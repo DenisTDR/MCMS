@@ -1,0 +1,7 @@
+﻿@using MCMS.Builder
+@using Microsoft.Extensions.Options
+@inject IOptions<SiteConfig> SiteConfig
+
+<div class="text-center">
+    <h1 class="display-4">Bine-ai venit p-aci pe @(SiteConfig.Value.SiteName ?? "MCMS")!</h1>
+</div>

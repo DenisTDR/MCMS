@@ -1,0 +1,15 @@
+@using Microsoft.Extensions.Options
+@using MCMS.Builder
+@inject IOptions<SiteConfig> SiteConfig
+<footer class="py-4 bg-light mt-auto">
+    <div class="container-fluid">
+        <div class="d-flex align-items-center justify-content-between small">
+            <div class="text-muted">@Html.Raw(SiteConfig.Value.SiteCopyright ?? "Copyright &copy; MCMS Team 2020") </div>
+            <div>
+                <a asp-controller="Home" asp-action="Privacy">Privacy Policy</a>
+                @* &middot; *@
+                @* <a href="#">Terms &amp; Conditions</a> *@
+            </div>
+        </div>
+    </div>
+</footer>

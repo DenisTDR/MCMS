@@ -1,0 +1,34 @@
+﻿@using Microsoft.Extensions.Options
+@using MCMS.Builder
+@inject IOptions<SiteConfig> SiteConfig
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title> @(ViewData.ContainsKey("Title") ? ViewData["Title"] + " |" : "") @(SiteConfig.Value.SiteName ?? "MCMS") </title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="~/lib/sb-admin/sb-admin-styles.css"/>
+    <link rel="stylesheet" href="~/lib/sb-admin/sb-custom-styles.css"/>
+    <link rel="stylesheet" href="~/lib/fontawesome/css/all.min.css"/>
+    <link rel="stylesheet" href="~/css/site.css"/>
+</head>
+<body class="sb-nav-fixed">
+<partial name="Partials/_Navbar"/>
+<div class="sb-layout-sidenav">
+    <partial name="Partials/_Sidenav"/>
+    <div class="sb-layout-sidenav-content">
+        <main role="main" class="pb-3 container-fluid">
+            @RenderBody()
+        </main>
+        <partial name="Partials/_Footer"/>
+    </div>
+</div>
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<script src="~/lib/sb-admin/sb-admin-scripts.js"></script>
+<script src="~/js/site.js" asp-append-version="true"></script>
+@await RenderSectionAsync("Scripts", required: false)
+<partial name="Formly/FormlyFormsScripts"/>
+</body>
+</html>

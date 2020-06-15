@@ -1,0 +1,95 @@
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.Extensions.Options
+@using MCMS.Builder.Menu
+@using MCMS.Base.Auth
+@inject SignInManager<User> SignInManager
+@inject UserManager<User> UserManager
+@inject IOptions<MenuConfig> Config
+
+<div class="sb-layout-sidenav-nav">
+    <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
+        <div class="sb-sidenav-menu">
+            <div class="nav">
+
+                @foreach (var section in Config.Value.Sections)
+                {
+                    if (!string.IsNullOrEmpty(section.Name))
+                    {
+                        <div class="sb-sidenav-menu-heading">
+                            @(section.Name)
+                        </div>
+                    }
+                    @foreach (var link in section.Links)
+                    {
+                        <a class="nav-link" href="@link.GetUrl(Url)" target="@link.Target">
+                            @if (!string.IsNullOrEmpty(link.FaIconClasses))
+                            {
+                                <div class="sb-nav-link-icon">
+                                    <i class="@link.FaIconClasses fa-fw"></i>
+                                </div>
+                            }
+                            @(link.Text)
+                        </a>
+                    }
+                }
+                <hr/>
+
+
+                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages" aria-expanded="false" aria-controls="collapsePages">
+                    <div class="sb-nav-link-icon">
+                        <i class="fas fa-book-open"></i>
+                    </div>
+                    Test Pages
+                    <div class="sb-sidenav-collapse-arrow">
+                        <i class="fas fa-angle-down"></i>
+                    </div>
+                </a>
+                <div class="collapse" id="collapsePages" aria-labelledby="headingTwo" data-parent="#sidenavAccordion">
+                    <nav class="sb-sidenav-menu-nested nav accordion" id="sidenavAccordionPages">
+                        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#pagesCollapseAuth" aria-expanded="false" aria-controls="pagesCollapseAuth">
+                            Authentication
+                            <div class="sb-sidenav-collapse-arrow">
+                                <i class="fas fa-angle-down"></i>
+                            </div>
+                        </a>
+                        <div class="collapse" id="pagesCollapseAuth" aria-labelledby="headingOne" data-parent="#sidenavAccordionPages">
+                            <nav class="sb-sidenav-menu-nested nav">
+                                <a class="nav-link" href="/Identity/Account/Login">Login</a>
+                                <a class="nav-link" href="/Identity/Account/Register">Register</a>
+                            </nav>
+                        </div>
+                        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#pagesCollapseError" aria-expanded="false" aria-controls="pagesCollapseError">
+                            Error
+                            <div class="sb-sidenav-collapse-arrow">
+                                <i class="fas fa-angle-down"></i>
+                            </div>
+                        </a>
+                        <div class="collapse" id="pagesCollapseError" aria-labelledby="headingOne" data-parent="#sidenavAccordionPages">
+                            <nav class="sb-sidenav-menu-nested nav">
+                                <a class="nav-link" asp-controller="Home" asp-action="Error" asp-route-code="401">401 Page</a>
+                                <a class="nav-link" asp-controller="Home" asp-action="Error" asp-route-code="404">404 Page</a>
+                                <a class="nav-link" asp-controller="Home" asp-action="Error" asp-route-code="500">500 Page</a>
+                            </nav>
+                        </div>
+                    </nav>
+                </div>
+            </div>
+        </div>
+        @if (SignInManager.IsSignedIn(User))
+        {
+            <div class="sb-sidenav-footer">
+                <div class="small">Logged in as:</div>
+                <div class="logged-in-user">@User.Identity.Name</div>
+                <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new {area = ""})">
+                    <button type="submit" class="btn btn-link btn-sm">Logout</button>
+                </form>
+            </div>
+        }
+        else
+        {
+            <div class="sb-sidenav-footer">
+                <a class="nav-link" asp-area="Identity" asp-page="/Account/Login">Login</a>
+            </div>
+        }
+    </nav>
+</div>

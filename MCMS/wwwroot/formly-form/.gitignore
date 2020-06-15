@@ -1,0 +1,4 @@
+# Here should be the build js files for formly field Angular web component
+# Those files are usualy served from a "CDN"
+/*.js*
+/3rdpartylicenses.txt

@@ -1,0 +1,55 @@
+@using MCMS.Helpers
+@using Newtonsoft.Json
+@model MCMS.SwaggerFormly.Models.FormlyFormParams
+@{
+    var iframeId = "formly-form-" + new Random().Next(1000, int.MaxValue);
+}
+@* <pre>@JsonConvert.SerializeObject(Model)</pre> *@
+@* <pre>@Model.ToUrlQuery()</pre> *@
+@if (Env.GetBool("FORMLY_DEBUG"))
+{
+    <style>
+          .form-frame {
+                width: 100%;
+                border: 1px solid black;
+            }
+    </style>
+    <iframe src="/formly-proxy?@Model.ToUrlQuery()" class="form-frame" id="@iframeId"></iframe>
+}
+else
+{
+    <script>
+    var openApiConfigUrl = '@(Model.OpenApiConfigUrl)'
+    </script>
+    <ce-formly-form-params
+        schema-name="@Model.SchemaName"
+        id="@Model.Id"
+        action="@Model.Action"
+        get-url="@Model.GetUrl"
+        submit-url="@Model.SubmitUrl"
+        additional-fields="@JsonConvert.SerializeObject(Model.AdditionalFields)"
+    >Loading form ... (check developer console if you still see this)</ce-formly-form-params>
+}
+
+
+<script>
+  (function (){
+      var iFrame = document.getElementById("@iframeId");
+      window.addEventListener('message', function(e){
+          if(!e || !e.data ) {
+              return;
+          }         
+          if(e.data.id === 'formly-form-height-changed') {
+              if(iFrame) {
+                  iFrame.style.height = e.data.height + 50 + "px";
+              }
+          }  else if(e.data.id === 'custom-form-done') {
+              if( typeof returnUrl !== 'undefined'){
+                window.location.href = returnUrl;
+              } else {
+                  window.history.back();
+              }
+          }
+      });
+   })();
+</script>

@@ -1,0 +1,37 @@
+using System;
+using System.Diagnostics;
+using System.IO;
+
+namespace MCMS.Helpers
+{
+    public static class Utilis
+    {
+        public static string GenerateRandomHexString(int length = 20)
+        {
+            var str = "";
+            while (str.Length < length)
+            {
+                str += Guid.NewGuid().ToString().ToLower().Replace("-", "");
+            }
+
+            return str.Substring(0, length);
+        }
+
+        public static void DieWith(string message, bool killProcess = true, ConsoleColor color = ConsoleColor.Red)
+        {
+            var oldColor = Console.ForegroundColor;
+            Console.ForegroundColor = color;
+            Console.WriteLine(message);
+            Console.ForegroundColor = oldColor;
+            if (killProcess)
+            {
+                Process.GetCurrentProcess().Kill();
+            }
+        }
+
+        public static string UrlCombine(params string[] p)
+        {
+            return Path.Combine(p).Replace("\\", "/");
+        }
+    }
+}

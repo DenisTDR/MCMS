@@ -1,12 +1,12 @@
 using System;
 using System.Linq;
 using MCMS.Base.Extensions;
+using MCMS.SwaggerFormly.Extensions;
 using Microsoft.OpenApi.Any;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
-using MCMS.SwaggerFormly.Extensions;
 
-namespace MCMS.SwaggerFormly
+namespace MCMS.SwaggerFormly.Filters
 {
     public class EnumSchemaFilter : ISchemaFilter
     {

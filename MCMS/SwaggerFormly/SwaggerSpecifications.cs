@@ -5,7 +5,9 @@ using Microsoft.OpenApi.Models;
 using MCMS.Builder;
 using MCMS.Helpers;
 using MCMS.SwaggerFormly.Filters;
-using MCMS.SwaggerFormly.MiddleWares;
+using MCMS.SwaggerFormly.FormParamsHelpers;
+using MCMS.SwaggerFormly.Middlewares;
+using MCMS.SwaggerFormly.Models;
 
 namespace MCMS.SwaggerFormly
 {
@@ -55,7 +57,8 @@ namespace MCMS.SwaggerFormly
                 swagger.UseAllOfToExtendReferenceSchemas();
             });
 
-            services.AddTransient(typeof(FormParamsService<,>));
+            services.AddTransient(typeof(FormParamsForControllerService<,>));
+            services.AddTransient<FormParamsServiceBuilder>();
         }
     }
 }

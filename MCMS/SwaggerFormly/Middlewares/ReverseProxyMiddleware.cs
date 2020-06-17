@@ -2,13 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.WebUtilities;
 using MCMS.Helpers;
+using Microsoft.AspNetCore.Http;
 
-namespace MCMS.SwaggerFormly.MiddleWares
+namespace MCMS.SwaggerFormly.Middlewares
 {
     // got from: 
     // https://auth0.com/blog/building-a-reverse-proxy-in-dot-net-core/

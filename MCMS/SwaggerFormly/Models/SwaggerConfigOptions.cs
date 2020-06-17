@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace MCMS.SwaggerFormly
+namespace MCMS.SwaggerFormly.Models
 {
     public class SwaggerConfigOptions
     {

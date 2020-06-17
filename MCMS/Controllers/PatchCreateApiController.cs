@@ -10,19 +10,19 @@ namespace MCMS.Controllers
         where TE : IEntity where TVm : class, IViewModel
     {
         [HttpGet("{id}")]
-        public Task<ActionResult<TVm>> Get([FromRoute] string id)
+        public virtual Task<ActionResult<TVm>> Get([FromRoute] string id)
         {
             throw new System.NotImplementedException();
         }
 
         [HttpPatch("{id}")]
-        public Task<ActionResult<TVm>> Patch([FromQuery] string id, [FromBody] JsonPatchDocument<TVm> bag)
+        public virtual Task<ActionResult<TVm>> Patch([FromQuery] string id, [FromBody] JsonPatchDocument<TVm> doc)
         {
             throw new System.NotImplementedException();
         }
 
         [HttpPost]
-        public Task<ActionResult<TVm>> Create([FromBody] TVm model)
+        public virtual Task<ActionResult<TVm>> Create([FromBody] TVm model)
         {
             throw new System.NotImplementedException();
         }

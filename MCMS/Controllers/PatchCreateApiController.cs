@@ -1,30 +1,74 @@
+using System;
+using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using MCMS.Base.Data.Entities;
 using MCMS.Base.Data.ViewModels;
+using MCMS.Base.Extensions;
+using MCMS.Data;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
 
 namespace MCMS.Controllers
 {
     public abstract class PatchCreateApiController<TE, TVm> : ApiController, IPatchCreateApiController<TVm>
-        where TE : IEntity where TVm : class, IViewModel
+        where TE : Entity where TVm : class, IViewModel
     {
+        protected IRepository<TE> Repo => ServiceProvider.GetService<IRepository<TE>>();
+
         [HttpGet("{id}")]
-        public virtual Task<ActionResult<TVm>> Get([FromRoute] string id)
+        public virtual async Task<ActionResult<TVm>> Get([FromRoute] string id)
         {
-            throw new System.NotImplementedException();
+            var e = await Repo.GetOne(id);
+            if (e == null)
+            {
+                return NotFound();
+            }
+
+            var vm = Map(e);
+            return Ok(vm);
         }
 
         [HttpPatch("{id}")]
-        public virtual Task<ActionResult<TVm>> Patch([FromQuery] string id, [FromBody] JsonPatchDocument<TVm> doc)
+        public virtual async Task<ActionResult<TVm>> Patch([FromRoute] [Required] string id,
+            [FromBody] [Required] JsonPatchDocument<TVm> doc)
         {
-            throw new System.NotImplementedException();
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var eDoc = doc.CloneFor<TVm, TE>();
+
+            var e = await Repo.Patch(id, eDoc);
+            var vm = Map(e);
+            
+            return Ok(vm);
         }
 
         [HttpPost]
-        public virtual Task<ActionResult<TVm>> Create([FromBody] TVm model)
+        public virtual async Task<ActionResult<TVm>> Create([FromBody] TVm vm)
         {
-            throw new System.NotImplementedException();
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var e = Map(vm);
+            e = await Repo.Add(e);
+            vm = Map(e);
+            return Ok(vm);
+        }
+
+        protected TVm Map(TE e)
+        {
+            return Mapper.Map<TVm>(e);
+        }
+
+        protected TE Map(TVm vm)
+        {
+            return Mapper.Map<TE>(vm);
         }
     }
 }

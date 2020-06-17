@@ -1,7 +1,12 @@
 using System;
+using AutoMapper;
+using MCMS.Base.Data.Entities;
+using MCMS.Base.Data.ViewModels;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using MCMS.Builder;
+using MCMS.Builder.Helpers;
+using MCMS.Data;
 using MCMS.Helpers;
 
 namespace MCMS
@@ -16,6 +21,7 @@ namespace MCMS
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddCors();
+            services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
         }
 
 

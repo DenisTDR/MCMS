@@ -2,9 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using AutoMapper;
+using MCMS.Builder.Helpers;
 using MCMS.Helpers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
@@ -45,9 +48,18 @@ namespace MCMS.Builder
                 mvcBuilder.AddRazorRuntimeCompilation();
             }
 
-            new MAppEntitiesHelper(this).Process(services);
+            new MAppEntitiesHelper(this).ProcessSpecifications(services);
 
             _addDbContextAction(services);
+
+            services.AddAutoMapper(expression =>
+            {
+                foreach (var buildMappingConfig in new MAppMappingHelper(this).BuildMappingConfigs())
+                {
+                    buildMappingConfig.CreateMaps(expression);
+                }
+            }, typeof(MBaseSpecifications));
+
             foreach (var smpSpec in _specifications)
             {
                 smpSpec.ConfigureServices(services);
@@ -86,7 +98,7 @@ namespace MCMS.Builder
                     pattern: "{controller=Home}/{action=Index}/{id?}");
                 endpoints.MapRazorPages();
             });
-            
+
             // assert that variable is set correctly
             if (!(Env.GetOrThrow("EXTERNAL_URL") is { } url) || url.EndsWith('/') || !url.Contains("http"))
             {

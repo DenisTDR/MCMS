@@ -8,7 +8,7 @@ using MCMS.Base.Extensions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace MCMS.Builder
+namespace MCMS.Builder.Helpers
 {
     public class MAppEntitiesHelper
     {
@@ -19,21 +19,18 @@ namespace MCMS.Builder
             _app = app;
         }
 
-        public void Process(IServiceCollection services)
+        public void ProcessSpecifications(IServiceCollection services)
         {
-            services.AddOptions<EntitiesConfig>().Configure(config => { config.EntityStacks.AddRange(Process()); });
+            services.AddOptions<EntitiesConfig>().Configure(config => { config.EntityStacks.AddRange(ProcessSpecifications()); });
         }
 
-        public List<EntityTypeStack> Process()
+        public List<EntityTypeStack> ProcessSpecifications()
         {
-            var allTypes = _app.Specifications
-                .Select(spec => spec.GetType().Assembly).Distinct()
-                .SelectMany(ass => ass.GetTypes())
-                .Where(type => !type.IsAbstract && !type.IsInterface)
-                .Where(type => !type.GetCustomAttributes(typeof(NotMappedAttribute), true).Any())
-                .Where(type =>
-                    !typeof(IdentityRole).IsAssignableFrom(type) && !typeof(IdentityUser).IsAssignableFrom(type))
-                .ToList();
+            var allTypes =
+                new MSpecificationsTypeFilter().FilterMapped(_app)
+                    .Where(type =>
+                        !typeof(IdentityRole).IsAssignableFrom(type) && !typeof(IdentityUser).IsAssignableFrom(type))
+                    .ToList();
             var entityTypes = allTypes.Where(type => typeof(IEntity).IsAssignableFrom(type)).ToList();
             var entityConfigTypes = allTypes
                 .Where(type => type.IsSubclassOfGenericType(typeof(EntityTypeConfiguration<>)))

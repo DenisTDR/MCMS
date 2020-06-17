@@ -7,8 +7,7 @@ namespace MCMS.Base.Data
     public sealed class EntityTypeStack
     {
         public Type EntityType { get; private set; }
-
-
+        public Type EntityTypeConfigurationType { get; private set; }
         public EntityTypeStack(Type entityType)
         {
             SetType(entityType);
@@ -25,7 +24,6 @@ namespace MCMS.Base.Data
             return this;
         }
 
-        public Type EntityTypeConfigurationType { get; private set; }
 
         public EntityTypeStack SetEntityTypeConfiguration(Type type)
         {

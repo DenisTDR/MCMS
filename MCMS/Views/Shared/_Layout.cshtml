@@ -1,5 +1,6 @@
 ﻿@using Microsoft.Extensions.Options
 @using MCMS.Builder
+@using MCMS.SwaggerFormly.Extensions
 @inject IOptions<SiteConfig> SiteConfig
 <!DOCTYPE html>
 <html lang="en">
@@ -7,11 +8,15 @@
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title> @(ViewData.ContainsKey("Title") ? ViewData["Title"] + " |" : "") @(SiteConfig.Value.SiteName ?? "MCMS") </title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css"/>
-    <link rel="stylesheet" href="~/lib/sb-admin/sb-admin-styles.css"/>
-    <link rel="stylesheet" href="~/lib/sb-admin/sb-custom-styles.css"/>
-    <link rel="stylesheet" href="~/lib/fontawesome/css/all.min.css"/>
-    <link rel="stylesheet" href="~/css/site.css"/>
+    @using (Html.BeginMStyles())
+    {
+        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css"/>
+        <link rel="stylesheet" href="~/lib/sb-admin/sb-admin-styles.css"/>
+        <link rel="stylesheet" href="~/lib/sb-admin/sb-custom-styles.css"/>
+        <link rel="stylesheet" href="~/lib/fontawesome/css/all.min.css"/>
+        <link rel="stylesheet" href="~/css/site.css"/>
+    }
+    @Html.RenderMStyles()
 </head>
 <body class="sb-nav-fixed">
 <partial name="Partials/_Navbar"/>
@@ -24,11 +29,17 @@
         <partial name="Partials/_Footer"/>
     </div>
 </div>
-<script src="~/lib/jquery/dist/jquery.min.js"></script>
-<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-<script src="~/lib/sb-admin/sb-admin-scripts.js"></script>
-<script src="~/js/site.js" asp-append-version="true"></script>
-@await RenderSectionAsync("Scripts", required: false)
+
+@using (Html.BeginMScripts())
+{
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/lib/sb-admin/sb-admin-scripts.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+}
 <partial name="Formly/FormlyFormsScripts"/>
+
+@Html.RenderMScripts()
+@await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

@@ -3,10 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MCMS.Base.Data.Entities;
+using MCMS.Base.Extensions;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.EntityFrameworkCore;
-
-#pragma warning disable 1998
 
 namespace MCMS.Data
 {
@@ -35,21 +34,28 @@ namespace MCMS.Data
 
         public async Task<T> Add(T e)
         {
+            e.Id = null;
             var addingResult = await _dbSet.AddAsync(e);
             await _dbContext.SaveChangesAsync();
             return addingResult.Entity;
         }
 
-        public async Task<T> Patch(string id, JsonPatchDocument<T> eub)
+        public async Task<T> Patch(string id, JsonPatchDocument<T> patchDoc)
         {
             var e = await GetOne(id);
-            eub.ApplyTo(e);
+            if (patchDoc.IsEmpty())
+            {
+                return e;
+            }
+
+            patchDoc.ApplyTo(e);
             await _dbContext.SaveChangesAsync();
             return e;
         }
 
         public async Task<bool> Delete(string id)
         {
+            await Task.Delay(1000);
             throw new NotImplementedException();
         }
 

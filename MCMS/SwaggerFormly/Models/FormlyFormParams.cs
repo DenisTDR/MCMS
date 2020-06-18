@@ -10,7 +10,8 @@ namespace MCMS.SwaggerFormly.Models
         public string GetUrl { get; set; }
         public string SubmitUrl { get; set; }
         public object AdditionalFields { get; set; }
-        public string Id { get; set; }
+        public string ModelId { get; set; }
+        public string FormInstanceId { get; set; }
 
         public string ToUrlQuery()
         {

@@ -8,7 +8,6 @@ namespace MCMS.SwaggerFormly.FormParamsHelpers
     {
         protected string ControllerPath { get; set; }
         protected string SchemaName { get; set; }
-
         protected string ApiUrl { get; set; } = Utilis.UrlCombine(Env.GetOrThrow("EXTERNAL_URL"), "api/");
 
         public FormParamsService(string controllerPath, string schemaName)
@@ -20,7 +19,7 @@ namespace MCMS.SwaggerFormly.FormParamsHelpers
         public virtual FormlyFormParams ForPatch(string id)
         {
             var @params = CommonConfig(FormActionType.Patch);
-            @params.Id = id;
+            @params.ModelId = id;
             return @params;
         }
 
@@ -45,6 +44,7 @@ namespace MCMS.SwaggerFormly.FormParamsHelpers
                 GetUrl = Utilis.UrlCombine(controllerUrl, GetGetActionName() + "/"),
                 SubmitUrl = Utilis.UrlCombine(controllerUrl, submitActionName + "/"),
                 OpenApiConfigUrl = Utilis.UrlCombine(openApiControllerUrl, nameof(OpenApiConfigController.Get)),
+                FormInstanceId = Utilis.GenerateRandomHexString()
             };
         }
 

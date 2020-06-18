@@ -14,6 +14,11 @@ namespace MCMS.Base.Extensions
             return doc;
         }
 
+        public static bool IsEmpty<T>(this JsonPatchDocument<T> doc) where T : class
+        {
+            return !doc.Operations.Any();
+        }
+
         public static Operation<TOut> CloneFor<TIn, TOut>(this Operation<TIn> source)
             where TIn : class where TOut : class
         {

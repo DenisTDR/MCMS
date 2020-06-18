@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MCMS.Data
 {
-    public class Repository<T> : IRepository<T> where T : Entity
+    public class Repository<T> : IRepository<T> where T : Entity, new()
     {
         private readonly BaseDbContext _dbContext;
         private DbSet<T> _dbSet;
@@ -55,8 +55,16 @@ namespace MCMS.Data
 
         public async Task<bool> Delete(string id)
         {
-            await Task.Delay(1000);
-            throw new NotImplementedException();
+            _dbSet.Remove(new T {Id = id});
+            await _dbContext.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> Delete(T e)
+        {
+            _dbSet.Remove(e);
+            await _dbContext.SaveChangesAsync();
+            return true;
         }
 
         public void RebuildQueryable(Func<IQueryable<T>, IQueryable<T>> func)

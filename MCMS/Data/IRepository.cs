@@ -15,6 +15,7 @@ namespace MCMS.Data
         Task<T> Patch(string id, JsonPatchDocument<T> eub);
 
         Task<bool> Delete(string id);
+        Task<bool> Delete(T e);
 
         void RebuildQueryable(Func<IQueryable<T>, IQueryable<T>> func);
         void ChainQueryable(Func<IQueryable<T>, IQueryable<T>> func);

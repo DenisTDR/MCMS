@@ -1,4 +1,3 @@
-using System;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using MCMS.Base.Data.Entities;
@@ -8,7 +7,6 @@ using MCMS.Data;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
 
 namespace MCMS.Controllers
 {
@@ -39,11 +37,16 @@ namespace MCMS.Controllers
                 return BadRequest(ModelState);
             }
 
+            if (!await Repo.Any(id))
+            {
+                return NotFound();
+            }
+
             var eDoc = doc.CloneFor<TVm, TE>();
 
             var e = await Repo.Patch(id, eDoc);
             var vm = Map(e);
-            
+
             return Ok(vm);
         }
 

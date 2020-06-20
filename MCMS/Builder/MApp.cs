@@ -6,8 +6,8 @@ using AutoMapper;
 using MCMS.Builder.Helpers;
 using MCMS.Helpers;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
@@ -80,6 +80,21 @@ namespace MCMS.Builder
                 app.UseHsts();
             }
 
+            app.UseStatusCodePagesWithReExecute("/Home/Error", "?code={0}");
+            app.Use(async (ctx, next) =>
+            {
+                if (ctx.Request.Path.Value.StartsWith("/api", StringComparison.OrdinalIgnoreCase))
+                {
+                    var statusCodeFeature = ctx.Features.Get<IStatusCodePagesFeature>();
+
+                    if (statusCodeFeature != null && statusCodeFeature.Enabled)
+                        statusCodeFeature.Enabled = false;
+                }
+
+                await next();
+            });
+
+            
             RegisterWwwrootPaths(app);
 
             app.UseStaticFiles();

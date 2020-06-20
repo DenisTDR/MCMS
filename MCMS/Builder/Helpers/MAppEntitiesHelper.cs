@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using MCMS.Base.Data;
 using MCMS.Base.Data.Entities;

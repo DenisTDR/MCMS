@@ -1,0 +1,10 @@
+@model MCMS.Builder.Menu.MenuLink
+<a class="nav-link" href="@Model.GetUrl(Url)" target="@Model.Target">
+    @if (!string.IsNullOrEmpty(Model.IconClasses))
+    {
+        <div class="sb-nav-link-icon">
+            <i class="@Model.IconClasses fa-fw"></i>
+        </div>
+    }
+    @(Model.Text)
+</a>

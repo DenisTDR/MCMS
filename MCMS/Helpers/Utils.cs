@@ -1,10 +1,13 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace MCMS.Helpers
 {
-    public static class Utilis
+    public static class Utils
     {
         public static string GenerateRandomHexString(int length = 20)
         {
@@ -32,6 +35,18 @@ namespace MCMS.Helpers
         public static string UrlCombine(params string[] p)
         {
             return Path.Combine(p).Replace("\\", "/");
+        }
+
+        public static JsonSerializerSettings JsonSerializerSettings()
+        {
+            return new JsonSerializerSettings
+            {
+                ContractResolver = new CamelCasePropertyNamesContractResolver(), Converters =
+                    new List<JsonConverter>
+                    {
+                        new Newtonsoft.Json.Converters.StringEnumConverter()
+                    }
+            };
         }
     }
 }

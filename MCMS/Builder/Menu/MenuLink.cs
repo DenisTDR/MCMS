@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace MCMS.Builder.Menu
 {
-    public class MenuLink
+    public class MenuLink: MenuItem
     {
         public string Text { get; }
         public string Url { get; }
@@ -14,7 +14,6 @@ namespace MCMS.Builder.Menu
         public string Target { get; private set; }
         public string ControllerName => Controller != null ? Controller.Name.Replace("Controller", "") : null;
         public string ActionName => Action != null ? Action.Name : "Index";
-        public string FaIconClasses { get; private set; }
 
         public string GetUrl(IUrlHelper urlHelper = null)
         {
@@ -25,6 +24,7 @@ namespace MCMS.Builder.Menu
 
             return urlHelper.ActionLink(ActionName, ControllerName);
         }
+
         public MenuLink(string text, Type controller, MethodInfo action = null)
         {
             if (controller != null)
@@ -65,12 +65,6 @@ namespace MCMS.Builder.Menu
         public MenuLink WithTarget(string target)
         {
             Target = target;
-            return this;
-        }
-
-        public MenuLink WithFaIconClasses(string faIconClasses)
-        {
-            FaIconClasses = faIconClasses;
             return this;
         }
     }

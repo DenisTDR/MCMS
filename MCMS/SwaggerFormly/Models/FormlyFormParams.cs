@@ -1,4 +1,12 @@
+using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
+using System.Web;
+using MCMS.Helpers;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Serialization;
 
 namespace MCMS.SwaggerFormly.Models
 {
@@ -15,15 +23,17 @@ namespace MCMS.SwaggerFormly.Models
 
         public string ToUrlQuery()
         {
-            return string.Join("&", GetType().GetProperties()
-                .Where(pi => !string.IsNullOrEmpty(pi.GetValue(this)?.ToString()))
-                .Select(pi => pi.Name.First().ToString().ToLower() + pi.Name.Substring(1) + "=" + pi.GetValue(this)));
+            var jObj = (JObject) JsonConvert.DeserializeObject(JsonConvert.SerializeObject(this,
+                Utils.JsonSerializerSettings()));
+            return string.Join("&",
+                jObj.Properties().Where(jProp => jProp.Value != null && !string.IsNullOrEmpty(jProp.Value.ToString()))
+                    .Select(jProp => jProp.Name + "=" + HttpUtility.UrlEncode(jProp.Value.ToString())));
         }
     }
 
     public enum FormActionType
     {
-        Create,
-        Patch
+        [EnumMember(Value = "create")] Create,
+        [EnumMember(Value = "patch")] Patch
     }
 }

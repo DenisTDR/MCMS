@@ -102,7 +102,7 @@ namespace MCMS.Builder
             // assert that variable is set correctly
             if (!(Env.GetOrThrow("EXTERNAL_URL") is { } url) || url.EndsWith('/') || !url.Contains("http"))
             {
-                Utilis.DieWith("EXTERNAL_URL must include protocol and must not end with /");
+                Utils.DieWith("EXTERNAL_URL must include protocol and must not end with /");
             }
         }
 

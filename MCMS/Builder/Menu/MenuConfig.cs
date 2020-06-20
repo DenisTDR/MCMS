@@ -4,6 +4,6 @@ namespace MCMS.Builder.Menu
 {
     public class MenuConfig
     {
-        public List<MenuSection> Sections { get; } = new List<MenuSection>();
+        public List<MenuItem> Items { get; } = new List<MenuItem>();
     }
 }

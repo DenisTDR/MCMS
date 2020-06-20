@@ -8,7 +8,9 @@ namespace MCMS.SwaggerFormly.FormParamsHelpers
     {
         protected string ControllerPath { get; set; }
         protected string SchemaName { get; set; }
-        protected string ApiUrl { get; set; } = Utilis.UrlCombine(Env.GetOrThrow("EXTERNAL_URL"), "api/");
+        protected string ApiUrl { get; set; } = Utils.UrlCombine(Env.GetOrThrow("EXTERNAL_URL"), "api/");
+
+        protected object AdditionalData { get; set; }
 
         public FormParamsService(string controllerPath, string schemaName)
         {
@@ -23,8 +25,9 @@ namespace MCMS.SwaggerFormly.FormParamsHelpers
             return @params;
         }
 
-        public virtual FormlyFormParams ForCreate()
+        public virtual FormlyFormParams ForCreate(object additionalData = null)
         {
+            AdditionalData = additionalData;
             return CommonConfig(FormActionType.Create);
         }
 
@@ -33,18 +36,19 @@ namespace MCMS.SwaggerFormly.FormParamsHelpers
             var submitActionName = GetActionName(action);
 
             var openApiConfigController = nameof(OpenApiConfigController).Replace("Controller", "");
-            var openApiControllerUrl = Utilis.UrlCombine(ApiUrl, openApiConfigController);
+            var openApiControllerUrl = Utils.UrlCombine(ApiUrl, openApiConfigController);
 
-            var controllerUrl = Utilis.UrlCombine(ApiUrl, ControllerPath);
+            var controllerUrl = Utils.UrlCombine(ApiUrl, ControllerPath);
 
             return new FormlyFormParams
             {
                 SchemaName = SchemaName,
                 Action = action,
-                GetUrl = Utilis.UrlCombine(controllerUrl, GetGetActionName() + "/"),
-                SubmitUrl = Utilis.UrlCombine(controllerUrl, submitActionName + "/"),
-                OpenApiConfigUrl = Utilis.UrlCombine(openApiControllerUrl, nameof(OpenApiConfigController.Get)),
-                FormInstanceId = Utilis.GenerateRandomHexString()
+                GetUrl = Utils.UrlCombine(controllerUrl, GetGetActionName() + "/"),
+                SubmitUrl = Utils.UrlCombine(controllerUrl, submitActionName + "/"),
+                OpenApiConfigUrl = Utils.UrlCombine(openApiControllerUrl, nameof(OpenApiConfigController.Get)),
+                FormInstanceId = Utils.GenerateRandomHexString(),
+                AdditionalFields = AdditionalData
             };
         }
 

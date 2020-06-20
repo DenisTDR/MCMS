@@ -26,6 +26,18 @@
         <EmbeddedResource Remove="wwwroot\formly-form\**" />
         <None Remove="wwwroot\formly-form\**" />
         <Content Remove="wwwroot\formly-form\**" />
+        <Content Update="Views\Shared\Menu\_MenuItem.cshtml">
+          <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+          <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+        </Content>
+        <Content Update="Views\Shared\Menu\_MenuLink.cshtml">
+          <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+          <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+        </Content>
+        <Content Update="Views\Shared\Menu\_MenuSection.cshtml">
+          <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+          <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+        </Content>
     </ItemGroup>
 
     <ItemGroup>

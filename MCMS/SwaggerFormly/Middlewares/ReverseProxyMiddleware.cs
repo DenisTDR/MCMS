@@ -131,6 +131,6 @@ namespace MCMS.SwaggerFormly.Middlewares
         }
 
         private readonly Dictionary<string, string> _proxyRules = new Dictionary<string, string>
-            {{"/formly-proxy", Utilis.UrlCombine(Env.GetOrThrow("FORMLY_SERVE_URL"), "formly-proxy/")}};
+            {{"/formly-proxy", Utils.UrlCombine(Env.GetOrThrow("FORMLY_SERVE_URL"), "formly-proxy/")}};
     }
 }

@@ -10,69 +10,51 @@
     <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
         <div class="sb-sidenav-menu">
             <div class="nav">
-
-                @foreach (var section in Config.Value.Sections)
+                @foreach (var section in Config.Value.Items)
                 {
-                    if (!string.IsNullOrEmpty(section.Name))
-                    {
-                        <div class="sb-sidenav-menu-heading">
-                            @(section.Name)
-                        </div>
-                    }
-                    @foreach (var link in section.Links)
-                    {
-                        <a class="nav-link" href="@link.GetUrl(Url)" target="@link.Target">
-                            @if (!string.IsNullOrEmpty(link.FaIconClasses))
-                            {
-                                <div class="sb-nav-link-icon">
-                                    <i class="@link.FaIconClasses fa-fw"></i>
-                                </div>
-                            }
-                            @(link.Text)
-                        </a>
-                    }
+                    @await Html.PartialAsync("Menu/_MenuItem", section)
                 }
                 <hr/>
 
 
-                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages" aria-expanded="false" aria-controls="collapsePages">
-                    <div class="sb-nav-link-icon">
-                        <i class="fas fa-book-open"></i>
-                    </div>
-                    Test Pages
-                    <div class="sb-sidenav-collapse-arrow">
-                        <i class="fas fa-angle-down"></i>
-                    </div>
-                </a>
-                <div class="collapse" id="collapsePages" aria-labelledby="headingTwo" data-parent="#sidenavAccordion">
-                    <nav class="sb-sidenav-menu-nested nav accordion" id="sidenavAccordionPages">
-                        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#pagesCollapseAuth" aria-expanded="false" aria-controls="pagesCollapseAuth">
-                            Authentication
-                            <div class="sb-sidenav-collapse-arrow">
-                                <i class="fas fa-angle-down"></i>
-                            </div>
-                        </a>
-                        <div class="collapse" id="pagesCollapseAuth" aria-labelledby="headingOne" data-parent="#sidenavAccordionPages">
-                            <nav class="sb-sidenav-menu-nested nav">
-                                <a class="nav-link" href="/Identity/Account/Login">Login</a>
-                                <a class="nav-link" href="/Identity/Account/Register">Register</a>
-                            </nav>
-                        </div>
-                        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#pagesCollapseError" aria-expanded="false" aria-controls="pagesCollapseError">
-                            Error
-                            <div class="sb-sidenav-collapse-arrow">
-                                <i class="fas fa-angle-down"></i>
-                            </div>
-                        </a>
-                        <div class="collapse" id="pagesCollapseError" aria-labelledby="headingOne" data-parent="#sidenavAccordionPages">
-                            <nav class="sb-sidenav-menu-nested nav">
-                                <a class="nav-link" asp-controller="Home" asp-action="Error" asp-route-code="401">401 Page</a>
-                                <a class="nav-link" asp-controller="Home" asp-action="Error" asp-route-code="404">404 Page</a>
-                                <a class="nav-link" asp-controller="Home" asp-action="Error" asp-route-code="500">500 Page</a>
-                            </nav>
-                        </div>
-                    </nav>
-                </div>
+                @* <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages" aria-expanded="false" aria-controls="collapsePages"> *@
+                @*     <div class="sb-nav-link-icon"> *@
+                @*         <i class="fas fa-book-open"></i> *@
+                @*     </div> *@
+                @*     Test Pages *@
+                @*     <div class="sb-sidenav-collapse-arrow"> *@
+                @*         <i class="fas fa-angle-down"></i> *@
+                @*     </div> *@
+                @* </a> *@
+                @* <div class="collapse" id="collapsePages" aria-labelledby="headingTwo" data-parent="#sidenavAccordion"> *@
+                @*     <nav class="sb-sidenav-menu-nested nav accordion" id="sidenavAccordionPages"> *@
+                @*         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#pagesCollapseAuth" aria-expanded="false" aria-controls="pagesCollapseAuth"> *@
+                @*             Authentication *@
+                @*             <div class="sb-sidenav-collapse-arrow"> *@
+                @*                 <i class="fas fa-angle-down"></i> *@
+                @*             </div> *@
+                @*         </a> *@
+                @*         <div class="collapse" id="pagesCollapseAuth" aria-labelledby="headingOne" data-parent="#sidenavAccordionPages"> *@
+                @*             <nav class="sb-sidenav-menu-nested nav"> *@
+                @*                 <a class="nav-link" href="/Identity/Account/Login">Login</a> *@
+                @*                 <a class="nav-link" href="/Identity/Account/Register">Register</a> *@
+                @*             </nav> *@
+                @*         </div> *@
+                @*         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#pagesCollapseError" aria-expanded="false" aria-controls="pagesCollapseError"> *@
+                @*             Error *@
+                @*             <div class="sb-sidenav-collapse-arrow"> *@
+                @*                 <i class="fas fa-angle-down"></i> *@
+                @*             </div> *@
+                @*         </a> *@
+                @*         <div class="collapse" id="pagesCollapseError" aria-labelledby="headingOne" data-parent="#sidenavAccordionPages"> *@
+                @*             <nav class="sb-sidenav-menu-nested nav"> *@
+                @*                 <a class="nav-link" asp-controller="Home" asp-action="Error" asp-route-code="401">401 Page</a> *@
+                @*                 <a class="nav-link" asp-controller="Home" asp-action="Error" asp-route-code="404">404 Page</a> *@
+                @*                 <a class="nav-link" asp-controller="Home" asp-action="Error" asp-route-code="500">500 Page</a> *@
+                @*             </nav> *@
+                @*         </div> *@
+                @*     </nav> *@
+                @* </div> *@
             </div>
         </div>
         @if (SignInManager.IsSignedIn(User))

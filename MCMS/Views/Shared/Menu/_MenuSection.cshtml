@@ -1,0 +1,38 @@
+@model MCMS.Builder.Menu.MenuSection
+
+@if (!Model.IsCollapsed)
+{
+    @if (!string.IsNullOrEmpty(Model.Name))
+    {
+        <div class="sb-sidenav-menu-heading">
+            @(Model.Name)
+        </div>
+    }
+    @foreach (var item in Model.Items)
+    {
+        @await Html.PartialAsync("Menu/_MenuItem", item)
+    }
+}
+else
+{
+    <a id="@Model.Id-header" class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#@Model.Id-section" aria-expanded="false" aria-controls="@Model.Id-section">
+        @if (!string.IsNullOrEmpty(Model.IconClasses))
+        {
+            <div class="sb-nav-link-icon">
+                <i class="@Model.IconClasses fa-fw"></i>
+            </div>
+        }
+        @Model.Name
+        <div class="sb-sidenav-collapse-arrow">
+            <i class="fas fa-angle-down"></i>
+        </div>
+    </a>
+    <div class="collapse" id="@Model.Id-section" aria-labelledby="@Model.Id-header">
+        <nav class="sb-sidenav-menu-nested nav accordion" id="@Model.Id-pages">
+            @foreach (var item in Model.Items)
+            {
+                @await Html.PartialAsync("Menu/_MenuItem", item)
+            }
+        </nav>
+    </div>
+}

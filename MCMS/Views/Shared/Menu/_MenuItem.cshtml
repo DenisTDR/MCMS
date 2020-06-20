@@ -1,0 +1,10 @@
+@using MCMS.Builder.Menu
+@model MCMS.Builder.Menu.MenuItem
+@if (Model is MenuLink link)
+{
+    @await Html.PartialAsync("Menu/_MenuLink", link)
+}
+else if (Model is MenuSection section)
+{
+    @await Html.PartialAsync("Menu/_MenuSection", section)
+}

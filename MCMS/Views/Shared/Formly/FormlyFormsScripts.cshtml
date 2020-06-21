@@ -1,5 +1,6 @@
 @using MCMS.Helpers
 @using MCMS.SwaggerFormly.Extensions
+@using MCMS.SwaggerFormly.FormParamsHelpers
 
 @if (!Env.GetBool("FORMLY_DEBUG"))
 {
@@ -7,6 +8,10 @@
 
     @using (Html.BeginMScripts())
     {
+        <script>
+            var openApiConfigUrl = '@FormParamsService.GetOpenApiConfigUrl()'
+        </script>
+
         <script src="@basePath/formly-form/runtime.js" defer asp-append-version="true"></script>
         <script src="@basePath/formly-form/polyfills.js" defer asp-append-version="true"></script>
         <script src="@basePath/formly-form/styles.js" defer asp-append-version="true"></script>

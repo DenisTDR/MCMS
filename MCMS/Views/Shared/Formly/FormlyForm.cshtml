@@ -7,13 +7,8 @@
 @{
     var iframeId = "formly-form-" + Utils.GenerateRandomHexString();
 }
-@* <pre>@JsonConvert.SerializeObject(Model)</pre> *@
-@* <pre>@Model.ToUrlQuery()</pre> *@
 @if (!Env.GetBool("FORMLY_DEBUG"))
 {
-    <script>
-    var openApiConfigUrl = '@Model.OpenApiConfigUrl'
-    </script>
     <ce-formly-form-params
         schema-name="@Model.SchemaName"
         model-id="@Model.ModelId"
@@ -40,9 +35,7 @@ else
     @if (!Env.GetBool("FORMLY_DEBUG"))
     {
         <script>
-        // console.log('bla-bla');
-        var id = '@Model.FormInstanceId';
-        var formElement = document.getElementById(id);
+        var formElement = document.getElementById('@Model.FormInstanceId');
         formElement.addEventListener('done', function(e) { formDone@(Model.FormInstanceId)(e.detail); });
         </script>
     }

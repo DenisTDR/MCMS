@@ -8,7 +8,7 @@ namespace MCMS.SwaggerFormly.FormParamsHelpers
     {
         protected string ControllerPath { get; set; }
         protected string SchemaName { get; set; }
-        protected string ApiUrl { get; set; } = Utils.UrlCombine(Env.GetOrThrow("EXTERNAL_URL"), "api/");
+        protected static string ApiUrl { get; set; } = Utils.UrlCombine(Env.GetOrThrow("EXTERNAL_URL"), "api/");
 
         protected object AdditionalData { get; set; }
 
@@ -35,8 +35,6 @@ namespace MCMS.SwaggerFormly.FormParamsHelpers
         {
             var submitActionName = GetActionName(action);
 
-            var openApiConfigController = nameof(OpenApiConfigController).Replace("Controller", "");
-            var openApiControllerUrl = Utils.UrlCombine(ApiUrl, openApiConfigController);
 
             var controllerUrl = Utils.UrlCombine(ApiUrl, ControllerPath);
 
@@ -46,10 +44,17 @@ namespace MCMS.SwaggerFormly.FormParamsHelpers
                 Action = action,
                 GetUrl = Utils.UrlCombine(controllerUrl, GetGetActionName() + "/"),
                 SubmitUrl = Utils.UrlCombine(controllerUrl, submitActionName + "/"),
-                OpenApiConfigUrl = Utils.UrlCombine(openApiControllerUrl, nameof(OpenApiConfigController.Get)),
+                OpenApiConfigUrl = GetOpenApiConfigUrl(),
                 FormInstanceId = Utils.GenerateRandomHexString(),
                 AdditionalFields = AdditionalData
             };
+        }
+
+        public static string GetOpenApiConfigUrl()
+        {
+            var openApiConfigController = nameof(OpenApiConfigController).Replace("Controller", "");
+            var openApiControllerUrl = Utils.UrlCombine(ApiUrl, openApiConfigController);
+            return Utils.UrlCombine(openApiControllerUrl, nameof(OpenApiConfigController.Get));
         }
 
         protected virtual string GetActionName(FormActionType actionType)

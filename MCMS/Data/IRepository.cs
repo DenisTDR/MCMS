@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.JsonPatch;
 
 namespace MCMS.Data
 {
-    public interface IRepository<T> where T : Entity
+    public interface IRepository<T> where T : class, IEntity
     {
         Task<T> GetOne(string id);
         Task<T> GetOne(Expression<Func<T, bool>> predicate);

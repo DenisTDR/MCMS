@@ -1,0 +1,28 @@
+@using MCMS.SwaggerFormly.Extensions
+@using MCMS.SwaggerFormly.FormParamsHelpers
+@{
+    ViewBag.Title = "Create a " + ViewBag.EntityName;
+    var formParamsService = ViewBag.FormParamsService as FormParamsService;
+}
+@* *@
+@* <div class="row"> *@
+@*     <div class="col-12"> *@
+@*     </div> *@
+@* </div> *@
+
+
+<div class="modal fade" tabindex="1" id="add-utility" role="dialog" aria-labelledby="logistics" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="add-utility-title">@ViewBag.Title</h5>
+            </div>
+            <div class="col-md-12">
+                @await Html.BlindPartialAsync("Formly/FormlyForm", formParamsService.ForCreate())
+                <div class="form-group">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Închide</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

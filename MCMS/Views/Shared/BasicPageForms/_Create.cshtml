@@ -1,0 +1,13 @@
+@using MCMS.SwaggerFormly.Extensions
+@using MCMS.SwaggerFormly.FormParamsHelpers
+@{
+    ViewBag.Title = "Create a " + ViewBag.EntityName;
+    var formParamsService = ViewBag.FormParamsService as FormParamsService;
+}
+<h2>@ViewBag.Title</h2>
+
+<div class="row">
+    <div class="col-12">
+        @await Html.BlindPartialAsync("Formly/FormlyForm", formParamsService.ForCreate())
+    </div>
+</div>

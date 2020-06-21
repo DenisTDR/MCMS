@@ -41,7 +41,7 @@ namespace MCMS.Helpers
 
         public static List<string> GetArray(string name)
         {
-            return Get(name)?.Split(ArraySeparator, StringSplitOptions.RemoveEmptyEntries).Select(s => s.Trim()).ToList();
+            return Get(name)?.Split(ArraySeparator, StringSplitOptions.RemoveEmptyEntries).Select(s => s.Trim()).ToList() ?? new List<string>();
         }
 
         public static void LoadEnvFiles()

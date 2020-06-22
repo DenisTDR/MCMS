@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using MCMS.Base.Extensions;
 using MCMS.Base.SwaggerFormly.Formly;
+using MCMS.Helpers;
 using MCMS.SwaggerFormly.Extensions;
 using MCMS.SwaggerFormly.Models;
 using Microsoft.OpenApi.Any;
@@ -81,7 +82,7 @@ namespace MCMS.SwaggerFormly.Filters
         {
             if (!templateOptions.ContainsKey("label"))
             {
-                templateOptions["label"] = Oas(propertyInfo.Name);
+                templateOptions["label"] = Oas(EntityHelper.GetPropertyName(propertyInfo) ?? propertyInfo.Name);
             }
         }
 

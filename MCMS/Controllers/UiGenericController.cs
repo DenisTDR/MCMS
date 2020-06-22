@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using MCMS.Base.Data.Entities;
 using MCMS.Base.Data.ViewModels;
 using MCMS.Data;
+using MCMS.Exceptions;
 using MCMS.Helpers;
 using MCMS.SwaggerFormly.FormParamsHelpers;
 using MCMS.SwaggerFormly.Models;
@@ -25,6 +26,7 @@ namespace MCMS.Controllers
         {
             base.OnActionExecuting(context);
             ViewBag.EntityName = EntityHelper.GetEntityName<TE>();
+            ViewBag.FormParamsService = FormParamsService;
         }
 
         [HttpGet("/[controller]")]
@@ -49,28 +51,21 @@ namespace MCMS.Controllers
         [HttpGet]
         public virtual IActionResult Create()
         {
-            ViewBag.FormParamsService = FormParamsService;
             return View("BasicPageForms/_Create");
         }
 
         [HttpGet("{id}")]
         public virtual async Task<IActionResult> Edit([FromRoute] string id)
         {
-            ViewBag.FormParamsService = FormParamsService;
-            var e = await Repo.GetOne(id);
-            if (e == null)
-            {
-                return NotFound();
-            }
-
+            var e = await GetOneOrThrowNotFound(id);
             return View("BasicPageForms/_Edit", e);
         }
 
         [HttpGet("{id}")]
         public virtual async Task<IActionResult> Delete([FromRoute] string id)
         {
-            var e = await Repo.GetOne(id);
-            return View(e);
+            var e = await GetOneOrThrowNotFound(id);
+            return View("BasicPageForms/_Delete", e);
         }
 
         [HttpPost("{id}"), ActionName("Delete")]
@@ -79,6 +74,17 @@ namespace MCMS.Controllers
         {
             await Repo.Delete(id);
             return RedirectBackOrOk();
+        }
+
+        protected async Task<TE> GetOneOrThrowNotFound(string id)
+        {
+            var e = await Repo.GetOne(id);
+            if (e == null)
+            {
+                throw new KnownException(code: 404);
+            }
+
+            return e;
         }
     }
 }

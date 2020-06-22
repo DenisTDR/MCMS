@@ -9,9 +9,10 @@ namespace MCMS.SwaggerFormly.FormParamsHelpers
         protected string ControllerPath { get; set; }
         protected string SchemaName { get; set; }
         protected static string ApiUrl { get; set; } = Utils.UrlCombine(Env.GetOrThrow("EXTERNAL_URL"), "api/");
-
         protected object AdditionalData { get; set; }
-
+        protected object Options { get; set; }
+        
+        
         public FormParamsService(string controllerPath, string schemaName)
         {
             ControllerPath = controllerPath;
@@ -25,19 +26,17 @@ namespace MCMS.SwaggerFormly.FormParamsHelpers
             return @params;
         }
 
-        public virtual FormlyFormParams ForCreate(object additionalData = null)
+        public virtual FormlyFormParams ForCreate(object additionalData = null, object options = null)
         {
             AdditionalData = additionalData;
+            Options = options;
             return CommonConfig(FormActionType.Create);
         }
 
         protected virtual FormlyFormParams CommonConfig(FormActionType action)
         {
             var submitActionName = GetActionName(action);
-
-
             var controllerUrl = Utils.UrlCombine(ApiUrl, ControllerPath);
-
             return new FormlyFormParams
             {
                 SchemaName = SchemaName,
@@ -46,7 +45,8 @@ namespace MCMS.SwaggerFormly.FormParamsHelpers
                 SubmitUrl = Utils.UrlCombine(controllerUrl, submitActionName + "/"),
                 OpenApiConfigUrl = GetOpenApiConfigUrl(),
                 FormInstanceId = Utils.GenerateRandomHexString(),
-                AdditionalFields = AdditionalData
+                AdditionalFields = AdditionalData,
+                Options = Options
             };
         }
 

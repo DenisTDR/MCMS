@@ -30,7 +30,6 @@ namespace MCMS.Controllers
         {
             var exceptionHandlerPathFeature =
                 HttpContext.Features.Get<IExceptionHandlerPathFeature>();
-
             var errorModel = new ErrorViewModel
             {
                 RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier,

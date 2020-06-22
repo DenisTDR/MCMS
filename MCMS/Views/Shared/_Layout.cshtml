@@ -29,19 +29,18 @@
         <partial name="Partials/_Footer"/>
     </div>
 </div>
-
-<partial name="_ProcessingDialog"/>
-
+<partial name="_BasicModals"/>
+<partial name="Formly/FormlyFormsScripts"/>
 @using (Html.BeginMScripts())
 {
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/lib/sb-admin/sb-admin-scripts.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/modals.js" asp-append-version="true"></script>
 }
-<partial name="Formly/FormlyFormsScripts"/>
-
 @Html.RenderMScripts()
+@Html.RenderMPageScripts()
 @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

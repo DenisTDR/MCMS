@@ -35,14 +35,23 @@ namespace MCMS.Builder
         {
             RegisterViewsPathsFromEnvVar(services);
             var mvcBuilder = services
-                .AddMvc()
+                .AddMvc(options =>
+                {
+                    foreach (var mSpecifications in _specifications)
+                    {
+                        mSpecifications.ConfigMvc(options);
+                    }
+                })
                 .AddNewtonsoftJson(mvcJsonOptions =>
                 {
                     mvcJsonOptions.SerializerSettings.Converters.Add(
                         new Newtonsoft.Json.Converters.StringEnumConverter());
                     mvcJsonOptions.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
                 });
-            // var mvcBuilder = services.AddRazorPages();
+
+            mvcBuilder = _specifications.Aggregate(mvcBuilder,
+                (current, mSpecifications) => mSpecifications.MvcChain(current));
+
             if (_hostEnvironment.IsDevelopment())
             {
                 mvcBuilder.AddRazorRuntimeCompilation();
@@ -94,7 +103,7 @@ namespace MCMS.Builder
                 await next();
             });
 
-            
+
             RegisterWwwrootPaths(app);
 
             app.UseStaticFiles();

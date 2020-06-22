@@ -1,0 +1,13 @@
+@model MCMS.Base.Data.Entities.IEntity
+
+
+@{
+    ViewBag.Title = "🗑️ " + Model;
+}
+
+<h2 class="mb-5">'R u șur' u want to 🗑️ @Model?</h2>
+
+@using (Html.BeginForm())
+{
+    <button type="submit" class="btn btn-danger">Yea</button>
+}

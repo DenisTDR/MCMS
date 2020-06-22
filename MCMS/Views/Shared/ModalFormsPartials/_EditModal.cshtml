@@ -1,9 +1,10 @@
 @using MCMS.SwaggerFormly.Extensions
 @using MCMS.SwaggerFormly.FormParamsHelpers
 @using MCMS.SwaggerFormly.Models
+@model MCMS.Base.Data.Entities.IEntity
 @{
-    ViewBag.Title = "Create a " + ViewBag.EntityName;
-    var formParams = ViewBag.FormParams as FormlyFormParams ?? (ViewBag.FormParamsService as FormParamsService)?.ForCreate();
+    ViewBag.Title = "Edit " + ViewBag.EntityName + " " + Model;
+    var formParams = ViewBag.FormParams as FormlyFormParams ?? (ViewBag.FormParamsService as FormParamsService)?.ForPatch(Model.Id);
     if (formParams == null)
     {
         throw new Exception("Don't have form params :(");

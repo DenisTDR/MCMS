@@ -3,7 +3,9 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using MCMS.Builder;
 using MCMS.Data;
+using MCMS.Filters;
 using MCMS.Helpers;
+using Microsoft.AspNetCore.Mvc;
 
 namespace MCMS
 {
@@ -20,6 +22,11 @@ namespace MCMS
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
         }
 
+        public override void ConfigMvc(MvcOptions options)
+        {
+            options.Filters.Add<CustomExceptionFilter>();
+            options.Filters.Add<LayoutFilter>();
+        }
 
         private void AddCorsFromEnv(IApplicationBuilder app)
         {

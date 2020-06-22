@@ -7,17 +7,13 @@
 @{
     ViewData["Title"] = "Error";
 }
+@if (Layout == "_ModalLayout")
+{
+    @Html.Raw("<div class=\"modal-body\">")
+}
 <div class="error-page">
-    <h2 class="text-danger">Error@(Model.StatusCode != 0 ? " " + Model.StatusCode:"")</h2>
+    <h2 class="text-danger">Error@(Model.StatusCode != 0 ? " " + Model.StatusCode : "")</h2>
     <h3 class="text-danger">An error occurred while processing your request.</h3>
-
-    @if (Model.StatusCode != 0)
-    {
-        <div class="my-5">
-            <div>Code @Model.StatusCode - <b>@Model.StatusCodeMessage()</b></div>
-        </div>
-    }
-
     @if (Model?.ShowRequestId == true)
     {
         <p>
@@ -26,10 +22,14 @@
     }
     @if (Model?.Exception is KnownException kEx)
     {
+        Model.StatusCode = kEx.Code;
+    }
+    @if (Model.StatusCode != 0)
+    {
         <p>
             <strong>Status code:</strong>
             <code>
-                <b>@kEx.Code</b>
+                <b>@Model.StatusCode - @Model.StatusCodeMessage()</b>
             </code>
         </p>
     }
@@ -67,9 +67,6 @@
             <i>Check admin logs for full stack trace and more details.</i>
         </div>
     }
-    else
-    {
-    }
 </div>
 
 @using (Html.BeginMStyles())
@@ -98,4 +95,11 @@
             font-weight: bold;
         }
     </style>
+}
+@if (Layout == "_ModalLayout")
+{
+    @Html.Raw("</div>")
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Ok</button>
+    </div>
 }

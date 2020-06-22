@@ -1,3 +1,10 @@
 ﻿@{
-    Layout = "_Layout";
+    if (Context.Items.ContainsKey("ForcedLayout") && !string.IsNullOrEmpty(Context.Items["ForcedLayout"] as string))
+    {
+        Layout = Context.Items["ForcedLayout"] as string;
+    }
+    else
+    {
+        Layout = "_Layout";
+    }
 }

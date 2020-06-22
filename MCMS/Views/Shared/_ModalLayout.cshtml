@@ -1,17 +1,17 @@
 @using MCMS.SwaggerFormly.Extensions
 
+@Html.RenderMStyles()
 
 <div class="modal fade" tabindex="1" role="dialog" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">@ViewBag.Title</h5>
             </div>
-            <div class="col-md-12">
-                @RenderBody()
-            </div>
+            @RenderBody()
         </div>
     </div>
 </div>
 
 @Html.RenderMScripts()
+@Html.RenderMPageScripts()

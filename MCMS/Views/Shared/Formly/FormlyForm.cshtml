@@ -1,12 +1,8 @@
 @using MCMS.Helpers
 @using MCMS.SwaggerFormly.Extensions
 @using Newtonsoft.Json
-@using Utils = MCMS.Helpers.Utils
 @using MCMS.Base.Extensions
 @model MCMS.SwaggerFormly.Models.FormlyFormParams
-@{
-    var iframeId = "formly-form-" + Utils.GenerateRandomHexString();
-}
 @if (!Env.GetBool("FORMLY_DEBUG"))
 {
     <ce-formly-form-params
@@ -17,39 +13,45 @@
         submit-url="@Model.SubmitUrl"
         additional-fields="@JsonConvert.SerializeObject(Model.AdditionalFields, Utils.JsonSerializerSettings())"
         id="@Model.FormInstanceId"
-        form-instance-id="@Model.FormInstanceId">
+        form-instance-id="@Model.FormInstanceId"
+        options="@JsonConvert.SerializeObject(Model.Options, Utils.JsonSerializerSettings())">
         Loading form ... (check developer console if you still see this)
     </ce-formly-form-params>
 }
 else
 {
-    <iframe src="/formly-proxy?@Model.ToUrlQuery()" class="col-12" id="@iframeId"></iframe>
+    <iframe src="/formly-proxy?@Model.ToUrlQuery()" class="col-12" id="@Model.FormInstanceId"></iframe>
 }
-@using (Html.BeginMScripts())
+@using (Html.BeginMPageScripts())
 {
     <script>
         function formDone@(Model.FormInstanceId)(e) {
-            console.log('done, ', e)
+            // console.log('done, ', e)
+            var callbackName = 'callback@(Model.FormInstanceId)';
+            if(window.hasOwnProperty(callbackName)) {
+                window[callbackName](e.senderId, e.params);
+            }
         }
     </script>
     @if (!Env.GetBool("FORMLY_DEBUG"))
     {
         <script>
-        var formElement = document.getElementById('@Model.FormInstanceId');
-        formElement.addEventListener('done', function(e) { formDone@(Model.FormInstanceId)(e.detail); });
+            var formElement = document.getElementById('@Model.FormInstanceId');
+            formElement.addEventListener('done', function(e) { formDone@(Model.FormInstanceId)(e.detail); });
+            $("#@Model.FormInstanceId-submit-button").on('click', function() {
+                $("#@Model.FormInstanceId .submit-button").click();
+            });
         </script>
     }
     else
     {
-        @using (Html.BeginMScripts())
-        {
-            <script>
+        <script>
               window.addEventListener('message', function(e){
                   if(!e || !e.data || !e.data.id || e.data.senderId !== '@Model.FormInstanceId') {
                       return;
                   }
                   if(e.data.id === 'formly-form-height-changed') {
-                      var iFrame = document.getElementById("@iframeId");
+                      var iFrame = document.getElementById("@Model.FormInstanceId");
                       if(iFrame) {
                           iFrame.style.height = e.data.height + 50 + "px";
                       }
@@ -57,7 +59,10 @@ else
                       formDone@(Model.FormInstanceId)(e.data.data); 
                   }
               });
-            </script>
-        }
+              
+              $("#@Model.FormInstanceId-submit-button").on('click', function() {
+                document.getElementById("@Model.FormInstanceId").contentWindow.postMessage({submitForm: true}, '*');
+              });
+        </script>
     }
 }

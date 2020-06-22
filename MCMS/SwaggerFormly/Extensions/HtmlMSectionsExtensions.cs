@@ -9,6 +9,15 @@ namespace MCMS.SwaggerFormly.Extensions
 {
     public static class HtmlMSectionsExtensions
     {
+        public static IDisposable BeginMPageScripts(this IHtmlHelper helper)
+        {
+            return helper.BeginMSection("page-scripts");
+        }
+
+        public static HtmlString RenderMPageScripts(this IHtmlHelper helper)
+        {
+            return helper.RenderMSection("page-scripts");
+        }
         public static IDisposable BeginMScripts(this IHtmlHelper helper)
         {
             return helper.BeginMSection("scripts");

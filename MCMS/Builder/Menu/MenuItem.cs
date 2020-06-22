@@ -3,6 +3,8 @@ namespace MCMS.Builder.Menu
     public abstract class MenuItem
     {
         public string IconClasses { get; set; }
+
+        public int Index { get; set; }
         //
         // public MenuItem WithIconClasses(string faIconClasses)
         // {

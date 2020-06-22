@@ -10,7 +10,7 @@
     <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
         <div class="sb-sidenav-menu">
             <div class="nav">
-                @foreach (var section in Config.Value.Items)
+                @foreach (var section in Config.Value.Items.OrderBy(s => s.Index))
                 {
                     @await Html.PartialAsync("Menu/_MenuItem", section)
                 }

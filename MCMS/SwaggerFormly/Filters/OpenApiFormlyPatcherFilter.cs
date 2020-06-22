@@ -24,6 +24,7 @@ namespace MCMS.SwaggerFormly.Filters
                 return;
             }
 
+            schema.Extensions.Add("x-formly-patched", new OpenApiBoolean(true));
             foreach (var propKvp in schema.Properties)
             {
                 var pInfo = context.Type.GetProperties().First(p =>

@@ -26,7 +26,7 @@ namespace MCMS.Builder.Helpers
         public List<EntityTypeStack> ProcessSpecifications()
         {
             var allTypes =
-                new MSpecificationsTypeFilter().FilterMapped(_app)
+                new MSpecificationsTypeFilter().FilterMapped(_app, true)
                     .Where(type =>
                         !typeof(IdentityRole).IsAssignableFrom(type) && !typeof(IdentityUser).IsAssignableFrom(type))
                     .ToList();

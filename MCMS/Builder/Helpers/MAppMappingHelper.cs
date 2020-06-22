@@ -41,7 +41,7 @@ namespace MCMS.Builder.Helpers
             {
                 var entityName = viewModelType.Name.Replace("ViewModel", "Entity");
                 var stack = mappingStacks.FirstOrDefault(st =>
-                    st.EntityType.Name == entityName && st.ViewModelType == null);
+                    st.EntityType?.Name == entityName && st.ViewModelType == null);
                 if (stack != null)
                 {
                     stack.WithViewModel(viewModelType);

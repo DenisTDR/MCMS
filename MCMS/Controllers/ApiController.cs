@@ -9,7 +9,7 @@ namespace MCMS.Controllers
     [Route("api/[controller]/[action]")]
     [Produces("application/json")]
     [Authorize]
-    public class ApiController : ControllerBase
+    public class ApiController : Controller
     {
         public IServiceProvider ServiceProvider => HttpContext.RequestServices;
 

@@ -21,12 +21,12 @@ namespace MCMS.Builder
         public IEnumerable<MSpecifications> Specifications => _specifications.ToList();
         private readonly IList<MSpecifications> _specifications;
         private readonly Action<IServiceCollection> _addDbContextAction;
-        private readonly IWebHostEnvironment _hostEnvironment;
+        public IWebHostEnvironment HostEnvironment { get; }
 
         public MApp(IWebHostEnvironment hostEnvironment, IList<MSpecifications> specifications,
             Action<IServiceCollection> addDbContextAction)
         {
-            _hostEnvironment = hostEnvironment;
+            HostEnvironment = hostEnvironment;
             _specifications = specifications;
             _addDbContextAction = addDbContextAction;
         }
@@ -52,7 +52,7 @@ namespace MCMS.Builder
             mvcBuilder = _specifications.Aggregate(mvcBuilder,
                 (current, mSpecifications) => mSpecifications.MvcChain(current));
 
-            if (_hostEnvironment.IsDevelopment())
+            if (HostEnvironment.IsDevelopment())
             {
                 mvcBuilder.AddRazorRuntimeCompilation();
             }
@@ -77,7 +77,7 @@ namespace MCMS.Builder
 
         public void Configure(IApplicationBuilder app, IServiceProvider serviceProvider)
         {
-            if (_hostEnvironment.IsDevelopment())
+            if (HostEnvironment.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
                 app.UseDatabaseErrorPage();

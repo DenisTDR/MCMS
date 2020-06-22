@@ -11,7 +11,7 @@ namespace MCMS.Base.Extensions
     {
         public static string GetDisplayDescription(this Enum value)
         {
-            return value.GetDisplayProperty((attribute => attribute.Description));
+            return value.GetDisplayProperty(attribute => attribute.Description);
         }
 
         public static string GetDisplayName(this Enum value)

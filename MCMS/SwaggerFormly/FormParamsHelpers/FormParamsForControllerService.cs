@@ -1,5 +1,6 @@
 using MCMS.Base.Data.ViewModels;
 using MCMS.Controllers;
+using MCMS.Controllers.Api;
 using MCMS.SwaggerFormly.Models;
 
 namespace MCMS.SwaggerFormly.FormParamsHelpers
@@ -8,7 +9,8 @@ namespace MCMS.SwaggerFormly.FormParamsHelpers
         where TForm : class, IFormModel, IViewModel
         where TController : IPatchCreateApiController<TForm>
     {
-        public FormParamsForControllerService(): base(typeof(TController).Name.Replace("Controller", ""), typeof(TForm).Name)
+        public FormParamsForControllerService() : base(
+            typeof(TController).Name.Replace("Controller", ""), typeof(TForm).Name)
         {
         }
     }

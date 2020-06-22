@@ -3,7 +3,7 @@ using MCMS.Base.Data.ViewModels;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
-namespace MCMS.Controllers
+namespace MCMS.Controllers.Api
 {
     public interface IPatchCreateApiController<TVm> where TVm : class, IViewModel
     {

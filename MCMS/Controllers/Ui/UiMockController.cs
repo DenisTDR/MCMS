@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 
-namespace MCMS.Controllers
+namespace MCMS.Controllers.Ui
 {
     public class UiMockController: UiController
     {

@@ -2,7 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 
-namespace MCMS.Controllers
+namespace MCMS.Controllers.Ui
 {
     [Route("[controller]/[action]")]
     [ApiExplorerSettings(IgnoreApi = true)]

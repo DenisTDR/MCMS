@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using MCMS.Base.Data.Entities;
 using MCMS.Base.Data.ViewModels;
+using MCMS.Controllers.Api;
 using MCMS.Data;
 using MCMS.Exceptions;
 using MCMS.Helpers;
@@ -10,7 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace MCMS.Controllers
+namespace MCMS.Controllers.Ui
 {
     public abstract class UiGenericController<TE, TVm, TApiController> : UiController where TE : class, IEntity
         where TVm : class, IViewModel, IFormModel

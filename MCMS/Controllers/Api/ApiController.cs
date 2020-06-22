@@ -1,12 +1,13 @@
 using System;
 using AutoMapper;
+using MCMS.Attributes;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace MCMS.Controllers
+namespace MCMS.Controllers.Api
 {
-    [Route("api/[controller]/[action]")]
+    [ApiRoute("[controller]/[action]")]
     [Produces("application/json")]
     [Authorize]
     public class ApiController : Controller

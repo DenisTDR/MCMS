@@ -26,6 +26,9 @@ namespace MCMS
         {
             options.Filters.Add<CustomExceptionFilter>();
             options.Filters.Add<LayoutFilter>();
+            
+            // won't use this because of reasons
+            // options.Conventions.Add(new ApiControllerNameAttributeConvention());
         }
 
         private void AddCorsFromEnv(IApplicationBuilder app)

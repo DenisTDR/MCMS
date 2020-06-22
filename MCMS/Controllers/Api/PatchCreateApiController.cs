@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
+using MCMS.Attributes;
 using MCMS.Base.Data.Entities;
 using MCMS.Base.Data.ViewModels;
 using MCMS.Base.Extensions;
@@ -8,14 +9,15 @@ using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace MCMS.Controllers
+namespace MCMS.Controllers.Api
 {
     public abstract class PatchCreateApiController<TE, TVm> : ApiController, IPatchCreateApiController<TVm>
         where TE : Entity where TVm : class, IViewModel
     {
         protected IRepository<TE> Repo => ServiceProvider.GetService<IRepository<TE>>();
 
-        [HttpGet("{id}")]
+        [Route("{id}")]
+        [HttpGet]
         public virtual async Task<ActionResult<TVm>> Get([FromRoute] string id)
         {
             var e = await Repo.GetOne(id);
@@ -28,7 +30,8 @@ namespace MCMS.Controllers
             return Ok(vm);
         }
 
-        [HttpPatch("{id}")]
+        [Route("{id}")]
+        [HttpPatch]
         public virtual async Task<ActionResult<TVm>> Patch([FromRoute] [Required] string id,
             [FromBody] [Required] JsonPatchDocument<TVm> doc)
         {

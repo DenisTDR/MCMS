@@ -30,10 +30,9 @@ namespace MCMS.Controllers.Ui
         }
 
         [HttpGet("/[controller]")]
-        public override async Task<IActionResult> Index()
+        public override Task<IActionResult> Index()
         {
-            var all = await Repo.GetAll();
-            return View(all);
+            return Task.FromResult(View() as IActionResult);
         }
 
         [HttpGet("{id}")]

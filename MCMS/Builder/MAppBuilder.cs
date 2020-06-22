@@ -41,6 +41,10 @@ namespace MCMS.Builder
             _addDbContextAction = services =>
             {
                 services.AddDbContext<T>(optionsBuilder => { optionsBuilder.UseNpgsql(Env.GetOrThrow("DB_URL")); });
+                
+                // this is required because service provider must use the same instance for T and for BaseDbContext 
+                // otherwise there will be two scoped instances and we don't like that
+                services.AddScoped(serviceProvider => serviceProvider.GetService<BaseDbContext>() as T);
             };
             return this;
         }

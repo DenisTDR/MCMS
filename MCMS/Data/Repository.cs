@@ -105,6 +105,11 @@ namespace MCMS.Data
             return _dbContext.Attach(e).Entity;
         }
 
+        public T Attach(string id)
+        {
+            return _dbContext.Attach(new T {Id = id}).Entity;
+        }
+
         public Task SaveChanges() => _dbContext.SaveChangesAsync();
         private Task SaveChangesAsyncIfNeeded() => !SkipSaving ? SaveChanges() : Task.CompletedTask;
     }

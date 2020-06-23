@@ -3,7 +3,7 @@
 @model MCMS.Base.Data.Entities.IEntity
 
 @{
-    ViewBag.Title = "'R u șur' u want to 🗑️ " + Model + "?";
+    ViewBag.Title = "'R u șur' u want to delete️ " + ViewBag.EntityName + " " + Model + "?";
     var formId = Utils.GenerateRandomHexString();
 }
 
@@ -19,7 +19,7 @@
 
 @using (Html.BeginMPageScripts())
 {
-     <script>
+    <script>
          var form = $("#@formId");
          form.submit(function(event) {
              event.preventDefault();

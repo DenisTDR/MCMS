@@ -2,10 +2,10 @@
 
 
 @{
-    ViewBag.Title = "🗑️ " + Model;
+    ViewBag.Title = "Delete " + Model;
 }
 
-<h2 class="mb-5">'R u șur' u want to 🗑️ @Model?</h2>
+<h2 class="mb-5">'R u șur' u want to delete @ViewBag.EntityName @Model?</h2>
 
 @using (Html.BeginForm())
 {

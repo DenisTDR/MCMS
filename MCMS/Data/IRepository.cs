@@ -24,5 +24,8 @@ namespace MCMS.Data
 
         void RebuildQueryable(Func<IQueryable<T>, IQueryable<T>> func);
         void ChainQueryable(Func<IQueryable<T>, IQueryable<T>> func);
+        T Attach(T e);
+        Task SaveChanges();
+        bool SkipSaving { get; set; }
     }
 }

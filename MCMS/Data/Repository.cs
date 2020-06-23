@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using MCMS.Base.Data.Entities;
 using MCMS.Base.Extensions;
+using MCMS.Exceptions;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,8 +14,9 @@ namespace MCMS.Data
     public class Repository<T> : IRepository<T> where T : Entity, new()
     {
         private readonly BaseDbContext _dbContext;
-        private DbSet<T> _dbSet;
+        private readonly DbSet<T> _dbSet;
         private IQueryable<T> _queryable;
+        public bool SkipSaving { get; set; }
 
         public Repository(BaseDbContext dbContext)
         {
@@ -42,7 +44,7 @@ namespace MCMS.Data
         {
             e.Id = null;
             var addingResult = await _dbSet.AddAsync(e);
-            await _dbContext.SaveChangesAsync();
+            await SaveChangesAsyncIfNeeded();
             return addingResult.Entity;
         }
 
@@ -55,21 +57,26 @@ namespace MCMS.Data
             }
 
             patchDoc.ApplyTo(e);
-            await _dbContext.SaveChangesAsync();
+            await SaveChangesAsyncIfNeeded();
             return e;
         }
 
         public virtual async Task<bool> Delete(string id)
         {
+            if (!await Any(id))
+            {
+                throw new KnownException(code: 404);
+            }
+
             _dbSet.Remove(new T {Id = id});
-            await _dbContext.SaveChangesAsync();
+            await SaveChangesAsyncIfNeeded();
             return true;
         }
 
         public virtual async Task<bool> Delete(T e)
         {
             _dbSet.Remove(e);
-            await _dbContext.SaveChangesAsync();
+            await SaveChangesAsyncIfNeeded();
             return true;
         }
 
@@ -92,5 +99,13 @@ namespace MCMS.Data
         {
             _queryable = func(_queryable);
         }
+
+        public T Attach(T e)
+        {
+            return _dbContext.Attach(e).Entity;
+        }
+
+        public Task SaveChanges() => _dbContext.SaveChangesAsync();
+        private Task SaveChangesAsyncIfNeeded() => !SkipSaving ? SaveChanges() : Task.CompletedTask;
     }
 }

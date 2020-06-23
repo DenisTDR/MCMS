@@ -45,7 +45,8 @@ namespace MCMS.Helpers
                     new List<JsonConverter>
                     {
                         new Newtonsoft.Json.Converters.StringEnumConverter()
-                    }
+                    },
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
             };
         }
     }

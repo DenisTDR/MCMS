@@ -13,6 +13,10 @@ namespace MCMS.Controllers.Ui
         where TVm : class, IViewModel, IFormModel
         where TApiController : IPatchCreateApiController<TVm>
     {
+        public UiModalController()
+        {
+            UsesModals = true;
+        }
         [ViewLayout("_ModalLayout")]
         public override IActionResult Create()
         {
@@ -24,6 +28,19 @@ namespace MCMS.Controllers.Ui
         {
             var e = await GetOneOrThrowNotFound(id);
             return View("ModalFormsPartials/_EditModal", e);
+        }
+
+        [ViewLayout("_ModalLayout")]
+        public override async Task<IActionResult> Delete(string id)
+        {
+            var e = await GetOneOrThrowNotFound(id);
+            return View("ModalFormsPartials/_DeleteModal", e);
+        }
+
+        [ViewLayout("_ModalLayout")]
+        public override Task<IActionResult> DeleteConfirmed(string id)
+        {
+            return base.DeleteConfirmed(id);
         }
     }
 }

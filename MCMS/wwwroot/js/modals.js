@@ -14,7 +14,11 @@ body.on('click', 'button[data-toggle="ajax-modal"], a[data-toggle="ajax-modal"]'
         event.preventDefault();
     }
     var button = $(this);
-    var url = button.data('url');
+    var url = button.data('url') || button.attr('href');
+    if(!url) {
+        console.error('Modal triggered by', this);
+        throw new Error('But url for modal content not found!');
+    }
     waitModal.modal('show');
     closeWaitModal = false;
     $.get(url).done(function (data) {
@@ -37,8 +41,8 @@ function onButtonActionResponse(data, button) {
     var modal = newElement.find('.modal');
     modal.on("hidden.bs.modal", function () {
         var callback = button.data('modal-callback');
-        console.log('modal closed!');
-        console.log(modal.data("result"));
+        // console.log('modal closed!');
+        // console.log(modal.data("result"));
         if (callback && window.hasOwnProperty(callback) && typeof window[callback] === 'function') {
             window[callback](button, modal.data("result"));
         }

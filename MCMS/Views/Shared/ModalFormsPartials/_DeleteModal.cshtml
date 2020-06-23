@@ -1,0 +1,48 @@
+@using MCMS.SwaggerFormly.Extensions
+@using MCMS.Helpers
+@model MCMS.Base.Data.Entities.IEntity
+
+@{
+    ViewBag.Title = "'R u șur' u want to 🗑️ " + Model + "?";
+    var formId = Utils.GenerateRandomHexString();
+}
+
+@using (Html.BeginForm(null, null, FormMethod.Post, new {id = formId}))
+{
+    <div class="modal-body">
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Închide</button>
+        <button type="submit" class="btn btn-danger">Yea</button>
+    </div>
+}
+
+@using (Html.BeginMPageScripts())
+{
+     <script>
+         var form = $("#@formId");
+         form.submit(function(event) {
+             event.preventDefault();
+              function close(result) {
+                  var modal = form.closest(".modal");
+                  modal.data('result', {params: result});
+                  modal.modal('hide');
+              }
+              $.ajax({
+                 type        : this.method || 'POST',
+                 url         : this.action,
+                 data        : {'__RequestVerificationToken': form.find("input[name=__RequestVerificationToken]").val()},
+                 encode      : true
+             })
+             .done(function(data) {
+                 close(true);
+             })
+             .fail(function(e) {
+                 console.log('error')
+                 console.error(e);
+                 close(false);
+                 alertModal(e.responseText);
+             });
+         });
+     </script>
+}

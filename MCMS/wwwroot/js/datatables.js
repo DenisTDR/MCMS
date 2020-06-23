@@ -4,10 +4,10 @@ function bindDefaultDataTables(tableElem, url, columns, actionsColumnContent, ha
     columns = columns.slice();
 
     var config = {
-        "processing": true,
-        "ajax": {
-            "url": url,
-            "dataSrc": function (json) {
+        processing: true,
+        ajax: {
+            url: url,
+            dataSrc: function (json) {
                 for (var i = 0; i < json.length; i++) {
                     if (hasStaticIndexColumn) {
                         json[i].dataTablesIndex = '#';
@@ -17,20 +17,23 @@ function bindDefaultDataTables(tableElem, url, columns, actionsColumnContent, ha
                 return json;
             }
         },
-        "columns": columns,
-        "bAutoWidth": false,
-        "iDisplayLength": 50,
-        "lengthMenu": [[10, 25, 50, 100, 250, 500, -1], [10, 25, 50, 100, 250, 500, "All"]],
+        columns: columns,
+        bAutoWidth: false,
+        iDisplayLength: 50,
+        lengthMenu: [[10, 25, 50, 100, 250, 500, -1], [10, 25, 50, 100, 250, 500, "All"]],
         fixedHeader: {
             headerOffset: 50
         },
+        language: {
+            "url": "/lib/datatables/Romanian.json"
+        }
     };
     if (hasStaticIndexColumn) {
         columns.splice(0, 0, {"data": "dataTablesIndex"});
         config.columnDefs = [{
-            "searchable": false,
-            "orderable": false,
-            "targets": 0
+            searchable: false,
+            orderable: false,
+            targets: 0
         }];
         config.aaSorting = [];
     }

@@ -11,8 +11,8 @@ namespace MCMS.SwaggerFormly.FormParamsHelpers
         protected static string ApiUrl { get; set; } = Utils.UrlCombine(Env.GetOrThrow("EXTERNAL_URL"), "api/");
         protected object AdditionalData { get; set; }
         protected object Options { get; set; }
-        
-        
+
+
         public FormParamsService(string controllerPath, string schemaName)
         {
             ControllerPath = controllerPath;
@@ -52,7 +52,7 @@ namespace MCMS.SwaggerFormly.FormParamsHelpers
 
         public static string GetOpenApiConfigUrl()
         {
-            var openApiConfigController = nameof(OpenApiConfigController).Replace("Controller", "");
+            var openApiConfigController = TypeHelpers.GetControllerName(typeof(OpenApiConfigController));
             var openApiControllerUrl = Utils.UrlCombine(ApiUrl, openApiConfigController);
             return Utils.UrlCombine(openApiControllerUrl, nameof(OpenApiConfigController.Get));
         }

@@ -1,7 +1,9 @@
 ﻿using System.Threading.Tasks;
 using MCMS.Base.Data.Entities;
+using MCMS.Base.Data.ViewModels;
 using MCMS.Controllers.Api;
 using MCMS.Data;
+using MCMS.Display.ModelDisplay;
 using MCMS.Helpers;
 using MCMS.SwaggerFormly.FormParamsHelpers;
 using MCMS.SwaggerFormly.Models;
@@ -11,11 +13,18 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace MCMS.Controllers.Ui
 {
-    public abstract class UiGenericController<TE, TFm, TApiController> : UiController
+    public abstract class GenericUiController<TE, TFm, TVm, TApiController> : UiController
         where TE : class, IEntity
         where TFm : class, IFormModel
-        where TApiController : IPatchCreateApiController<TFm>
+        where TVm : class, IViewModel
+        where TApiController : IGenericApiController<TFm, TVm>
     {
+        protected virtual IModelDisplayConfigService ModelDisplayConfigService =>
+            ServiceProvider.GetService(
+                ModelDisplayConfigForControllerService<TE, TFm, TVm,
+                        GenericUiController<TE, TFm, TVm, TApiController>, TApiController>
+                    .MakeGenericTypeWithUiControllerType(GetType())) as IModelDisplayConfigService;
+
         protected virtual FormParamsService FormParamsService =>
             ServiceProvider.GetService<FormParamsForControllerService<TApiController, TFm>>();
 
@@ -26,10 +35,17 @@ namespace MCMS.Controllers.Ui
             base.OnActionExecuting(context);
             ViewBag.EntityName = EntityHelper.GetEntityName<TE>();
             ViewBag.FormParamsService = FormParamsService;
+            ViewBag.UsesModals = UsesModals;
         }
+
         public override Task<IActionResult> Index()
         {
-            return Task.FromResult(View() as IActionResult);
+            return Task.FromResult(View("BasicPages/Index", TableConfigForIndex()) as IActionResult);
+        }
+
+        protected virtual ModelDisplayConfig TableConfigForIndex()
+        {
+            return ModelDisplayConfigService.GetTableConfig(Url, ViewBag);
         }
 
         [HttpGet("{id}")]
@@ -61,7 +77,7 @@ namespace MCMS.Controllers.Ui
         public virtual async Task<IActionResult> Delete([FromRoute] string id)
         {
             var e = await Repo.GetOneOrThrow(id);
-            return View("BasicPages/Delete", e);
+            return View("BasicModals/DeleteModal", e);
         }
 
         [HttpPost("{id}"), ActionName("Delete")]

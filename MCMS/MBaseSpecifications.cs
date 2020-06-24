@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using MCMS.Builder;
 using MCMS.Data;
 using MCMS.Data.Seeder;
+using MCMS.Display.ModelDisplay;
 using MCMS.Filters;
 using MCMS.Helpers;
 using Microsoft.AspNetCore.Mvc;
@@ -28,6 +29,7 @@ namespace MCMS
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
             services.AddScoped<DataSeeder>();
             services.AddOptions<EntitySeeders>().Configure(seeders => { seeders.Add<RoleSeeder>(); });
+            services.AddScoped(typeof(ModelDisplayConfigForControllerService<,,,,>));
         }
 
         public override void ConfigMvc(MvcOptions options)

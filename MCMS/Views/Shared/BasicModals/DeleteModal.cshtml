@@ -5,6 +5,7 @@
 @{
     ViewBag.Title = "'R u șur' u want to delete️ " + ViewBag.EntityName + " " + Model + "?";
     var formId = Utils.GenerateRandomHexString();
+    Layout = "_ModalLayout";
 }
 
 @using (Html.BeginForm(null, null, FormMethod.Post, new {id = formId}))

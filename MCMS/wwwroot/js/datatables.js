@@ -12,7 +12,7 @@ function bindDefaultDataTables(tableElem, url, columns, actionsColumnContent, ha
                     if (hasStaticIndexColumn) {
                         json[i].dataTablesIndex = '#';
                     }
-                    json[i].actionsContent = actionsColumnContent.replace(/ENTITY_ID/g, json[i].id);
+                    json[i]._actions = actionsColumnContent.replace(/ENTITY_ID/g, json[i].id);
                 }
                 return json;
             }

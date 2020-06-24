@@ -1,5 +1,5 @@
-@using MCMS.Builder.Menu
-@model MCMS.Builder.Menu.MenuItem
+@using MCMS.Display.Menu
+@model MCMS.Display.Menu.IMenuItem
 @if (Model is MenuLink link)
 {
     @await Html.PartialAsync("Menu/_MenuLink", link)

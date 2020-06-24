@@ -1,0 +1,18 @@
+@using MCMS.Models
+@using MCMS.Display.Link
+@model MCMS.Display.Link.MRichLink
+
+<a href="@Model.BuildUrl(Url)"
+   class="@Model.CssClasses"
+   target="@Model.Target"
+   @if (Model.AsModal)
+   {
+       @Html.Raw("data-toggle=\"ajax-modal\"")
+       @Html.Raw("data-modal-backdrop=\"" + Model.ModalBackdrop + "\"")
+       if (Model.ModalSuccessAction == ModalSuccessAction.ReloadTable && !string.IsNullOrEmpty(ViewBag.ModalCallback))
+       {
+           @Html.Raw("data-modal-callback=\"" + ViewBag.ModalCallback + "\"")
+       }
+   }>
+    @Html.Raw(Model.BuildText())
+</a>

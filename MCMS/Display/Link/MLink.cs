@@ -15,8 +15,8 @@ namespace MCMS.Display.Link
         public string Target { get; internal set; }
         public string ControllerName => Controller != null ? TypeHelpers.GetControllerName(Controller) : null;
         public string ActionName => Action != null ? Action.Name : "Index";
-
         public string IconClasses { get; set; }
+        public string Tag { get; set; }
 
         public virtual string BuildUrl(IUrlHelper urlHelper = null)
         {
@@ -77,6 +77,12 @@ namespace MCMS.Display.Link
         public static T WithIconClasses<T>(this T item, string iconClasses) where T : MLink
         {
             item.IconClasses = iconClasses;
+            return item;
+        }
+
+        public static T WitTag<T>(this T item, string tag) where T : MLink
+        {
+            item.Tag = tag;
             return item;
         }
 

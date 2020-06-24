@@ -1,6 +1,6 @@
 using System.Linq;
 using System.Reflection;
-using MCMS.Attributes;
+using MCMS.Base.Attributes;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Filters;
 

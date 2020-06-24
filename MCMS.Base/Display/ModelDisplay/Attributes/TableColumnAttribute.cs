@@ -1,6 +1,6 @@
 using System;
 
-namespace MCMS.Display.ModelDisplay.Attributes
+namespace MCMS.Base.Display.ModelDisplay.Attributes
 {
     [AttributeUsage(AttributeTargets.Property)]
     public class TableColumnAttribute : Attribute
@@ -14,6 +14,7 @@ namespace MCMS.Display.ModelDisplay.Attributes
         {
         }
 
-        public int Order { get; }
+        public int Order { get; set; }
+        public bool Hidden { get; set; }
     }
 }

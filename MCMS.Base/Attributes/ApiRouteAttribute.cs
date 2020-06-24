@@ -1,7 +1,7 @@
 using System;
 using Microsoft.AspNetCore.Mvc.Routing;
 
-namespace MCMS.Attributes
+namespace MCMS.Base.Attributes
 {
     /// <summary>
     /// Specifies an attribute route on a controller.

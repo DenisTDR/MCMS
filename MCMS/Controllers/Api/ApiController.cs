@@ -1,6 +1,6 @@
 using System;
 using AutoMapper;
-using MCMS.Attributes;
+using MCMS.Base.Attributes;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;

@@ -10,9 +10,7 @@ namespace MCMS.Display.Link
         public bool AsModal { get; set; }
         public string CssClasses { get; set; }
         public string ModalBackdrop { get; set; }
-
         public object Values { get; set; } = new {id = "ENTITY_ID"};
-
         public ModalSuccessAction ModalSuccessAction { get; set; }
 
 

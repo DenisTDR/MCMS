@@ -5,7 +5,7 @@ namespace MCMS.Display.ModelDisplay
 {
     public interface IModelDisplayConfigService
     {
-        ModelDisplayConfig GetTableConfig(IUrlHelper url, dynamic viewBag, bool createNewLink = true);
+        ModelDisplayTableConfig GetTableConfig(IUrlHelper url, dynamic viewBag, bool createNewLink = true);
         List<TableColumn> GetTableColumns(bool excludeActionsColumn = false);
     }
 }

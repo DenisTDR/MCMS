@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 
 namespace MCMS.Display.ModelDisplay
 {
-    public class ModelDisplayConfig
+    public class ModelDisplayTableConfig
     {
         public List<MRichLink> TableItemActions { get; set; }
         public List<TableColumn> TableColumns { get; set; }

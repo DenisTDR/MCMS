@@ -1,6 +1,6 @@
 using System;
 
-namespace MCMS.Attributes
+namespace MCMS.Base.Attributes
 {
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
     public class ViewLayoutAttribute : Attribute

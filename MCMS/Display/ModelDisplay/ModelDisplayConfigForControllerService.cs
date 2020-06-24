@@ -4,11 +4,11 @@ using System.Linq;
 using System.Reflection;
 using MCMS.Base.Data.Entities;
 using MCMS.Base.Data.ViewModels;
+using MCMS.Base.Display.ModelDisplay.Attributes;
 using MCMS.Base.Extensions;
 using MCMS.Controllers.Api;
 using MCMS.Controllers.Ui;
 using MCMS.Display.Link;
-using MCMS.Display.ModelDisplay.Attributes;
 using MCMS.Helpers;
 using MCMS.SwaggerFormly.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -23,9 +23,9 @@ namespace MCMS.Display.ModelDisplay
         where TVm : class, IViewModel
         where TApiController : IGenericApiController<TFm, TVm>
     {
-        public ModelDisplayConfig GetTableConfig(IUrlHelper url, dynamic viewBag, bool createNewLink = true)
+        public ModelDisplayTableConfig GetTableConfig(IUrlHelper url, dynamic viewBag, bool createNewLink = true)
         {
-            var config = new ModelDisplayConfig
+            var config = new ModelDisplayTableConfig
             {
                 IndexPageTitle = TypeHelpers.GetDisplayName<TUiController>(),
                 ModelName = EntityHelper.GetEntityName<TE>(),
@@ -41,7 +41,7 @@ namespace MCMS.Display.ModelDisplay
                         "Create " + TypeHelpers.GetDisplayName(typeof(TE)),
                         typeof(TUiController), nameof(GenericUiController<TE, TFm, TVm, TApiController>.Create))
                     .AsButton("outline-primary")
-                    .WithIconClasses("fas fa-plus").WithValues(viewBag.TableItemsApiUrlValues);
+                    .WithIconClasses("fas fa-plus").WithValues(viewBag.CreateNewLinkValues);
                 if (viewBag.UsesModals)
                 {
                     config.CreateNewItemLink.WithModal();
@@ -54,11 +54,21 @@ namespace MCMS.Display.ModelDisplay
         public virtual List<TableColumn> GetTableColumns(bool excludeActionsColumn = false)
         {
             var props = typeof(TVm).GetProperties().ToList();
-            var tableColumnProps = props.Where(prop => prop.GetCustomAttributes<TableColumnAttribute>().Any()).ToList();
+            var tableColumnProps = props.Where(prop =>
+            {
+                var attr = prop.GetCustomAttributes<TableColumnAttribute>().FirstOrDefault();
+                return attr != null && !attr.Hidden;
+            }).ToList();
             if (tableColumnProps.Count == 0)
             {
                 tableColumnProps = props;
             }
+
+            tableColumnProps = tableColumnProps.Where(prop =>
+            {
+                var attr = prop.GetCustomAttributes<TableColumnAttribute>().FirstOrDefault();
+                return attr == null || !attr.Hidden;
+            }).ToList();
 
             var list = tableColumnProps
                 .Select(prop => new TableColumn(TypeHelpers.GetDisplayName(prop), prop.Name.ToCamelCase(),
@@ -76,13 +86,13 @@ namespace MCMS.Display.ModelDisplay
             return new List<MRichLink>
             {
                 new MRichLink("", typeof(TUiController),
-                        nameof(GenericUiController<TE, TFm, TVm, TApiController>.Details))
+                        nameof(GenericUiController<TE, TFm, TVm, TApiController>.Details)).WitTag("detalis")
                     .AsButton("outline-info").WithIconClasses("far fa-eye").WithValues(new {id = "ENTITY_ID"}),
                 new MRichLink("", typeof(TUiController),
-                        nameof(GenericUiController<TE, TFm, TVm, TApiController>.Edit))
+                        nameof(GenericUiController<TE, TFm, TVm, TApiController>.Edit)).WitTag("edit")
                     .AsButton("outline-primary").WithModal().WithIconClasses("fas fa-pencil-alt"),
                 new MRichLink("", typeof(TUiController),
-                        nameof(GenericUiController<TE, TFm, TVm, TApiController>.Delete))
+                        nameof(GenericUiController<TE, TFm, TVm, TApiController>.Delete)).WitTag("delete")
                     .AsButton("outline-danger").WithModal().WithIconClasses("fas fa-trash-alt")
             };
         }

@@ -43,7 +43,7 @@ namespace MCMS.Controllers.Ui
             return Task.FromResult(View("BasicPages/Index", TableConfigForIndex()) as IActionResult);
         }
 
-        protected virtual ModelDisplayConfig TableConfigForIndex()
+        protected virtual ModelDisplayTableConfig TableConfigForIndex()
         {
             return ModelDisplayConfigService.GetTableConfig(Url, ViewBag);
         }

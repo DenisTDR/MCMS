@@ -1,7 +1,9 @@
+using MCMS.Base.Display.ModelDisplay.Attributes;
+
 namespace MCMS.Base.Data.ViewModels
 {
     public class ViewModel : IViewModel
     {
-        public string Id { get; set; }
+        [TableColumn(Hidden = true)] public virtual string Id { get; set; }
     }
 }

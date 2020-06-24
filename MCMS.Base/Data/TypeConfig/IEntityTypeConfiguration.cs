@@ -1,4 +1,4 @@
-namespace MCMS.Base.Data
+namespace MCMS.Base.Data.TypeConfig
 {
     public interface IEntityTypeConfiguration
     {

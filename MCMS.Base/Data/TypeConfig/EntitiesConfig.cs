@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace MCMS.Base.Data
+namespace MCMS.Base.Data.TypeConfig
 {
     public class EntitiesConfig
     {

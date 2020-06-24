@@ -1,0 +1,29 @@
+@using Newtonsoft.Json
+@using MCMS.Helpers
+@model Dictionary<string, Newtonsoft.Json.Linq.JArray>
+@{
+    ViewBag.Title = "Seed";
+}
+<h3 class="my-3">@ViewBag.Title</h3>
+<a asp-action="Index">Admin dashboard</a>
+<div class="d-flex">
+    <form asp-action="seed">
+        <button type="submit" class="btn btn-primary">Build seed</button>
+    </form>
+    <form asp-action="SeedRoles">
+        <button type="submit" class="btn btn-secondary ml-2">Seed basic roles</button>
+    </form>
+</div>
+@if (Model != null)
+{
+    var jSettings = Utils.DefaultJsonSerializerSettings();
+    jSettings.NullValueHandling = NullValueHandling.Ignore;
+    jSettings.Formatting = Formatting.Indented;
+    jSettings.DefaultValueHandling = DefaultValueHandling.Ignore;
+    var str = JsonConvert.SerializeObject(Model, jSettings);
+    var lines = str.Split("\n").Length;
+
+    <div class="py-3">
+        <textarea class="form-control" style="width:100%;" rows="@lines">@str</textarea>
+    </div>
+}

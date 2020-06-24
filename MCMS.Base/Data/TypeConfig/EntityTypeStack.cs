@@ -2,7 +2,7 @@ using System;
 using MCMS.Base.Data.Entities;
 using MCMS.Base.Extensions;
 
-namespace MCMS.Base.Data
+namespace MCMS.Base.Data.TypeConfig
 {
     public sealed class EntityTypeStack
     {

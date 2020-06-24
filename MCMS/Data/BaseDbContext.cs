@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using MCMS.Base.Auth;
-using MCMS.Base.Data;
 using MCMS.Base.Data.Entities;
+using MCMS.Base.Data.TypeConfig;
 using MCMS.Base.Extensions;
 using Microsoft.Extensions.Options;
 

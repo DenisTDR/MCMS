@@ -5,7 +5,6 @@ using Microsoft.OpenApi;
 using Microsoft.OpenApi.Extensions;
 using Newtonsoft.Json;
 using Swashbuckle.AspNetCore.Swagger;
-using MCMS.Controllers;
 using MCMS.Controllers.Api;
 using MCMS.SwaggerFormly.Models;
 

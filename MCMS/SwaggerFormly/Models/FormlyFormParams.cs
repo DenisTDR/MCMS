@@ -22,7 +22,7 @@ namespace MCMS.SwaggerFormly.Models
         public string ToUrlQuery()
         {
             var jObj = (JObject) JsonConvert.DeserializeObject(JsonConvert.SerializeObject(this,
-                Utils.JsonSerializerSettings()));
+                Utils.DefaultJsonSerializerSettings()));
             return string.Join("&",
                 jObj.Properties().Where(jProp => jProp.Value != null && !string.IsNullOrEmpty(jProp.Value.ToString()))
                     .Select(jProp => jProp.Name + "=" + HttpUtility.UrlEncode(jProp.Value.ToString())));

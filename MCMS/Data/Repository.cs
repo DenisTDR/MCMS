@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MCMS.Data
 {
-    public class Repository<T> : IRepository<T> where T : Entity, new()
+    public class Repository<T> : IRepository<T> where T : class, IEntity, new()
     {
         private readonly BaseDbContext _dbContext;
         private readonly DbSet<T> _dbSet;

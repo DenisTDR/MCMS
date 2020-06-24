@@ -37,7 +37,7 @@ namespace MCMS.Helpers
             return Path.Combine(p).Replace("\\", "/");
         }
 
-        public static JsonSerializerSettings JsonSerializerSettings()
+        public static JsonSerializerSettings DefaultJsonSerializerSettings()
         {
             return new JsonSerializerSettings
             {

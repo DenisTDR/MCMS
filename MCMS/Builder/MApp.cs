@@ -1,16 +1,14 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using AutoMapper;
 using MCMS.Builder.Helpers;
+using MCMS.Data.Seeder;
 using MCMS.Helpers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
 
@@ -33,7 +31,6 @@ namespace MCMS.Builder
 
         public void ConfigureServices(IServiceCollection services)
         {
-            RegisterViewsPathsFromEnvVar(services);
             var mvcBuilder = services
                 .AddMvc(options =>
                 {
@@ -104,8 +101,6 @@ namespace MCMS.Builder
             });
 
 
-            RegisterWwwrootPaths(app);
-
             app.UseStaticFiles();
 
             app.UseRouting();
@@ -123,41 +118,16 @@ namespace MCMS.Builder
                 endpoints.MapRazorPages();
             });
 
+            if (Env.GetBool("SEED_ON_START"))
+            {
+                serviceProvider.GetService<DataSeeder>().SeedFromFile().Wait();
+            }
+
             // assert that variable is set correctly
             if (!(Env.GetOrThrow("EXTERNAL_URL") is { } url) || url.EndsWith('/') || !url.Contains("http"))
             {
                 Utils.DieWith("EXTERNAL_URL must include protocol and must not end with /");
             }
         }
-
-        #region VIEWS_AND_WWW_PATHS
-
-        public void RegisterViewsPathsFromEnvVar(IServiceCollection services)
-        {
-            foreach (var s in Env.GetArray("VIEWS_AND_WWW_PATHS"))
-            {
-                var path = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), s));
-                var fileProvider = new PhysicalFileProvider(path);
-                services.Configure<MvcRazorRuntimeCompilationOptions>(options =>
-                {
-                    options.FileProviders.Add(fileProvider);
-                });
-            }
-        }
-
-        public void RegisterWwwrootPaths(IApplicationBuilder app)
-        {
-            foreach (var s in Env.GetArray("VIEWS_AND_WWW_PATHS"))
-            {
-                var path = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), s, "wwwroot"));
-                if (Directory.Exists(path))
-                {
-                    app.UseStaticFiles(new StaticFileOptions
-                        {FileProvider = new PhysicalFileProvider(path), RequestPath = ""});
-                }
-            }
-        }
-
-        #endregion
     }
 }

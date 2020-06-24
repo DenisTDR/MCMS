@@ -1,6 +1,5 @@
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
-using MCMS.Attributes;
 using MCMS.Base.Data.Entities;
 using MCMS.Base.Data.ViewModels;
 using MCMS.Base.Extensions;

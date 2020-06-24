@@ -4,10 +4,16 @@
     ViewBag.Title = "Create a " + ViewBag.EntityName;
     var formParamsService = ViewBag.FormParamsService as FormParamsService;
 }
-<h2>@ViewBag.Title</h2>
 
-<div class="row">
-    <div class="col-12">
-        @await Html.BlindPartialAsync("Formly/FormlyForm", formParamsService.ForCreate())
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <h2 class="my-4">@ViewBag.Title</h2>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            @await Html.BlindPartialAsync("Formly/FormlyForm", formParamsService.ForCreate())
+        </div>
     </div>
 </div>

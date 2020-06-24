@@ -4,7 +4,7 @@ using MCMS.Base.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace MCMS.Base.Data
+namespace MCMS.Base.Data.TypeConfig
 {
     public class EntityTypeConfiguration<T> : IEntityTypeConfiguration, IEntityTypeConfiguration<T>
         where T : class, IEntity

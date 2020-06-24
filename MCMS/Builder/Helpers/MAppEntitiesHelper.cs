@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using MCMS.Base.Data;
 using MCMS.Base.Data.Entities;
+using MCMS.Base.Data.TypeConfig;
 using MCMS.Base.Extensions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;

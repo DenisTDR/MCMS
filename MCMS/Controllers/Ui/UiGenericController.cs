@@ -28,8 +28,6 @@ namespace MCMS.Controllers.Ui
             ViewBag.EntityName = EntityHelper.GetEntityName<TE>();
             ViewBag.FormParamsService = FormParamsService;
         }
-
-        [HttpGet("/[controller]")]
         public override Task<IActionResult> Index()
         {
             return Task.FromResult(View() as IActionResult);

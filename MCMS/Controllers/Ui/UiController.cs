@@ -1,17 +1,20 @@
 using System;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MCMS.Controllers.Ui
 {
     [Route("[controller]/[action]")]
     [ApiExplorerSettings(IgnoreApi = true)]
+    [Authorize]
     public abstract class UiController : Controller
     {
         public IServiceProvider ServiceProvider => HttpContext.RequestServices;
         protected bool UsesModals { get; set; }
 
         [HttpGet]
+        [Route("/[controller]")]
         public abstract Task<IActionResult> Index();
 
         protected IActionResult RedirectBackOrOk()

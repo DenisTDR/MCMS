@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace MCMS.Controllers.Api
 {
-    public interface IReadOnlyApiController<TVm> where TVm : class, IViewModel
+    public interface IReadOnlyApiController<TVm> where TVm : IViewModel
     {
         Task<ActionResult<List<TVm>>> Index();
         Task<ActionResult<TVm>> Preview(string id);

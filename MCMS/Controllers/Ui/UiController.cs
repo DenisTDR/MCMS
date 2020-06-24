@@ -17,6 +17,11 @@ namespace MCMS.Controllers.Ui
         [Route("/[controller]")]
         public abstract Task<IActionResult> Index();
 
+        protected Task<IActionResult> CustomIndex()
+        {
+            return Task.FromResult(View() as IActionResult);
+        }
+
         protected IActionResult RedirectBackOrOk()
         {
             if (UsesModals)

@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace MCMS.Controllers.Ui
 {
-    public class UiMockController: UiController
+    public class MockUiController: UiController
     {
         public override Task<IActionResult> Index()
         {

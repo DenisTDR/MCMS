@@ -58,10 +58,10 @@ namespace MCMS.Builder.Helpers
                 {
                     stack,
                     matchPoints = stack.CanPutMappingConfig(mappingConfigType)
-                }).Where(b => b.matchPoints > 0).OrderByDescending(b => b.matchPoints).FirstOrDefault()?.stack;
+                }).Where(b => b.matchPoints > 0).OrderByDescending(b => b.matchPoints).FirstOrDefault();
                 if (bestMatchStack != null)
                 {
-                    bestMatchStack.PutMappingConfig(mappingConfigType);
+                    bestMatchStack.stack.PutMappingConfig(mappingConfigType);
                 }
                 else
                 {

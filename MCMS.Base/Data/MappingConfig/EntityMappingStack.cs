@@ -159,7 +159,8 @@ namespace MCMS.Base.Data.MappingConfig
                 out var buildGenericType);
 
             return (EntityType == buildGenericType.GenericTypeArguments[0] ? 2 : 0) +
-                   (existingModelType == buildGenericType.GenericTypeArguments[1] ? 1 : 0);
+                   (existingModelType == buildGenericType.GenericTypeArguments[1] ? 1 :
+                       existingModelType == null ? 0 : -3);
         }
 
         private bool MatchMappingConfig(Type mappingConfigType, out PropertyInfo propertyInfo,

@@ -8,33 +8,33 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace MCMS.Controllers.Ui
 {
-    public abstract class UiModalController<T, TVm, TApiController> : UiGenericController<T, TVm, TApiController>
+    public abstract class UiGenericModalController<T, TFm, TApiController> : UiGenericController<T, TFm, TApiController>
         where T : class, IEntity
-        where TVm : class, IViewModel, IFormModel
-        where TApiController : IPatchCreateApiController<TVm>
+        where TFm : class, IFormModel
+        where TApiController : IPatchCreateApiController<TFm>
     {
-        public UiModalController()
+        public UiGenericModalController()
         {
             UsesModals = true;
         }
         [ViewLayout("_ModalLayout")]
         public override IActionResult Create()
         {
-            return View("ModalFormsPartials/_CreateModal");
+            return View("BasicModals/CreateModal");
         }
 
         [ViewLayout("_ModalLayout")]
         public override async Task<IActionResult> Edit([FromRoute] string id)
         {
-            var e = await GetOneOrThrowNotFound(id);
-            return View("ModalFormsPartials/_EditModal", e);
+            var e = await Repo.GetOneOrThrow(id);
+            return View("BasicModals/EditModal", e);
         }
 
         [ViewLayout("_ModalLayout")]
         public override async Task<IActionResult> Delete(string id)
         {
-            var e = await GetOneOrThrowNotFound(id);
-            return View("ModalFormsPartials/_DeleteModal", e);
+            var e = await Repo.GetOneOrThrow(id);
+            return View("BasicModals/DeleteModal", e);
         }
 
         [ViewLayout("_ModalLayout")]

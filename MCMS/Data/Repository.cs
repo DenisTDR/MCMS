@@ -30,6 +30,16 @@ namespace MCMS.Data
             return _queryable.FirstOrDefaultAsync(e => e.Id == id);
         }
 
+        public virtual async Task<T> GetOneOrThrow(string id)
+        {
+            var e = await _queryable.FirstOrDefaultAsync(e => e.Id == id);
+            if (e == null)
+            {
+                throw new KnownException(code: 404);
+            }
+            return e;
+        }
+
         public virtual Task<T> GetOne(Expression<Func<T, bool>> predicate)
         {
             return _queryable.FirstOrDefaultAsync(predicate);

@@ -3,12 +3,13 @@ using System.Threading.Tasks;
 using MCMS.Attributes;
 using MCMS.Base.Data.Entities;
 using MCMS.Base.Data.ViewModels;
+using MCMS.SwaggerFormly.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MCMS.Controllers.Api
 {
-    public class GenericApiController<TE, TVm> : PatchCreateApiController<TE, TVm>
-        where TE : Entity where TVm : class, IViewModel
+    public class GenericApiController<TE, TFm, TVm> : PatchCreateApiController<TE, TFm>, IGenericApiController<TFm, TVm>
+        where TE : Entity where TFm : class, IFormModel where TVm : class, IViewModel
     {
         [ApiRoute("/[controller]")]
         [HttpGet]
@@ -19,9 +20,23 @@ namespace MCMS.Controllers.Api
             return Ok(allVm);
         }
 
-        protected List<TVm> Map(List<TE> entities)
+        [Route("{id}")]
+        [HttpGet]
+        public virtual async Task<ActionResult<TVm>> Preview([FromRoute] string id)
+        {
+            var e = await Repo.GetOneOrThrow(id);
+            var fm = MapV(e);
+            return Ok(fm);
+        }
+
+        protected virtual List<TVm> Map(List<TE> entities)
         {
             return Mapper.Map<List<TVm>>(entities);
+        }
+
+        protected virtual TVm MapV(TE e)
+        {
+            return Mapper.Map<TVm>(e);
         }
     }
 }

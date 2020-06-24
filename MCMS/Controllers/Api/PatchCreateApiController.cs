@@ -4,35 +4,31 @@ using MCMS.Base.Data.Entities;
 using MCMS.Base.Data.ViewModels;
 using MCMS.Base.Extensions;
 using MCMS.Data;
+using MCMS.SwaggerFormly.Models;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace MCMS.Controllers.Api
 {
-    public abstract class PatchCreateApiController<TE, TVm> : ApiController, IPatchCreateApiController<TVm>
-        where TE : Entity where TVm : class, IViewModel
+    public abstract class PatchCreateApiController<TE, TFm> : ApiController, IPatchCreateApiController<TFm>
+        where TE : Entity where TFm : class, IFormModel
     {
         protected IRepository<TE> Repo => ServiceProvider.GetService<IRepository<TE>>();
 
         [Route("{id}")]
         [HttpGet]
-        public virtual async Task<ActionResult<TVm>> Get([FromRoute] string id)
+        public virtual async Task<ActionResult<TFm>> Get([FromRoute] string id)
         {
-            var e = await Repo.GetOne(id);
-            if (e == null)
-            {
-                return NotFound();
-            }
-
-            var vm = Map(e);
-            return Ok(vm);
+            var e = await Repo.GetOneOrThrow(id);
+            var fm = MapF(e);
+            return Ok(fm);
         }
 
         [Route("{id}")]
         [HttpPatch]
-        public virtual async Task<ActionResult<TVm>> Patch([FromRoute] [Required] string id,
-            [FromBody] [Required] JsonPatchDocument<TVm> doc)
+        public virtual async Task<ActionResult<TFm>> Patch([FromRoute] [Required] string id,
+            [FromBody] [Required] JsonPatchDocument<TFm> doc)
         {
             if (!ModelState.IsValid)
             {
@@ -44,34 +40,34 @@ namespace MCMS.Controllers.Api
                 return NotFound();
             }
 
-            var eDoc = doc.CloneFor<TVm, TE>();
+            var eDoc = doc.CloneFor<TFm, TE>();
 
             var e = await Repo.Patch(id, eDoc);
-            var vm = Map(e);
+            var fm = MapF(e);
 
-            return Ok(vm);
+            return Ok(fm);
         }
 
         [HttpPost]
-        public virtual async Task<ActionResult<TVm>> Create([FromBody] TVm vm)
+        public virtual async Task<ActionResult<TFm>> Create([FromBody] TFm fm)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var e = Map(vm);
+            var e = MapF(fm);
             e = await Repo.Add(e);
-            vm = Map(e);
-            return Ok(vm);
+            fm = MapF(e);
+            return Ok(fm);
         }
 
-        protected TVm Map(TE e)
+        protected virtual TFm MapF(TE e)
         {
-            return Mapper.Map<TVm>(e);
+            return Mapper.Map<TFm>(e);
         }
 
-        protected TE Map(TVm vm)
+        protected virtual TE MapF(TFm vm)
         {
             return Mapper.Map<TE>(vm);
         }

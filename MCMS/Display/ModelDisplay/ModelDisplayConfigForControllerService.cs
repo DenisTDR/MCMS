@@ -33,7 +33,7 @@ namespace MCMS.Display.ModelDisplay
                 HasTableIndexColumn = true,
                 TableItemsApiUrl = url.ActionLink(nameof(IReadOnlyApiController<TVm>.Index),
                     TypeHelpers.GetControllerName(typeof(TApiController)), viewBag.TableItemsApiUrlValues as object),
-                TableItemActions = GetDefaultTableItemActions()
+                TableItemActions = GetDefaultTableItemActions(viewBag)
             };
             if (createNewLink)
             {
@@ -81,7 +81,7 @@ namespace MCMS.Display.ModelDisplay
             return list;
         }
 
-        public virtual List<MRichLink> GetDefaultTableItemActions()
+        public virtual List<MRichLink> GetDefaultTableItemActions(dynamic viewBag)
         {
             return new List<MRichLink>
             {
@@ -90,7 +90,8 @@ namespace MCMS.Display.ModelDisplay
                     .AsButton("outline-info").WithIconClasses("far fa-eye").WithValues(new {id = "ENTITY_ID"}),
                 new MRichLink("", typeof(TUiController),
                         nameof(GenericUiController<TE, TFm, TVm, TApiController>.Edit)).WitTag("edit")
-                    .AsButton("outline-primary").WithModal().WithIconClasses("fas fa-pencil-alt"),
+                    .AsButton("outline-primary").WithModal().ToggleModal((bool) viewBag.UsesModals)
+                    .WithIconClasses("fas fa-pencil-alt"),
                 new MRichLink("", typeof(TUiController),
                         nameof(GenericUiController<TE, TFm, TVm, TApiController>.Delete)).WitTag("delete")
                     .AsButton("outline-danger").WithModal().WithIconClasses("fas fa-trash-alt")

@@ -4,13 +4,38 @@
 @{
     ViewBag.Title = "Edit " + ViewBag.EntityName + " " + Model;
     var formParamsService = ViewBag.FormParamsService as FormParamsService;
+    var formParams = formParamsService.ForPatch(Model.Id);
+    formParams.Options = new {hideSubmitButton = true};
+
+    var returnUrl = Context.Request.Query.ContainsKey("returnUrl") ? (string) Context.Request.Query["returnUrl"] : null;
 }
 
 <h2>@ViewBag.Title</h2>
-
-<div class="row">
-    @* <div class="col-12 col-sm-10 col-md-8 col-xl-6"> *@
-    <div class="col-12">
-        @await Html.BlindPartialAsync("Formly/FormlyForm", formParamsService.ForPatch(Model.Id))
+<div class="container">
+    <div class="row">
+        <div class="col-12 col-sm-10 col-md-8">
+            @* <div class="col-12"> *@
+            @await Html.BlindPartialAsync("Formly/FormlyForm", formParams)
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12 col-sm-10 col-md-8 justify-content-between d-flex">
+            <button type="button" class="btn btn-secondary" onclick="callback@(formParams.FormInstanceId)()">Înapoi</button>
+            <button type="button" class="btn btn-primary" id="@formParams.FormInstanceId-submit-button">Salvează</button>
+        </div>
     </div>
 </div>
+
+@using (Html.BeginMPageScripts())
+{
+    <script>
+       function callback@(formParams.FormInstanceId)(sender, params) {
+           var returnUrl = '@returnUrl';
+           if(returnUrl) {
+               window.location.href = returnUrl;
+           } else {
+               window.history.back();
+           }
+       }
+    </script>
+}

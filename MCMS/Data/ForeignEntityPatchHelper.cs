@@ -33,7 +33,6 @@ namespace MCMS.Data
                 var eKeyProp = eKeys[0].Name.ToCamelCase();
                 if (eKeyProp != opBag.path[1])
                 {
-                    patchDocument.Operations.Remove(opBag.op);
                     continue;
                 }
 

@@ -86,7 +86,7 @@ namespace MCMS.Display.ModelDisplay
             return new List<MRichLink>
             {
                 new MRichLink("", typeof(TUiController),
-                        nameof(GenericUiController<TE, TFm, TVm, TApiController>.Details)).WitTag("detalis")
+                        nameof(GenericUiController<TE, TFm, TVm, TApiController>.Details)).WitTag("details")
                     .AsButton("outline-info").WithModal().ToggleModal((bool) viewBag.UsesModals)
                     .WithIconClasses("far fa-eye").WithValues(new {id = "ENTITY_ID"}),
                 new MRichLink("", typeof(TUiController),

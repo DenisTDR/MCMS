@@ -87,7 +87,8 @@ namespace MCMS.Display.ModelDisplay
             {
                 new MRichLink("", typeof(TUiController),
                         nameof(GenericUiController<TE, TFm, TVm, TApiController>.Details)).WitTag("detalis")
-                    .AsButton("outline-info").WithIconClasses("far fa-eye").WithValues(new {id = "ENTITY_ID"}),
+                    .AsButton("outline-info").WithModal().ToggleModal((bool) viewBag.UsesModals)
+                    .WithIconClasses("far fa-eye").WithValues(new {id = "ENTITY_ID"}),
                 new MRichLink("", typeof(TUiController),
                         nameof(GenericUiController<TE, TFm, TVm, TApiController>.Edit)).WitTag("edit")
                     .AsButton("outline-primary").WithModal().ToggleModal((bool) viewBag.UsesModals)

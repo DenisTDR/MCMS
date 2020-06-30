@@ -66,6 +66,7 @@ namespace MCMS.Data
                 return e;
             }
 
+            ForeignEntityPatchHelper.PatchEntityProperties(e, _dbContext, patchDoc);
             patchDoc.ApplyTo(e);
             await SaveChangesAsyncIfNeeded();
             return e;

@@ -37,9 +37,9 @@ namespace MCMS.Helpers
             return Path.Combine(p).Replace("\\", "/");
         }
 
-        public static JsonSerializerSettings DefaultJsonSerializerSettings()
+        public static JsonSerializerSettings DefaultJsonSerializerSettings(bool indented = false)
         {
-            return new JsonSerializerSettings
+            var settings = new JsonSerializerSettings
             {
                 ContractResolver = new CamelCasePropertyNamesContractResolver(), Converters =
                     new List<JsonConverter>
@@ -48,6 +48,12 @@ namespace MCMS.Helpers
                     },
                 ReferenceLoopHandling = ReferenceLoopHandling.Ignore
             };
+            if (indented)
+            {
+                settings.Formatting = Formatting.Indented;
+            }
+
+            return settings;
         }
     }
 }

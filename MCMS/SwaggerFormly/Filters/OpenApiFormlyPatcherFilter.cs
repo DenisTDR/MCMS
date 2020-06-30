@@ -5,9 +5,11 @@ using System.Linq;
 using System.Reflection;
 using MCMS.Base.Extensions;
 using MCMS.Base.SwaggerFormly.Formly;
+using MCMS.Base.SwaggerFormly.Formly.Fields;
 using MCMS.Helpers;
 using MCMS.SwaggerFormly.Extensions;
 using MCMS.SwaggerFormly.Models;
+using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.OpenApi.Any;
 using Microsoft.OpenApi.Interfaces;
 using Microsoft.OpenApi.Models;
@@ -57,19 +59,26 @@ namespace MCMS.SwaggerFormly.Filters
             var templateOptions = new OpenApiObject();
             schema.Extensions.Add("x-templateOptions", templateOptions);
             PatchFieldTexts(templateOptions, propertyInfo, declaringType);
-            ProcessFieldBasicAttributes(schema, templateOptions, propertyInfo, declaringType);
+            ProcessFieldAttributes(schema, templateOptions, propertyInfo, declaringType);
             PatchDataTypeAttribute(propertyInfo, schema, templateOptions, out var validators);
             PatchEnumProperties(propertyInfo, templateOptions, schema);
             PatchValidators(propertyInfo, schema, validators);
         }
 
-        private void ProcessFieldBasicAttributes(OpenApiSchema schema,
+        private void ProcessFieldAttributes(OpenApiSchema schema,
             OpenApiObject templateOptions, PropertyInfo propertyInfo, Type declaringType)
         {
             var xProps = new OpenApiObject();
             foreach (var fieldPropertyAttribute in GetAttributes<FormlyFieldPropAttribute>(propertyInfo, declaringType))
             {
                 xProps[fieldPropertyAttribute.FullPath] = OpenApiExtensions.ToOpenApi(fieldPropertyAttribute.Value);
+            }
+
+            foreach (var fieldPropertyAttribute in GetAttributes<FormlySelectAttribute>(propertyInfo, declaringType))
+            {
+                schema.AllOf = new List<OpenApiSchema>();
+                xProps["type"] = OpenApiExtensions.ToOpenApi(fieldPropertyAttribute.Type);
+                templateOptions["type-config"] = fieldPropertyAttribute.GetOpenApiConfig();
             }
 
             if (xProps.Count > 0)

@@ -1,8 +1,8 @@
 namespace MCMS.Base.SwaggerFormly.Formly
 {
-    public class FormlyFieldDefaultValue : FormlyFieldPropAttribute
+    public class FormlyFieldDefaultValueAttribute : FormlyFieldPropAttribute
     {
-        public FormlyFieldDefaultValue(object value) : base("defaultValue", value)
+        public FormlyFieldDefaultValueAttribute(object value) : base("defaultValue", value)
         {
         }
     }

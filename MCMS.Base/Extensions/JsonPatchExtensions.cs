@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.JsonPatch.Operations;
@@ -29,6 +31,11 @@ namespace MCMS.Base.Extensions
                 op = source.op,
                 value = source.value
             };
+        }
+
+        public static List<string> GetSplitPath<T>(this Operation<T> val) where T : class
+        {
+            return val.path.Split('/', StringSplitOptions.RemoveEmptyEntries).ToList();
         }
     }
 }

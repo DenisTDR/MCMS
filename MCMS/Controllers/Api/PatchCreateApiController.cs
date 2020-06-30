@@ -57,6 +57,7 @@ namespace MCMS.Controllers.Api
             }
 
             var e = MapF(fm);
+            AttachFkProperties(e);
             e = await Repo.Add(e);
             fm = MapF(e);
             return Ok(fm);
@@ -70,6 +71,10 @@ namespace MCMS.Controllers.Api
         protected virtual TE MapF(TFm vm)
         {
             return Mapper.Map<TE>(vm);
+        }
+
+        protected virtual void AttachFkProperties(TE e)
+        {
         }
     }
 }

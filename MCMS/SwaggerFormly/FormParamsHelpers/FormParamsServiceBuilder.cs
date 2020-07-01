@@ -17,9 +17,9 @@ namespace MCMS.SwaggerFormly.FormParamsHelpers
             return this;
         }
 
-        public FormParamsService Build()
-        {
-            return new FormParamsService(_controllerPath, _schemaName);
-        }
+        // public FormParamsService Build(IUrlHelper urlHelper)
+        // {
+        //     return new FormParamsService(urlHelper, _controllerPath, _schemaName);
+        // }
     }
 }

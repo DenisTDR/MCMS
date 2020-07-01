@@ -11,7 +11,7 @@ namespace MCMS.Common.Translations.Translations
         [DataType(DataType.MultilineText)] public string Value { get; set; }
         public bool IsRichText { get; set; }
 
-        [FormlySelect("/api/LanguagesApi")]
+        [FormlySelect(typeof(LanguagesAdminApiController))]
         public LanguageViewModel Language { get; set; }
     }
 }

@@ -4,9 +4,9 @@ using MCMS.Display.ModelDisplay;
 
 namespace MCMS.Common.Translations.Translations
 {
-    public class TranslationsController : GenericUiModalController<TranslationEntity, TranslationFormModel,
+    public class TranslationsController : GenericModalAdminUiController<TranslationEntity, TranslationFormModel,
         TranslationViewModel,
-        TranslationsApiController>
+        TranslationsAdminApiController>
     {
         protected override ModelDisplayTableConfig TableConfigForIndex()
         {

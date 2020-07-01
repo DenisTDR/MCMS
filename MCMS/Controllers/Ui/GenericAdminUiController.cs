@@ -1,10 +1,10 @@
 ﻿using System.Threading.Tasks;
 using MCMS.Base.Data.Entities;
 using MCMS.Base.Data.ViewModels;
+using MCMS.Base.Helpers;
 using MCMS.Controllers.Api;
 using MCMS.Data;
 using MCMS.Display.ModelDisplay;
-using MCMS.Helpers;
 using MCMS.SwaggerFormly.FormParamsHelpers;
 using MCMS.SwaggerFormly.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -13,7 +13,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace MCMS.Controllers.Ui
 {
-    public abstract class GenericUiController<TE, TFm, TVm, TApiController> : UiController
+    public abstract class GenericAdminUiController<TE, TFm, TVm, TApiController> : AdminUiController
         where TE : class, IEntity
         where TFm : class, IFormModel
         where TVm : class, IViewModel
@@ -22,7 +22,7 @@ namespace MCMS.Controllers.Ui
         protected virtual IModelDisplayConfigService ModelDisplayConfigService =>
             ServiceProvider.GetService(
                 ModelDisplayConfigForControllerService<TE, TFm, TVm,
-                        GenericUiController<TE, TFm, TVm, TApiController>, TApiController>
+                        GenericAdminUiController<TE, TFm, TVm, TApiController>, TApiController>
                     .MakeGenericTypeWithUiControllerType(GetType())) as IModelDisplayConfigService;
 
         protected virtual FormParamsService FormParamsService =>

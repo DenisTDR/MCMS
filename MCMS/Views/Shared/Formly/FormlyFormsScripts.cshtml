@@ -1,6 +1,6 @@
-@using MCMS.Helpers
 @using MCMS.SwaggerFormly.Extensions
 @using MCMS.SwaggerFormly.FormParamsHelpers
+@using MCMS.Base.Helpers
 
 @if (!Env.GetBool("FORMLY_DEBUG"))
 {
@@ -9,7 +9,7 @@
     @using (Html.BeginMPageScripts())
     {
         <script>
-            var openApiConfigUrl = '@FormParamsService.GetOpenApiConfigUrl()'
+            var openApiConfigUrl = '@FormParamsService.GetOpenApiConfigUrl(Url)'
         </script>
 
         <script src="@basePath/formly-form/runtime.js" defer asp-append-version="true"></script>

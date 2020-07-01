@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using dotenv.net;
 
-namespace MCMS.Helpers
+namespace MCMS.Base.Helpers
 {
     public class Env
     {

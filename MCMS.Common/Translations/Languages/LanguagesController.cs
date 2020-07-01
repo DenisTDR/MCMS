@@ -5,8 +5,8 @@ using MCMS.Display.ModelDisplay;
 namespace MCMS.Common.Translations.Languages
 {
     public class
-        LanguagesController : GenericUiModalController<LanguageEntity, LanguageFormModel, LanguageViewModel,
-            LanguagesApiController>
+        LanguagesController : GenericModalAdminUiController<LanguageEntity, LanguageFormModel, LanguageViewModel,
+            LanguagesAdminApiController>
     {
         protected override ModelDisplayTableConfig TableConfigForIndex()
         {

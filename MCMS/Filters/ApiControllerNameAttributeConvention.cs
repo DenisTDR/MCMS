@@ -7,7 +7,7 @@ namespace MCMS.Filters
     {
         public void Apply(ControllerModel controller)
         {
-            if (controller.ControllerType.IsSubclassOf(typeof(ApiController)))
+            if (controller.ControllerType.IsSubclassOf(typeof(AdminApiController)))
             {
                 var typeName = controller.ControllerType.Name;
                 

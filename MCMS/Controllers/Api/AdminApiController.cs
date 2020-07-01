@@ -7,10 +7,10 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace MCMS.Controllers.Api
 {
-    [ApiRoute("[controller]/[action]")]
+    [AdminApiRoute("[controller]/[action]")]
     [Produces("application/json")]
     [Authorize]
-    public class ApiController : Controller
+    public class AdminApiController : Controller
     {
         public IServiceProvider ServiceProvider => HttpContext.RequestServices;
 

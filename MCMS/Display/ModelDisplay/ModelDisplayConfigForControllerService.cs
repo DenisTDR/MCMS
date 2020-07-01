@@ -6,10 +6,10 @@ using MCMS.Base.Data.Entities;
 using MCMS.Base.Data.ViewModels;
 using MCMS.Base.Display.ModelDisplay.Attributes;
 using MCMS.Base.Extensions;
+using MCMS.Base.Helpers;
 using MCMS.Controllers.Api;
 using MCMS.Controllers.Ui;
 using MCMS.Display.Link;
-using MCMS.Helpers;
 using MCMS.SwaggerFormly.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,7 +17,7 @@ namespace MCMS.Display.ModelDisplay
 {
     public class
         ModelDisplayConfigForControllerService<TE, TFm, TVm, TUiController, TApiController> : IModelDisplayConfigService
-        where TUiController : GenericUiController<TE, TFm, TVm, TApiController>
+        where TUiController : GenericAdminUiController<TE, TFm, TVm, TApiController>
         where TE : class, IEntity
         where TFm : class, IFormModel
         where TVm : class, IViewModel
@@ -39,7 +39,7 @@ namespace MCMS.Display.ModelDisplay
             {
                 config.CreateNewItemLink = new MRichLink(
                         "Create " + TypeHelpers.GetDisplayName(typeof(TE)),
-                        typeof(TUiController), nameof(GenericUiController<TE, TFm, TVm, TApiController>.Create))
+                        typeof(TUiController), nameof(GenericAdminUiController<TE, TFm, TVm, TApiController>.Create))
                     .AsButton("outline-primary")
                     .WithIconClasses("fas fa-plus").WithValues(viewBag.CreateNewLinkValues);
                 if (viewBag.UsesModals)
@@ -86,15 +86,15 @@ namespace MCMS.Display.ModelDisplay
             return new List<MRichLink>
             {
                 new MRichLink("", typeof(TUiController),
-                        nameof(GenericUiController<TE, TFm, TVm, TApiController>.Details)).WitTag("details")
+                        nameof(GenericAdminUiController<TE, TFm, TVm, TApiController>.Details)).WitTag("details")
                     .AsButton("outline-info").WithModal().ToggleModal((bool) viewBag.UsesModals)
                     .WithIconClasses("far fa-eye").WithValues(new {id = "ENTITY_ID"}),
                 new MRichLink("", typeof(TUiController),
-                        nameof(GenericUiController<TE, TFm, TVm, TApiController>.Edit)).WitTag("edit")
+                        nameof(GenericAdminUiController<TE, TFm, TVm, TApiController>.Edit)).WitTag("edit")
                     .AsButton("outline-primary").WithModal().ToggleModal((bool) viewBag.UsesModals)
                     .WithIconClasses("fas fa-pencil-alt"),
                 new MRichLink("", typeof(TUiController),
-                        nameof(GenericUiController<TE, TFm, TVm, TApiController>.Delete)).WitTag("delete")
+                        nameof(GenericAdminUiController<TE, TFm, TVm, TApiController>.Delete)).WitTag("delete")
                     .AsButton("outline-danger").WithModal().WithIconClasses("fas fa-trash-alt")
             };
         }

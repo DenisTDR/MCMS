@@ -11,7 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 namespace MCMS.Controllers
 {
     [Authorize(Roles = "Admin")]
-    public class AdminDashboardController : UiController
+    public class AdminDashboardController : AdminUiController
     {
         public override Task<IActionResult> Index()
         {

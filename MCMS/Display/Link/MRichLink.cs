@@ -48,7 +48,7 @@ namespace MCMS.Display.Link
             AsModal = isWith;
             return this;
         }
-        
+
         public MRichLink WithModal(string backdrop = "static",
             ModalSuccessAction modalSuccessAction = ModalSuccessAction.ReloadTable)
         {

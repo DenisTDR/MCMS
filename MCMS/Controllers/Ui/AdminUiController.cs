@@ -1,20 +1,21 @@
 using System;
 using System.Threading.Tasks;
+using MCMS.Base.Attributes;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MCMS.Controllers.Ui
 {
-    [Route("[controller]/[action]")]
+    [AdminRoute("[controller]/[action]")]
     [ApiExplorerSettings(IgnoreApi = true)]
     [Authorize]
-    public abstract class UiController : Controller
+    public abstract class AdminUiController : Controller
     {
         public IServiceProvider ServiceProvider => HttpContext.RequestServices;
         protected bool UsesModals { get; set; }
 
         [HttpGet]
-        [Route("/[controller]")]
+        [AdminRoute("/[controller]")]
         public abstract Task<IActionResult> Index();
 
         protected Task<IActionResult> CustomIndex()

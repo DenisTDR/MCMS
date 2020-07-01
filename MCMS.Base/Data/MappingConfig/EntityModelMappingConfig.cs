@@ -1,5 +1,4 @@
 using AutoMapper;
-using MCMS.Base.Data.Entities;
 
 namespace MCMS.Base.Data.MappingConfig
 {

@@ -1,7 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using MCMS.Base.Data.Entities;
-using MCMS.Base.Data.ViewModels;
 using MCMS.Base.Extensions;
 using MCMS.Data;
 using MCMS.SwaggerFormly.Models;
@@ -11,7 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace MCMS.Controllers.Api
 {
-    public abstract class PatchCreateApiController<TE, TFm> : ApiController, IPatchCreateApiController<TFm>
+    public abstract class PatchCreateAdminApiController<TE, TFm> : AdminApiController, IPatchCreateApiController<TFm>
         where TE : Entity where TFm : class, IFormModel
     {
         protected IRepository<TE> Repo => ServiceProvider.GetService<IRepository<TE>>();

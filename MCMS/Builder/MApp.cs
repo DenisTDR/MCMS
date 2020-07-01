@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
+using MCMS.Base.Helpers;
 using MCMS.Builder.Helpers;
 using MCMS.Data.Seeder;
-using MCMS.Helpers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
@@ -34,6 +34,7 @@ namespace MCMS.Builder
             var mvcBuilder = services
                 .AddMvc(options =>
                 {
+                    // options.Conventions.Insert(0, new MRouteConvention(Env.Get("ADMIN_ROUTE_PREFIX")));
                     foreach (var mSpecifications in _specifications)
                     {
                         mSpecifications.ConfigMvc(options);

@@ -10,12 +10,12 @@ using MCMS.SwaggerFormly.Models;
 
 namespace MCMS.SwaggerFormly.Controllers
 {
-    public class OpenApiConfigController : ApiController
+    public class OpenAdminApiConfigController : AdminApiController
     {
         private readonly ISwaggerProvider _swaggerProvider;
         private readonly SwaggerConfigOptions _options;
 
-        public OpenApiConfigController(
+        public OpenAdminApiConfigController(
             ISwaggerProvider swaggerProvider,
             IOptions<SwaggerConfigOptions> options
         )

@@ -8,13 +8,13 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace MCMS.Controllers.Ui
 {
-    public abstract class GenericUiModalController<T, TFm, TVm, TApiController> : GenericUiController<T, TFm, TVm, TApiController>
+    public abstract class GenericModalAdminUiController<T, TFm, TVm, TApiController> : GenericAdminUiController<T, TFm, TVm, TApiController>
         where T : class, IEntity
         where TFm : class, IFormModel
         where TVm : class, IViewModel
         where TApiController : IGenericApiController<TFm, TVm>
     {
-        public GenericUiModalController()
+        public GenericModalAdminUiController()
         {
             UsesModals = true;
         }

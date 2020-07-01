@@ -41,7 +41,7 @@ namespace MCMS.Filters
         private bool IsApiController(ExceptionContext context)
         {
             return context.ActionDescriptor is ControllerActionDescriptor actionDescriptor &&
-                   typeof(ApiController).IsAssignableFrom(actionDescriptor.ControllerTypeInfo);
+                   typeof(AdminApiController).IsAssignableFrom(actionDescriptor.ControllerTypeInfo);
         }
 
 

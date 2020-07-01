@@ -5,7 +5,7 @@ using System.Linq;
 using System.Reflection;
 using MCMS.Base.Extensions;
 
-namespace MCMS.Helpers
+namespace MCMS.Base.Helpers
 {
     public static class TypeHelpers
     {

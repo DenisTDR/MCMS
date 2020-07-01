@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using MCMS.Base.Helpers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using MCMS.Builder;
@@ -7,9 +8,10 @@ using MCMS.Data;
 using MCMS.Data.Seeder;
 using MCMS.Display.ModelDisplay;
 using MCMS.Filters;
-using MCMS.Helpers;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation;
+using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.Extensions.FileProviders;
 
 namespace MCMS
@@ -30,6 +32,11 @@ namespace MCMS
             services.AddScoped<DataSeeder>();
             services.AddOptions<EntitySeeders>().Configure(seeders => { seeders.Add<RoleSeeder>(); });
             services.AddScoped(typeof(ModelDisplayConfigForControllerService<,,,,>));
+            
+            services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
+            services.AddTransient(x => x
+                .GetRequiredService<IUrlHelperFactory>()
+                .GetUrlHelper(x.GetRequiredService<IActionContextAccessor>().ActionContext));
         }
 
         public override void ConfigMvc(MvcOptions options)

@@ -1,9 +1,9 @@
 using System;
+using MCMS.Base.Helpers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 using MCMS.Builder;
-using MCMS.Helpers;
 using MCMS.SwaggerFormly.Filters;
 using MCMS.SwaggerFormly.FormParamsHelpers;
 using MCMS.SwaggerFormly.Middlewares;
@@ -57,8 +57,8 @@ namespace MCMS.SwaggerFormly
                 swagger.UseAllOfToExtendReferenceSchemas();
             });
 
-            services.AddTransient(typeof(FormParamsForControllerService<,>));
-            services.AddTransient<FormParamsServiceBuilder>();
+            services.AddScoped(typeof(FormParamsForControllerService<,>));
+            services.AddScoped<FormParamsServiceBuilder>();
         }
     }
 }

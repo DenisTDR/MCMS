@@ -11,7 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 namespace MCMS.Common.Translations.Translations
 {
     public class
-        TranslationsApiController : GenericApiController<TranslationEntity, TranslationFormModel, TranslationViewModel>
+        TranslationsAdminApiController : GenericAdminApiController<TranslationEntity, TranslationFormModel, TranslationViewModel>
     {
         public override void OnActionExecuting(ActionExecutingContext context)
         {

@@ -1,4 +1,5 @@
 using System;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.OpenApi.Any;
 
 namespace MCMS.Base.SwaggerFormly.Formly.Fields
@@ -17,7 +18,7 @@ namespace MCMS.Base.SwaggerFormly.Formly.Fields
 
         public string Type { get; set; }
         
-        public virtual OpenApiObject GetOpenApiConfig()
+        public virtual OpenApiObject GetOpenApiConfig(LinkGenerator linkGenerator)
         {
            return null;
         }

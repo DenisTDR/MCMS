@@ -8,10 +8,10 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace MCMS.Controllers.Api
 {
-    public class GenericApiController<TE, TFm, TVm> : PatchCreateApiController<TE, TFm>, IGenericApiController<TFm, TVm>
+    public class GenericAdminApiController<TE, TFm, TVm> : PatchCreateAdminApiController<TE, TFm>, IGenericApiController<TFm, TVm>
         where TE : Entity where TFm : class, IFormModel where TVm : class, IViewModel
     {
-        [ApiRoute("/[controller]")]
+        [AdminApiRoute("/[controller]")]
         [HttpGet]
         public virtual async Task<ActionResult<List<TVm>>> Index()
         {

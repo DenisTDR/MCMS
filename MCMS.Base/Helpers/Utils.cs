@@ -5,7 +5,7 @@ using System.IO;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
-namespace MCMS.Helpers
+namespace MCMS.Base.Helpers
 {
     public static class Utils
     {

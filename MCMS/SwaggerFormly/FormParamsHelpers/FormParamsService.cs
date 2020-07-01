@@ -1,60 +1,61 @@
-using MCMS.Helpers;
+using MCMS.Base.Helpers;
 using MCMS.SwaggerFormly.Controllers;
 using MCMS.SwaggerFormly.Models;
+using Microsoft.AspNetCore.Mvc;
 
 namespace MCMS.SwaggerFormly.FormParamsHelpers
 {
     public class FormParamsService
     {
-        protected string ControllerPath { get; set; }
+        public IUrlHelper UrlHelper { get; set; }
+        protected string ControllerName { get; set; }
         protected string SchemaName { get; set; }
-        protected static string ApiUrl { get; set; } = Utils.UrlCombine(Env.GetOrThrow("EXTERNAL_URL"), "api/");
         protected object AdditionalData { get; set; }
         protected object Options { get; set; }
 
 
-        public FormParamsService(string controllerPath, string schemaName)
+        public FormParamsService(IUrlHelper urlHelper, string controllerName, string schemaName)
         {
-            ControllerPath = controllerPath;
+            UrlHelper = urlHelper;
+            ControllerName = controllerName;
             SchemaName = schemaName;
         }
 
         public virtual FormlyFormParams ForPatch(string id)
         {
-            var @params = CommonConfig(FormActionType.Patch);
-            @params.ModelId = id;
-            return @params;
+            var config = CommonConfig(FormActionType.Patch);
+            config.GetUrl = GetUrlFor(ControllerName, GetGetActionName(), new {id});
+            config.SubmitUrl = UrlHelper.ActionLink(GetActionName(FormActionType.Patch), ControllerName, new {id});
+            config.ModelId = id;
+            return config;
         }
 
         public virtual FormlyFormParams ForCreate(object additionalData = null, object options = null)
         {
             AdditionalData = additionalData;
             Options = options;
-            return CommonConfig(FormActionType.Create);
+            var config = CommonConfig(FormActionType.Create);
+            config.SubmitUrl = UrlHelper.ActionLink(GetActionName(FormActionType.Create), ControllerName);
+            return config;
         }
 
         protected virtual FormlyFormParams CommonConfig(FormActionType action)
         {
-            var submitActionName = GetActionName(action);
-            var controllerUrl = Utils.UrlCombine(ApiUrl, ControllerPath);
             return new FormlyFormParams
             {
                 SchemaName = SchemaName,
                 Action = action,
-                GetUrl = Utils.UrlCombine(controllerUrl, GetGetActionName() + "/"),
-                SubmitUrl = Utils.UrlCombine(controllerUrl, submitActionName + "/"),
-                OpenApiConfigUrl = GetOpenApiConfigUrl(),
+                OpenApiConfigUrl = GetOpenApiConfigUrl(UrlHelper),
                 FormInstanceId = Utils.GenerateRandomHexString(),
                 AdditionalFields = AdditionalData,
                 Options = Options
             };
         }
 
-        public static string GetOpenApiConfigUrl()
+        public static string GetOpenApiConfigUrl(IUrlHelper urlHelper)
         {
-            var openApiConfigController = TypeHelpers.GetControllerName(typeof(OpenApiConfigController));
-            var openApiControllerUrl = Utils.UrlCombine(ApiUrl, openApiConfigController);
-            return Utils.UrlCombine(openApiControllerUrl, nameof(OpenApiConfigController.Get));
+            return urlHelper.ActionLink(nameof(OpenAdminApiConfigController.Get),
+                TypeHelpers.GetControllerName(typeof(OpenAdminApiConfigController)));
         }
 
         protected virtual string GetActionName(FormActionType actionType)
@@ -65,6 +66,12 @@ namespace MCMS.SwaggerFormly.FormParamsHelpers
         protected virtual string GetGetActionName()
         {
             return "Get";
+        }
+
+        protected virtual string GetUrlFor(string controllerName, string actionName, object values = null)
+        {
+            var url = UrlHelper.ActionLink(actionName, controllerName, values);
+            return url;
         }
     }
 }

@@ -1,17 +1,15 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using MCMS.Base.Data.Entities;
 using MCMS.Base.Extensions;
-using MCMS.Data;
+using Microsoft.EntityFrameworkCore;
 
-namespace MCMS.Helpers
+namespace MCMS.Base.Helpers
 {
     public class EntityHelper
     {
@@ -94,12 +92,12 @@ namespace MCMS.Helpers
             return properties.Where(kvp => kvp.Value).Select(kvp => kvp.Key.ToLower());
         }
 
-        public static List<PropertyInfo> GetKeys<T>(BaseDbContext dbContext) where T : IEntity, new()
+        public static List<PropertyInfo> GetKeys<T>(DbContext dbContext) where T : IEntity, new()
         {
             return GetKeys(dbContext, typeof(T));
         }
 
-        public static List<PropertyInfo> GetKeys(BaseDbContext dbContext, Type eType)
+        public static List<PropertyInfo> GetKeys(DbContext dbContext, Type eType)
         {
             if (eType == null)
             {

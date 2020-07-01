@@ -4,12 +4,12 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reflection;
 using MCMS.Base.Extensions;
+using MCMS.Base.Helpers;
 using MCMS.Base.SwaggerFormly.Formly;
 using MCMS.Base.SwaggerFormly.Formly.Fields;
-using MCMS.Helpers;
 using MCMS.SwaggerFormly.Extensions;
 using MCMS.SwaggerFormly.Models;
-using Microsoft.AspNetCore.Mvc.Routing;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.OpenApi.Any;
 using Microsoft.OpenApi.Interfaces;
 using Microsoft.OpenApi.Models;
@@ -20,6 +20,12 @@ namespace MCMS.SwaggerFormly.Filters
 {
     public class OpenApiFormlyPatcherSchemaFilter : ISchemaFilter
     {
+        private readonly LinkGenerator _linkGenerator;
+
+        public OpenApiFormlyPatcherSchemaFilter(LinkGenerator linkGenerator)
+        {
+            _linkGenerator = linkGenerator;
+        }
         public void Apply(OpenApiSchema schema, SchemaFilterContext context)
         {
             if (!ShouldPatchSchema(context.Type))
@@ -78,7 +84,7 @@ namespace MCMS.SwaggerFormly.Filters
             {
                 schema.AllOf = new List<OpenApiSchema>();
                 xProps["type"] = OpenApiExtensions.ToOpenApi(fieldPropertyAttribute.Type);
-                templateOptions["type-config"] = fieldPropertyAttribute.GetOpenApiConfig();
+                templateOptions["type-config"] = fieldPropertyAttribute.GetOpenApiConfig(_linkGenerator);
             }
 
             if (xProps.Count > 0)

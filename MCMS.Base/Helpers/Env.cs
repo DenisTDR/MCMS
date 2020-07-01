@@ -60,6 +60,6 @@ namespace MCMS.Base.Helpers
             Console.ForegroundColor = oldColor;
         }
 
-        public static readonly string[] ArraySeparator = new[] {";"};
+        public static readonly string[] ArraySeparator = {";"};
     }
 }

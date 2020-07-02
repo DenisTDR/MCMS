@@ -4,12 +4,15 @@ using System.Linq;
 using AutoMapper;
 using MCMS.Base.Helpers;
 using MCMS.Builder.Helpers;
+using MCMS.Data;
 using MCMS.Data.Seeder;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
 namespace MCMS.Builder
@@ -75,6 +78,7 @@ namespace MCMS.Builder
 
         public void Configure(IApplicationBuilder app, IServiceProvider serviceProvider)
         {
+            var logger = serviceProvider.GetService<ILogger<MApp>>();
             if (HostEnvironment.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -118,6 +122,17 @@ namespace MCMS.Builder
                     pattern: "{controller=Home}/{action=Index}/{id?}");
                 endpoints.MapRazorPages();
             });
+
+            if (Env.GetBool("MIGRATE_ON_START"))
+            {
+                logger.LogInformation("Checking pending migrations.");
+                var dbContext = serviceProvider.GetService<BaseDbContext>();
+                if (dbContext.Database.GetPendingMigrations().Any())
+                {
+                    logger.LogWarning("Migrating database...");
+                    dbContext.Database.Migrate();
+                }
+            }
 
             if (Env.GetBool("SEED_ON_START"))
             {

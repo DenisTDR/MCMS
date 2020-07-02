@@ -4,6 +4,7 @@
         <TargetFramework>netcoreapp3.1</TargetFramework>
         <OutputType>Library</OutputType>
         <RootNamespace>MCMS.Base</RootNamespace>
+        <StaticWebAssetBasePath Condition="$(StaticWebAssetBasePath) == ''">/</StaticWebAssetBasePath>
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="AutoMapper" Version="9.0.0" />

@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
+using MCMS.Base.Attributes;
 using MCMS.Base.Data.Entities;
 using MCMS.Base.Extensions;
 using MCMS.Data;
@@ -26,19 +27,14 @@ namespace MCMS.Controllers.Api
 
         [Route("{id}")]
         [HttpPatch]
+        [PatchDocumentValidation]
         public virtual async Task<ActionResult<TFm>> Patch([FromRoute] [Required] string id,
             [FromBody] [Required] JsonPatchDocument<TFm> doc)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
             if (!await Repo.Any(id))
             {
                 return NotFound();
             }
-
             var eDoc = doc.CloneFor<TFm, TE>();
 
             var e = await Repo.Patch(id, eDoc);
@@ -48,13 +44,9 @@ namespace MCMS.Controllers.Api
         }
 
         [HttpPost]
+        [ModelValidation]
         public virtual async Task<ActionResult<TFm>> Create([FromBody] TFm fm)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
             var e = MapF(fm);
             AttachFkProperties(e);
             e = await Repo.Add(e);

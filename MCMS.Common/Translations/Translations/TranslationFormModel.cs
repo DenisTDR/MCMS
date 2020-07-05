@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using MCMS.Base.Data.FormModels;
 using MCMS.Base.SwaggerFormly.Formly.Fields;
 using MCMS.Common.Translations.Languages;
 using MCMS.SwaggerFormly.Models;

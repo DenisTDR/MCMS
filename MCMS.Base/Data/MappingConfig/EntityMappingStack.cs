@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using MCMS.Base.Data.Entities;
+using MCMS.Base.Data.FormModels;
 using MCMS.Base.Data.ViewModels;
 using MCMS.Base.Extensions;
-using MCMS.SwaggerFormly.Models;
 
 namespace MCMS.Base.Data.MappingConfig
 {

@@ -4,9 +4,10 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using MCMS.Base.Data.Entities;
-using MCMS.Base.Extensions;
-using MCMS.Exceptions;
+using MCMS.Base.Exceptions;
+using MCMS.Base.JsonPatch;
 using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.AspNetCore.JsonPatch.Adapters;
 using Microsoft.EntityFrameworkCore;
 
 namespace MCMS.Data
@@ -37,6 +38,7 @@ namespace MCMS.Data
             {
                 throw new KnownException(code: 404);
             }
+
             return e;
         }
 
@@ -58,7 +60,12 @@ namespace MCMS.Data
             return addingResult.Entity;
         }
 
-        public virtual async Task<T> Patch(string id, JsonPatchDocument<T> patchDoc)
+        public virtual Task<T> Patch(string id, JsonPatchDocument<T> patchDoc)
+        {
+            return Patch(id, patchDoc, null);
+        }
+
+        public virtual async Task<T> Patch(string id, JsonPatchDocument<T> patchDoc, IAdapterFactory adapterFactory)
         {
             var e = await GetOne(id);
             if (patchDoc.IsEmpty())
@@ -67,7 +74,15 @@ namespace MCMS.Data
             }
 
             ForeignEntityPatchHelper.PatchEntityProperties(e, _dbContext, patchDoc);
-            patchDoc.ApplyTo(e);
+            if (adapterFactory == null)
+            {
+                patchDoc.ApplyTo(e);
+            }
+            else
+            {
+                patchDoc.ApplyTo(e, adapterFactory);
+            }
+
             await SaveChangesAsyncIfNeeded();
             return e;
         }

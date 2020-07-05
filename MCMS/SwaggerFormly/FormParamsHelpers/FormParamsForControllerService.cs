@@ -1,6 +1,6 @@
+using MCMS.Base.Data.FormModels;
 using MCMS.Base.Helpers;
 using MCMS.Controllers.Api;
-using MCMS.SwaggerFormly.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MCMS.SwaggerFormly.FormParamsHelpers

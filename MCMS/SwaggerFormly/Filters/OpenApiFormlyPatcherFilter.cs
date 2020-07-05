@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reflection;
+using MCMS.Base.Data.FormModels;
 using MCMS.Base.Extensions;
 using MCMS.Base.Helpers;
+using MCMS.Base.SwaggerFormly.Extensions;
 using MCMS.Base.SwaggerFormly.Formly;
 using MCMS.Base.SwaggerFormly.Formly.Fields;
-using MCMS.SwaggerFormly.Extensions;
 using MCMS.SwaggerFormly.Models;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.OpenApi.Any;
@@ -26,6 +27,7 @@ namespace MCMS.SwaggerFormly.Filters
         {
             _linkGenerator = linkGenerator;
         }
+
         public void Apply(OpenApiSchema schema, SchemaFilterContext context)
         {
             if (!ShouldPatchSchema(context.Type))
@@ -64,15 +66,16 @@ namespace MCMS.SwaggerFormly.Filters
         {
             var templateOptions = new OpenApiObject();
             schema.Extensions.Add("x-templateOptions", templateOptions);
+            var validators = new List<ValidatorModel>();
             PatchFieldTexts(templateOptions, propertyInfo, declaringType);
-            ProcessFieldAttributes(schema, templateOptions, propertyInfo, declaringType);
-            PatchDataTypeAttribute(propertyInfo, schema, templateOptions, out var validators);
+            ProcessFieldAttributes(schema, templateOptions, propertyInfo, declaringType, validators);
+            PatchDataTypeAttribute(propertyInfo, schema, templateOptions, validators);
             PatchEnumProperties(propertyInfo, templateOptions, schema);
             PatchValidators(propertyInfo, schema, validators);
         }
 
         private void ProcessFieldAttributes(OpenApiSchema schema,
-            OpenApiObject templateOptions, PropertyInfo propertyInfo, Type declaringType)
+            OpenApiObject templateOptions, PropertyInfo propertyInfo, Type declaringType, List<ValidatorModel> validators)
         {
             var xProps = new OpenApiObject();
             foreach (var fieldPropertyAttribute in GetAttributes<FormlyFieldPropAttribute>(propertyInfo, declaringType))
@@ -80,11 +83,13 @@ namespace MCMS.SwaggerFormly.Filters
                 xProps[fieldPropertyAttribute.FullPath] = OpenApiExtensions.ToOpenApi(fieldPropertyAttribute.Value);
             }
 
-            foreach (var fieldPropertyAttribute in GetAttributes<FormlySelectAttribute>(propertyInfo, declaringType))
+            foreach (var formlyFieldAttribute in GetAttributes<FormlyFieldAttribute>(propertyInfo, declaringType))
             {
-                schema.AllOf = new List<OpenApiSchema>();
-                xProps["type"] = OpenApiExtensions.ToOpenApi(fieldPropertyAttribute.Type);
-                templateOptions["type-config"] = fieldPropertyAttribute.GetOpenApiConfig(_linkGenerator);
+                formlyFieldAttribute.Attach(schema, xProps, templateOptions, _linkGenerator);
+                if (formlyFieldAttribute.HasCustomValidators)
+                {
+                    validators.AddRange(formlyFieldAttribute.GetCustomValidators());
+                }
             }
 
             if (xProps.Count > 0)
@@ -102,10 +107,9 @@ namespace MCMS.SwaggerFormly.Filters
         }
 
         private void PatchDataTypeAttribute(PropertyInfo propertyInfo, OpenApiSchema schema,
-            OpenApiObject templateOptions, out List<ValidatorModel> validators)
+            OpenApiObject templateOptions, List<ValidatorModel> validators)
         {
             var dataTypeAttributes = propertyInfo.GetCustomAttributes<DataTypeAttribute>();
-            validators = new List<ValidatorModel>();
             // var vOa = schema.Extensions.GetOrSetDefault<OpenApiObject, IOpenApiExtension>("validators");
             // var validation = vOa.GetOrSetDefault<OpenApiArray, IOpenApiAny>("validation");
 

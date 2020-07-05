@@ -22,15 +22,23 @@ namespace MCMS.Builder
             _hostEnvironment = hostEnvironment;
         }
 
-        public MAppBuilder AddSpecifications(MSpecifications specifications)
+        public MAppBuilder AddSpecifications(MSpecifications specifications, int? index = null)
         {
-            _specifications.Add(specifications);
+            if (index != null)
+            {
+                _specifications.Insert(index.Value, specifications);
+            }
+            else
+            {
+                _specifications.Add(specifications);
+            }
+
             return this;
         }
 
-        public MAppBuilder AddSpecifications<T>() where T : MSpecifications, new()
+        public MAppBuilder AddSpecifications<T>(int? index = null) where T : MSpecifications, new()
         {
-            AddSpecifications(new T());
+            AddSpecifications(new T(), index);
             return this;
         }
 
@@ -41,7 +49,7 @@ namespace MCMS.Builder
             _addDbContextAction = services =>
             {
                 services.AddDbContext<T>(optionsBuilder => { optionsBuilder.UseNpgsql(Env.GetOrThrow("DB_URL")); });
-                
+
                 // this is required because service provider must use the same instance for T and for BaseDbContext 
                 // otherwise there will be two scoped instances and we don't like that
                 services.AddScoped(serviceProvider => serviceProvider.GetService<BaseDbContext>() as T);
@@ -58,17 +66,17 @@ namespace MCMS.Builder
         {
             if (!_specifications.Any(spec => spec is MAuthSpecifications))
             {
-                AddSpecifications<MAuthSpecifications>();
+                AddSpecifications<MAuthSpecifications>(0);
             }
 
             if (!_specifications.Any(spec => spec is MBaseSpecifications))
             {
-                AddSpecifications<MBaseSpecifications>();
+                AddSpecifications<MBaseSpecifications>(0);
             }
 
-            var addDbContextAction = _addDbContextAction;
+            var app = new MApp(_hostEnvironment, _specifications, _addDbContextAction);
             _addDbContextAction = null;
-            return new MApp(_hostEnvironment, _specifications, addDbContextAction);
+            return app;
         }
     }
 }

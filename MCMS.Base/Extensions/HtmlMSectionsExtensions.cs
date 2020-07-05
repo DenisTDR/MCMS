@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
-namespace MCMS.SwaggerFormly.Extensions
+namespace MCMS.Base.Extensions
 {
     public static class HtmlMSectionsExtensions
     {

@@ -1,5 +1,5 @@
+using MCMS.Base.Data.FormModels;
 using MCMS.Base.Data.ViewModels;
-using MCMS.SwaggerFormly.Models;
 
 namespace MCMS.Controllers.Api
 {

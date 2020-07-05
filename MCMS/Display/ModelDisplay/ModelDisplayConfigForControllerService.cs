@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using MCMS.Base.Data.Entities;
+using MCMS.Base.Data.FormModels;
 using MCMS.Base.Data.ViewModels;
 using MCMS.Base.Display.ModelDisplay.Attributes;
 using MCMS.Base.Extensions;
@@ -10,7 +11,6 @@ using MCMS.Base.Helpers;
 using MCMS.Controllers.Api;
 using MCMS.Controllers.Ui;
 using MCMS.Display.Link;
-using MCMS.SwaggerFormly.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MCMS.Display.ModelDisplay

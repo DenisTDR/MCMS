@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
 using MCMS.Base.Extensions;
-using MCMS.SwaggerFormly.Extensions;
+using MCMS.Base.SwaggerFormly.Extensions;
 using Microsoft.OpenApi.Any;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;

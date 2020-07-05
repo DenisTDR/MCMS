@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using MCMS.Base.Data.Entities;
 using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.AspNetCore.JsonPatch.Adapters;
 
 namespace MCMS.Data
 {
@@ -16,6 +17,7 @@ namespace MCMS.Data
         Task<List<T>> GetAll(bool dontFetch = false);
         Task<T> Add(T e);
         Task<T> Patch(string id, JsonPatchDocument<T> eub);
+        Task<T> Patch(string id, JsonPatchDocument<T> eub, IAdapterFactory adapterFactory);
 
         Task<bool> Delete(string id);
         Task<bool> Delete(T e);

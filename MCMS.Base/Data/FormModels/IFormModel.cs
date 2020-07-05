@@ -1,4 +1,4 @@
-namespace MCMS.SwaggerFormly.Models
+namespace MCMS.Base.Data.FormModels
 {
     public interface IFormModel
     {

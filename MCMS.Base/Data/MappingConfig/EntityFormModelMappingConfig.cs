@@ -1,5 +1,5 @@
 using MCMS.Base.Data.Entities;
-using MCMS.SwaggerFormly.Models;
+using MCMS.Base.Data.FormModels;
 
 namespace MCMS.Base.Data.MappingConfig
 {

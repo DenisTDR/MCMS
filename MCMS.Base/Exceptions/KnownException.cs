@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MCMS.Exceptions
+namespace MCMS.Base.Exceptions
 {
     public class KnownException : Exception
     {

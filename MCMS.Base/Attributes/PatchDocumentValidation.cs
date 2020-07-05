@@ -1,11 +1,14 @@
 using System;
 using System.Linq;
 using System.Reflection;
+using MCMS.Base.Data.FormModels;
 using MCMS.Base.Extensions;
-using MCMS.SwaggerFormly.Models;
+using MCMS.Base.JsonPatch;
 using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.AspNetCore.JsonPatch.Adapters;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace MCMS.Base.Attributes
 {
@@ -71,10 +74,11 @@ namespace MCMS.Base.Attributes
                 }
             }
 
-            doc.ApplyTo(nfm, context.ModelState);
-            if (context.Controller is Controller controller)
+            var adapterFactory = context.HttpContext.RequestServices.GetService<IAdapterFactory>() ?? new AdapterFactory();
+            doc.ApplyTo(nfm, adapterFactory, context.ModelState);
+            if (!context.ModelState.IsValid)
             {
-                controller.TryValidateModel(nfm);
+                return false;
             }
 
             var keys = context.ModelState.Keys.ToList();

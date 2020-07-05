@@ -1,6 +1,6 @@
 ﻿using System;
+using MCMS.Base.Exceptions;
 using MCMS.Controllers.Api;
-using MCMS.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Filters;

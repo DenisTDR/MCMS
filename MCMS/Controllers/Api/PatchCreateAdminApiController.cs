@@ -2,10 +2,11 @@ using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using MCMS.Base.Attributes;
 using MCMS.Base.Data.Entities;
-using MCMS.Base.Extensions;
+using MCMS.Base.Data.FormModels;
+using MCMS.Base.JsonPatch;
 using MCMS.Data;
-using MCMS.SwaggerFormly.Models;
 using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.AspNetCore.JsonPatch.Adapters;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -37,7 +38,7 @@ namespace MCMS.Controllers.Api
             }
             var eDoc = doc.CloneFor<TFm, TE>();
 
-            var e = await Repo.Patch(id, eDoc);
+            var e = await Repo.Patch(id, eDoc, ServiceProvider.GetService<IAdapterFactory>());
             var fm = MapF(e);
 
             return Ok(fm);

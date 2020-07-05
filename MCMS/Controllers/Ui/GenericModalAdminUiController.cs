@@ -1,9 +1,9 @@
 using System.Threading.Tasks;
 using MCMS.Base.Attributes;
 using MCMS.Base.Data.Entities;
+using MCMS.Base.Data.FormModels;
 using MCMS.Base.Data.ViewModels;
 using MCMS.Controllers.Api;
-using MCMS.SwaggerFormly.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MCMS.Controllers.Ui

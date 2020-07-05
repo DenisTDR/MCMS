@@ -1,11 +1,11 @@
 using System;
 using System.Collections;
 using System.Linq;
+using MCMS.Base.Exceptions;
 using MCMS.Base.Extensions;
 using Microsoft.OpenApi.Any;
-using MCMS.Exceptions;
 
-namespace MCMS.SwaggerFormly.Extensions
+namespace MCMS.Base.SwaggerFormly.Extensions
 {
     public static class OpenApiExtensions
     {

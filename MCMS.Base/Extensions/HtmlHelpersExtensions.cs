@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 
-namespace MCMS.SwaggerFormly.Extensions
+namespace MCMS.Base.Extensions
 {
     public static class HtmlHelpersExtensions
     {

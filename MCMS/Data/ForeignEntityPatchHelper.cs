@@ -1,9 +1,10 @@
 using System;
 using System.Linq;
 using MCMS.Base.Data.Entities;
+using MCMS.Base.Exceptions;
 using MCMS.Base.Extensions;
 using MCMS.Base.Helpers;
-using MCMS.Exceptions;
+using MCMS.Base.JsonPatch;
 using Microsoft.AspNetCore.JsonPatch;
 
 namespace MCMS.Data

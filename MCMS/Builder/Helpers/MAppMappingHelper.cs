@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using MCMS.Base.Data.Entities;
+using MCMS.Base.Data.FormModels;
 using MCMS.Base.Data.MappingConfig;
 using MCMS.Base.Data.ViewModels;
 using MCMS.Base.Extensions;
-using MCMS.SwaggerFormly.Models;
 using Microsoft.AspNetCore.Identity;
 
 namespace MCMS.Builder.Helpers

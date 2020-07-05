@@ -8,6 +8,7 @@ using MCMS.Data;
 using MCMS.Data.Seeder;
 using MCMS.Display.ModelDisplay;
 using MCMS.Filters;
+using Microsoft.AspNetCore.JsonPatch.Adapters;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation;
@@ -32,11 +33,13 @@ namespace MCMS
             services.AddScoped<DataSeeder>();
             services.AddOptions<EntitySeeders>().Configure(seeders => { seeders.Add<RoleSeeder>(); });
             services.AddScoped(typeof(ModelDisplayConfigForControllerService<,,,,>));
-            
+
             services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
-            services.AddTransient(x => x
+            services.AddTransient(serviceProvider => serviceProvider
                 .GetRequiredService<IUrlHelperFactory>()
-                .GetUrlHelper(x.GetRequiredService<IActionContextAccessor>().ActionContext));
+                .GetUrlHelper(serviceProvider.GetRequiredService<IActionContextAccessor>().ActionContext));
+
+            services.AddTransient<IAdapterFactory, AdapterFactory>();
         }
 
         public override void ConfigMvc(MvcOptions options)

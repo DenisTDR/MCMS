@@ -1,5 +1,5 @@
 using System;
-using MCMS.Exceptions;
+using MCMS.Base.Exceptions;
 
 namespace MCMS.Models
 {

@@ -1,5 +1,6 @@
 using System;
 using MCMS.Base.Auth;
+using MCMS.Base.Builder;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using MCMS.Builder;

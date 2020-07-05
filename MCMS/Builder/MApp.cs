@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
+using MCMS.Base.Builder;
 using MCMS.Base.Helpers;
 using MCMS.Builder.Helpers;
 using MCMS.Data;

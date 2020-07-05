@@ -75,7 +75,8 @@ namespace MCMS.SwaggerFormly.Filters
         }
 
         private void ProcessFieldAttributes(OpenApiSchema schema,
-            OpenApiObject templateOptions, PropertyInfo propertyInfo, Type declaringType, List<ValidatorModel> validators)
+            OpenApiObject templateOptions, PropertyInfo propertyInfo, Type declaringType,
+            List<ValidatorModel> validators)
         {
             var xProps = new OpenApiObject();
             foreach (var fieldPropertyAttribute in GetAttributes<FormlyFieldPropAttribute>(propertyInfo, declaringType))
@@ -144,6 +145,32 @@ namespace MCMS.SwaggerFormly.Filters
             {
                 validators.Add(
                     new ValidatorModel("required", message: reqAttr.ErrorMessage ?? "field-required"));
+            }
+
+            var rangeAttr = propertyInfo.GetCustomAttribute<RangeAttribute>();
+            if (rangeAttr != null)
+            {
+                validators.Add(new ValidatorModel("min", message: rangeAttr.ErrorMessage));
+                validators.Add(new ValidatorModel("max", message: rangeAttr.ErrorMessage));
+            }
+
+            var minLengthAttr = propertyInfo.GetCustomAttribute<MinLengthAttribute>();
+            if (minLengthAttr != null)
+            {
+                validators.Add(new ValidatorModel("minlength", message: minLengthAttr.ErrorMessage));
+            }
+
+            var maxLengthAttr = propertyInfo.GetCustomAttribute<MaxLengthAttribute>();
+            if (maxLengthAttr != null)
+            {
+                validators.Add(new ValidatorModel("maxlength", message: maxLengthAttr.ErrorMessage));
+            }
+
+            var stringLengthAttr = propertyInfo.GetCustomAttribute<StringLengthAttribute>();
+            if (stringLengthAttr != null)
+            {
+                validators.Add(new ValidatorModel("minlength", message: stringLengthAttr.ErrorMessage));
+                validators.Add(new ValidatorModel("maxlength", message: stringLengthAttr.ErrorMessage));
             }
 
             if (validators.Any())

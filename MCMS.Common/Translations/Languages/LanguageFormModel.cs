@@ -1,5 +1,4 @@
 using MCMS.Base.Data.FormModels;
-using MCMS.SwaggerFormly.Models;
 
 namespace MCMS.Common.Translations.Languages
 {

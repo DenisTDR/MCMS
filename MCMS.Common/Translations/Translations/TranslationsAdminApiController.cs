@@ -1,9 +1,6 @@
-using System.Threading.Tasks;
 using MCMS.Common.Translations.Languages;
 using MCMS.Controllers.Api;
 using MCMS.Data;
-using Microsoft.AspNetCore.JsonPatch;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;

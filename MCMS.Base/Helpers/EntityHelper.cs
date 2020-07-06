@@ -23,8 +23,8 @@ namespace MCMS.Base.Helpers
             var attrs = propertyInfo.GetCustomAttributes<DisplayAttribute>().ToList();
             if (attrs.Any())
             {
-                var firstName = attrs.Select(a => a.Name).FirstOrDefault(name => !string.IsNullOrEmpty(name));
-                if (!string.IsNullOrEmpty(firstName))
+                var firstName = attrs.Select(a => a.Name).FirstOrDefault(name => name != null);
+                if (firstName != null)
                 {
                     return firstName;
                 }

@@ -1,6 +1,7 @@
 using System;
 using System.Reflection;
 using System.Runtime.Serialization;
+using MCMS.Base.Helpers;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MCMS.Display.Link
@@ -34,7 +35,7 @@ namespace MCMS.Display.Link
                 return Url;
             }
 
-            return urlHelper.ActionLink(ActionName, ControllerName, Values);
+            return urlHelper.ActionLink(ActionName, ControllerName, Values, protocol: Utils.GetExternalProtocol());
         }
 
         public MRichLink AsButton(string cssClasses)

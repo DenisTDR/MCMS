@@ -55,5 +55,18 @@ namespace MCMS.Base.Helpers
 
             return settings;
         }
+
+
+        private static bool? _isHttpsExternalUrl;
+
+        public static bool IsHttpsExternalUrl()
+        {
+            return _isHttpsExternalUrl ?? (_isHttpsExternalUrl = Env.Get("EXTERNAL_URL")?.StartsWith("https")) == true;
+        }
+
+        public static string GetExternalProtocol()
+        {
+            return IsHttpsExternalUrl() ? "https" : "http";
+        }
     }
 }

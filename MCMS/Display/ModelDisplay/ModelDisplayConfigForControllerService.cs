@@ -32,7 +32,7 @@ namespace MCMS.Display.ModelDisplay
                 TableColumns = GetTableColumns(),
                 HasTableIndexColumn = true,
                 TableItemsApiUrl = url.ActionLink(nameof(IReadOnlyApiController<TVm>.Index),
-                    TypeHelpers.GetControllerName(typeof(TApiController)), viewBag.TableItemsApiUrlValues as object),
+                    TypeHelpers.GetControllerName(typeof(TApiController)), viewBag.TableItemsApiUrlValues as object, protocol: Utils.GetExternalProtocol()),
                 TableItemActions = GetDefaultTableItemActions(viewBag)
             };
             if (createNewLink)

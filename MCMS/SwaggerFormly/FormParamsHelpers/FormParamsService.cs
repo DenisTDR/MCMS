@@ -25,7 +25,7 @@ namespace MCMS.SwaggerFormly.FormParamsHelpers
         {
             var config = CommonConfig(FormActionType.Patch);
             config.GetUrl = GetUrlFor(ControllerName, GetGetActionName(), new {id});
-            config.SubmitUrl = UrlHelper.ActionLink(GetActionName(FormActionType.Patch), ControllerName, new {id});
+            config.SubmitUrl = UrlHelper.ActionLink(GetActionName(FormActionType.Patch), ControllerName, new {id}, protocol: Utils.GetExternalProtocol());
             config.ModelId = id;
             return config;
         }
@@ -35,7 +35,7 @@ namespace MCMS.SwaggerFormly.FormParamsHelpers
             AdditionalData = additionalData;
             Options = options;
             var config = CommonConfig(FormActionType.Create);
-            config.SubmitUrl = UrlHelper.ActionLink(GetActionName(FormActionType.Create), ControllerName);
+            config.SubmitUrl = UrlHelper.ActionLink(GetActionName(FormActionType.Create), ControllerName, protocol: Utils.GetExternalProtocol());
             return config;
         }
 
@@ -55,7 +55,7 @@ namespace MCMS.SwaggerFormly.FormParamsHelpers
         public static string GetOpenApiConfigUrl(IUrlHelper urlHelper)
         {
             return urlHelper.ActionLink(nameof(OpenAdminApiConfigController.Get),
-                TypeHelpers.GetControllerName(typeof(OpenAdminApiConfigController)));
+                TypeHelpers.GetControllerName(typeof(OpenAdminApiConfigController)), protocol: Utils.GetExternalProtocol());
         }
 
         protected virtual string GetActionName(FormActionType actionType)
@@ -70,7 +70,7 @@ namespace MCMS.SwaggerFormly.FormParamsHelpers
 
         protected virtual string GetUrlFor(string controllerName, string actionName, object values = null)
         {
-            var url = UrlHelper.ActionLink(actionName, controllerName, values);
+            var url = UrlHelper.ActionLink(actionName, controllerName, values, protocol: Utils.GetExternalProtocol());
             return url;
         }
     }

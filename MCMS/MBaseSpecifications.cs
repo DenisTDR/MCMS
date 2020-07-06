@@ -9,6 +9,7 @@ using MCMS.Data;
 using MCMS.Data.Seeder;
 using MCMS.Display.ModelDisplay;
 using MCMS.Filters;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.JsonPatch.Adapters;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
@@ -41,6 +42,12 @@ namespace MCMS
                 .GetUrlHelper(serviceProvider.GetRequiredService<IActionContextAccessor>().ActionContext));
 
             services.AddTransient<IAdapterFactory, AdapterFactory>();
+            
+            if (!string.IsNullOrEmpty(Env.Get("PERSISTED_KEYS_DIRECTORY")))
+            {
+                services.AddDataProtection()
+                    .PersistKeysToFileSystem(new DirectoryInfo(Env.Get("PERSISTED_KEYS_DIRECTORY")));
+            }
         }
 
         public override void ConfigMvc(MvcOptions options)

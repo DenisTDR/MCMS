@@ -1,12 +1,14 @@
 using MCMS.Common.Translations.Languages;
 using MCMS.Controllers.Api;
 using MCMS.Data;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace MCMS.Common.Translations.Translations
 {
+    [Authorize(Roles = "Admin")]
     public class
         TranslationsAdminApiController : GenericAdminApiController<TranslationEntity, TranslationFormModel, TranslationViewModel>
     {

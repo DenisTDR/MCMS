@@ -57,7 +57,13 @@ namespace MCMS.Admin.Users
             var existingRoles = await userManager.GetRolesAsync(user);
             var newRoles = allRoles.Where(roles.ContainsKey)
                 .ToList();
-            var toDeleteRoles = existingRoles.Except(newRoles).Where(r => r != "Admin");
+            var toDeleteRoles = existingRoles.Except(newRoles);
+
+            if (ServiceProvider.GetService<UserManager<User>>().GetUserId(User) == id)
+            {
+                toDeleteRoles = toDeleteRoles.Where(r => r != "Admin");
+            }
+
             var toAddRoles = newRoles.Except(existingRoles);
             await userManager.AddToRolesAsync(user, toAddRoles);
             await userManager.RemoveFromRolesAsync(user, toDeleteRoles);

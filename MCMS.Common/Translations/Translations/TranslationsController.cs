@@ -1,9 +1,11 @@
 using System.Linq;
 using MCMS.Controllers.Ui;
 using MCMS.Display.ModelDisplay;
+using Microsoft.AspNetCore.Authorization;
 
 namespace MCMS.Common.Translations.Translations
 {
+    [Authorize(Roles = "Admin")]
     public class TranslationsController : GenericModalAdminUiController<TranslationEntity, TranslationFormModel,
         TranslationViewModel,
         TranslationsAdminApiController>

@@ -16,14 +16,16 @@ using Microsoft.AspNetCore.Mvc;
 namespace MCMS.Display.ModelDisplay
 {
     public class
-        ModelDisplayConfigForControllerService<TE, TFm, TVm, TUiController, TApiController> : IModelDisplayConfigService
+        ModelDisplayConfigForControllerService<TE, TFm, TVm, TUiController, TApiController> : ModelDisplayConfigService
         where TUiController : GenericAdminUiController<TE, TFm, TVm, TApiController>
         where TE : class, IEntity
         where TFm : class, IFormModel
         where TVm : class, IViewModel
         where TApiController : IGenericApiController<TFm, TVm>
     {
-        public ModelDisplayTableConfig GetTableConfig(IUrlHelper url, dynamic viewBag, bool createNewLink = true)
+        public override Type ViewModelType => typeof(TVm);
+
+        public override ModelDisplayTableConfig GetTableConfig(IUrlHelper url, dynamic viewBag, bool createNewLink = true)
         {
             var config = new ModelDisplayTableConfig
             {
@@ -51,35 +53,6 @@ namespace MCMS.Display.ModelDisplay
             return config;
         }
 
-        public virtual List<TableColumn> GetTableColumns(bool excludeActionsColumn = false)
-        {
-            var props = typeof(TVm).GetProperties().ToList();
-            var tableColumnProps = props.Where(prop =>
-            {
-                var attr = prop.GetCustomAttributes<TableColumnAttribute>().FirstOrDefault();
-                return attr != null && !attr.Hidden;
-            }).ToList();
-            if (tableColumnProps.Count == 0)
-            {
-                tableColumnProps = props;
-            }
-
-            tableColumnProps = tableColumnProps.Where(prop =>
-            {
-                var attr = prop.GetCustomAttributes<TableColumnAttribute>().FirstOrDefault();
-                return attr == null || !attr.Hidden;
-            }).ToList();
-
-            var list = tableColumnProps
-                .Select(prop => new TableColumn(TypeHelpers.GetDisplayName(prop), prop.Name.ToCamelCase(),
-                    prop.GetCustomAttributes<TableColumnAttribute>().FirstOrDefault()?.Order ?? 0)).ToList();
-            if (!excludeActionsColumn)
-            {
-                list.Add(new TableColumn("Actions", "_actions", 100));
-            }
-
-            return list;
-        }
 
         public virtual List<MRichLink> GetDefaultTableItemActions(dynamic viewBag)
         {

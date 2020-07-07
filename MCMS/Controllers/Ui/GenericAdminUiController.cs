@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using MCMS.Base.Attributes;
 using MCMS.Base.Data.Entities;
 using MCMS.Base.Data.FormModels;
 using MCMS.Base.Data.ViewModels;
@@ -81,11 +82,11 @@ namespace MCMS.Controllers.Ui
         }
 
         [HttpPost("{id}"), ActionName("Delete")]
-        [ValidateAntiForgeryToken]
+        [Produces("application/json")]
         public virtual async Task<IActionResult> DeleteConfirmed([FromRoute] string id)
         {
             await Repo.Delete(id);
-            return RedirectBackOrOk();
+            return Ok();
         }
     }
 }

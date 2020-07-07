@@ -54,8 +54,8 @@ namespace MCMS.SwaggerFormly.FormParamsHelpers
 
         public static string GetOpenApiConfigUrl(IUrlHelper urlHelper)
         {
-            return urlHelper.ActionLink(nameof(OpenAdminApiConfigController.Get),
-                TypeHelpers.GetControllerName(typeof(OpenAdminApiConfigController)), protocol: Utils.GetExternalProtocol());
+            return urlHelper.ActionLink(nameof(OpenApiConfigController.Get),
+                TypeHelpers.GetControllerName(typeof(OpenApiConfigController)), protocol: Utils.GetExternalProtocol());
         }
 
         protected virtual string GetActionName(FormActionType actionType)

@@ -8,6 +8,16 @@ waitModal.on("shown.bs.modal", function (e) {
         closeWaitModal = false;
     }
 });
+
+function displayLoadingModal() {
+    closeWaitModal = false;
+    waitModal.modal('show');
+}
+function hideLoadingModal() {
+    closeWaitModal = true;
+    waitModal.modal('hide');
+}
+
 var body = $('body');
 body.on('click', 'button[data-toggle="ajax-modal"], a[data-toggle="ajax-modal"]', function (event) {
     if (event) {
@@ -19,15 +29,12 @@ body.on('click', 'button[data-toggle="ajax-modal"], a[data-toggle="ajax-modal"]'
         console.error('Modal triggered by', this);
         throw new Error('But url for modal content not found!');
     }
-    waitModal.modal('show');
-    closeWaitModal = false;
+    displayLoadingModal()
     $.get(url).done(function (data) {
-        waitModal.modal('hide');
-        closeWaitModal = true;
+        hideLoadingModal();
         onButtonActionResponse(data, button);
     }).fail(function (e) {
-        waitModal.modal('hide');
-        closeWaitModal = true;
+        hideLoadingModal();
         alertModal(e.responseText);
     }).always(function () {
     });

@@ -1,0 +1,22 @@
+@using MCMS.Display.ModelDisplay
+@model MCMS.Admin.Users.UserViewModel
+
+@{
+    ViewBag.Title = "User: " + Model.FullName;
+    var fields = ViewBag.Fields as List<DetailsField>;
+}
+<div class="modal-body">
+
+    <div class="container-fluid">
+        @foreach (var detailsField in fields)
+        {
+            <div class="row">
+                <div class="col-sm-3">@detailsField.Name</div>
+                <div class="col-sm-9">@detailsField.GetFor(Model)</div>
+            </div>
+        }
+    </div>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-secondary" data-dismiss="modal">Exit</button>
+</div>

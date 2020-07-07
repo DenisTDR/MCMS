@@ -1,8 +1,10 @@
 using System;
 using System.Threading.Tasks;
+using AutoMapper;
 using MCMS.Base.Attributes;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace MCMS.Controllers.Ui
 {
@@ -12,6 +14,7 @@ namespace MCMS.Controllers.Ui
     public abstract class AdminUiController : Controller
     {
         public IServiceProvider ServiceProvider => HttpContext.RequestServices;
+        public IMapper Mapper => ServiceProvider.GetService<IMapper>();
         protected bool UsesModals { get; set; }
 
         [HttpGet]

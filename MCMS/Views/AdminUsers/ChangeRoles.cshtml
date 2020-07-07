@@ -1,0 +1,43 @@
+@using MCMS.Base.Helpers
+@using MCMS.Base.Extensions
+@model MCMS.Admin.Users.UserViewModel
+
+@{
+    ViewBag.Title = "Change roles for: " + Model.FullName;
+    var allRoles = ViewBag.Roles as List<string> ?? throw new Exception("no roles found");
+    var id = Utils.GenerateRandomHexString();
+}
+<div class="modal-body">
+
+    <div class="container-fluid">
+        <ul class="list-group" id="@id">
+            <form asp-action="ChangeRoles" asp-controller="AdminUsersAdminApi" asp-route-id="@Model.Id">
+                @foreach (var role in allRoles)
+                {
+                    <li class="list-group-item">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="true" name="@role" id="check-role-@role" @(Model.RolesList.Contains(role) ? "checked" : "")>
+                            <label class="form-check-label" for="check-role-@role">
+                                @role
+                            </label>
+                        </div>
+                    </li>
+                }
+            </form>
+        </ul>
+    </div>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-secondary" data-dismiss="modal">Exit</button>
+    <button type="button" class="btn btn-primary" id="save-@id">Save</button>
+</div>
+
+@using (Html.BeginMPageScripts())
+{
+    <script>
+     $("#save-@id").click(function() {
+          $("#@id form").submit();
+     });
+     ajaxForm($("#@id form"), true);
+    </script>
+}

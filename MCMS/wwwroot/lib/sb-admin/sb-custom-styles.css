@@ -106,3 +106,12 @@
 .sb-sidenav-dark .sb-sidenav-footer .nav-link.active {
     color: #fff;
 }
+
+.sb-sidenav-menu {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.sb-sidenav-menu::-webkit-scrollbar {
+    display: none;
+}

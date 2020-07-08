@@ -25,7 +25,8 @@ namespace MCMS.SwaggerFormly.FormParamsHelpers
         {
             var config = CommonConfig(FormActionType.Patch);
             config.GetUrl = GetUrlFor(ControllerName, GetGetActionName(), new {id});
-            config.SubmitUrl = UrlHelper.ActionLink(GetActionName(FormActionType.Patch), ControllerName, new {id}, protocol: Utils.GetExternalProtocol());
+            config.SubmitUrl = UrlHelper.ActionLink(GetActionName(FormActionType.Patch), ControllerName, new {id},
+                protocol: Utils.GetExternalProtocol());
             config.ModelId = id;
             return config;
         }
@@ -35,7 +36,8 @@ namespace MCMS.SwaggerFormly.FormParamsHelpers
             AdditionalData = additionalData;
             Options = options;
             var config = CommonConfig(FormActionType.Create);
-            config.SubmitUrl = UrlHelper.ActionLink(GetActionName(FormActionType.Create), ControllerName, protocol: Utils.GetExternalProtocol());
+            config.SubmitUrl = UrlHelper.ActionLink(GetActionName(FormActionType.Create), ControllerName,
+                protocol: Utils.GetExternalProtocol());
             return config;
         }
 
@@ -72,6 +74,11 @@ namespace MCMS.SwaggerFormly.FormParamsHelpers
         {
             var url = UrlHelper.ActionLink(actionName, controllerName, values, protocol: Utils.GetExternalProtocol());
             return url;
+        }
+
+        public void SetSchemaName(string schemaName)
+        {
+            SchemaName = schemaName;
         }
     }
 }

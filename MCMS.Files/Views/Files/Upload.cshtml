@@ -1,0 +1,42 @@
+
+@using MCMS.SwaggerFormly.FormParamsHelpers
+@using MCMS.SwaggerFormly.Models
+@using MCMS.Base.Extensions
+@{
+    ViewBag.Title = "Upload new file ";
+}
+@* <div class="modal-body"> *@
+@*     <h1>blabla !!!</h1> *@
+@* </div> *@
+@* <div class="modal-footer"> *@
+@*     <button type="button" class="btn btn-secondary" data-dismiss="modal">Închide</button> *@
+@* </div> *@
+@* *@
+
+
+@{
+    var formParams = ViewBag.FormParams as FormlyFormParams ?? (ViewBag.FormParamsService as FormParamsService)?.ForCreate();
+    if (formParams == null)
+    {
+        throw new Exception("Don't have form params :(");
+    }
+    formParams.Options = new {hideSubmitButton = true};
+}
+<div class="modal-body" id="@formParams.FormInstanceId-modal-body">
+    @await Html.BlindPartialAsync("Formly/FormlyForm", formParams)
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-secondary" data-dismiss="modal">Închide</button>
+    <button type="button" class="btn btn-primary" id="@formParams.FormInstanceId-submit-button">Salvează</button>
+</div>
+@using (Html.BeginMPageScripts())
+{
+    <script>
+    function callback@(formParams.FormInstanceId)(sender, params) {
+        // console.log(sender, params);
+        var modal = $("#@formParams.FormInstanceId-modal-body").closest(".modal");
+        modal.data('result', {params: params});
+        modal.modal('hide');
+    }
+    </script>
+}

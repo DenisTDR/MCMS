@@ -106,6 +106,13 @@ namespace MCMS.Data
             return true;
         }
 
+        public async Task<bool> Delete(Expression<Func<T, bool>> predicate)
+        {
+            _dbSet.RemoveRange(_dbSet.Where(predicate));
+            await SaveChangesAsyncIfNeeded();
+            return true;
+        }
+
         public virtual Task<bool> Any(string id)
         {
             return Any(e => e.Id == id);

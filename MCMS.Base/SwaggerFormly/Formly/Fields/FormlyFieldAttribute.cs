@@ -45,10 +45,10 @@ namespace MCMS.Base.SwaggerFormly.Formly.Fields
                 xProps["type"] = OpenApiExtensions.ToOpenApi(Type);
             }
 
-            var typeConfig = GetOpenApiConfig(linkGenerator);
-            if (typeConfig != null)
+            var customFieldConfig = GetOpenApiConfig(linkGenerator);
+            if (customFieldConfig != null)
             {
-                templateOptions["type-config"] = typeConfig;
+                templateOptions["customFieldConfig"] = customFieldConfig;
             }
 
             if (Format != null)

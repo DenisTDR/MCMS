@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netcoreapp3.1</TargetFramework>
+        <OutputType>Library</OutputType>
+        <RootNamespace>MCMS.Files</RootNamespace>
+        <StaticWebAssetBasePath Condition="$(StaticWebAssetBasePath) == ''">/</StaticWebAssetBasePath>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\MCMS.Base\MCMS.Base.csproj" />
+      <ProjectReference Include="..\MCMS\MCMS.csproj" />
+    </ItemGroup>
+    
+</Project>

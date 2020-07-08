@@ -21,6 +21,7 @@ namespace MCMS.Data
 
         Task<bool> Delete(string id);
         Task<bool> Delete(T e);
+        Task<bool> Delete(Expression<Func<T, bool>> predicate);
 
         Task<bool> Any(string id);
         Task<bool> Any(Expression<Func<T, bool>> predicate);

@@ -1,11 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using MCMS.Base.Attributes;
-using MCMS.Base.Helpers;
 using MCMS.Base.JsonPatch;
 using MCMS.Controllers.Api;
 using MCMS.Files.Models;
@@ -23,6 +21,8 @@ namespace MCMS.Files.Controllers
     {
         private ILogger<FilesAdminApiController> Logger =>
             ServiceProvider.GetService<ILogger<FilesAdminApiController>>();
+
+        private FileUploadManager FileUploadManager => ServiceProvider.GetService<FileUploadManager>();
 
         public override void OnActionExecuting(ActionExecutingContext context)
         {
@@ -67,24 +67,16 @@ namespace MCMS.Files.Controllers
 
         [HttpPost]
         [ModelValidation]
-        public async Task<ActionResult<FileUploadFormModel>> Upload([Required] IFormFile file)
+        public async Task<ActionResult<FileUploadFormModel>> Upload([Required] IFormFile file,
+            [FromQuery] [Required] string purpose)
         {
             Logger.LogInformation("in Upload, file: \nname=" + file.FileName + "\nsize=" + file.Length + "\nname=" +
                                   file.Name);
             Logger.LogInformation("now delaying ...");
             await Task.Delay(new Random().Next(100, 1000));
             Logger.LogInformation("done");
-            var fileE = new FileEntity()
-            {
-                OriginalName = file.FileName,
-                OwnerToken = Utils.GenerateRandomHexString(),
-                Name = Utils.GenerateRandomHexString(10),
-                Extension = Path.GetExtension(file.FileName),
-                VirtualPath = "virtual ceva",
-                PhysicalPath = "physical ceva",
-            };
-            await Repo.Add(fileE);
 
+            var fileE = await FileUploadManager.SaveFile(file, purpose);
             var fileViewModel = Mapper.Map<FileViewModel>(fileE);
             return Ok(fileViewModel);
         }

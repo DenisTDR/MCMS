@@ -12,35 +12,26 @@ namespace MCMS.SwaggerFormly.Controllers
 {
     public class OpenApiConfigController : AdminApiController
     {
-        private readonly ISwaggerProvider _swaggerProvider;
-        private readonly SwaggerConfigOptions _options;
+        private readonly SwaggerConfigService _swaggerConfigService;
 
         public OpenApiConfigController(
-            ISwaggerProvider swaggerProvider,
-            IOptions<SwaggerConfigOptions> options
+            SwaggerConfigService swaggerConfigService
         )
         {
-            _swaggerProvider = swaggerProvider;
-            _options = options.Value;
+            _swaggerConfigService = swaggerConfigService;
         }
 
         [HttpGet]
         public IActionResult Get()
         {
-            var doc = _swaggerProvider.GetSwagger(_options.Name, null, "/");
-            var docJson = doc.SerializeAsJson(OpenApiSpecVersion.OpenApi3_0);
-            var docParsed = JsonConvert.DeserializeObject(docJson);
-            return Ok(docParsed);
+            return Ok(_swaggerConfigService.GetConfig());
         }
 
         [HttpGet]
         public async Task<IActionResult> GetDelayed()
         {
             await Task.Delay(1000);
-            var doc = _swaggerProvider.GetSwagger(_options.Name, null, "/");
-            var docJson = doc.SerializeAsJson(OpenApiSpecVersion.OpenApi3_0);
-            var docParsed = JsonConvert.DeserializeObject(docJson);
-            return Ok(docParsed);
+            return Ok(_swaggerConfigService.GetConfig());
         }
     }
 }

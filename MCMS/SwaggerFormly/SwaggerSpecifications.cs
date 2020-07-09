@@ -60,6 +60,7 @@ namespace MCMS.SwaggerFormly
 
             services.AddScoped(typeof(FormParamsForControllerService<,>));
             services.AddScoped<FormParamsServiceBuilder>();
+            services.AddSingleton<SwaggerConfigService>();
         }
     }
 }

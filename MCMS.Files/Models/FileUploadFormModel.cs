@@ -8,7 +8,7 @@ namespace MCMS.Files.Models
 {
     public class FileUploadFormModel : IFormModel
     {
-        [FormlyFile(typeof(FilesAdminApiController), nameof(FilesAdminApiController.Upload))]
+        [FormlyFile(typeof(FilesAdminApiController), nameof(FilesAdminApiController.Upload), "admin", "admin")]
         [Required]
         public FileFormModel File { get; set; }
 

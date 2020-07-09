@@ -11,15 +11,19 @@ namespace MCMS.Files.Attributes
     {
         public Type FileUploadControllerType { get; }
         public string FileUploadActionName { get; }
-        public string FileDeleteActionName { get; }
+        public string Purpose { get; }
+        public string Path { get; }
+        public bool Private { get; set; }
+        public string FileDeleteActionName { get; set; } = "Delete";
         public bool Multiple { get; set; }
 
-        public FormlyFileAttribute(Type fileUploadControllerType, string fileUploadActionName,
-            string fileDeleteActionName = "Delete")
+        public FormlyFileAttribute(Type fileUploadControllerType, string fileUploadActionName, string purpose,
+            string path = null)
         {
             FileUploadControllerType = fileUploadControllerType;
             FileUploadActionName = fileUploadActionName;
-            FileDeleteActionName = fileDeleteActionName;
+            Purpose = purpose;
+            Path = path;
             Type = "file";
             AsOpenApi = true;
         }
@@ -32,7 +36,8 @@ namespace MCMS.Files.Attributes
                     TypeHelpers.GetControllerName(FileUploadControllerType))),
                 ["deleteUrl"] = new OpenApiString(linkGenerator.GetAbsolutePathByAction(FileDeleteActionName,
                     TypeHelpers.GetControllerName(FileUploadControllerType))),
-                ["multiple"] = new OpenApiBoolean(Multiple)
+                ["multiple"] = new OpenApiBoolean(Multiple),
+                ["purpose"] = new OpenApiString(Purpose),
             };
             return obj;
         }

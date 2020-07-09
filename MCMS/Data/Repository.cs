@@ -14,14 +14,14 @@ namespace MCMS.Data
 {
     public class Repository<T> : IRepository<T> where T : class, IEntity, new()
     {
-        private readonly BaseDbContext _dbContext;
-        private readonly DbSet<T> _dbSet;
-        private IQueryable<T> _queryable;
+        protected readonly BaseDbContext DbContext;
+        protected readonly DbSet<T> _dbSet;
+        protected IQueryable<T> _queryable;
         public bool SkipSaving { get; set; }
 
         public Repository(BaseDbContext dbContext)
         {
-            _dbContext = dbContext;
+            DbContext = dbContext;
             _dbSet = dbContext.Set<T>();
             _queryable = _dbSet;
         }
@@ -73,7 +73,7 @@ namespace MCMS.Data
                 return e;
             }
 
-            ForeignEntityPatchHelper.PatchEntityProperties(e, _dbContext, patchDoc);
+            ForeignEntityPatchHelper.PatchEntityProperties(e, DbContext, patchDoc);
             if (adapterFactory == null)
             {
                 patchDoc.ApplyTo(e);
@@ -106,7 +106,7 @@ namespace MCMS.Data
             return true;
         }
 
-        public async Task<bool> Delete(Expression<Func<T, bool>> predicate)
+        public virtual async Task<bool> Delete(Expression<Func<T, bool>> predicate)
         {
             _dbSet.RemoveRange(_dbSet.Where(predicate));
             await SaveChangesAsyncIfNeeded();
@@ -135,15 +135,15 @@ namespace MCMS.Data
 
         public T Attach(T e)
         {
-            return _dbContext.Attach(e).Entity;
+            return DbContext.Attach(e).Entity;
         }
 
         public T Attach(string id)
         {
-            return _dbContext.Attach(new T {Id = id}).Entity;
+            return DbContext.Attach(new T {Id = id}).Entity;
         }
 
-        public Task SaveChanges() => _dbContext.SaveChangesAsync();
-        private Task SaveChangesAsyncIfNeeded() => !SkipSaving ? SaveChanges() : Task.CompletedTask;
+        public Task SaveChanges() => DbContext.SaveChangesAsync();
+        protected Task SaveChangesAsyncIfNeeded() => !SkipSaving ? SaveChanges() : Task.CompletedTask;
     }
 }

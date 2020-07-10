@@ -34,7 +34,7 @@ namespace MCMS.Controllers.Ui
         public override void OnActionExecuting(ActionExecutingContext context)
         {
             base.OnActionExecuting(context);
-            ViewBag.EntityName = EntityHelper.GetEntityName<TE>();
+            ViewBag.ModelName = TypeHelpers.GetDisplayName<TVm>();
             ViewBag.FormParamsService = FormParamsService;
             ViewBag.ModelDisplayConfigService = ModelDisplayConfigService;
             ViewBag.UsesModals = UsesModals;

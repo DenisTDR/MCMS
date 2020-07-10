@@ -4,7 +4,6 @@ namespace MCMS.Display.ModelDisplay
 {
     public class DetailsField
     {
-        public int Order { get; set; }
 
         public DetailsField(string name, PropertyInfo propertyInfo, int order) : this(name, propertyInfo)
         {
@@ -17,6 +16,8 @@ namespace MCMS.Display.ModelDisplay
             PropertyInfo = propertyInfo;
         }
 
+        public int Order { get; set; }
+        public string Tag { get; set; }
         public string Name { get; }
         public PropertyInfo PropertyInfo { get; }
 

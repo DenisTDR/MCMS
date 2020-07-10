@@ -25,7 +25,7 @@ namespace MCMS.Admin.Users
         public override void OnActionExecuting(ActionExecutingContext context)
         {
             base.OnActionExecuting(context);
-            ViewBag.EntityName = EntityHelper.GetEntityName<User>();
+            ViewBag.ModelName = EntityHelper.GetEntityName<User>();
             ViewBag.ModelDisplayConfigService = ModelDisplayConfigService;
             ViewBag.UsesModals = UsesModals;
         }

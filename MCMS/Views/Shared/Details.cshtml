@@ -1,11 +1,11 @@
 @using MCMS.Display.ModelDisplay
 
 @{
-    ViewBag.Title = ViewBag.EntityName + ": " + Model;
+    ViewBag.Title = ViewBag.ModelName + ": " + Model;
     var fields = ViewBag.Fields as List<DetailsField>
                  ?? (ViewBag.ModelDisplayConfigService as IModelDisplayConfigService)?.GetDetailsFields()
-                 ?? throw new Exception("Can't get fields for " + ViewBag.EntityName);
-    Layout = "_ModalLayout";
+                 ?? throw new Exception("Can't get fields for " + ViewBag.ModelName);
+    // Layout = "_ModalLayout";
 }
 <div class="modal-body">
 

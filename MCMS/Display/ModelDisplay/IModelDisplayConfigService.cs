@@ -9,6 +9,6 @@ namespace MCMS.Display.ModelDisplay
         Type ViewModelType { get; }
         ModelDisplayTableConfig GetTableConfig(IUrlHelper url, dynamic viewBag, bool createNewLink = true);
         List<TableColumn> GetTableColumns(bool excludeActionsColumn = false);
-        List<DetailsField> GetDetailsFields(bool excludeActionsColumn = false);
+        List<DetailsField> GetDetailsFields(Type viewModelType = null);
     }
 }

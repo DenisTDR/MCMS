@@ -1,7 +1,7 @@
 @using MCMS.SwaggerFormly.FormParamsHelpers
 @using MCMS.Base.Extensions
 @{
-    ViewBag.Title = "Create a " + ViewBag.EntityName;
+    ViewBag.Title = "Create a " + ViewBag.ModelName;
     var formParamsService = ViewBag.FormParamsService as FormParamsService;
     var formParams = formParamsService.ForCreate();
     formParams.Options = new {hideSubmitButton = true};

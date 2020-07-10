@@ -2,7 +2,7 @@
 @using MCMS.SwaggerFormly.Models
 @using MCMS.Base.Extensions
 @{
-    ViewBag.Title = "Create a " + ViewBag.EntityName;
+    ViewBag.Title = "Create a " + ViewBag.ModelName;
     var formParams = ViewBag.FormParams as FormlyFormParams ?? (ViewBag.FormParamsService as FormParamsService)?.ForCreate();
     if (formParams == null)
     {

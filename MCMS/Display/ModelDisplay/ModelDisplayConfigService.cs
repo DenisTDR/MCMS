@@ -9,11 +9,12 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace MCMS.Display.ModelDisplay
 {
-    public abstract class ModelDisplayConfigService: IModelDisplayConfigService
+    public abstract class ModelDisplayConfigService : IModelDisplayConfigService
     {
         public abstract Type ViewModelType { get; }
 
-        public abstract ModelDisplayTableConfig GetTableConfig(IUrlHelper url, dynamic viewBag, bool createNewLink = true);
+        public abstract ModelDisplayTableConfig GetTableConfig(IUrlHelper url, dynamic viewBag,
+            bool createNewLink = true);
 
         public virtual List<TableColumn> GetTableColumns(bool excludeActionsColumn = false)
         {
@@ -45,9 +46,9 @@ namespace MCMS.Display.ModelDisplay
             return list;
         }
 
-        public virtual List<DetailsField> GetDetailsFields(bool excludeActionsColumn = false)
+        public virtual List<DetailsField> GetDetailsFields(Type viewModelType = null)
         {
-            var props = ViewModelType.GetProperties().ToList();
+            var props = (viewModelType ?? ViewModelType).GetProperties().ToList();
             var detailsFields = props.Where(prop =>
             {
                 var attr = prop.GetCustomAttributes<DetailsFieldAttribute>().FirstOrDefault();
@@ -65,8 +66,17 @@ namespace MCMS.Display.ModelDisplay
             }).ToList();
 
             var list = detailsFields
-                .Select(prop => new DetailsField(TypeHelpers.GetDisplayName(prop), prop,
-                    prop.GetCustomAttributes<DetailsFieldAttribute>().FirstOrDefault()?.Order ?? 0)).ToList();
+                .Select(prop =>
+                {
+                    var field = new DetailsField(TypeHelpers.GetDisplayName(prop), prop);
+                    if (prop.GetCustomAttributes<DetailsFieldAttribute>().FirstOrDefault() is {} attr)
+                    {
+                        field.Order = attr.Order;
+                        field.Tag = attr.Tag;
+                    }
+
+                    return field;
+                }).ToList();
 
             return list;
         }

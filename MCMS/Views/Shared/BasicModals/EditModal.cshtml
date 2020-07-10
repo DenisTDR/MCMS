@@ -3,7 +3,7 @@
 @using MCMS.Base.Extensions
 @model MCMS.Base.Data.Entities.IEntity
 @{
-    ViewBag.Title = "Edit " + ViewBag.EntityName + " " + Model;
+    ViewBag.Title = "Edit " + ViewBag.ModelName + " " + Model;
     var formParams = ViewBag.FormParams as FormlyFormParams ?? (ViewBag.FormParamsService as FormParamsService)?.ForPatch(Model.Id);
     if (formParams == null)
     {

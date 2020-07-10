@@ -2,7 +2,7 @@
 @using MCMS.Base.Extensions
 @model MCMS.Base.Data.Entities.IEntity
 @{
-    ViewBag.Title = "Edit " + ViewBag.EntityName + " " + Model;
+    ViewBag.Title = "Edit " + ViewBag.ModelName + " " + Model;
     var formParamsService = ViewBag.FormParamsService as FormParamsService;
     var formParams = formParamsService.ForPatch(Model.Id);
     formParams.Options = new {hideSubmitButton = true};

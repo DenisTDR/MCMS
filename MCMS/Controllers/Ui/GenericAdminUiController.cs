@@ -36,6 +36,7 @@ namespace MCMS.Controllers.Ui
             base.OnActionExecuting(context);
             ViewBag.EntityName = EntityHelper.GetEntityName<TE>();
             ViewBag.FormParamsService = FormParamsService;
+            ViewBag.ModelDisplayConfigService = ModelDisplayConfigService;
             ViewBag.UsesModals = UsesModals;
         }
 
@@ -58,7 +59,8 @@ namespace MCMS.Controllers.Ui
                 return NotFound();
             }
 
-            return View(e);
+            var vm = Mapper.Map<TVm>(e);
+            return View(vm);
         }
 
         [HttpGet]

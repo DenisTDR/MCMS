@@ -2,12 +2,15 @@ using System.Linq;
 using System.Threading.Tasks;
 using MCMS.Base.Attributes;
 using MCMS.Base.Auth;
+using MCMS.Base.Helpers;
 using MCMS.Controllers.Ui;
 using MCMS.Data;
 using MCMS.Display.ModelDisplay;
+using MCMS.SwaggerFormly.FormParamsHelpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -18,6 +21,14 @@ namespace MCMS.Admin.Users
     {
         protected IRepository<User> Repo => ServiceProvider.GetService<IRepository<User>>();
         protected IModelDisplayConfigService ModelDisplayConfigService => new UsersTableModelDisplayConfigService();
+
+        public override void OnActionExecuting(ActionExecutingContext context)
+        {
+            base.OnActionExecuting(context);
+            ViewBag.EntityName = EntityHelper.GetEntityName<User>();
+            ViewBag.ModelDisplayConfigService = ModelDisplayConfigService;
+            ViewBag.UsesModals = UsesModals;
+        }
 
 #pragma warning disable 1998
         public override async Task<IActionResult> Index()

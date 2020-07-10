@@ -16,5 +16,10 @@ namespace MCMS.Admin.Users
 
         [DetailsField(Hidden = true)] public List<string> RolesList { get; set; }
         [TableColumn] public string Roles => string.Join(", ", RolesList ?? new List<string>());
+
+        public override string ToString()
+        {
+            return FullName;
+        }
     }
 }

@@ -4,7 +4,7 @@
         <TargetFramework>netcoreapp3.1</TargetFramework>
         <OutputType>Library</OutputType>
         <RootNamespace>MCMS</RootNamespace>
-        <StaticWebAssetBasePath Condition="$(StaticWebAssetBasePath) == ''">/</StaticWebAssetBasePath>
+        <StaticWebAssetBasePath Condition="$(StaticWebAssetBasePath) == '/'">/</StaticWebAssetBasePath>
     </PropertyGroup>
 
     

@@ -1,6 +1,12 @@
 @using MCMS.Base.Extensions
+@using Microsoft.Extensions.Options
+@using MCMS.Base.Builder
+@inject IOptions<LayoutIncludesOptions> LayoutIncludes
+@foreach (var valueLayoutInclude in LayoutIncludes.Value.GetAllForModals)
+{
+    await Html.RenderBlindPartialAsync(valueLayoutInclude, null, ViewData);
+}
 @Html.RenderMStyles()
-
 <div class="modal fade" tabindex="1" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-scrollable modal-dialog-centered">
         <div class="modal-content">
@@ -11,6 +17,5 @@
         </div>
     </div>
 </div>
-
 @Html.RenderMScripts()
 @Html.RenderMPageScripts()

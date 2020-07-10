@@ -18,7 +18,6 @@ namespace MCMS.Files
         public FilesRepository(BaseDbContext dbContext, ILogger<FilesRepository> logger) : base(dbContext)
         {
             _logger = logger;
-            Console.WriteLine("FilesRepository ctor");
         }
 
         public override async Task<bool> Delete(FileEntity e)

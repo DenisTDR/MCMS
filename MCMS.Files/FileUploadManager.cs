@@ -65,6 +65,7 @@ namespace MCMS.Files
 
             fileE.PhysicalPath = physicalDir;
             fileE = await _filesRepo.Add(fileE);
+            _logger.LogInformation($"saved file '{fileE.OriginalName}' to '{physicalPath}'");
 
             return fileE;
         }

@@ -7,6 +7,7 @@ using MCMS.Base.Attributes;
 using MCMS.Base.JsonPatch;
 using MCMS.Controllers.Api;
 using MCMS.Files.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.JsonPatch.Adapters;
@@ -17,6 +18,7 @@ using Microsoft.Extensions.Logging;
 
 namespace MCMS.Files.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class FilesAdminApiController : GenericAdminApiController<FileEntity, FileUploadFormModel, FileViewModel>
     {
         private ILogger<FilesAdminApiController> Logger =>
@@ -67,6 +69,8 @@ namespace MCMS.Files.Controllers
 
         [HttpPost]
         [ModelValidation]
+        [RequestSizeLimit(135266304)]
+        // [RequestSizeLimit((128 + 1) * 1024 * 1024)]
         public async Task<ActionResult<FileUploadFormModel>> Upload([Required] IFormFile file,
             [FromQuery] [Required] string purpose)
         {

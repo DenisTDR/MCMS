@@ -5,7 +5,7 @@
     var fields = ViewBag.Fields as List<DetailsField>
                  ?? (ViewBag.ModelDisplayConfigService as IModelDisplayConfigService)?.GetDetailsFields()
                  ?? throw new Exception("Can't get fields for " + ViewBag.ModelName);
-    // Layout = "_ModalLayout";
+    Layout = "_ModalLayout";
 }
 <div class="modal-body">
 

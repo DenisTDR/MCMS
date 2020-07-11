@@ -228,7 +228,15 @@ namespace MCMS.SwaggerFormly.Filters
 
         private bool IsFormlyIgnored(PropertyInfo propertyInfo)
         {
-            return propertyInfo.GetCustomAttributes().Any(attr => attr is FormlyIgnoreAttribute);
+            var attr = propertyInfo.GetCustomAttributes().FirstOrDefault(a => a is FormlyIgnoreAttribute);
+
+            if (attr == null) return false;
+            if (attr is FormlyIgnoreAttribute at && at.DontIgnore)
+            {
+                return false;
+            }
+
+            return true;
         }
 
         private bool IsReadOnly(PropertyInfo propertyInfo)

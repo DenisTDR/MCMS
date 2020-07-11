@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using MCMS.Common.Translations.Languages;
 using MCMS.Controllers.Api;
 using MCMS.Data;
@@ -10,7 +11,8 @@ namespace MCMS.Common.Translations.Translations
 {
     [Authorize(Roles = "Admin")]
     public class
-        TranslationsAdminApiController : GenericAdminApiController<TranslationEntity, TranslationFormModel, TranslationViewModel>
+        TranslationsAdminApiController : GenericAdminApiController<TranslationEntity, TranslationFormModel,
+            TranslationViewModel>
     {
         public override void OnActionExecuting(ActionExecutingContext context)
         {
@@ -18,10 +20,11 @@ namespace MCMS.Common.Translations.Translations
             Repo.ChainQueryable(q => q.Include(t => t.Language));
         }
 
-        protected override void AttachFkProperties(TranslationEntity e)
+        protected override Task PatchBeforeSaveNew(TranslationEntity e)
         {
             var repo = ServiceProvider.GetService<IRepository<LanguageEntity>>();
             repo.Attach(e.Language);
+            return Task.CompletedTask;
         }
     }
 }

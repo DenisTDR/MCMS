@@ -49,7 +49,7 @@ namespace MCMS.Controllers.Api
         public virtual async Task<ActionResult<TFm>> Create([FromBody] TFm fm)
         {
             var e = MapF(fm);
-            AttachFkProperties(e);
+            await PatchBeforeSaveNew(e);
             e = await Repo.Add(e);
             fm = MapF(e);
             return Ok(fm);
@@ -65,8 +65,9 @@ namespace MCMS.Controllers.Api
             return Mapper.Map<TE>(vm);
         }
 
-        protected virtual void AttachFkProperties(TE e)
+        protected virtual Task PatchBeforeSaveNew(TE e)
         {
+            return Task.CompletedTask;
         }
     }
 }

@@ -2,8 +2,9 @@ using System;
 
 namespace MCMS.Base.SwaggerFormly.Formly
 {
-    public class FormlyIgnoreAttribute: Attribute
+    [AttributeUsage(AttributeTargets.Property)]
+    public class FormlyIgnoreAttribute : Attribute
     {
-        
+        public bool DontIgnore { get; set; }
     }
 }

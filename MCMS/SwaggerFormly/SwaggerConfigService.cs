@@ -35,6 +35,7 @@ namespace MCMS.SwaggerFormly
             if (_cache == null)
             {
                 var doc = _swaggerProvider.GetSwagger(_options.Name, null, "/");
+                doc.Paths.Clear();
                 var docJson = doc.SerializeAsJson(OpenApiSpecVersion.OpenApi3_0);
                 var docParsed = JsonConvert.DeserializeObject(docJson);
                 _cache = docParsed;

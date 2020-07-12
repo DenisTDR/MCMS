@@ -22,7 +22,6 @@ namespace MCMS.Files.Models
         [TableColumn] public string Purpose { get; set; }
         public bool Protected { get; set; }
         public string Description { get; set; }
-        public string OwnerToken { get; set; }
         public DateTime Created { get; set; }
 
         [TableColumn] public string UploadTime => Created.ToString("u");

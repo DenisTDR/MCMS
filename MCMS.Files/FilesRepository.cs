@@ -60,13 +60,19 @@ namespace MCMS.Files
 
             if (e.PhysicalFullPath == null)
             {
-                throw new KnownException("Can't delete a file, not enough intel provided.");
+                _logger.LogError($"Trying to delete a file with null {nameof(FileEntity.PhysicalFullPath)}.");
+                return e;
+                // throw new KnownException("Can't delete a file, not enough intel provided.");
             }
 
             if (File.Exists(e.PhysicalFullPath))
             {
                 _logger.LogInformation("Deleting file: " + e.PhysicalFullPath);
                 File.Delete(e.PhysicalFullPath);
+            }
+            else
+            {
+                _logger.LogError("Trying to delete non-existing file: " + e.PhysicalFullPath);
             }
 
             return e;

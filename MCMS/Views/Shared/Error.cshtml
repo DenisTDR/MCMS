@@ -56,7 +56,9 @@
         </div>
         @if (HostEnvironment.IsDevelopment())
         {
-            @exc.ToString()
+            <pre>
+@exc.ToString()
+            </pre>
         }
         <hr/>
         exc = exc.InnerException;

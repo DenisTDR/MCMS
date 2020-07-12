@@ -45,9 +45,10 @@ namespace MCMS.Files
                 OwnerToken = Utils.GenerateRandomHexString(),
                 Name = Utils.GenerateRandomHexString(32),
                 Extension = Path.GetExtension(file.FileName),
+                Purpose = purpose,
+                VirtualPath = Path.Combine(MFiles.PublicVirtualPath, path),
             };
 
-            fileE.VirtualPath = Path.Combine(MFiles.PublicVirtualPath, path);
 
             var physicalDir = attr.Private ? MFiles.PrivatePath : MFiles.PublicPath;
             physicalDir = Path.Combine(physicalDir, path);

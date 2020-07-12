@@ -10,19 +10,21 @@ namespace MCMS.Files.Models
         [TableColumn] public string OriginalName { get; set; }
 
         [TableColumn]
-        public string Link => "<a target='_blank' href='" + Path.Combine(VirtualPath, Name + Extension) + "'>" +
-                              OriginalName + "</a>";
+        public string Link => VirtualPath == null || Name == null
+            ? "--"
+            : "<a target='_blank' href='" + Path.Combine(VirtualPath, Name + Extension) + "'>" + OriginalName + "</a>";
 
         public string Name { get; set; }
         public string Extension { get; set; }
         public string PhysicalPath { get; set; }
         public string VirtualPath { get; set; }
         [TableColumn] public bool Claimed { get; set; }
+        [TableColumn] public string Purpose { get; set; }
         public bool Protected { get; set; }
         public string Description { get; set; }
         public string OwnerToken { get; set; }
         public DateTime Created { get; set; }
-        
+
         [TableColumn] public string UploadTime => Created.ToString("u");
     }
 }

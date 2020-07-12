@@ -39,15 +39,25 @@ namespace MCMS.Files.Controllers
             return Ok(fm);
         }
 
-        public override async Task<ActionResult<FileUploadFormModel>> Patch(string id,
+        [NonAction]
+        public override Task<ActionResult<FileUploadFormModel>> Patch(string id,
             JsonPatchDocument<FileUploadFormModel> doc)
+        {
+            throw new NotImplementedException();
+        }
+
+        [Route("{id}")]
+        [HttpPatch]
+        [PatchDocumentValidation]
+        public async Task<ActionResult<FileFormModel>> Patch([FromRoute] [Required] string id,
+            [FromBody] [Required] JsonPatchDocument<FileFormModel> doc)
         {
             if (!await Repo.Any(id))
             {
                 return NotFound();
             }
 
-            var eDoc = doc.CloneFor<FileUploadFormModel, FileEntity>();
+            var eDoc = doc.CloneFor<FileFormModel, FileEntity>();
 
             var e = await Repo.Patch(id, eDoc, ServiceProvider.GetService<IAdapterFactory>());
             var fm = Mapper.Map<FileFormModel>(e);
@@ -76,10 +86,6 @@ namespace MCMS.Files.Controllers
         {
             Logger.LogInformation("in Upload, file: \nname=" + file.FileName + "\nsize=" + file.Length + "\nname=" +
                                   file.Name);
-            Logger.LogInformation("now delaying ...");
-            await Task.Delay(new Random().Next(100, 1000));
-            Logger.LogInformation("done");
-
             var fileE = await FileUploadManager.SaveFile(file, purpose);
             var fileViewModel = Mapper.Map<FileViewModel>(fileE);
             return Ok(fileViewModel);

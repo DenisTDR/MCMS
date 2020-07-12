@@ -42,7 +42,7 @@ namespace MCMS.Display.ModelDisplay
             if (createNewLink)
             {
                 config.CreateNewItemLink = new MRichLink(
-                        "Create " + TypeHelpers.GetDisplayName(typeof(TVm)),
+                        "Crează " + TypeHelpers.GetDisplayName(typeof(TVm)),
                         typeof(TUiController), nameof(GenericAdminUiController<TE, TFm, TVm, TApiController>.Create))
                     .AsButton("outline-primary")
                     .WithIconClasses("fas fa-plus").WithValues(viewBag.CreateNewLinkValues);

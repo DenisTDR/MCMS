@@ -3,7 +3,7 @@
 @model MCMS.Base.Data.Entities.IEntity
 
 @{
-    ViewBag.Title = "'R u șur' u want to delete️ " + ViewBag.ModelName + " " + Model + "?";
+    ViewBag.Title = "Eşti sigur că vrei să ştergi️ " + ViewBag.ModelName + " " + Model + "?";
     var formId = Utils.GenerateRandomHexString();
     Layout = "_ModalLayout";
 }
@@ -12,7 +12,7 @@
     </div>
     <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Închide</button>
-        <button type="submit" class="btn btn-danger">Yea</button>
+        <button type="submit" class="btn btn-danger">Da</button>
     </div>
 </form>
 

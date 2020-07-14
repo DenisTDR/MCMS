@@ -31,11 +31,9 @@ namespace MCMS.Admin.Users
             ViewBag.UsesModals = UsesModals;
         }
 
-#pragma warning disable 1998
         public override async Task<IActionResult> Index()
-#pragma warning restore 1998
         {
-            return View("BasicPages/Index", ModelDisplayConfigService.GetTableConfig(Url, ViewBag, false));
+            return View("BasicPages/Index", await ModelDisplayConfigService.GetTableConfig(Url, ViewBag, false));
         }
 
         [HttpGet]

@@ -1,17 +1,28 @@
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
 using MCMS.Base.Data.ViewModels;
 using MCMS.Base.Display.ModelDisplay.Attributes;
-using MCMS.Common.Translations.Languages;
+using MCMS.Common.Translations.Translations.Item;
 
 namespace MCMS.Common.Translations.Translations
 {
+    [DisplayName("Translation")]
     public class TranslationViewModel : ViewModel
+
     {
         [TableColumn] public string Slug { get; set; }
 
-        [TableColumn] public string Value { get; set; }
-
         public bool IsRichText { get; set; }
-        public LanguageViewModel Language { get; set; }
-        [TableColumn] public string LanguageName => Language?.Name ?? "-";
+        [DetailsField(Hidden = true)] public List<TranslationItemViewModel> Items { get; set; }
+
+        [TableColumn]
+        [DisplayName("Texts")]
+        public string TextsPreview => string.Join(", ", Items?.Select(i => i.Value) ?? new List<string>());
+
+        public override string ToString()
+        {
+            return Slug;
+        }
     }
 }

@@ -1,4 +1,6 @@
 using MCMS.Base.Data.TypeConfig;
+using MCMS.Common.Translations.Translations.Item;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace MCMS.Common.Translations.Translations
@@ -8,7 +10,7 @@ namespace MCMS.Common.Translations.Translations
         public override void Configure(EntityTypeBuilder<TranslationEntity> builder)
         {
             base.Configure(builder);
-            builder.HasIndex(t => t.Slug);
+            builder.HasMany(t => t.Items).WithOne(t => t.Translation).OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

@@ -1,13 +1,19 @@
+using System.Collections.Generic;
 using MCMS.Base.Data.Entities;
-using MCMS.Common.Translations.Languages;
+using MCMS.Common.Translations.Translations.Item;
 
 namespace MCMS.Common.Translations.Translations
 {
-    public class TranslationEntity : Entity
+    public class TranslationEntity : Entity, ISluggable
     {
         public string Slug { get; set; }
-        public string Value { get; set; }
         public bool IsRichText { get; set; }
-        public LanguageEntity Language { get; set; }
+
+        public List<TranslationItemEntity> Items { get; set; }
+
+        public override string ToString()
+        {
+            return Slug;
+        }
     }
 }

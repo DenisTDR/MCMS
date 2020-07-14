@@ -9,6 +9,7 @@ using MCMS.SwaggerFormly.Filters;
 using MCMS.SwaggerFormly.FormParamsHelpers;
 using MCMS.SwaggerFormly.Middlewares;
 using MCMS.SwaggerFormly.Models;
+using Microsoft.Extensions.Logging;
 
 namespace MCMS.SwaggerFormly
 {
@@ -25,6 +26,8 @@ namespace MCMS.SwaggerFormly
         {
             if (Env.GetBool("FORMLY_DEBUG"))
             {
+                var logger = serviceProvider.GetService<ILogger<SwaggerSpecifications>>();
+                logger.LogWarning("FORMLY_DEBUG=True => enabling reverse proxy middleware");
                 app.UseMiddleware<ReverseProxyMiddleware>();
             }
 

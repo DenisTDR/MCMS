@@ -1,20 +1,34 @@
+using System.ComponentModel;
 using System.Linq;
 using MCMS.Controllers.Ui;
-using MCMS.Display.ModelDisplay;
-using Microsoft.AspNetCore.Authorization;
+using MCMS.Display.Link;
+using MCMS.SwaggerFormly.FormParamsHelpers;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.EntityFrameworkCore;
 
 namespace MCMS.Common.Translations.Translations
 {
-    [Authorize(Roles = "Admin")]
+    [DisplayName("Translations")]
     public class TranslationsController : GenericModalAdminUiController<TranslationEntity, TranslationFormModel,
         TranslationViewModel,
         TranslationsAdminApiController>
     {
-        protected override ModelDisplayTableConfig TableConfigForIndex()
+        public override void OnActionExecuting(ActionExecutingContext context)
         {
-            var config = base.TableConfigForIndex();
-            config.TableItemActions = config.TableItemActions.Where(tia => tia.Tag != "details").ToList();
-            return config;
+            base.OnActionExecuting(context);
+            Repo.ChainQueryable(q => q
+                .Include(t => t.Items)
+                .ThenInclude(i => i.Language)
+                .OrderBy(t => t.Slug));
+        }
+
+        public override IActionResult Create()
+        {
+            var formConfig = FormParamsService.ForCreate();
+            formConfig.GetUrl = new MLink("", typeof(TranslationsAdminApiController), "GetInitialData").BuildUrl(Url);
+            ViewBag.FormParams = formConfig;
+            return base.Create();
         }
     }
 }

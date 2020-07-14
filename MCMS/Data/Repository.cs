@@ -33,7 +33,7 @@ namespace MCMS.Data
 
         public virtual async Task<T> GetOneOrThrow(string id)
         {
-            var e = await _queryable.FirstOrDefaultAsync(e => e.Id == id);
+            var e = await GetOne(id);
             if (e == null)
             {
                 throw new KnownException(code: 404);

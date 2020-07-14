@@ -14,7 +14,12 @@ namespace MCMS.Base.Data.TypeConfig
             builder.ToTable(GetTableName());
 
             builder.HasKey(e => e.Id);
+            if (typeof(ISluggable).IsAssignableFrom(typeof(T)))
+            {
+                builder.HasIndex(e => ((ISluggable) e).Slug);
+            }
         }
+
         public virtual string GetTableName()
         {
             if (typeof(T).GetCustomAttributes(true).LastOrDefault(attr => attr is TableAttribute) is

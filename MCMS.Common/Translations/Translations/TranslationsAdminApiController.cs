@@ -1,30 +1,36 @@
+using System.Linq;
 using System.Threading.Tasks;
 using MCMS.Common.Translations.Languages;
+using MCMS.Common.Translations.Translations.Item;
 using MCMS.Controllers.Api;
-using MCMS.Data;
-using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace MCMS.Common.Translations.Translations
 {
-    [Authorize(Roles = "Admin")]
-    public class
-        TranslationsAdminApiController : GenericAdminApiController<TranslationEntity, TranslationFormModel,
-            TranslationViewModel>
+    public class TranslationsAdminApiController : GenericAdminApiController<TranslationEntity, TranslationFormModel,
+        TranslationViewModel>
     {
         public override void OnActionExecuting(ActionExecutingContext context)
         {
             base.OnActionExecuting(context);
-            Repo.ChainQueryable(q => q.Include(t => t.Language));
+            Repo.ChainQueryable(q => q
+                .Include(t => t.Items)
+                .ThenInclude(i => i.Language)
+                .OrderBy(t => t.Slug));
         }
 
-        protected override Task PatchBeforeSaveNew(TranslationEntity e)
+        [HttpGet]
+        public async Task<ActionResult<TranslationFormModel>> GetInitialData()
         {
-            var repo = ServiceProvider.GetService<IRepository<LanguageEntity>>();
-            repo.Attach(e.Language);
-            return Task.CompletedTask;
+            var model = new TranslationFormModel();
+            var langs = await ServiceProvider.GetService<LanguagesRepository>().GetAll();
+            model.Items = langs.OrderBy(lang => lang.Code).Select(lang => new ItemForTranslationFormModel
+                {Language = new LanguageViewModel {Id = lang.Id}}).ToList();
+            return model;
         }
     }
 }

@@ -1,4 +1,6 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using MCMS.Base.Data.FormModels;
@@ -124,8 +126,32 @@ namespace MCMS.Base.Attributes
 
         private object EnsureSubPropertyExists(object mainObj, string propertyName)
         {
+            if (mainObj.GetType().ImplementsGenericInterface(typeof(IList<>)))
+            {
+                if (int.TryParse(propertyName, out var index) && index.ToString() == propertyName)
+                {
+                    var list = mainObj as IList;
+                    if (list.Count <= index)
+                    {
+                        var itemType = mainObj.GetType()
+                            .GetGenericArgumentTypeOfImplementedGenericInterface(typeof(IList<>));
+                        while (list.Count <= index)
+                        {
+                            list.Add(Activator.CreateInstance(itemType));
+                        }
+                    }
+
+                    return list[index];
+                }
+            }
+
             var propInfo = mainObj.GetType().GetProperty(propertyName.ToPascalCase()) ??
                            throw new Exception("Invalid property: " + propertyName);
+            if (propInfo.GetValue(mainObj) is {} existing)
+            {
+                return existing;
+            }
+
             var subOjb = Activator.CreateInstance(propInfo.PropertyType);
             propInfo.SetValue(mainObj, subOjb);
             return subOjb;

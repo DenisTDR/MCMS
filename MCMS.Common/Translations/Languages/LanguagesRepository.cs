@@ -14,7 +14,7 @@ namespace MCMS.Common.Translations.Languages
 
         public Task<List<string>> GetLanguagesCodes()
         {
-            return _queryable.Select(l => l.Code).OrderBy(c => c).ToListAsync();
+            return Queryable.Select(l => l.Code).OrderBy(c => c).ToListAsync();
         }
     }
 }

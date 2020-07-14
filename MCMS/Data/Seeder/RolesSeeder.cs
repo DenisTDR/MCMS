@@ -13,12 +13,12 @@ using Newtonsoft.Json.Linq;
 
 namespace MCMS.Data.Seeder
 {
-    public class RoleSeeder : ISeeder
+    public class RolesSeeder : ISeeder
     {
         public async Task Seed(IServiceProvider serviceProvider, JArray seedData)
         {
             var roleManager = serviceProvider.GetService<RoleManager<Role>>();
-            var logger = serviceProvider.GetService<ILogger<RoleSeeder>>();
+            var logger = serviceProvider.GetService<ILogger<RolesSeeder>>();
             var seedRoles = seedData.ToObject<List<string>>();
             var existingRoles = await roleManager.Roles.Select(r => r.Name).ToListAsync();
             var rolesToAdd = seedRoles.Except(existingRoles);

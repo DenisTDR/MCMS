@@ -4,7 +4,6 @@ using MCMS.Base.Builder;
 using MCMS.Base.Helpers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
-using MCMS.Builder;
 using MCMS.Data;
 using MCMS.Data.Seeder;
 using MCMS.Display.ModelDisplay;
@@ -33,7 +32,6 @@ namespace MCMS
             services.AddCors();
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
             services.AddScoped<DataSeeder>();
-            services.AddOptions<EntitySeeders>().Configure(seeders => { seeders.Add<RoleSeeder>(); });
             services.AddScoped(typeof(ModelDisplayConfigForControllerService<,,,,>));
 
             services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();

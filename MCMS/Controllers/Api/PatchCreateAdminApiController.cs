@@ -15,7 +15,7 @@ namespace MCMS.Controllers.Api
     public abstract class PatchCreateAdminApiController<TE, TFm> : AdminApiController, IPatchCreateApiController<TFm>
         where TE : Entity where TFm : class, IFormModel
     {
-        protected IRepository<TE> Repo => ServiceProvider.GetService<IRepository<TE>>();
+        protected virtual IRepository<TE> Repo => ServiceProvider.GetService<IRepository<TE>>();
 
         [Route("{id}")]
         [HttpGet]

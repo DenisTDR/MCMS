@@ -15,20 +15,20 @@ namespace MCMS.Data
     public class Repository<T> : IRepository<T> where T : class, IEntity, new()
     {
         protected readonly BaseDbContext DbContext;
-        protected readonly DbSet<T> _dbSet;
-        protected IQueryable<T> _queryable;
+        public DbSet<T> DbSet { get; }
+        public IQueryable<T> Queryable { get; protected set; }
         public bool SkipSaving { get; set; }
 
         public Repository(BaseDbContext dbContext)
         {
             DbContext = dbContext;
-            _dbSet = dbContext.Set<T>();
-            _queryable = _dbSet;
+            DbSet = dbContext.Set<T>();
+            Queryable = DbSet;
         }
 
         public virtual Task<T> GetOne(string id)
         {
-            return _queryable.FirstOrDefaultAsync(e => e.Id == id);
+            return Queryable.FirstOrDefaultAsync(e => e.Id == id);
         }
 
         public virtual async Task<T> GetOneOrThrow(string id)
@@ -44,18 +44,18 @@ namespace MCMS.Data
 
         public virtual Task<T> GetOne(Expression<Func<T, bool>> predicate)
         {
-            return _queryable.FirstOrDefaultAsync(predicate);
+            return Queryable.FirstOrDefaultAsync(predicate);
         }
 
         public virtual Task<List<T>> GetAll(bool dontFetch = false)
         {
-            return _queryable.ToListAsync();
+            return Queryable.ToListAsync();
         }
 
         public virtual async Task<T> Add(T e)
         {
             e.Id = null;
-            var addingResult = await _dbSet.AddAsync(e);
+            var addingResult = await DbSet.AddAsync(e);
             await SaveChangesAsyncIfNeeded();
             return addingResult.Entity;
         }
@@ -93,19 +93,20 @@ namespace MCMS.Data
             {
                 throw new KnownException(code: 404);
             }
+
             return await Delete(new T {Id = id});
         }
 
         public virtual async Task<bool> Delete(T e)
         {
-            _dbSet.Remove(e);
+            DbSet.Remove(e);
             await SaveChangesAsyncIfNeeded();
             return true;
         }
 
         public virtual async Task<bool> Delete(Expression<Func<T, bool>> predicate)
         {
-            _dbSet.RemoveRange(_dbSet.Where(predicate));
+            DbSet.RemoveRange(DbSet.Where(predicate));
             await SaveChangesAsyncIfNeeded();
             return true;
         }
@@ -117,17 +118,17 @@ namespace MCMS.Data
 
         public virtual Task<bool> Any(Expression<Func<T, bool>> predicate)
         {
-            return _queryable.AnyAsync(predicate);
+            return Queryable.AnyAsync(predicate);
         }
 
         public void RebuildQueryable(Func<IQueryable<T>, IQueryable<T>> func)
         {
-            _queryable = func(_dbSet);
+            Queryable = func(DbSet);
         }
 
         public void ChainQueryable(Func<IQueryable<T>, IQueryable<T>> func)
         {
-            _queryable = func(_queryable);
+            Queryable = func(Queryable);
         }
 
         public T Attach(T e)

@@ -41,12 +41,15 @@ namespace MCMS.Base.Helpers
         {
             var settings = new JsonSerializerSettings
             {
-                ContractResolver = new CamelCasePropertyNamesContractResolver(), Converters =
+                ContractResolver = new CamelCasePropertyNamesContractResolver(),
+                Converters =
                     new List<JsonConverter>
                     {
                         new Newtonsoft.Json.Converters.StringEnumConverter()
                     },
-                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                NullValueHandling = NullValueHandling.Ignore,
+                DefaultValueHandling = DefaultValueHandling.Ignore,
             };
             if (indented)
             {

@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using MCMS.Base.Helpers;
 using MCMS.Base.Repositories;
 using MCMS.Common.Translations.Languages;
+using MCMS.Common.Translations.Seed;
+using MCMS.Common.Translations.Translations.Item;
 using MCMS.Data;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.JsonPatch.Adapters;
@@ -44,7 +46,7 @@ namespace MCMS.Common.Translations.Translations
 
             _logger.LogDebug("GetForLanguage fetching from db.");
 
-            var query = _queryable.Include(q => q.Items).ThenInclude(t => t.Language);
+            var query = Queryable.Include(q => q.Items).ThenInclude(t => t.Language);
             var all = await query.ToListAsync();
             var langs = await _langsRepo.GetLanguagesCodes();
             var entries = all.ToDictionary(t => t.Slug, t => new TranslationCacheEntry
@@ -128,7 +130,7 @@ namespace MCMS.Common.Translations.Translations
             var one = await base.GetOne(id);
             if (one?.Items != null)
             {
-                ReOrderByLang(one);
+                await PatchLanguages(one);
             }
 
             return one;
@@ -139,20 +141,50 @@ namespace MCMS.Common.Translations.Translations
             var all = await base.GetAll(dontFetch);
             foreach (var translationEntity in all)
             {
-                ReOrderByLang(translationEntity);
+                await PatchLanguages(translationEntity);
             }
 
             return all;
         }
 
-        private void ReOrderByLang(TranslationEntity translationEntity)
+        public async Task PatchLanguages(TranslationEntity translationEntity)
         {
-            if (translationEntity.Items == null)
+            if (translationEntity?.Items == null)
             {
                 return;
             }
 
+            var langs = await _langsRepo.GetAll();
+            var missingLangs = langs.Where(l => translationEntity.Items.All(i => i.Language.Code != l.Code));
+            foreach (var languageEntity in missingLangs)
+            {
+                translationEntity.Items.Add(new TranslationItemEntity {Language = languageEntity});
+            }
+
+
             translationEntity.Items = translationEntity.Items.OrderBy(i => i?.Language.Code).ToList();
+        }
+
+        public async Task<List<TranslationSeedEntry>> BuildSeed()
+        {
+            var anonEntries = await Queryable.Select(t => new
+                {
+                    t.Slug,
+                    t.IsRichText,
+                    Items = t.Items.OrderBy(i => i.Language.Code)
+                        .Select(i => new {lang = i.Language.Code, value = i.Value}).ToList()
+                }
+            ).ToListAsync();
+
+            var entries = anonEntries.Select(ae => new TranslationSeedEntry
+            {
+                Slug = ae.Slug,
+                IsRichText = ae.IsRichText,
+                Items = ae.Items.ToDictionary(i => i.lang, i => i.value),
+            }).OrderBy(t => t.Slug).ToList();
+
+
+            return entries;
         }
     }
 }

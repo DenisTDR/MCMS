@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using MCMS.Base.Data.Entities;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.JsonPatch.Adapters;
+using Microsoft.EntityFrameworkCore;
 
 namespace MCMS.Data
 {
@@ -32,5 +33,7 @@ namespace MCMS.Data
         T Attach(string id);
         Task SaveChanges();
         bool SkipSaving { get; set; }
+        DbSet<T> DbSet { get; }
+        IQueryable<T> Queryable { get; }
     }
 }

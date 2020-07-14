@@ -18,7 +18,8 @@ namespace MCMS.Common.Translations.Translations
 
         [TableColumn]
         [DisplayName("Texts")]
-        public string TextsPreview => string.Join(", ", Items?.Select(i => i.Value) ?? new List<string>());
+        public string TextsPreview => string.Join(", ",
+            Items?.Select(i => i.Value).Where(v => !string.IsNullOrEmpty(v)) ?? new List<string>());
 
         public override string ToString()
         {

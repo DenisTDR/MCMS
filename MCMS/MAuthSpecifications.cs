@@ -5,6 +5,7 @@ using MCMS.Base.Builder;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using MCMS.Data;
+using MCMS.Data.Seeder;
 
 namespace MCMS
 {
@@ -21,6 +22,7 @@ namespace MCMS
                 .AddRoles<Role>()
                 .AddEntityFrameworkStores<BaseDbContext>();
             services.AddScoped<UsersTableModelDisplayConfigService>();
+            services.AddOptions<EntitySeeders>().Configure(seeders => { seeders.Add<RolesSeeder>(); });
         }
 
 

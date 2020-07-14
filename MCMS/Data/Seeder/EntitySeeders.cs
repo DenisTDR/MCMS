@@ -5,9 +5,10 @@ namespace MCMS.Data.Seeder
 {
     public sealed class EntitySeeders : List<ISeeder>
     {
-        public void Add<T>() where T : ISeeder, new()
+        public EntitySeeders Add<T>() where T : ISeeder, new()
         {
             base.Add(new T());
+            return this;
         }
     }
 }

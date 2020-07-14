@@ -111,9 +111,9 @@ namespace MCMS.Builder
 
             app.UseRouting();
 
-            foreach (var rmpSpec in _specifications)
+            foreach (var mSpec in _specifications)
             {
-                rmpSpec.Configure(app, serviceProvider);
+                mSpec.Configure(app, serviceProvider);
             }
 
             app.UseEndpoints(endpoints =>

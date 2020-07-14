@@ -21,7 +21,7 @@ git submodule add ssh://git@git.ligaac.ro:5022/upt/mcms.git MCMS
     * `FORMLY_DEBUG` - `True` if you want to use formly form with an iframe with reverse proxy from /formly-proxy to `FORMLY_SERVE_URL` with query params.
       * `FORMLY_SERVE_URL` - domain+port for the ng serve app (ex: `http://localhost:4455`)
       * `FORMLY_SCRIPTS_PATH` - defaults to `~`, change it if the js files should be served from another domain/host
-      * check `UPT.RMP.Base/Views/Shared/Formly/FormlyFormsScripts.cshtml` for more information
+      * check `MCMS/Views/Shared/Formly/FormlyFormsScripts.cshtml` for more information
     * Seed & Migrations
         * `SEED_ON_START` - boolean
           * `SEED_FILE_PATH` - string

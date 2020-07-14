@@ -71,6 +71,18 @@ namespace MCMS.Admin.Users
             return Ok(roles);
         }
 
+
+        [HttpPost]
+        [Route("{id}")]
+        public virtual async Task<ActionResult<UserViewModel>> ConfirmEmail([FromRoute] string id)
+        {
+            // var userManager = ServiceProvider.GetService<UserManager<User>>();
+            var user = await Repo.GetOneOrThrow(id);
+            user.EmailConfirmed = true;
+            await Repo.SaveChanges();
+            return Ok();
+        }
+
         protected virtual List<UserViewModel> MapV(List<User> entities)
         {
             return Mapper.Map<List<UserViewModel>>(entities);

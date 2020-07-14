@@ -2,6 +2,7 @@ using System;
 using MCMS.Admin.Users;
 using MCMS.Base.Auth;
 using MCMS.Base.Builder;
+using MCMS.Base.Helpers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using MCMS.Data;
@@ -15,7 +16,7 @@ namespace MCMS
         {
             services.AddDefaultIdentity<User>(options =>
                 {
-                    options.SignIn.RequireConfirmedAccount = false;
+                    options.SignIn.RequireConfirmedAccount = Env.GetBool("REQUIRE_CONFIRMED_ACCOUNT");
                     options.Password.RequireUppercase = false;
                     options.Password.RequireNonAlphanumeric = false;
                 })

@@ -1,4 +1,5 @@
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using MCMS.Base.Attributes;
 using MCMS.Base.Auth;
@@ -55,6 +56,44 @@ namespace MCMS.Admin.Users
             ViewBag.Roles = await ServiceProvider.GetService<RoleManager<Role>>().Roles.Select(role => role.Name)
                 .ToListAsync();
             return View(userVm);
+        }
+
+        [HttpGet]
+        [Route("{id}")]
+        [ViewLayout("_ModalLayout")]
+        public async Task<IActionResult> ConfirmEmail([FromRoute] string id)
+        {
+            var user = await Repo.GetOneOrThrow(id);
+            var userVm = Mapper.Map<UserViewModel>(user);
+            return View(userVm);
+        }
+
+        [HttpGet("{id}")]
+        public virtual async Task<IActionResult> Delete([FromRoute] string id)
+        {
+            var e = await Repo.GetOneOrThrow(id);
+            return View("BasicModals/DeleteModal", e);
+        }
+
+        [HttpPost("{id}"), ActionName("Delete")]
+        [Produces("application/json")]
+        public virtual async Task<IActionResult> DeleteConfirmed([FromRoute] string id)
+        {
+            var isCurrentUser = User.FindFirstValue("Id") == id;
+            if (isCurrentUser)
+            {
+                return BadRequest("Can't delete your own user.");
+            }
+
+            var usersManager = ServiceProvider.GetService<UserManager<User>>();
+            var user = await usersManager.FindByIdAsync(id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            await usersManager.DeleteAsync(user);
+            return Ok();
         }
 
         private async Task<UserViewModel> GetUserWithRoles(string id)

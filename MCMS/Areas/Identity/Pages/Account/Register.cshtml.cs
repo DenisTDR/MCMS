@@ -77,7 +77,7 @@ namespace MCMS.Areas.Identity.Pages.Account
 
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
-            returnUrl = returnUrl ?? Url.Content("~/");
+            returnUrl ??= Url.Content("~/");
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             await using (var transaction = await _dbContext.Database.BeginTransactionAsync())
             {
@@ -102,18 +102,26 @@ namespace MCMS.Areas.Identity.Pages.Account
                         }
 
                         _logger.LogInformation("Created first user as admin.");
+
+                        await transaction.CommitAsync();
+                        user.EmailConfirmed = true;
+                        await _dbContext.SaveChangesAsync();
+                        await _signInManager.SignInAsync(user, isPersistent: false);
+                        return LocalRedirect(returnUrl);
                     }
 
-                    var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                    code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-                    var callbackUrl = Url.Page(
-                        "/Account/ConfirmEmail",
-                        pageHandler: null,
-                        values: new {area = "Identity", userId = user.Id, code = code, returnUrl = returnUrl},
-                        protocol: Request.Scheme);
-
-                    await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
-                        $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+                    if (_userManager.Options.SignIn.RequireConfirmedAccount)
+                    {
+                        var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                        code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+                        var callbackUrl = Url.Page(
+                            "/Account/ConfirmEmail",
+                            pageHandler: null,
+                            values: new {area = "Identity", userId = user.Id, code = code, returnUrl = returnUrl},
+                            protocol: Request.Scheme);
+                        await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
+                            $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+                    }
 
                     await transaction.CommitAsync();
                     if (_userManager.Options.SignIn.RequireConfirmedAccount)
@@ -121,11 +129,12 @@ namespace MCMS.Areas.Identity.Pages.Account
                         return RedirectToPage("RegisterConfirmation",
                             new {email = Input.Email, returnUrl = returnUrl});
                     }
-                    else
-                    {
-                        await _signInManager.SignInAsync(user, isPersistent: false);
-                        return LocalRedirect(returnUrl);
-                    }
+
+                    user.EmailConfirmed = true;
+                    await _dbContext.SaveChangesAsync();
+                    
+                    await _signInManager.SignInAsync(user, isPersistent: false);
+                    return LocalRedirect(returnUrl);
                 }
             }
 

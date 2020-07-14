@@ -1,0 +1,29 @@
+@using MCMS.Base.Repositories
+@using MCMS.Display.Link
+@using MCMS.Admin.Users
+@inject ITranslationsRepository TransRepo
+@model MCMS.Admin.Users.UserViewModel
+
+@{
+    ViewBag.Title = ViewBag.ModelName + ": " + Model;
+    Layout = "_ModalLayout";
+}
+<div class="modal-body">
+    <div class="container-fluid">
+        <partial name="BasicModals/_DetailsFields"/>
+    </div>
+</div>
+<div class="modal-footer">
+    @if (!Model.EmailConfirmed)
+    {
+        var confirmEmailLink = new MRichLink(await TransRepo.GetValueOrSlug("confirm_email"), typeof(AdminUsersController),
+            nameof(AdminUsersController.ConfirmEmail)).WithValues(new {Model.Id}).WitTag("confirm-email")
+            .AsButton("outline-warning").WithModal()
+            .WithIconClasses("fas fa-check");
+
+        <partial name="Partials/_MRichLink" model="confirmEmailLink"/>
+@*         <button type="button" class="btn btn-warning">@await TransRepo.GetValueOrSlug("confirm_email")</button> *@
+    }
+
+    <button type="button" class="btn btn-secondary" data-dismiss="modal">@await TransRepo.GetValueOrSlug("close")</button>
+</div>

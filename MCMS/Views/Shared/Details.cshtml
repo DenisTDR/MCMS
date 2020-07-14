@@ -1,24 +1,13 @@
-@using MCMS.Display.ModelDisplay
 @using MCMS.Base.Repositories
 @inject ITranslationsRepository TransRepo
 
 @{
     ViewBag.Title = ViewBag.ModelName + ": " + Model;
-    var fields = ViewBag.Fields as List<DetailsField>
-                 ?? (ViewBag.ModelDisplayConfigService as IModelDisplayConfigService)?.GetDetailsFields()
-                 ?? throw new Exception("Can't get fields for " + ViewBag.ModelName);
     Layout = "_ModalLayout";
 }
 <div class="modal-body">
-
     <div class="container-fluid">
-        @foreach (var detailsField in fields)
-        {
-            <div class="row">
-                <div class="col-sm-3">@detailsField.Name</div>
-                <div class="col-sm-9">@Html.Raw(detailsField.GetFor(Model))</div>
-            </div>
-        }
+        <partial name="BasicModals/_DetailsFields"/>
     </div>
 </div>
 <div class="modal-footer">

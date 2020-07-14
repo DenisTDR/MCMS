@@ -1,7 +1,11 @@
 ﻿@using MCMS.Builder
 @using Microsoft.Extensions.Options
+@using MCMS.Base.Repositories
 @inject IOptions<SiteConfig> SiteConfig
+@inject ITranslationsRepository TransRepo
 
 <div class="text-center">
-    <h1 class="display-4">Bine-ai venit p-aci pe @(SiteConfig.Value.SiteName ?? "MCMS")!</h1>
+    <h1 class="display-4 mt-4">
+        @await TransRepo.Format("home_page_welcome_message_format", new object[] {SiteConfig.Value.SiteName ?? "MCMS"})
+    </h1>
 </div>

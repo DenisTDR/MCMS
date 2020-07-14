@@ -34,17 +34,13 @@ namespace MCMS.Admin.Users
         {
             return new List<MRichLink>
             {
-                new MRichLink("", typeof(AdminUsersController),
-                        nameof(AdminUsersController.Details)).WitTag("details")
+                new MRichLink("", typeof(AdminUsersController), nameof(AdminUsersController.Details)).WitTag("details")
                     .AsButton("outline-info").WithModal().WithIconClasses("far fa-eye")
                     .WithValues(new {id = "ENTITY_ID"}),
-                new MRichLink("", typeof(AdminUsersController),
-                        nameof(AdminUsersController.ChangeRoles)).WitTag("roles")
-                    .AsButton("outline-primary").WithModal()
-                    .WithIconClasses("fas fa-tags"),
-                // new MRichLink("", typeof(TUiController),
-                //         nameof(GenericAdminUiController<TE, TFm, TVm, TApiController>.Delete)).WitTag("delete")
-                //     .AsButton("outline-danger").WithModal().WithIconClasses("fas fa-trash-alt")
+                new MRichLink("", typeof(AdminUsersController), nameof(AdminUsersController.ChangeRoles))
+                    .WitTag("roles").AsButton("outline-primary").WithModal().WithIconClasses("fas fa-tags"),
+                new MRichLink("", typeof(AdminUsersController), nameof(AdminUsersController.Delete)).WitTag("delete")
+                    .AsButton("outline-danger").WithModal().WithIconClasses("fas fa-trash-alt")
             };
         }
 

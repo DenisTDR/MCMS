@@ -1,0 +1,14 @@
+@using MCMS.Display.ModelDisplay
+
+@{
+    var fields = ViewBag.Fields as List<DetailsField>
+                 ?? (ViewBag.ModelDisplayConfigService as IModelDisplayConfigService)?.GetDetailsFields()
+                 ?? throw new Exception("Can't get fields for " + ViewBag.ModelName);
+}
+@foreach (var detailsField in fields)
+{
+    <div class="row">
+        <div class="col-sm-3">@detailsField.Name</div>
+        <div class="col-sm-9">@Html.Raw(detailsField.GetFor(Model))</div>
+    </div>
+}

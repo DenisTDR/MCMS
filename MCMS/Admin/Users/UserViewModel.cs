@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using MCMS.Base.Data.ViewModels;
 using MCMS.Base.Display.ModelDisplay.Attributes;
 
@@ -10,7 +11,13 @@ namespace MCMS.Admin.Users
         public string UserName { get; set; }
         [TableColumn] public string FullName { get; set; }
 
-        [TableColumn] public string Email { get; set; }
+        public string Email { get; set; }
+
+        [DisplayName("Email")]
+        [DetailsField(Hidden = true)]
+        [TableColumn]
+        public string EmailColumn => Email + (EmailConfirmed ? "" : " (not confirmed)");
+
         public bool EmailConfirmed { get; set; }
         public DateTime Created { get; set; }
 

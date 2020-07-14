@@ -16,7 +16,7 @@ namespace MCMS.Base.Helpers
             var value = Get(name);
             if (string.IsNullOrEmpty(value))
             {
-                Utils.DieWith("Env var '" + name + "' is not set");
+                Utils.DieWith("Required Env var '" + name + "' is not set.");
             }
 
             return value;

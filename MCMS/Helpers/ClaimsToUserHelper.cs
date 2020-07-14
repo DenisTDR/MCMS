@@ -19,7 +19,6 @@ namespace MCMS.Helpers
         public User GetUserById()
         {
             var userId = _claims.FindFirstValue("Id");
-            Console.WriteLine($"userId: {userId}");
             return _userManager.FindByIdAsync(userId).Result;
         }
 

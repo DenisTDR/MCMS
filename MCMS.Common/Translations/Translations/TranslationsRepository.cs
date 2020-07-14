@@ -40,7 +40,7 @@ namespace MCMS.Common.Translations.Translations
             langCode ??= DefaultLanguage;
             if (Cache.ContainsKey(langCode))
             {
-                _logger.LogDebug("GetForLanguage hit cache.");
+                // _logger.LogDebug("GetForLanguage hit cache.");
                 return Cache[langCode];
             }
 

@@ -73,7 +73,6 @@ namespace MCMS.Areas.Identity.Pages.Account.Manage
 
         public async Task<IActionResult> OnPostAsync()
         {
-            Console.WriteLine(JsonConvert.SerializeObject(Input));
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
             {

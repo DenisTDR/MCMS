@@ -1,9 +1,9 @@
 using System;
+using MCMS.Admin.Users;
 using MCMS.Base.Auth;
 using MCMS.Base.Builder;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
-using MCMS.Builder;
 using MCMS.Data;
 
 namespace MCMS
@@ -20,6 +20,7 @@ namespace MCMS
                 })
                 .AddRoles<Role>()
                 .AddEntityFrameworkStores<BaseDbContext>();
+            services.AddScoped<UsersTableModelDisplayConfigService>();
         }
 
 

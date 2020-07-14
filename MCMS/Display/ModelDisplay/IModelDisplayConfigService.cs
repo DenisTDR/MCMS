@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MCMS.Display.ModelDisplay
@@ -7,8 +8,8 @@ namespace MCMS.Display.ModelDisplay
     public interface IModelDisplayConfigService
     {
         Type ViewModelType { get; }
-        ModelDisplayTableConfig GetTableConfig(IUrlHelper url, dynamic viewBag, bool createNewLink = true);
-        List<TableColumn> GetTableColumns(bool excludeActionsColumn = false);
+        Task<ModelDisplayTableConfig> GetTableConfig(IUrlHelper url, dynamic viewBag, bool createNewLink = true);
+        Task<List<TableColumn>> GetTableColumns(bool excludeActionsColumn = false);
         List<DetailsField> GetDetailsFields(Type viewModelType = null);
     }
 }

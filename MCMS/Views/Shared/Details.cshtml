@@ -1,4 +1,6 @@
 @using MCMS.Display.ModelDisplay
+@using MCMS.Base.Repositories
+@inject ITranslationsRepository TransRepo
 
 @{
     ViewBag.Title = ViewBag.ModelName + ": " + Model;
@@ -20,5 +22,5 @@
     </div>
 </div>
 <div class="modal-footer">
-    <button type="button" class="btn btn-secondary" data-dismiss="modal">Exit</button>
+    <button type="button" class="btn btn-secondary" data-dismiss="modal">@await TransRepo.GetValueOrSlug("close")</button>
 </div>

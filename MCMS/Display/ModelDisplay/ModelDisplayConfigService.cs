@@ -2,21 +2,30 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using MCMS.Base.Display.ModelDisplay.Attributes;
 using MCMS.Base.Extensions;
 using MCMS.Base.Helpers;
+using MCMS.Base.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MCMS.Display.ModelDisplay
 {
     public abstract class ModelDisplayConfigService : IModelDisplayConfigService
     {
+        protected ITranslationsRepository TranslationsRepository { get; }
         public abstract Type ViewModelType { get; }
 
-        public abstract ModelDisplayTableConfig GetTableConfig(IUrlHelper url, dynamic viewBag,
+        public abstract Task<ModelDisplayTableConfig> GetTableConfig(IUrlHelper url, dynamic viewBag,
             bool createNewLink = true);
 
-        public virtual List<TableColumn> GetTableColumns(bool excludeActionsColumn = false)
+
+        public ModelDisplayConfigService(ITranslationsRepository translationsRepository)
+        {
+            TranslationsRepository = translationsRepository;
+        }
+
+        public virtual async Task<List<TableColumn>> GetTableColumns(bool excludeActionsColumn = false)
         {
             var props = ViewModelType.GetProperties().ToList();
             var tableColumnProps = props.Where(prop =>
@@ -40,7 +49,7 @@ namespace MCMS.Display.ModelDisplay
                     prop.GetCustomAttributes<TableColumnAttribute>().FirstOrDefault()?.Order ?? 0)).ToList();
             if (!excludeActionsColumn)
             {
-                list.Add(new TableColumn("Actions", "_actions", 100));
+                list.Add(new TableColumn(await TranslationsRepository.GetValueOrSlug("actions"), "_actions", 100));
             }
 
             return list;

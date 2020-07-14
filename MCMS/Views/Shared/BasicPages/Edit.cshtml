@@ -1,16 +1,18 @@
 @using MCMS.SwaggerFormly.FormParamsHelpers
 @using MCMS.Base.Extensions
+@using MCMS.Base.Repositories
+@using MCMS.SwaggerFormly.Models
 @model MCMS.Base.Data.Entities.IEntity
+@inject ITranslationsRepository TransRepo
 @{
-    ViewBag.Title = "Editează " + ViewBag.ModelName + " " + Model;
-    var formParamsService = ViewBag.FormParamsService as FormParamsService;
-    var formParams = formParamsService.ForPatch(Model.Id);
+    ViewBag.Title = $"{await TransRepo.GetValueOrSlug("edit")} {ViewBag.ModelName} '{Model}'";
+    var formParams = ViewBag.FormParams as FormlyFormParams ?? (ViewBag.FormParamsService as FormParamsService)?.ForPatch(Model.Id) ?? throw new Exception("Don't have form params :(");
     formParams.Options = new {hideSubmitButton = true};
 
     var returnUrl = Context.Request.Query.ContainsKey("returnUrl") ? (string) Context.Request.Query["returnUrl"] : null;
 }
 
-<h2>@ViewBag.Title</h2>
+<h2 class="mt-4">@ViewBag.Title</h2>
 <div class="container">
     <div class="row">
         <div class="col-12">
@@ -20,8 +22,8 @@
     </div>
     <div class="row">
         <div class="col-12 justify-content-between d-flex">
-            <button type="button" class="btn btn-secondary" onclick="callback@(formParams.FormInstanceId)()">Înapoi</button>
-            <button type="button" class="btn btn-primary" id="@formParams.FormInstanceId-submit-button">Salvează</button>
+            <button type="button" class="btn btn-secondary" onclick="callback@(formParams.FormInstanceId)()">@await TransRepo.GetValueOrSlug("cancel")</button>
+            <button type="button" class="btn btn-primary" id="@formParams.FormInstanceId-submit-button">@await TransRepo.GetValueOrSlug("save")</button>
         </div>
     </div>
 </div>

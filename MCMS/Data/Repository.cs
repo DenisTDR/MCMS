@@ -93,10 +93,7 @@ namespace MCMS.Data
             {
                 throw new KnownException(code: 404);
             }
-
-            _dbSet.Remove(new T {Id = id});
-            await SaveChangesAsyncIfNeeded();
-            return true;
+            return await Delete(new T {Id = id});
         }
 
         public virtual async Task<bool> Delete(T e)

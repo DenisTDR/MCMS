@@ -2,12 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using MCMS.Base.Data.Entities;
 using MCMS.Base.Data.FormModels;
 using MCMS.Base.Data.ViewModels;
 using MCMS.Base.Display.ModelDisplay.Attributes;
 using MCMS.Base.Extensions;
 using MCMS.Base.Helpers;
+using MCMS.Base.Repositories;
 using MCMS.Controllers.Api;
 using MCMS.Controllers.Ui;
 using MCMS.Display.Link;
@@ -25,14 +27,14 @@ namespace MCMS.Display.ModelDisplay
     {
         public override Type ViewModelType => typeof(TVm);
 
-        public override ModelDisplayTableConfig GetTableConfig(IUrlHelper url, dynamic viewBag,
+        public override async Task<ModelDisplayTableConfig> GetTableConfig(IUrlHelper url, dynamic viewBag,
             bool createNewLink = true)
         {
             var config = new ModelDisplayTableConfig
             {
                 IndexPageTitle = TypeHelpers.GetDisplayName<TUiController>(),
                 ModelName = TypeHelpers.GetDisplayName<TVm>(),
-                TableColumns = GetTableColumns(),
+                TableColumns = await GetTableColumns(),
                 HasTableIndexColumn = true,
                 TableItemsApiUrl = url.ActionLink(nameof(IReadOnlyApiController<TVm>.Index),
                     TypeHelpers.GetControllerName(typeof(TApiController)), viewBag.TableItemsApiUrlValues as object,
@@ -42,7 +44,7 @@ namespace MCMS.Display.ModelDisplay
             if (createNewLink)
             {
                 config.CreateNewItemLink = new MRichLink(
-                        "Crează " + TypeHelpers.GetDisplayName(typeof(TVm)),
+                        $"{await TranslationsRepository.GetValueOrSlug("create")} {TypeHelpers.GetDisplayName(typeof(TVm))}",
                         typeof(TUiController), nameof(GenericAdminUiController<TE, TFm, TVm, TApiController>.Create))
                     .AsButton("outline-primary")
                     .WithIconClasses("fas fa-plus").WithValues(viewBag.CreateNewLinkValues);
@@ -78,6 +80,11 @@ namespace MCMS.Display.ModelDisplay
         {
             return typeof(ModelDisplayConfigForControllerService<,,,,>).MakeGenericType(typeof(TE), typeof(TFm),
                 typeof(TVm), uiControllerType, typeof(TApiController));
+        }
+
+        public ModelDisplayConfigForControllerService(ITranslationsRepository translationsRepository) : base(
+            translationsRepository)
+        {
         }
     }
 }

@@ -1,9 +1,12 @@
 @using MCMS.Base.Helpers
 @using MCMS.Base.Extensions
+@using MCMS.Base.Repositories
 @model MCMS.Base.Data.Entities.IEntity
+@inject ITranslationsRepository TransRepo
 
 @{
-    ViewBag.Title = "Eşti sigur că vrei să ştergi️ " + ViewBag.ModelName + " " + Model + "?";
+    // ViewBag.Title = "Eşti sigur că vrei să ştergi️ " + ViewBag.ModelName + " " + Model + "?";
+    ViewBag.Title = await TransRepo.Format("delete_confirm_format", new object[] {ViewBag.ModelName, Model});
     var formId = Utils.GenerateRandomHexString();
     Layout = "_ModalLayout";
 }
@@ -11,8 +14,8 @@
     <div class="modal-body">
     </div>
     <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Închide</button>
-        <button type="submit" class="btn btn-danger">Da</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">@await TransRepo.GetValueOrSlug("cancel")</button>
+        <button type="submit" class="btn btn-danger">@await TransRepo.GetValueOrSlug("yes")</button>
     </div>
 </form>
 

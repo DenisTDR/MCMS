@@ -45,9 +45,9 @@ namespace MCMS.Files.Controllers
         }
 
 
-        protected override ModelDisplayTableConfig TableConfigForIndex()
+        protected override async Task<ModelDisplayTableConfig> TableConfigForIndex()
         {
-            var config = base.TableConfigForIndex();
+            var config = await base.TableConfigForIndex();
             ViewBag.CreateNewLinkValues = null;
 
             config.CreateNewItemLink = new MRichLink("Upload new file", typeof(FilesController), nameof(Upload))

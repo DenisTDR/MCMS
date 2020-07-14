@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using MCMS.Base.Helpers;
+using MCMS.Base.Repositories;
 using MCMS.Display.Link;
 using MCMS.Display.ModelDisplay;
 using Microsoft.AspNetCore.Mvc;
@@ -11,14 +13,14 @@ namespace MCMS.Admin.Users
     {
         public override Type ViewModelType => typeof(UserViewModel);
 
-        public override ModelDisplayTableConfig GetTableConfig(IUrlHelper url, dynamic viewBag,
+        public override async Task<ModelDisplayTableConfig> GetTableConfig(IUrlHelper url, dynamic viewBag,
             bool createNewLink = true)
         {
             var config = new ModelDisplayTableConfig
             {
                 IndexPageTitle = "Users",
                 ModelName = "User",
-                TableColumns = GetTableColumns(),
+                TableColumns = await GetTableColumns(),
                 HasTableIndexColumn = true,
                 TableItemsApiUrl = url.ActionLink(nameof(AdminUsersAdminApiController.Index),
                     TypeHelpers.GetControllerName(typeof(AdminUsersAdminApiController)),
@@ -44,6 +46,11 @@ namespace MCMS.Admin.Users
                 //         nameof(GenericAdminUiController<TE, TFm, TVm, TApiController>.Delete)).WitTag("delete")
                 //     .AsButton("outline-danger").WithModal().WithIconClasses("fas fa-trash-alt")
             };
+        }
+
+        public UsersTableModelDisplayConfigService(ITranslationsRepository translationsRepository) : base(
+            translationsRepository)
+        {
         }
     }
 }

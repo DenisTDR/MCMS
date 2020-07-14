@@ -40,12 +40,12 @@ namespace MCMS.Controllers.Ui
             ViewBag.UsesModals = UsesModals;
         }
 
-        public override Task<IActionResult> Index()
+        public override async Task<IActionResult> Index()
         {
-            return Task.FromResult(View("BasicPages/Index", TableConfigForIndex()) as IActionResult);
+            return View("BasicPages/Index", await TableConfigForIndex());
         }
 
-        protected virtual ModelDisplayTableConfig TableConfigForIndex()
+        protected virtual Task<ModelDisplayTableConfig> TableConfigForIndex()
         {
             return ModelDisplayConfigService.GetTableConfig(Url, ViewBag);
         }

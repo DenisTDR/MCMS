@@ -1,22 +1,20 @@
 @using MCMS.SwaggerFormly.FormParamsHelpers
 @using MCMS.SwaggerFormly.Models
 @using MCMS.Base.Extensions
+@using MCMS.Base.Repositories
 @model MCMS.Base.Data.Entities.IEntity
+@inject ITranslationsRepository TransRepo
 @{
-    ViewBag.Title = "Editează " + ViewBag.ModelName + " " + Model;
-    var formParams = ViewBag.FormParams as FormlyFormParams ?? (ViewBag.FormParamsService as FormParamsService)?.ForPatch(Model.Id);
-    if (formParams == null)
-    {
-        throw new Exception("Don't have form params :(");
-    }
+    ViewBag.Title = $"{await TransRepo.GetValueOrSlug("edit")} {ViewBag.ModelName} '{Model}'";
+    var formParams = ViewBag.FormParams as FormlyFormParams ?? (ViewBag.FormParamsService as FormParamsService)?.ForPatch(Model.Id) ?? throw new Exception("Don't have form params :(");
     formParams.Options = new {hideSubmitButton = true};
 }
 <div class="modal-body" id="@formParams.FormInstanceId-modal-body">
     @await Html.BlindPartialAsync("Formly/FormlyForm", formParams)
 </div>
 <div class="modal-footer">
-    <button type="button" class="btn btn-secondary" data-dismiss="modal">Închide</button>
-    <button type="button" class="btn btn-primary" id="@formParams.FormInstanceId-submit-button">Salvează</button>
+    <button type="button" class="btn btn-secondary" data-dismiss="modal">@await TransRepo.GetValueOrSlug("cancel")</button>
+    <button type="button" class="btn btn-primary" id="@formParams.FormInstanceId-submit-button">@await TransRepo.GetValueOrSlug("save")</button>
 </div>
 @using (Html.BeginMPageScripts())
 {

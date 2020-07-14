@@ -1,13 +1,14 @@
+@using MCMS.Base.Repositories
 @model MCMS.Base.Data.Entities.IEntity
-
+@inject ITranslationsRepository TransRepo
 
 @{
-    ViewBag.Title = "Șterge " + Model;
+    ViewBag.Title = $"{await TransRepo.GetValueOrSlug("delete")} {Model}";
 }
 
-<h2 class="mb-5">'R u șur' u want to delete @ViewBag.ModelName @Model?</h2>
+<h2 class="mb-5">@await TransRepo.Format("delete_confirm_format", new object[] {ViewBag.ModelName, Model})</h2>
 
 @using (Html.BeginForm())
 {
-    <button type="submit" class="btn btn-danger">Yea</button>
+    <button type="submit" class="btn btn-danger">@await TransRepo.GetValueOrSlug("yes")</button>
 }

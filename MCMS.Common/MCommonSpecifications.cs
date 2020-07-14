@@ -1,4 +1,5 @@
 using MCMS.Base.Builder;
+using MCMS.Base.Repositories;
 using MCMS.Common.Translations.Languages;
 using MCMS.Common.Translations.Translations;
 using MCMS.Data;
@@ -14,6 +15,7 @@ namespace MCMS.Common
             services.AddScoped<TranslationsRepository>();
             services.AddScoped<IRepository<LanguageEntity>, LanguagesRepository>();
             services.AddScoped<LanguagesRepository>();
+            services.AddScoped<ITranslationsRepository, TranslationsRepository>();
         }
     }
 }

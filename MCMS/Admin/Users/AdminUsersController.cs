@@ -6,7 +6,6 @@ using MCMS.Base.Helpers;
 using MCMS.Controllers.Ui;
 using MCMS.Data;
 using MCMS.Display.ModelDisplay;
-using MCMS.SwaggerFormly.FormParamsHelpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -20,7 +19,9 @@ namespace MCMS.Admin.Users
     public class AdminUsersController : AdminUiController
     {
         protected IRepository<User> Repo => ServiceProvider.GetService<IRepository<User>>();
-        protected IModelDisplayConfigService ModelDisplayConfigService => new UsersTableModelDisplayConfigService();
+
+        protected IModelDisplayConfigService ModelDisplayConfigService =>
+            ServiceProvider.GetService<UsersTableModelDisplayConfigService>();
 
         public override void OnActionExecuting(ActionExecutingContext context)
         {

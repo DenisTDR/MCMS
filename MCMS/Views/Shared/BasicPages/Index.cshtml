@@ -2,6 +2,8 @@
 @using MCMS.Base.Helpers
 @using MCMS.Base.Exceptions
 @using MCMS.Base.Extensions
+@using MCMS.Base.Repositories
+@inject ITranslationsRepository TransRepo;
 
 @{
     // var returnUrl = Context.Request.Query.ContainsKey("returnUrl") ? (string) Context.Request.Query["returnUrl"] : Url.Action("Index");

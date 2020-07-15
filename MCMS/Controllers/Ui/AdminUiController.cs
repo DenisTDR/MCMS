@@ -9,12 +9,9 @@ using Microsoft.Extensions.DependencyInjection;
 namespace MCMS.Controllers.Ui
 {
     [AdminRoute("[controller]/[action]")]
-    [ApiExplorerSettings(IgnoreApi = true)]
     [Authorize]
-    public abstract class AdminUiController : Controller
+    public abstract class AdminUiController : UiController
     {
-        public IServiceProvider ServiceProvider => HttpContext.RequestServices;
-        public IMapper Mapper => ServiceProvider.GetService<IMapper>();
         protected bool UsesModals { get; set; }
 
         [HttpGet]

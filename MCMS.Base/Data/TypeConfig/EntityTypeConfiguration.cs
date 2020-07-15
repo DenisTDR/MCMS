@@ -14,9 +14,15 @@ namespace MCMS.Base.Data.TypeConfig
             builder.ToTable(GetTableName());
 
             builder.HasKey(e => e.Id);
+
             if (typeof(ISluggable).IsAssignableFrom(typeof(T)))
             {
-                builder.HasIndex(e => ((ISluggable) e).Slug);
+                builder.HasIndex(e => ((ISluggable) e).Slug).IsUnique();
+            }
+
+            if (typeof(IPublishable).IsAssignableFrom(typeof(T)))
+            {
+                builder.HasIndex(e => ((IPublishable) e).Published);
             }
         }
 

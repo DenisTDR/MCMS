@@ -10,10 +10,7 @@ namespace MCMS.Controllers.Api
     [AdminApiRoute("[controller]/[action]")]
     [Produces("application/json")]
     [Authorize]
-    public class AdminApiController : Controller
+    public class AdminApiController : BaseController
     {
-        public IServiceProvider ServiceProvider => HttpContext.RequestServices;
-
-        public IMapper Mapper => ServiceProvider.GetService<IMapper>();
     }
 }

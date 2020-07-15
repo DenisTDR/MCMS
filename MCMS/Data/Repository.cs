@@ -28,7 +28,10 @@ namespace MCMS.Data
 
         public virtual Task<T> GetOne(string id)
         {
-            return Queryable.FirstOrDefaultAsync(e => e.Id == id);
+            var query = typeof(ISluggable).IsAssignableFrom(typeof(T))
+                ? Queryable.Where(e => e.Id == id || ((ISluggable) e).Slug == id)
+                : Queryable.Where(e => e.Id == id);
+            return query.FirstOrDefaultAsync();
         }
 
         public virtual async Task<T> GetOneOrThrow(string id)

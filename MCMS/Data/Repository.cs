@@ -24,6 +24,10 @@ namespace MCMS.Data
             DbContext = dbContext;
             DbSet = dbContext.Set<T>();
             Queryable = DbSet;
+            if (typeof(IOrderable).IsAssignableFrom(typeof(T)))
+            {
+                Queryable = Queryable.OrderBy(e => ((IOrderable) e).Order);
+            }
         }
 
         public virtual Task<T> GetOne(string id)

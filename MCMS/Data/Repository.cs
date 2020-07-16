@@ -54,7 +54,7 @@ namespace MCMS.Data
             return Queryable.FirstOrDefaultAsync(predicate);
         }
 
-        public virtual Task<List<T>> GetAll(bool dontFetch = false)
+        public virtual Task<List<T>> GetAll()
         {
             return Queryable.ToListAsync();
         }

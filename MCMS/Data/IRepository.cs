@@ -15,7 +15,7 @@ namespace MCMS.Data
         Task<T> GetOne(string id);
         Task<T> GetOneOrThrow(string id);
         Task<T> GetOne(Expression<Func<T, bool>> predicate);
-        Task<List<T>> GetAll(bool dontFetch = false);
+        Task<List<T>> GetAll();
         Task<T> Add(T e);
         Task<T> Patch(string id, JsonPatchDocument<T> eub);
         Task<T> Patch(string id, JsonPatchDocument<T> eub, IAdapterFactory adapterFactory);

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using MCMS.Base.Attributes;
 using MCMS.Base.Data.Entities;
@@ -8,8 +9,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace MCMS.Controllers.Api
 {
-    public class GenericAdminApiController<TE, TFm, TVm> : PatchCreateAdminApiController<TE, TFm>, IGenericApiController<TFm, TVm>
-        where TE : Entity where TFm : class, IFormModel where TVm : class, IViewModel
+    public class GenericAdminApiController<TE, TFm, TVm> : PatchCreateAdminApiController<TE, TFm>,
+        IGenericApiController<TFm, TVm>
+        where TE : Entity, new() where TFm : class, IFormModel where TVm : class, IViewModel
     {
         [AdminApiRoute("/[controller]")]
         [HttpGet]
@@ -18,6 +20,14 @@ namespace MCMS.Controllers.Api
             var all = await Repo.GetAll();
             var allVm = Map(all);
             return Ok(allVm);
+        }
+
+        [AdminApiRoute("/[controller]/light")]
+        [HttpGet]
+        public virtual Task<ActionResult<List<TVm>>> IndexLight()
+        {
+            Repo.ChainQueryable(q => q.Select(e => new TE {Id = e.Id}));
+            return Index();
         }
 
         [Route("{id}")]

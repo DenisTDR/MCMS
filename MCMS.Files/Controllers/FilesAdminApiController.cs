@@ -7,6 +7,7 @@ using MCMS.Base.Attributes;
 using MCMS.Base.JsonPatch;
 using MCMS.Controllers.Api;
 using MCMS.Files.Models;
+using MCMS.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
@@ -40,7 +41,7 @@ namespace MCMS.Files.Controllers
         }
 
         [NonAction]
-        public override Task<ActionResult<FileUploadFormModel>> Patch(string id,
+        public override Task<ActionResult<ModelResponse<FileUploadFormModel>>> Patch(string id,
             JsonPatchDocument<FileUploadFormModel> doc)
         {
             throw new NotImplementedException();
@@ -62,11 +63,11 @@ namespace MCMS.Files.Controllers
             var e = await Repo.Patch(id, eDoc, ServiceProvider.GetService<IAdapterFactory>());
             var fm = Mapper.Map<FileFormModel>(e);
 
-            return Ok(fm);
+            return OkModel(fm);
         }
 
         [ModelValidation]
-        public override async Task<ActionResult<FileUploadFormModel>> Create(FileUploadFormModel fm)
+        public override async Task<ActionResult<ModelResponse<FileUploadFormModel>>> Create(FileUploadFormModel fm)
         {
             var fileE = await Repo.GetOneOrThrow(fm.File.Id);
             fileE.Description = fm.Description;
@@ -74,7 +75,7 @@ namespace MCMS.Files.Controllers
             fileE.Protected = fm.Protected;
             fileE.OwnerToken = null;
             await Repo.SaveChanges();
-            return Ok(fm);
+            return OkModel(fm);
         }
 
         [HttpPost]

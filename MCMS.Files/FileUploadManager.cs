@@ -46,7 +46,7 @@ namespace MCMS.Files
                 Name = Utils.GenerateRandomHexString(32),
                 Extension = Path.GetExtension(file.FileName),
                 Purpose = purpose,
-                VirtualPath = Path.Combine(MFiles.PublicVirtualPath, path),
+                VirtualPath = !attr.Private ? Path.Combine(MFiles.PublicVirtualPath, path) : "",
             };
 
 

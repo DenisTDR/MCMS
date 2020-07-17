@@ -5,6 +5,7 @@ using MCMS.Base.Data.Entities;
 using MCMS.Base.Data.FormModels;
 using MCMS.Base.JsonPatch;
 using MCMS.Data;
+using MCMS.Models;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.JsonPatch.Adapters;
 using Microsoft.AspNetCore.Mvc;
@@ -29,30 +30,31 @@ namespace MCMS.Controllers.Api
         [Route("{id}")]
         [HttpPatch]
         [PatchDocumentValidation]
-        public virtual async Task<ActionResult<TFm>> Patch([FromRoute] [Required] string id,
+        public virtual async Task<ActionResult<ModelResponse<TFm>>> Patch([FromRoute] [Required] string id,
             [FromBody] [Required] JsonPatchDocument<TFm> doc)
         {
             if (!await Repo.Any(id))
             {
                 return NotFound();
             }
+
             var eDoc = doc.CloneFor<TFm, TE>();
 
             var e = await Repo.Patch(id, eDoc, ServiceProvider.GetService<IAdapterFactory>());
             var fm = MapF(e);
 
-            return Ok(fm);
+            return OkModel(fm);
         }
 
         [HttpPost]
         [ModelValidation]
-        public virtual async Task<ActionResult<TFm>> Create([FromBody] TFm fm)
+        public virtual async Task<ActionResult<ModelResponse<TFm>>> Create([FromBody] TFm fm)
         {
             var e = MapF(fm);
             await PatchBeforeSaveNew(e);
             e = await Repo.Add(e);
             fm = MapF(e);
-            return Ok(fm);
+            return OkModel(fm);
         }
 
         protected virtual TFm MapF(TE e)

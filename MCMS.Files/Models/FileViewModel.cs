@@ -10,7 +10,7 @@ namespace MCMS.Files.Models
         [TableColumn] public string OriginalName { get; set; }
 
         [TableColumn]
-        public string Link => VirtualPath == null || Name == null
+        public string Link => string.IsNullOrEmpty(VirtualPath) || string.IsNullOrEmpty(Name)
             ? "--"
             : "<a target='_blank' href='" + Path.Combine(VirtualPath, Name + Extension) + "'>" + OriginalName + "</a>";
 

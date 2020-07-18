@@ -18,20 +18,7 @@ namespace MCMS.Base.Helpers
             return TypeHelpers.GetDisplayName(typeof(T));
         }
 
-        public static string GetPropertyName(PropertyInfo propertyInfo)
-        {
-            var attrs = propertyInfo.GetCustomAttributes<DisplayAttribute>().ToList();
-            if (attrs.Any())
-            {
-                var firstName = attrs.Select(a => a.Name).FirstOrDefault(name => name != null);
-                if (firstName != null)
-                {
-                    return firstName;
-                }
-            }
 
-            return propertyInfo.Name;
-        }
 
         private static readonly ConcurrentDictionary<Type, List<PropertyInfo>> UpdatablePrimitiveProperties =
             new ConcurrentDictionary<Type, List<PropertyInfo>>();

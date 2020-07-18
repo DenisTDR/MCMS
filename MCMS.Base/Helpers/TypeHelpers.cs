@@ -32,6 +32,13 @@ namespace MCMS.Base.Helpers
                 .FirstOrDefault(n => !string.IsNullOrEmpty(n)) ?? memberInfo.Name.ToSpacedPascalCase();
         }
 
+        public static string GetDescription(MemberInfo memberInfo)
+        {
+            return memberInfo.GetCustomAttributes<DisplayAttribute>().Select(a => a.Description)
+                .FirstOrDefault(n => !string.IsNullOrEmpty(n));
+        }
+        
+
         public static string GetControllerName(Type type)
         {
             return type.Name.Replace("Controller", "");

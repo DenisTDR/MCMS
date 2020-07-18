@@ -136,9 +136,10 @@ namespace MCMS.Common.Translations.Translations
             return one;
         }
 
-        public override async Task<List<TranslationEntity>> GetAll()
+        public override async Task<List<TranslationEntity>> GetAll(
+            Expression<Func<TranslationEntity, bool>> predicate = null)
         {
-            var all = await base.GetAll();
+            var all = await base.GetAll(predicate);
             foreach (var translationEntity in all)
             {
                 await PatchLanguages(translationEntity);

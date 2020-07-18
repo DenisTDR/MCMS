@@ -9,7 +9,6 @@ using MCMS.Base.JsonPatch;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.JsonPatch.Adapters;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Query;
 
 namespace MCMS.Data
 {
@@ -55,9 +54,15 @@ namespace MCMS.Data
             return Queryable.FirstOrDefaultAsync(predicate);
         }
 
-        public virtual Task<List<T>> GetAll()
+        public virtual Task<List<T>> GetAll(Expression<Func<T, bool>> predicate = null)
         {
-            return Queryable.ToListAsync();
+            var query = Queryable;
+            if (predicate != null)
+            {
+                query = query.Where(predicate);
+            }
+
+            return query.ToListAsync();
         }
 
         public virtual async Task<T> Add(T e)

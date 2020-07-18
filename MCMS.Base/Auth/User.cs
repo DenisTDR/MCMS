@@ -17,7 +17,7 @@ namespace MCMS.Base.Auth
         {
             get
             {
-                if (string.IsNullOrEmpty(FirstName) && string.IsNullOrEmpty(LastName))
+                if (string.IsNullOrEmpty(FirstName) || string.IsNullOrEmpty(LastName))
                 {
                     return Email;
                 }

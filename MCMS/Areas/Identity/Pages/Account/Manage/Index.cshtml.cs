@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using MCMS.Base.Auth;
@@ -42,12 +43,14 @@ namespace MCMS.Areas.Identity.Pages.Account.Manage
 
             [Display(Name = "First name")] public string FirstName { get; set; }
             [Display(Name = "Last name")] public string LastName { get; set; }
+            [Display(Name = "Roles")] public IList<string> Roles { get; set; }
         }
 
         private async Task LoadAsync(User user)
         {
             var userName = await _userManager.GetUserNameAsync(user);
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
+            var roles = await _userManager.GetRolesAsync(user);
 
             Username = userName;
 
@@ -56,6 +59,7 @@ namespace MCMS.Areas.Identity.Pages.Account.Manage
                 PhoneNumber = phoneNumber,
                 FirstName = user.FirstName,
                 LastName = user.LastName,
+                Roles = roles
             };
         }
 

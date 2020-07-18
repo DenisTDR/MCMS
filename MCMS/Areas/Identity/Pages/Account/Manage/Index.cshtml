@@ -1,5 +1,6 @@
 @page
 @using MCMS.Areas.Identity.Pages.Account.Manage
+@using System.Security.Claims
 @model IndexModel
 @{
     ViewData["Title"] = "Profile";
@@ -15,6 +16,18 @@
             <div class="form-group">
                 <label asp-for="Username"></label>
                 <input asp-for="Username" class="form-control" disabled/>
+            </div>
+            <div class="form-group">
+                <label asp-for="Input.Roles"></label>
+                <input class="form-control" value="@string.Join(", ", Model.Input.Roles)" disabled/>
+                @{
+                    var rolesInDb = Model.Input.Roles;
+                    var rolesInClaims = User.FindAll(ClaimTypes.Role).Select(claim => claim.Value).ToList();
+                    if (rolesInDb.Count != rolesInClaims.Count || rolesInDb.Intersect(rolesInClaims).Count() != rolesInDb.Count)
+                    {
+                        <span class="text-danger">Your roles have been changed since you logged in last time. You have to logout and login again to refresh your roles.</span>
+                    }
+                }
             </div>
             <div class="form-group">
                 <label asp-for="Input.FirstName"></label>

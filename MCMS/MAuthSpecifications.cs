@@ -21,6 +21,7 @@ namespace MCMS
                     options.Password.RequireNonAlphanumeric = false;
                 })
                 .AddRoles<Role>()
+                .AddClaimsPrincipalFactory<MUserClaimsPrincipalFactory>()
                 .AddEntityFrameworkStores<BaseDbContext>();
             services.AddScoped<UsersTableModelDisplayConfigService>();
             services.AddOptions<EntitySeeders>().Configure(seeders => { seeders.Add<RolesSeeder>(); });

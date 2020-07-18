@@ -10,7 +10,7 @@
 <div class="modal-body">
 
     <div class="container-fluid">
-        <ul class="list-group" id="@id">
+        <ul class="list-group row" id="@id">
             <form asp-action="ChangeRoles" asp-controller="AdminUsersAdminApi" asp-route-id="@Model.Id">
                 @foreach (var role in allRoles)
                 {
@@ -25,6 +25,11 @@
                 }
             </form>
         </ul>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <div class="text-info ml-2 pt-4">Remember this user should refresh his session (logout and login again) in order to use the new roles.</div>
+        </div>
     </div>
 </div>
 <div class="modal-footer">

@@ -28,7 +28,7 @@ namespace MCMS.Data
         Task<bool> Any(Expression<Func<T, bool>> predicate);
 
         void RebuildQueryable(Func<IQueryable<T>, IQueryable<T>> func);
-        void ChainQueryable(Func<IQueryable<T>, IQueryable<T>> func);
+        IRepository<T> ChainQueryable(Func<IQueryable<T>, IQueryable<T>> func);
         T Attach(T e);
         T Attach(string id);
         Task SaveChanges();

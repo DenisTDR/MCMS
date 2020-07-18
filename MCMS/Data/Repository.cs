@@ -9,6 +9,7 @@ using MCMS.Base.JsonPatch;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.JsonPatch.Adapters;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 
 namespace MCMS.Data
 {
@@ -133,9 +134,10 @@ namespace MCMS.Data
             Queryable = func(DbSet);
         }
 
-        public void ChainQueryable(Func<IQueryable<T>, IQueryable<T>> func)
+        public IRepository<T> ChainQueryable(Func<IQueryable<T>, IQueryable<T>> func)
         {
             Queryable = func(Queryable);
+            return this;
         }
 
         public T Attach(T e)

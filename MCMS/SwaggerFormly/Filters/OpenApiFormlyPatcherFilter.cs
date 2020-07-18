@@ -103,7 +103,16 @@ namespace MCMS.SwaggerFormly.Filters
         {
             if (!templateOptions.ContainsKey("label"))
             {
-                templateOptions["label"] = Oas(EntityHelper.GetPropertyName(propertyInfo) ?? propertyInfo.Name);
+                templateOptions["label"] = Oas(TypeHelpers.GetDisplayName(propertyInfo) ?? propertyInfo.Name);
+            }
+            
+            if (!templateOptions.ContainsKey("description"))
+            {
+                var desc = TypeHelpers.GetDescription(propertyInfo);
+                if (!string.IsNullOrEmpty(desc))
+                {
+                    templateOptions["description"] = Oas(desc);
+                }
             }
         }
 

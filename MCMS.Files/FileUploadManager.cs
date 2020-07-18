@@ -2,8 +2,10 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using MCMS.Base.Exceptions;
 using MCMS.Base.Helpers;
 using MCMS.Data;
+using MCMS.Files.Attributes;
 using MCMS.Files.Models;
 using MCMS.SwaggerFormly;
 using Microsoft.AspNetCore.Http;
@@ -34,7 +36,13 @@ namespace MCMS.Files
 
             if (!MFilesSpecifications.RegisteredPurposes.TryGetValue(purpose, out var attr))
             {
-                throw new Exception("Invalid file purpose: '" + purpose + "'");
+                throw new KnownException("Invalid file purpose: '" + purpose + "'");
+            }
+
+            if (!HasValidExtension(file.FileName, attr.Accept))
+            {
+                throw new KnownException(
+                    $"Invalid extensions for '{file.FileName}'. Allowed extensions: {attr.AcceptStr}");
             }
 
             var path = attr.Path ?? "uploads";
@@ -69,6 +77,17 @@ namespace MCMS.Files
             _logger.LogInformation($"saved file '{fileE.OriginalName}' to '{physicalPath}'");
 
             return fileE;
+        }
+
+        private bool HasValidExtension(string fileName, string[] allowedExtensions)
+        {
+            if (allowedExtensions == null || allowedExtensions.Length == 0)
+            {
+                return true;
+            }
+
+            fileName = fileName.ToLower();
+            return allowedExtensions.Any(ext => fileName.EndsWith(ext));
         }
     }
 }

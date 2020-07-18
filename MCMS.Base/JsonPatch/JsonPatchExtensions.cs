@@ -35,6 +35,17 @@ namespace MCMS.Base.JsonPatch
             };
         }
 
+        public static Operation<TOut> CloneFor<TOut>(this Operation source) where TOut : class
+        {
+            return new Operation<TOut>
+            {
+                from = source.from,
+                path = source.path,
+                op = source.op,
+                value = source.value
+            };
+        }
+
         public static List<string> GetSplitPath<T>(this Operation<T> val) where T : class
         {
             return val.path.Split('/', StringSplitOptions.RemoveEmptyEntries).ToList();

@@ -16,7 +16,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace MCMS.Admin.Users
 {
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin, Moderator")]
     public class AdminUsersController : AdminUiController
     {
         protected IRepository<User> Repo => ServiceProvider.GetService<IRepository<User>>();

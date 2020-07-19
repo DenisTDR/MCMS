@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -11,11 +10,10 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
 
 namespace MCMS.Admin.Users
 {
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin, Moderator")]
     public class AdminUsersAdminApiController : AdminApiController
     {
         protected IRepository<User> Repo => ServiceProvider.GetService<IRepository<User>>();
@@ -50,6 +48,7 @@ namespace MCMS.Admin.Users
         public virtual async Task<ActionResult<UserViewModel>> ChangeRoles([FromRoute] string id,
             [FromBody] Dictionary<string, object> roles)
         {
+            var asMod = !UserFromClaims.HasRole("Admin");
             var userManager = ServiceProvider.GetService<UserManager<User>>();
             var user = await Repo.GetOneOrThrow(id);
             var allRoles = await ServiceProvider.GetService<RoleManager<Role>>().Roles.Select(role => role.Name)
@@ -57,14 +56,27 @@ namespace MCMS.Admin.Users
             var existingRoles = await userManager.GetRolesAsync(user);
             var newRoles = allRoles.Where(roles.ContainsKey)
                 .ToList();
-            var toDeleteRoles = existingRoles.Except(newRoles);
+            var toDeleteRoles = existingRoles.Except(newRoles).ToList();
 
-            if (ServiceProvider.GetService<UserManager<User>>().GetUserId(User) == id)
+            if (UserFromClaims.Id == id)
             {
-                toDeleteRoles = toDeleteRoles.Where(r => r != "Admin");
+                toDeleteRoles = toDeleteRoles.Where(r => r != (asMod ? "Moderator" : "Admin")).ToList();
             }
 
-            var toAddRoles = newRoles.Except(existingRoles);
+            var toAddRoles = newRoles.Except(existingRoles).ToList();
+            if (asMod)
+            {
+                if (toAddRoles.Contains("Admin"))
+                {
+                    toAddRoles.RemoveAll(r => r == "Admin");
+                }
+
+                if (toDeleteRoles.Contains("Admin"))
+                {
+                    toDeleteRoles.RemoveAll(r => r == "Admin");
+                }
+            }
+
             await userManager.AddToRolesAsync(user, toAddRoles);
             await userManager.RemoveFromRolesAsync(user, toDeleteRoles);
 

@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Security.Claims;
 using AutoMapper;
 using MCMS.Base.Auth;
@@ -13,13 +14,14 @@ namespace MCMS.Controllers
         protected IServiceProvider ServiceProvider => HttpContext.RequestServices;
         protected IMapper Mapper => ServiceProvider.GetService<IMapper>();
 
-        private User _user;
+        private UserWithRoles _user;
 
-        protected User UserFromClaims =>
-            _user ??= new User
+        protected UserWithRoles UserFromClaims =>
+            _user ??= new UserWithRoles
             {
-                Id = User.FindFirst(ClaimTypes.NameIdentifier).Value,
-                Email = User.FindFirst(ClaimTypes.Email).Value,
+                Id = User.FindFirstValue(ClaimTypes.NameIdentifier),
+                Email = User.FindFirstValue(ClaimTypes.Email),
+                Roles = User.FindAll(ClaimTypes.Role).Select(claim => claim.Value).ToList()
             };
     }
 }

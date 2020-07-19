@@ -59,6 +59,7 @@
         "@Model.TableItemsApiUrl", 
         @Html.Raw(Model.TableColumnsSerializedForDataTables),
         $("#actions-cell-template-@tableId").html(), 
-        @Model.HasTableIndexColumn.ToString().ToLower());
+        @Model.HasTableIndexColumn.ToString().ToLower(),
+        '@TransRepo.Language');
     </script>
 }

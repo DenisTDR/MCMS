@@ -1,6 +1,8 @@
-function bindDefaultDataTables(tableElem, url, columns, actionsColumnContent, hasStaticIndexColumn) {
+function bindDefaultDataTables(tableElem, url, columns, actionsColumnContent, hasStaticIndexColumn, lang) {
     // {"data": "index"},
     columns = columns.slice();
+
+    var langConfig = {'ro': {"url": "/lib/datatables/Romanian.json"}};
 
     var config = {
         processing: true,
@@ -23,9 +25,7 @@ function bindDefaultDataTables(tableElem, url, columns, actionsColumnContent, ha
         fixedHeader: {
             headerOffset: 50
         },
-        language: {
-            "url": "/lib/datatables/Romanian.json"
-        },
+        language: langConfig[lang],
         dom: "<'row'<'col-sm-12 col-md-6'l><'col-sm-12 col-md-6'<f>>>" +
             "<'row'<'col-sm-12'tr>>" +
             "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7 d-flex justify-content-between'pB>>",

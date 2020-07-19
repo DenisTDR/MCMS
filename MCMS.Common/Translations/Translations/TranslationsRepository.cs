@@ -84,6 +84,8 @@ namespace MCMS.Common.Translations.Translations
             return string.Format(format, args);
         }
 
+        public string Language => DefaultLanguage;
+
         public Task<string> Format(string slug, params object[] args)
         {
             return Format(slug, null, args);

@@ -22,7 +22,7 @@
 <div class="sb-layout-sidenav">
     <partial name="Partials/_Sidenav"/>
     <div class="sb-layout-sidenav-content">
-        <main role="main" class="pb-3 container-fluid">
+        <main role="main" class="container-fluid @ViewBag.MainContainerClasses">
             @RenderBody()
         </main>
         <partial name="Partials/_Footer"/>

@@ -2,6 +2,10 @@
 @using MCMS.Builder
 @using MCMS.Base.Helpers
 @inject IOptions<SiteConfig> SiteConfig
+@if (ViewBag.HideFooter is bool hideFooter && hideFooter)
+{
+    return;
+}
 <footer class="py-4 bg-light mt-auto">
     <div class="container-fluid">
         <div class="d-flex align-items-center justify-content-between small">

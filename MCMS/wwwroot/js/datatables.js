@@ -1,4 +1,3 @@
-
 function bindDefaultDataTables(tableElem, url, columns, actionsColumnContent, hasStaticIndexColumn) {
     // {"data": "index"},
     columns = columns.slice();
@@ -26,7 +25,19 @@ function bindDefaultDataTables(tableElem, url, columns, actionsColumnContent, ha
         },
         language: {
             "url": "/lib/datatables/Romanian.json"
-        }
+        },
+        dom: "<'row'<'col-sm-12 col-md-6'l><'col-sm-12 col-md-6'<f>>>" +
+            "<'row'<'col-sm-12'tr>>" +
+            "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7 d-flex justify-content-between'pB>>",
+        buttons: [
+            {
+                text: '<i class="fas fa-sync-alt"></i>',
+                className: 'btn-light btn-outline-info',
+                action: function (e, dt, node, config) {
+                    dt.ajax.reload();
+                }
+            }
+        ]
     };
     if (hasStaticIndexColumn) {
         columns.splice(0, 0, {"data": "dataTablesIndex"});
@@ -37,6 +48,7 @@ function bindDefaultDataTables(tableElem, url, columns, actionsColumnContent, ha
         }];
         config.aaSorting = [];
     }
+    console.log(config.buttons);
     var table = tableElem.DataTable(config);
     if (hasStaticIndexColumn) {
         table.on('order.dt search.dt', function () {

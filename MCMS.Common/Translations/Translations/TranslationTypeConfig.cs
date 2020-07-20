@@ -1,5 +1,4 @@
 using MCMS.Base.Data.TypeConfig;
-using MCMS.Common.Translations.Translations.Item;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

@@ -1,11 +1,9 @@
-using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using MCMS.Base.Exceptions;
 using MCMS.Base.Helpers;
 using MCMS.Data;
-using MCMS.Files.Attributes;
 using MCMS.Files.Models;
 using MCMS.SwaggerFormly;
 using Microsoft.AspNetCore.Http;

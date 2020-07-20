@@ -1,12 +1,6 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
-using Microsoft.OpenApi;
-using Microsoft.OpenApi.Extensions;
-using Newtonsoft.Json;
-using Swashbuckle.AspNetCore.Swagger;
 using MCMS.Controllers.Api;
-using MCMS.SwaggerFormly.Models;
 
 namespace MCMS.SwaggerFormly.Controllers
 {

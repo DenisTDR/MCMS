@@ -1,10 +1,7 @@
-using System;
-using AutoMapper;
 using MCMS.Base.Attributes;
 using MCMS.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace MCMS.Controllers.Api
 {

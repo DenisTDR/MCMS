@@ -31,6 +31,13 @@ function bindDefaultDataTables(tableElem, url, columns, actionsColumnContent, ha
             "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7 d-flex justify-content-between'pB>>",
         buttons: [
             {
+                text: '<i class="fas fa-grip-lines-vertical fa-fw"></i><i class="fas fa-search fa-fw"></i>',
+                className: 'btn-light btn-outline-info',
+                action: function (e, dt, node, config) {
+                    toggleDataTablesColumnSearch(tableElem, columns);
+                }
+            },
+            {
                 text: '<i class="fas fa-sync-alt"></i>',
                 className: 'btn-light btn-outline-info',
                 action: function (e, dt, node, config) {
@@ -48,7 +55,6 @@ function bindDefaultDataTables(tableElem, url, columns, actionsColumnContent, ha
         }];
         config.aaSorting = [];
     }
-    console.log(config.buttons);
     var table = tableElem.DataTable(config);
     if (hasStaticIndexColumn) {
         table.on('order.dt search.dt', function () {
@@ -58,4 +64,31 @@ function bindDefaultDataTables(tableElem, url, columns, actionsColumnContent, ha
         }).draw();
     }
     return table;
+}
+
+function toggleDataTablesColumnSearch(table, columns) {
+    var searchRow = table.find('tfoot tr.column-search-row');
+    searchRow.toggle();
+    if (!searchRow.data('build')) {
+        searchRow.data('build', true)
+
+        var searchCells = searchRow.find('th');
+        searchCells.each(function (index) {
+            if (!columns[index].searchable) {
+                $(this).html('');
+                return;
+            }
+            var title = $(this).text();
+            $(this).html('&nbsp;<input type="text" placeholder="Search ' + title + '" />');
+        });
+
+        table.dataTable().api().columns().every(function (index) {
+            var that = this;
+            $(searchCells[index]).find("input").on('keyup change clear', function () {
+                if (that.search() !== this.value) {
+                    that.search(this.value).draw();
+                }
+            });
+        });
+    }
 }

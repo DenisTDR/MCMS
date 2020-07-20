@@ -44,12 +44,12 @@ namespace MCMS.Display.ModelDisplay
                 return attr == null || !attr.Hidden;
             }).ToList();
 
-            var list = tableColumnProps
-                .Select(prop => new TableColumn(TypeHelpers.GetDisplayName(prop), prop.Name.ToCamelCase(),
-                    prop.GetCustomAttributes<TableColumnAttribute>().FirstOrDefault()?.Order ?? 0)).ToList();
+            var list = tableColumnProps.Select(prop => new TableColumn(TypeHelpers.GetDisplayName(prop),
+                prop.Name.ToCamelCase(), prop.GetCustomAttributes<TableColumnAttribute>().FirstOrDefault())).ToList();
             if (!excludeActionsColumn)
             {
-                list.Add(new TableColumn(await TranslationsRepository.GetValueOrSlug("actions"), "_actions", 100));
+                list.Add(new TableColumn(await TranslationsRepository.GetValueOrSlug("actions"), "_actions", 100)
+                    {Orderable = false, Searchable = false});
             }
 
             return list;

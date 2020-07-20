@@ -17,7 +17,6 @@ namespace MCMS.Display.ModelDisplay
         public string TableItemsApiUrl { get; set; }
 
         public string TableColumnsSerializedForDataTables =>
-            JsonConvert.SerializeObject(TableColumnsOrdered.Select(tc =>
-                new {data = tc.Key, defaultContent = "<span class='st-text'>null/empty</i>"}));
+            JsonConvert.SerializeObject(TableColumnsOrdered.Select(tc => tc.GetDataTablesObject()));
     }
 }

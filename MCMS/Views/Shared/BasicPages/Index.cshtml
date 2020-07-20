@@ -37,6 +37,28 @@
         }
     </tr>
     </thead>
+    <tfoot>
+    <tr>
+        @if (Model.HasTableIndexColumn)
+        {
+            <th></th>
+        }
+        @foreach (var tableColumn in Model.TableColumnsOrdered)
+        {
+            <th>@tableColumn.Name</th>
+        }
+    </tr>
+    <tr class="column-search-row">
+        @if (Model.HasTableIndexColumn)
+        {
+            <th></th>
+        }
+        @foreach (var tableColumn in Model.TableColumnsOrdered)
+        {
+            <th>@tableColumn.Name</th>
+        }
+    </tr>
+    </tfoot>
 </table>
 
 <div id="actions-cell-template-@tableId" class="d-none">

@@ -40,7 +40,7 @@ namespace MCMS
                 .GetUrlHelper(serviceProvider.GetRequiredService<IActionContextAccessor>().ActionContext));
 
             services.AddTransient<IAdapterFactory, AdapterFactory>();
-            
+
             if (!string.IsNullOrEmpty(Env.Get("PERSISTED_KEYS_DIRECTORY")))
             {
                 services.AddDataProtection()

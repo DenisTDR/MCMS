@@ -10,6 +10,7 @@ using MCMS.Data.Seeder;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -75,10 +76,18 @@ namespace MCMS.Builder
             {
                 smpSpec.ConfigureServices(services);
             }
+
+            services.Configure<ForwardedHeadersOptions>(options =>
+            {
+                options.ForwardedHeaders = ForwardedHeaders.All;
+                options.KnownNetworks.Clear();
+                options.KnownProxies.Clear();
+            });
         }
 
         public void Configure(IApplicationBuilder app, IServiceProvider serviceProvider)
         {
+            app.UseForwardedHeaders();
             var logger = serviceProvider.GetService<ILogger<MApp>>();
             if (HostEnvironment.IsDevelopment())
             {

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using MCMS.Base.Auth;
 using MCMS.Controllers.Ui;
@@ -42,6 +43,29 @@ namespace MCMS.Controllers
             }
 
             return RedirectToAction(nameof(Seed));
+        }
+
+        [HttpGet]
+        [Produces("application/json")]
+        [AllowAnonymous]
+        public IActionResult HeadersDebug()
+        {
+            var obj = new Dictionary<string, object>
+            {
+                ["Request Method"] = $"{HttpContext.Request.Method}",
+                ["Request Scheme"] = $"{HttpContext.Request.Scheme}",
+                ["Request Path"] = $"{HttpContext.Request.Path}"
+            };
+            var headers = new Dictionary<string, string>();
+            foreach (var header in HttpContext.Request.Headers)
+            {
+                headers[header.Key] = header.Value;
+            }
+
+            obj["headers"] = headers;
+            obj["Request RemoteIp"] = HttpContext.Connection.RemoteIpAddress.ToString();
+
+            return Ok(obj);
         }
     }
 }

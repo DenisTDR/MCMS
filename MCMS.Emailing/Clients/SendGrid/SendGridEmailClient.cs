@@ -20,7 +20,7 @@ namespace MCMS.Emailing.Clients.SendGrid
         public async Task SendEmailAsync(string senderEmail, string senderName, string recipientAddress, string subject,
             string message)
         {
-            _logger.LogInformation($"Sending email with SendGrid: '{subject}' to '{recipientAddress}'");
+            _logger.LogWarning($"Sending email with SendGrid: '{subject}' to '{recipientAddress}'");
             var client = new SendGridClient(_clientOptions.Key);
             var msg = new SendGridMessage
             {

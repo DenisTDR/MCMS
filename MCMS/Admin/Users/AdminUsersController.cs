@@ -54,7 +54,7 @@ namespace MCMS.Admin.Users
         {
             var userVm = await GetUserWithRoles(id);
             ViewBag.Roles = await ServiceProvider.GetService<RoleManager<Role>>().Roles.Select(role => role.Name)
-                .ToListAsync();
+                .Where(role => role != "God").ToListAsync();
             return View(userVm);
         }
 

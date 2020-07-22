@@ -93,7 +93,7 @@ namespace MCMS.Base.Attributes
                     }
                 }
 
-                if (splitPath?.Length == 1)
+                if (splitPath.Length == 1)
                 {
                     continue;
                 }
@@ -102,6 +102,12 @@ namespace MCMS.Base.Attributes
                 foreach (var pathPart in splitPath.Take(splitPath.Length - 1))
                 {
                     obj = EnsureSubPropertyExists(obj, pathPart);
+                }
+
+                if (obj.GetType().GetProperty(splitPath[^1].ToPascalCase())?.CanWrite == false)
+                {
+                    doc.Operations.Remove(op);
+                    i--;
                 }
             }
 

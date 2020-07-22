@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using MCMS.Base.Data.FormModels;
+using MCMS.Base.Data.ViewModels;
 using MCMS.Base.Extensions;
 using MCMS.Base.JsonPatch;
 using MCMS.Base.SwaggerFormly.Formly;
@@ -99,6 +100,17 @@ namespace MCMS.Base.Attributes
                 }
 
                 object obj = nfm;
+                
+                // TODO: generalize this
+                if (obj.GetType().GetProperty(splitPath[0].ToPascalCase()) is {} prop &&
+                    splitPath[1].ToPascalCase() != "Id" &&
+                    prop.GetCustomAttribute<DisablePatchSubPropertiesAttribute>() != null)
+                {
+                    doc.Operations.Remove(op);
+                    i--;
+                    continue;
+                }
+
                 foreach (var pathPart in splitPath.Take(splitPath.Length - 1))
                 {
                     obj = EnsureSubPropertyExists(obj, pathPart);
@@ -167,12 +179,8 @@ namespace MCMS.Base.Attributes
         {
             propertyInfo = objType.GetProperty(propertyName.ToPascalCase()) ??
                            throw new Exception("Invalid property: " + propertyName);
-            if (typeof(IFormModel).IsAssignableFrom(propertyInfo.PropertyType))
-            {
-                return true;
-            }
-
-            return false;
+            return typeof(IFormModel).IsAssignableFrom(propertyInfo.PropertyType) ||
+                   typeof(IViewModel).IsAssignableFrom(propertyInfo.PropertyType);
         }
     }
 }

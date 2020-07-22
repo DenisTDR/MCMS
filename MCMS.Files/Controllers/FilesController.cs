@@ -21,14 +21,14 @@ namespace MCMS.Files.Controllers
 
         public override Task<IActionResult> Edit(string id)
         {
-            FormParamsService.SetSchemaName(nameof(FileFormModel));
+            FormParamsService.SchemaName = nameof(FileFormModel);
             return base.Edit(id);
         }
 
         [ViewLayout("_ModalLayout")]
         public IActionResult Upload()
         {
-            FormParamsService.SetSchemaName(nameof(FileUploadFormModel));
+            FormParamsService.SchemaName = nameof(FileUploadFormModel);
             return View();
         }
 

@@ -1,5 +1,6 @@
 using System;
 using MCMS.Admin.Users;
+using MCMS.Auth;
 using MCMS.Base.Auth;
 using MCMS.Base.Builder;
 using MCMS.Base.Helpers;
@@ -24,6 +25,7 @@ namespace MCMS
                 .AddClaimsPrincipalFactory<MUserClaimsPrincipalFactory>()
                 .AddEntityFrameworkStores<BaseDbContext>();
             services.AddScoped<UsersTableModelDisplayConfigService>();
+            services.AddScoped<AuthService>();
             services.AddOptions<EntitySeeders>().Configure(seeders => { seeders.Add<RolesSeeder>(); });
         }
 

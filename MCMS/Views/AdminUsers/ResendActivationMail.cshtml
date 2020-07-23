@@ -1,0 +1,27 @@
+@using MCMS.Base.Helpers
+@using MCMS.Base.Extensions
+@using MCMS.Base.Repositories
+@model MCMS.Admin.Users.UserViewModel
+@inject ITranslationsRepository TransRepo
+@{
+    ViewBag.Title = $"Resend activation email for {Model.FullName} <{Model.Email}>?";
+    ViewBag.ModalDialogClasses = "modal-md";
+    var id = Utils.GenerateRandomHexString();
+}
+<div class="modal-body" id="@id">
+    <form asp-action="ResendActivationMail" asp-controller="AdminUsersAdminApi" asp-route-id="@Model.Id">
+    </form>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-secondary" data-dismiss="modal">@await TransRepo.GetValueOrSlug("cancel")</button>
+    <button type="button" class="btn btn-primary" id="save-@id">@await TransRepo.GetValueOrSlug("yes")</button>
+</div>
+@using (Html.BeginMPageScripts())
+{
+    <script>
+     $("#save-@id").click(function() {
+          $("#@id form").submit();
+     });
+     ajaxForm($("#@id form"), true, function (){alert('Sent!');});
+    </script>
+}

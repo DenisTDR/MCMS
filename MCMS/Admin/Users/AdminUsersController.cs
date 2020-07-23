@@ -67,6 +67,17 @@ namespace MCMS.Admin.Users
             var userVm = Mapper.Map<UserViewModel>(user);
             return View(userVm);
         }
+        
+        
+        [HttpGet]
+        [Route("{id}")]
+        [ViewLayout("_ModalLayout")]
+        public async Task<IActionResult> ResendActivationMail([FromRoute] string id)
+        {
+            var user = await Repo.GetOneOrThrow(id);
+            var userVm = Mapper.Map<UserViewModel>(user);
+            return View(userVm);
+        }
 
         [HttpGet("{id}")]
         public virtual async Task<IActionResult> Delete([FromRoute] string id)

@@ -18,12 +18,19 @@
     {
         var confirmEmailLink = new MRichLink(await TransRepo.GetValueOrSlug("confirm_email"), typeof(AdminUsersController),
             nameof(AdminUsersController.ConfirmEmail)).WithValues(new {Model.Id}).WitTag("confirm-email")
-            .AsButton("outline-warning").WithModal()
+            .AsButton("outline-secondary").WithModal()
             .WithIconClasses("fas fa-check");
 
         <partial name="Partials/_MRichLink" model="confirmEmailLink"/>
 @*         <button type="button" class="btn btn-warning">@await TransRepo.GetValueOrSlug("confirm_email")</button> *@
     }
+    @{
+        var resendResetLink = new MRichLink(await TransRepo.GetValueOrSlug("resend_activation_email"), typeof(AdminUsersController),
+            nameof(AdminUsersController.ResendActivationMail)).WithValues(new {Model.Id}).WitTag("confirm-email")
+            .AsButton("outline-secondary").WithModal()
+            .WithIconClasses("fas fa-envelope");
 
+        <partial name="Partials/_MRichLink" model="resendResetLink"/>
+    }
     <button type="button" class="btn btn-secondary" data-dismiss="modal">@await TransRepo.GetValueOrSlug("close")</button>
 </div>

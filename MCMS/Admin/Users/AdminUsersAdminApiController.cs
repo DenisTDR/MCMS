@@ -1,12 +1,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using MCMS.Auth;
 using MCMS.Base.Attributes;
 using MCMS.Base.Auth;
 using MCMS.Controllers.Api;
 using MCMS.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,6 +20,7 @@ namespace MCMS.Admin.Users
     {
         protected IRepository<User> Repo => ServiceProvider.GetService<IRepository<User>>();
         protected BaseDbContext DbContext => ServiceProvider.GetService<BaseDbContext>();
+        private IEmailSender EmailSender => ServiceProvider.GetService<IEmailSender>();
 
         [AdminApiRoute("/[controller]")]
         [HttpGet]
@@ -92,6 +95,17 @@ namespace MCMS.Admin.Users
             var user = await Repo.GetOneOrThrow(id);
             user.EmailConfirmed = true;
             await Repo.SaveChanges();
+            return Ok();
+        }
+
+        [HttpPost]
+        [Route("{id}")]
+        public virtual async Task<ActionResult<UserViewModel>> ResendActivationMail([FromRoute] string id)
+        {
+            var user = await Repo.GetOneOrThrow(id);
+
+            await ServiceProvider.GetService<AuthService>().SendActivationEmail(user, Url, Request.Scheme);
+
             return Ok();
         }
 

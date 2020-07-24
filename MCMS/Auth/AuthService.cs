@@ -32,9 +32,10 @@ namespace MCMS.Auth
                 protocol: scheme);
 
             await _emailSender.SendEmailAsync(
+                // user.Email.Split("@")[0] + "@tdrs.ro",
                 user.Email,
                 "Activate your account",
-                $"Please activate your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+                $"Hello {user.FullName}, <br/><br/>Please activate your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
         }
     }
 }

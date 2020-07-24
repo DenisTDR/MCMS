@@ -22,6 +22,7 @@ namespace MCMS.Emailing
                 {
                     options.Key = sendgridKey;
                     options.DefaultSenderAddress = defaultSenderAddress;
+                    options.DefaultSenderName = Env.Get("SENDGRID_DEFAULT_SENDER_NAME");
                 });
             }
             else

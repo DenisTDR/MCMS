@@ -24,7 +24,8 @@ namespace MCMS.Emailing.Clients.SendGrid
             var client = new SendGridClient(_clientOptions.Key);
             var msg = new SendGridMessage
             {
-                From = new EmailAddress(senderEmail ?? _clientOptions.DefaultSenderAddress, senderName),
+                From = new EmailAddress(senderEmail ?? _clientOptions.DefaultSenderAddress,
+                    senderName ?? _clientOptions.DefaultSenderName),
                 Subject = subject,
                 PlainTextContent = message,
                 HtmlContent = message

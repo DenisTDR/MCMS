@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+using System.Reflection;
 using MCMS.Base.Exceptions;
 using MCMS.Controllers.Api;
 using MCMS.Models;
@@ -44,15 +46,14 @@ namespace MCMS.Filters
                             StatusCode = knownExc.Code
                         }
                     };
-                    var result = new ViewResult {
+                    var result = new ViewResult
+                    {
                         ViewName = "Error",
                         ViewData = viewData,
                     };
 
                     context.ExceptionHandled = true;
-                    
-                    // var result = new StatusCodeResult(knownExc.Code);
-                    // var result = new ObjectResult(Error = context.Exception?.Message);
+
                     context.Result = result;
                 }
             }
@@ -60,11 +61,23 @@ namespace MCMS.Filters
 
         private bool IsApiController(ExceptionContext context)
         {
-            return context.ActionDescriptor is ControllerActionDescriptor actionDescriptor &&
-                   typeof(AdminApiController).IsAssignableFrom(actionDescriptor.ControllerTypeInfo);
+            if (!(context.ActionDescriptor is ControllerActionDescriptor actionDescriptor))
+            {
+                return false;
+            }
+
+            var pAttrs = actionDescriptor.MethodInfo.GetCustomAttributes<ProducesAttribute>().ToList();
+            if (!pAttrs.Any())
+            {
+                pAttrs = actionDescriptor.ControllerTypeInfo.GetCustomAttributes<ProducesAttribute>().ToList();
+            }
+
+            if (!pAttrs.Any())
+            {
+                return typeof(ApiController).IsAssignableFrom(actionDescriptor.ControllerTypeInfo);
+            }
+
+            return pAttrs.Any(a => a.ContentTypes.Any(c => c.ToLower().StartsWith("application/json")));
         }
-
-
-        // context.HttpContext.Items["ForcedLayout"] = "_ModalLayout";
     }
 }

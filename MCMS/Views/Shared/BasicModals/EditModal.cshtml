@@ -8,6 +8,7 @@
     ViewBag.Title = $"{await TransRepo.GetValueOrSlug("edit")} {ViewBag.ModelName} '{Model}'";
     var formParams = ViewBag.FormParams as FormlyFormParams ?? (ViewBag.FormParamsService as FormParamsService)?.ForPatch(Model.Id) ?? throw new Exception("Don't have form params :(");
     formParams.Options = new {hideSubmitButton = true};
+    ViewBag.ModalDialogClasses = "modal-xl";
 }
 <div class="modal-body" id="@formParams.FormInstanceId-modal-body">
     @await Html.BlindPartialAsync("Formly/FormlyForm", formParams)

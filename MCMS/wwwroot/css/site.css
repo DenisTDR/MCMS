@@ -82,3 +82,41 @@ body {
 .st-text {
     opacity: .4;
 }
+
+.image {
+    display: table;
+    clear: both;
+    text-align: center;
+    margin: 1em auto;
+}
+
+.image-style-align-right {
+    float: right;
+    /*noinspection CssUnresolvedCustomProperty*/
+    margin-left: var(--ck-image-style-spacing, 1.5em);
+}
+
+.image-style-side,
+.image-style-align-left {
+    float: left;
+    /*noinspection CssUnresolvedCustomProperty*/
+    margin-left: var(--ck-image-style-spacing, 1.5em);
+}
+
+.image-style-align-center,
+.image-style-align-left,
+.image-style-align-right,
+.image-style-side {
+    max-width: 50%;
+}
+
+.image > figcaption {
+    display: table-caption;
+    caption-side: bottom;
+    word-break: break-word;
+    color: #333;
+    background-color: #f7f7f7;
+    padding: .6em;
+    font-size: .75em;
+    outline-offset: -1px;
+}

@@ -1,9 +1,8 @@
 using System;
-using System.Collections.Concurrent;
 using System.IO;
 using MCMS.Base.Builder;
+using MCMS.Base.Files.UploadPurpose;
 using MCMS.Data;
-using MCMS.Files.Attributes;
 using MCMS.Files.Filters;
 using MCMS.Files.Models;
 using Microsoft.AspNetCore.Builder;
@@ -17,10 +16,10 @@ namespace MCMS.Files
     {
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.AddOptions<UploadPurposeOptions>();
             services.AddTransient<FileUploadManager>();
             services.ConfigureSwaggerGen(options =>
             {
-                // options.fil
                 options.SchemaFilter<SwaggerFilePurposesFilter>();
             });
             services.AddScoped<IRepository<FileEntity>, FilesRepository>();
@@ -49,8 +48,5 @@ namespace MCMS.Files
             app.UseStaticFiles(new StaticFileOptions
                 {FileProvider = new PhysicalFileProvider(path), RequestPath = MFiles.PublicVirtualPath});
         }
-
-        public static readonly ConcurrentDictionary<string, FormlyFileAttribute> RegisteredPurposes =
-            new ConcurrentDictionary<string, FormlyFileAttribute>();
     }
 }

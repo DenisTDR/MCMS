@@ -1,8 +1,10 @@
 using System.Linq;
 using System.Reflection;
 using MCMS.Base.Extensions;
+using MCMS.Base.Files.UploadPurpose;
 using MCMS.Files.Attributes;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
@@ -11,10 +13,13 @@ namespace MCMS.Files.Filters
     public class SwaggerFilePurposesFilter : ISchemaFilter
     {
         private readonly ILogger<SwaggerFilePurposesFilter> _logger;
+        private readonly UploadPurposeOptions _options;
 
-        public SwaggerFilePurposesFilter(ILogger<SwaggerFilePurposesFilter> logger)
+        public SwaggerFilePurposesFilter(ILogger<SwaggerFilePurposesFilter> logger,
+            IOptions<UploadPurposeOptions> options)
         {
             _logger = logger;
+            _options = options.Value;
         }
 
         public void Apply(OpenApiSchema schema, SchemaFilterContext context)
@@ -36,10 +41,7 @@ namespace MCMS.Files.Filters
                     continue;
                 }
 
-                if (!MFilesSpecifications.RegisteredPurposes.ContainsKey(fileAttribute.Purpose))
-                {
-                    MFilesSpecifications.RegisteredPurposes[fileAttribute.Purpose] = fileAttribute;
-                }
+                _options.Register(fileAttribute.Purpose, fileAttribute);
             }
         }
     }

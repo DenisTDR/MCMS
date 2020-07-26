@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using MCMS.Base.Extensions;
+using MCMS.Base.Files.UploadPurpose;
 using MCMS.Base.Helpers;
 using MCMS.Base.SwaggerFormly.Formly.Fields;
 using Microsoft.AspNetCore.Routing;
@@ -8,7 +9,7 @@ using Microsoft.OpenApi.Any;
 
 namespace MCMS.Files.Attributes
 {
-    public class FormlyFileAttribute : FormlyFieldAttribute
+    public class FormlyFileAttribute : FormlyFieldAttribute, IFileUploadPurpose
     {
         private string[] _accept;
         public Type FileUploadControllerType { get; }

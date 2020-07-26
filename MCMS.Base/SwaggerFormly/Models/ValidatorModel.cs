@@ -1,6 +1,6 @@
 using Microsoft.OpenApi.Any;
 
-namespace MCMS.SwaggerFormly.Models
+namespace MCMS.Base.SwaggerFormly.Models
 {
     public class ValidatorModel
     {

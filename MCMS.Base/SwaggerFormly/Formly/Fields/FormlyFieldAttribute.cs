@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using MCMS.Base.SwaggerFormly.Extensions;
-using MCMS.SwaggerFormly.Models;
+using MCMS.Base.SwaggerFormly.Models;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.OpenApi.Any;
 using Microsoft.OpenApi.Models;

@@ -1,5 +1,6 @@
 using System;
 using MCMS.Base.Builder;
+using MCMS.Base.Files.UploadPurpose;
 using MCMS.Base.Helpers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
@@ -63,6 +64,14 @@ namespace MCMS.SwaggerFormly
             services.AddScoped(typeof(FormParamsForControllerService<,>));
             services.AddScoped<FormParamsServiceBuilder>();
             services.AddSingleton<SwaggerConfigService>();
+            services.AddOptions<UploadPurposeOptions>().Configure(o =>
+            {
+                var ckeditorPurpose = new FileUploadPurpose("ckeditor")
+                {
+                    Accept = new[] {"jpg", "jpeg", "png", "gif", "bmp", "webp", "tiff", "svg"}
+                };
+                o.Register("ckeditor", ckeditorPurpose);
+            });
         }
     }
 }

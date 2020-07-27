@@ -22,6 +22,15 @@ namespace MCMS.Auth
 
         public async Task SendActivationEmail(User user, IUrlHelper urlHelper, string scheme)
         {
+            var subject = "Activate your account";
+            var body =
+                "Hello {{fullName}}, <br/><br/>Please activate your account by <a href='{{activationUrl}}'>clicking here</a>.";
+            await SendActivationEmail(user, urlHelper, scheme, subject, body);
+        }
+
+        public async Task SendActivationEmail(User user, IUrlHelper urlHelper, string scheme, string subject,
+            string body)
+        {
             var code = await _userManager.GeneratePasswordResetTokenAsync(user);
             code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
             var userId = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(user.Id));
@@ -30,12 +39,15 @@ namespace MCMS.Auth
                 pageHandler: null,
                 values: new {area = "Identity", code, userId},
                 protocol: scheme);
+            var encodedUrl = HtmlEncoder.Default.Encode(callbackUrl);
+
+            body = body.Replace("{{fullName}}", user.FullName);
+            body = body.Replace("{{activationUrl}}", encodedUrl);
 
             await _emailSender.SendEmailAsync(
                 // user.Email.Split("@")[0] + "@tdrs.ro",
-                user.Email,
-                "Activate your account",
-                $"Hello {user.FullName}, <br/><br/>Please activate your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+                user.Email, 
+                subject, body);
         }
     }
 }

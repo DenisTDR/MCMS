@@ -1,5 +1,6 @@
 using System.Linq;
 using Microsoft.AspNetCore.JsonPatch;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace MCMS.Base.JsonPatch
@@ -17,8 +18,10 @@ namespace MCMS.Base.JsonPatch
 
         public static JsonPatchDocument CreatePatchFromObjects(object originalObject, object modifiedObject)
         {
-            var original = JObject.FromObject(originalObject);
-            var modified = JObject.FromObject(modifiedObject);
+            var serializer = JsonSerializer.CreateDefault();
+            serializer.PreserveReferencesHandling = PreserveReferencesHandling.All;
+            var original = JObject.FromObject(originalObject, serializer);
+            var modified = JObject.FromObject(modifiedObject, serializer);
 
             var patch = new JsonPatchDocument();
             FillPatchForObject(original, modified, patch, "/");

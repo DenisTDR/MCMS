@@ -42,8 +42,8 @@ namespace MCMS.Display.ModelDisplay
                 config.CreateNewItemLink = new MRichLink(
                         $"{await TranslationsRepository.GetValueOrSlug("create")} {TypeHelpers.GetDisplayName(typeof(TVm))}",
                         typeof(TUiController), nameof(GenericAdminUiController<TE, TFm, TVm, TApiController>.Create))
-                    .AsButton("outline-primary")
-                    .WithIconClasses("fas fa-plus").WithValues(viewBag.CreateNewLinkValues);
+                    .AsButton("outline-primary").WithIconClasses("fas fa-plus")
+                    .WithValues(viewBag.CreateNewLinkValues as object);
                 if (viewBag.UsesModals)
                 {
                     config.CreateNewItemLink.WithModal();

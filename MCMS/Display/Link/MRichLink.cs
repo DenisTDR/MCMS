@@ -38,32 +38,6 @@ namespace MCMS.Display.Link
             return urlHelper.ActionLink(ActionName, ControllerName, Values, protocol: Utils.GetExternalProtocol());
         }
 
-        public MRichLink AsButton(string cssClasses)
-        {
-            CssClasses = "btn btn-" + cssClasses;
-            return this;
-        }
-
-        public MRichLink ToggleModal(bool isWith)
-        {
-            AsModal = isWith;
-            return this;
-        }
-
-        public MRichLink WithModal(string backdrop = "static",
-            ModalSuccessAction modalSuccessAction = ModalSuccessAction.ReloadTable)
-        {
-            ModalBackdrop = backdrop;
-            AsModal = true;
-            ModalSuccessAction = modalSuccessAction;
-            return this;
-        }
-
-        public MRichLink WithValues(object values)
-        {
-            Values = values;
-            return this;
-        }
     }
 
     public enum ModalSuccessAction

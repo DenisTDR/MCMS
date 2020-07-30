@@ -5,7 +5,7 @@ using MCMS.Display.Link;
 
 namespace MCMS.Display.Menu
 {
-    public class MenuLink : MLink, IMenuItem
+    public class MenuLink : MRichLink, IMenuItem
     {
         public MenuLink(string text, Type controller, MethodInfo action = null) : base(text, controller, action)
         {
@@ -21,5 +21,6 @@ namespace MCMS.Display.Menu
         }
 
         public int Index { get; set; }
+
     }
 }

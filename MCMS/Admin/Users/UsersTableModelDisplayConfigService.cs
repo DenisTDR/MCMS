@@ -38,9 +38,11 @@ namespace MCMS.Admin.Users
                     .AsButton("outline-info").WithModal().WithIconClasses("far fa-eye")
                     .WithValues(new {id = "ENTITY_ID"}),
                 new MRichLink("", typeof(AdminUsersController), nameof(AdminUsersController.ChangeRoles))
-                    .WitTag("roles").AsButton("outline-primary").WithModal().WithIconClasses("fas fa-tags"),
+                    .WitTag("roles").AsButton("outline-primary").WithModal().WithIconClasses("fas fa-tags")
+                    .WithValues(new {id = "ENTITY_ID"}),
                 new MRichLink("", typeof(AdminUsersController), nameof(AdminUsersController.Delete)).WitTag("delete")
                     .AsButton("outline-danger").WithModal().WithIconClasses("fas fa-trash-alt")
+                    .WithValues(new {id = "ENTITY_ID"})
             };
         }
 

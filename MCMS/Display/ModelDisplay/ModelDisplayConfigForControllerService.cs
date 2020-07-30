@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using MCMS.Base.Data.Entities;
 using MCMS.Base.Data.FormModels;
@@ -69,7 +70,7 @@ namespace MCMS.Display.ModelDisplay
                 new MRichLink("", typeof(TUiController),
                         nameof(GenericAdminUiController<TE, TFm, TVm, TApiController>.Delete)).WitTag("delete")
                     .AsButton("outline-danger").WithModal().WithIconClasses("fas fa-trash-alt")
-            };
+            }.Select(l => l.WithValues(new {id = "ENTITY_ID"})).ToList();
         }
 
         public static Type MakeGenericTypeWithUiControllerType(Type uiControllerType)

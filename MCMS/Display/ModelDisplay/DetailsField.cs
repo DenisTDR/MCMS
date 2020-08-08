@@ -1,10 +1,10 @@
 using System.Reflection;
+using MCMS.Display.DisplayValue;
 
 namespace MCMS.Display.ModelDisplay
 {
     public class DetailsField
     {
-
         public DetailsField(string name, PropertyInfo propertyInfo, int order) : this(name, propertyInfo)
         {
             Order = order;
@@ -20,10 +20,6 @@ namespace MCMS.Display.ModelDisplay
         public string Tag { get; set; }
         public string Name { get; }
         public PropertyInfo PropertyInfo { get; }
-
-        public object GetFor(object obj)
-        {
-            return PropertyInfo.GetValue(obj);
-        }
+        
     }
 }

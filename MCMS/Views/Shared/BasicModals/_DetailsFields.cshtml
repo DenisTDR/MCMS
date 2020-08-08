@@ -1,4 +1,6 @@
 @using MCMS.Display.ModelDisplay
+@using MCMS.Display.DisplayValue
+@inject DisplayValueService DisplayValueService
 
 @{
     var fields = ViewBag.Fields as List<DetailsField>
@@ -9,6 +11,6 @@
 {
     <div class="row">
         <div class="col-sm-3">@detailsField.Name</div>
-        <div class="col-sm-9">@Html.Raw(detailsField.GetFor(Model) ?? "<span class='st-text'>null/empty</i>")</div>
+        <div class="col-sm-9">@Html.Raw(DisplayValueService.GetDisplayValue(detailsField.PropertyInfo, Model) ?? "<span class='st-text'>null/empty</i>")</div>
     </div>
 }

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using MCMS.Data;
 using MCMS.Data.Seeder;
+using MCMS.Display.DisplayValue;
 using MCMS.Display.ModelDisplay;
 using MCMS.Filters;
 using Microsoft.AspNetCore.DataProtection;
@@ -34,6 +35,8 @@ namespace MCMS
             services.AddScoped<DataSeeder>();
             services.AddScoped(typeof(ModelDisplayConfigForControllerService<,,,,>));
 
+            services.AddSingleton<DisplayValueService>();
+            
             services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
             services.AddTransient(serviceProvider => serviceProvider
                 .GetRequiredService<IUrlHelperFactory>()

@@ -9,7 +9,7 @@ using Microsoft.OpenApi.Any;
 
 namespace MCMS.Files.Attributes
 {
-    public class FormlyFileAttribute : FormlyFieldAttribute, IFileUploadPurpose
+    public class FormlyFileAttribute : FormlyCustomFieldFieldAttribute, IFileUploadPurpose
     {
         private string[] _accept;
         public Type FileUploadControllerType { get; }

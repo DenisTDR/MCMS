@@ -6,7 +6,7 @@ using Microsoft.OpenApi.Any;
 
 namespace MCMS.Base.SwaggerFormly.Formly.Fields
 {
-    public class FormlySelectAttribute : FormlyFieldAttribute
+    public class FormlySelectAttribute : FormlyCustomFieldFieldAttribute
     {
         public string OptionsUrl { get; }
         public Type OptionsControllerType { get; }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using MCMS.Base.SwaggerFormly.Extensions;
 using MCMS.Base.SwaggerFormly.Models;
 using Microsoft.AspNetCore.Routing;
@@ -8,59 +9,42 @@ using Microsoft.OpenApi.Models;
 
 namespace MCMS.Base.SwaggerFormly.Formly.Fields
 {
-    [AttributeUsage(AttributeTargets.Property)]
+    [AttributeUsage(AttributeTargets.Property, Inherited = true)]
     public class FormlyFieldAttribute : Attribute
     {
-        public FormlyFieldAttribute()
-        {
-        }
-
-        public FormlyFieldAttribute(string type, string format = null)
-        {
-            Type = type;
-            Format = format;
-        }
-
-        public bool AsOpenApi { get; set; }
-        public string Type { get; set; }
-        public string Format { get; set; }
-        
+        public bool IgnoreField { get; set; }
+        public double OrderIndex { get; set; }
+        public object DefaultValue { get; set; }
+        public string[] Wrappers { get; set; }
+        public string ClassName { get; set; }
         public bool HasCustomValidators { get; set; }
 
-        public virtual OpenApiObject GetOpenApiConfig(LinkGenerator linkGenerator)
-        {
-            return null;
-        }
 
         public virtual void Attach(OpenApiSchema schema, OpenApiObject xProps, OpenApiObject templateOptions,
             LinkGenerator linkGenerator)
         {
-            schema.AllOf = new List<OpenApiSchema>();
-            if (AsOpenApi)
+            AttachBasicProps(schema, xProps, templateOptions, linkGenerator);
+        }
+
+        protected virtual void AttachBasicProps(OpenApiSchema schema, OpenApiObject xProps,
+            OpenApiObject templateOptions,
+            LinkGenerator linkGenerator)
+        {
+            if (ClassName != null)
             {
-                schema.Type = Type;
-            }
-            else
-            {
-                xProps["type"] = OpenApiExtensions.ToOpenApi(Type);
+                xProps["className"] = OpenApiExtensions.ToOpenApi(ClassName);
             }
 
-            var customFieldConfig = GetOpenApiConfig(linkGenerator);
-            if (customFieldConfig != null)
+            if (DefaultValue != null)
             {
-                templateOptions["customFieldConfig"] = customFieldConfig;
+                xProps["defaultValue"] = OpenApiExtensions.ToOpenApi(DefaultValue);
             }
 
-            if (Format != null)
+            if (Wrappers != null)
             {
-                if (AsOpenApi)
-                {
-                    schema.Format = Format;
-                }
-                else
-                {
-                    templateOptions["format"] = OpenApiExtensions.ToOpenApi(Format);
-                }
+                var arr = new OpenApiArray();
+                arr.AddRange(from object o in Wrappers select OpenApiExtensions.ToOpenApi(o));
+                xProps["wrappers"] = arr;
             }
         }
 

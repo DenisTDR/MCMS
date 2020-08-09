@@ -10,7 +10,6 @@ using MCMS.Base.SwaggerFormly.Extensions;
 using MCMS.Base.SwaggerFormly.Formly;
 using MCMS.Base.SwaggerFormly.Formly.Fields;
 using MCMS.Base.SwaggerFormly.Models;
-using MCMS.SwaggerFormly.Models;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.OpenApi.Any;
 using Microsoft.OpenApi.Interfaces;
@@ -37,29 +36,28 @@ namespace MCMS.SwaggerFormly.Filters
             }
 
             schema.Extensions.Add("x-formly-patched", new OpenApiBoolean(true));
+
+            var props = new List<Tuple<string, OpenApiSchema, double>>();
+
             foreach (var propKvp in schema.Properties)
             {
                 var pInfo = context.Type.GetProperties().First(p =>
                     p.Name.Equals(propKvp.Key, StringComparison.InvariantCultureIgnoreCase));
-                if (IsFormlyIgnored(pInfo))
+                if (IsFormlyIgnored(pInfo, out var orderIndex))
                 {
                     propKvp.Value.Extensions["x-formlyIgnore"] = new OpenApiBoolean(true);
                     continue;
                 }
 
+                props.Add(new Tuple<string, OpenApiSchema, double>(propKvp.Key, propKvp.Value, orderIndex));
+
                 var propSchema = propKvp.Value;
-                // if (!string.IsNullOrWhiteSpace(propSchema?.Reference?.Id))
-                // {
-                //     propSchema.AllOf = new List<OpenApiSchema> {new OpenApiSchema {Reference = propSchema.Reference}};
-                //     propSchema.Reference = null;
-                //     if (typeof(IFormModel).IsAssignableFrom(pInfo.PropertyType))
-                //     {
-                //         propSchema.Extensions["type"] = Oas("object");
-                //     }
-                // }
 
                 PatchProperty(propKvp.Key, propSchema, pInfo, context.Type);
             }
+
+            schema.Properties = props.OrderBy(p => p.Item3)
+                .ToDictionary(t => t.Item1, t => t.Item2);
         }
 
         private void PatchProperty(string propertyName, OpenApiSchema schema, PropertyInfo propertyInfo,
@@ -106,7 +104,7 @@ namespace MCMS.SwaggerFormly.Filters
             {
                 templateOptions["label"] = Oas(TypeHelpers.GetDisplayName(propertyInfo) ?? propertyInfo.Name);
             }
-            
+
             if (!templateOptions.ContainsKey("description"))
             {
                 var desc = TypeHelpers.GetDescription(propertyInfo);
@@ -121,8 +119,6 @@ namespace MCMS.SwaggerFormly.Filters
             OpenApiObject templateOptions, List<ValidatorModel> validators)
         {
             var dataTypeAttributes = propertyInfo.GetCustomAttributes<DataTypeAttribute>();
-            // var vOa = schema.Extensions.GetOrSetDefault<OpenApiObject, IOpenApiExtension>("validators");
-            // var validation = vOa.GetOrSetDefault<OpenApiArray, IOpenApiAny>("validation");
 
             foreach (var dataTypeAttribute in dataTypeAttributes)
             {
@@ -134,9 +130,6 @@ namespace MCMS.SwaggerFormly.Filters
                     case DataType.PhoneNumber:
                         validators.Add(
                             new ValidatorModel("pattern", "^\\+?(?:[0-9]\\s*){8,}$", "invalid_phone_number"));
-                        break;
-                    case DataType.Html:
-//                        schema.Extensions["customFormat"] = "textarea";
                         break;
                 }
             }
@@ -194,21 +187,6 @@ namespace MCMS.SwaggerFormly.Filters
         {
             if (!propertyInfo.PropertyType.IsEnum)
                 return;
-
-            // var requiredNotDefault = propertyInfo.GetCustomAttributes<RequireNotDefaultAttribute>().Any();
-            // var defaultValue = Activator.CreateInstance(propertyInfo.PropertyType);
-
-            // var optionsArray = new OpenApiArray();
-            // optionsArray.AddRange(Enum.GetValues(propertyInfo.PropertyType).Cast<Enum>()
-            //     .Where(enumValue => !requiredNotDefault || !Equals(enumValue, defaultValue))
-            //     .Select(
-            //         enumValue => new OpenApiObject
-            //         {
-            //             ["value"] = OpenApiExtensions.ToOpenApi(enumValue.GetCustomValue()),
-            //             ["label"] = Oas(enumValue.GetDisplayName()),
-            //             ["description"] = Oas(enumValue.GetDisplayDescription())
-            //         }));
-            // templateOptions["options"] = optionsArray;
             schema.Extensions["format"] = Oas("select");
         }
 
@@ -236,26 +214,20 @@ namespace MCMS.SwaggerFormly.Filters
             return new OpenApiString(str);
         }
 
-        private bool IsFormlyIgnored(PropertyInfo propertyInfo)
+        private bool IsFormlyIgnored(PropertyInfo propertyInfo, out double orderIndex)
         {
-            var attr = propertyInfo.GetCustomAttributes().FirstOrDefault(a => a is FormlyIgnoreAttribute);
+            var attr = propertyInfo.GetCustomAttributes().FirstOrDefault(a => a is FormlyFieldAttribute);
 
-            if (attr == null) return false;
-            if (attr is FormlyIgnoreAttribute at && at.DontIgnore)
+            if (attr is FormlyFieldAttribute at)
             {
-                return false;
+                orderIndex = at.OrderIndex;
+                return at.IgnoreField;
             }
 
-            return true;
-        }
-
-        private bool IsReadOnly(PropertyInfo propertyInfo)
-        {
+            orderIndex = 0;
             return false;
-            // return propertyInfo.GetCustomAttributes().Any(attr => attr is IsReadOnlyAttribute)
-            // && propertyInfo.GetCustomAttributes<IsReadOnlyAttribute>().Any(attr => attr.Is);
         }
-
+        
         private static bool ShouldPatchSchema(Type type)
         {
             return typeof(IFormModel).IsAssignableFrom(type);

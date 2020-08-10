@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace MCMS.Display.DisplayValue
+namespace MCMS.Base.Display.DisplayValue
 {
     public class DisplayValueFormatters
     {

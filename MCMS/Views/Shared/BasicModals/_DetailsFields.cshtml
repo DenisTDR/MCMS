@@ -1,5 +1,6 @@
 @using MCMS.Display.ModelDisplay
-@using MCMS.Display.DisplayValue
+@using MCMS.Base.Display.ModelDisplay
+@using MCMS.Base.Display.DisplayValue
 @inject DisplayValueService DisplayValueService
 
 @{
@@ -9,8 +10,8 @@
 }
 @foreach (var detailsField in fields)
 {
-    <div class="row">
-        <div class="col-sm-3">@detailsField.Name</div>
-        <div class="col-sm-9">@Html.Raw(DisplayValueService.GetDisplayValue(detailsField.PropertyInfo, Model) ?? "<span class='st-text'>null/empty</i>")</div>
+    <div class="row @detailsField.ClassName">
+        <div class="col-12 col-sm-4 col-md-3">@detailsField.Name</div>
+        <div class="col-12 col-sm-8 col-md-9">@Html.Raw(DisplayValueService.GetDisplayValue(detailsField.PropertyInfo, Model) ?? "<span class='st-text'>null/empty</i>")</div>
     </div>
 }

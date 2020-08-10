@@ -1,12 +1,12 @@
 using System;
 using System.IO;
 using MCMS.Base.Builder;
+using MCMS.Base.Display.DisplayValue;
 using MCMS.Base.Helpers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using MCMS.Data;
 using MCMS.Data.Seeder;
-using MCMS.Display.DisplayValue;
 using MCMS.Display.ModelDisplay;
 using MCMS.Filters;
 using Microsoft.AspNetCore.DataProtection;

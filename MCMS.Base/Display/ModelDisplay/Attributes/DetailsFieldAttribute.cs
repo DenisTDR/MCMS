@@ -5,9 +5,9 @@ namespace MCMS.Base.Display.ModelDisplay.Attributes
     [AttributeUsage(AttributeTargets.Property)]
     public class DetailsFieldAttribute : Attribute
     {
-        public DetailsFieldAttribute(int order)
+        public DetailsFieldAttribute(double orderIndex)
         {
-            Order = order;
+            OrderIndex = orderIndex;
         }
 
         public DetailsFieldAttribute(string tag)
@@ -19,8 +19,19 @@ namespace MCMS.Base.Display.ModelDisplay.Attributes
         {
         }
 
-        public int Order { get; set; }
+        public double OrderIndex { get; set; }
         public bool Hidden { get; set; }
         public string Tag { get; set; }
+        public string ClassName { get; set; }
+
+        public DetailsField ToDetailsField()
+        {
+            return new DetailsField
+            {
+                OrderIndex = OrderIndex,
+                Tag = Tag,
+                ClassName = ClassName
+            };
+        }
     }
 }

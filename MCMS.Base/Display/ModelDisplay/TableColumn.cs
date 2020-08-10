@@ -1,6 +1,6 @@
 using MCMS.Base.Display.ModelDisplay.Attributes;
 
-namespace MCMS.Display.ModelDisplay
+namespace MCMS.Base.Display.ModelDisplay
 {
     public class TableColumn
     {

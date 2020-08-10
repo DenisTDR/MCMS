@@ -4,6 +4,8 @@ namespace MCMS.Base.Data.ViewModels
 {
     public class ViewModel : IViewModel
     {
-        [TableColumn(Hidden = true)] public virtual string Id { get; set; }
+        [TableColumn(Hidden = true)]
+        [DetailsField(Hidden = true)]
+        public virtual string Id { get; set; }
     }
 }

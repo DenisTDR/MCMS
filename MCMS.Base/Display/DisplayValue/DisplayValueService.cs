@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using Microsoft.Extensions.Options;
 
-namespace MCMS.Display.DisplayValue
+namespace MCMS.Base.Display.DisplayValue
 {
     public class DisplayValueService
     {

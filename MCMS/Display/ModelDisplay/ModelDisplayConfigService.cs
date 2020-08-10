@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using MCMS.Base.Display.ModelDisplay;
 using MCMS.Base.Display.ModelDisplay.Attributes;
 using MCMS.Base.Extensions;
 using MCMS.Base.Helpers;
@@ -77,15 +78,12 @@ namespace MCMS.Display.ModelDisplay
             var list = detailsFields
                 .Select(prop =>
                 {
-                    var field = new DetailsField(TypeHelpers.GetDisplayName(prop), prop);
-                    if (prop.GetCustomAttributes<DetailsFieldAttribute>().FirstOrDefault() is {} attr)
-                    {
-                        field.Order = attr.Order;
-                        field.Tag = attr.Tag;
-                    }
-
+                    var field = prop.GetCustomAttributes<DetailsFieldAttribute>().FirstOrDefault() is {} attr
+                        ? attr.ToDetailsField()
+                        : new DetailsField();
+                    field.PropertyInfo = prop;
                     return field;
-                }).ToList();
+                }).OrderBy(df => df.OrderIndex).ToList();
 
             return list;
         }

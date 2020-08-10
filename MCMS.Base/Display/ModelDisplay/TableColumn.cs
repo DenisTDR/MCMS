@@ -4,16 +4,16 @@ namespace MCMS.Base.Display.ModelDisplay
 {
     public class TableColumn
     {
-        public int Order { get; set; }
+        public int OrderIndex { get; set; }
 
-        public TableColumn(string name, string key, int order) : this(name, key)
+        public TableColumn(string name, string key, int orderIndex) : this(name, key)
         {
-            Order = order;
+            OrderIndex = orderIndex;
         }
 
         public TableColumn(string name, string key, TableColumnAttribute attr) : this(name, key)
         {
-            Order = attr?.Order ?? 0;
+            OrderIndex = attr?.OrderIndex ?? 0;
             Searchable = attr?.Searchable ?? true;
             Orderable = attr?.Orderable ?? true;
         }
@@ -35,7 +35,7 @@ namespace MCMS.Base.Display.ModelDisplay
 
         public override string ToString()
         {
-            return $"{Key} as {Name} at {Order}";
+            return $"{Key} as {Name} at {OrderIndex}";
         }
 
         public object GetDataTablesObject()

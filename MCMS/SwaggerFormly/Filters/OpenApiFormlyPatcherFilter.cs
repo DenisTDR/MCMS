@@ -83,13 +83,10 @@ namespace MCMS.SwaggerFormly.Filters
                 xProps[fieldPropertyAttribute.FullPath] = OpenApiExtensions.ToOpenApi(fieldPropertyAttribute.Value);
             }
 
-            foreach (var formlyFieldAttribute in GetAttributes<FormlyFieldAttribute>(propertyInfo, declaringType))
+
+            foreach (var patchAttr in GetAttributes<FormlyConfigPatcherAttribute>(propertyInfo, declaringType))
             {
-                formlyFieldAttribute.Attach(schema, xProps, templateOptions, _linkGenerator);
-                if (formlyFieldAttribute.HasCustomValidators)
-                {
-                    validators.AddRange(formlyFieldAttribute.GetCustomValidators());
-                }
+                patchAttr.Patch(schema, xProps, templateOptions, _linkGenerator, validators);
             }
 
             if (xProps.Count > 0)
@@ -227,7 +224,7 @@ namespace MCMS.SwaggerFormly.Filters
             orderIndex = 0;
             return false;
         }
-        
+
         private static bool ShouldPatchSchema(Type type)
         {
             return typeof(IFormModel).IsAssignableFrom(type);

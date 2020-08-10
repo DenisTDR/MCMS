@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using MCMS.Base.SwaggerFormly.Extensions;
+using MCMS.Base.SwaggerFormly.Models;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.OpenApi.Any;
 using Microsoft.OpenApi.Models;
@@ -28,10 +29,10 @@ namespace MCMS.Base.SwaggerFormly.Formly.Fields
             return null;
         }
 
-        public override void Attach(OpenApiSchema schema, OpenApiObject xProps, OpenApiObject templateOptions,
-            LinkGenerator linkGenerator)
+        public override void Patch(OpenApiSchema schema, OpenApiObject xProps, OpenApiObject templateOptions,
+            LinkGenerator linkGenerator, List<ValidatorModel> validators)
         {
-            base.Attach(schema, xProps, templateOptions, linkGenerator);
+            base.Patch(schema, xProps, templateOptions, linkGenerator, validators);
             schema.AllOf = new List<OpenApiSchema>();
             if (AsOpenApi)
             {
@@ -60,6 +61,5 @@ namespace MCMS.Base.SwaggerFormly.Formly.Fields
                 }
             }
         }
-
     }
 }

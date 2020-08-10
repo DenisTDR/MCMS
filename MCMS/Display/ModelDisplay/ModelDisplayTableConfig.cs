@@ -10,7 +10,7 @@ namespace MCMS.Display.ModelDisplay
     {
         public List<MRichLink> TableItemActions { get; set; }
         public List<TableColumn> TableColumns { get; set; }
-        public IEnumerable<TableColumn> TableColumnsOrdered => TableColumns.OrderBy(tc => tc.Order);
+        public IEnumerable<TableColumn> TableColumnsOrdered => TableColumns.OrderBy(tc => tc.OrderIndex);
         public bool HasTableIndexColumn { get; set; }
         public string IndexPageTitle { get; set; }
         public string ModelName { get; set; }

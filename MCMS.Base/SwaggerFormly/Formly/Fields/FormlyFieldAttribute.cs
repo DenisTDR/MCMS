@@ -10,7 +10,7 @@ using Microsoft.OpenApi.Models;
 namespace MCMS.Base.SwaggerFormly.Formly.Fields
 {
     [AttributeUsage(AttributeTargets.Property, Inherited = true)]
-    public class FormlyFieldAttribute : Attribute
+    public class FormlyFieldAttribute : FormlyConfigPatcherAttribute
     {
         public bool IgnoreField { get; set; }
         public double OrderIndex { get; set; }
@@ -20,15 +20,18 @@ namespace MCMS.Base.SwaggerFormly.Formly.Fields
         public bool HasCustomValidators { get; set; }
 
 
-        public virtual void Attach(OpenApiSchema schema, OpenApiObject xProps, OpenApiObject templateOptions,
-            LinkGenerator linkGenerator)
+        public override void Patch(OpenApiSchema schema, OpenApiObject xProps, OpenApiObject templateOptions,
+            LinkGenerator linkGenerator, List<ValidatorModel> validators)
         {
             AttachBasicProps(schema, xProps, templateOptions, linkGenerator);
+            if (HasCustomValidators)
+            {
+                validators.AddRange(GetCustomValidators());
+            }
         }
 
         protected virtual void AttachBasicProps(OpenApiSchema schema, OpenApiObject xProps,
-            OpenApiObject templateOptions,
-            LinkGenerator linkGenerator)
+            OpenApiObject templateOptions, LinkGenerator linkGenerator)
         {
             if (ClassName != null)
             {

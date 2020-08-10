@@ -36,13 +36,15 @@ namespace MCMS
             services.AddScoped(typeof(ModelDisplayConfigForControllerService<,,,,>));
 
             services.AddSingleton<DisplayValueService>();
-            
+
             services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
             services.AddTransient(serviceProvider => serviceProvider
                 .GetRequiredService<IUrlHelperFactory>()
                 .GetUrlHelper(serviceProvider.GetRequiredService<IActionContextAccessor>().ActionContext));
 
             services.AddTransient<IAdapterFactory, AdapterFactory>();
+
+            services.AddOptions<DisplayValueFormatters>().Configure(DefaultDisplayValueFormatters.RegisterFormatters);
 
             if (!string.IsNullOrEmpty(Env.Get("PERSISTED_KEYS_DIRECTORY")))
             {

@@ -21,6 +21,8 @@ namespace MCMS.Common.Translations.Translations
         public string TextsPreview => string.Join(", ",
             Items?.Select(i => i.Value).Where(v => !string.IsNullOrEmpty(v)) ?? new List<string>());
 
+        [TableColumn] public string Tag { get; set; }
+
         public override string ToString()
         {
             return Slug;

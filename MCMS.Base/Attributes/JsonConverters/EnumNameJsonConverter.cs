@@ -1,15 +1,16 @@
 using System;
+using MCMS.Base.Extensions;
 using Newtonsoft.Json;
 
-namespace MCMS.Base.Attributes
+namespace MCMS.Base.Attributes.JsonConverters
 {
-    public class ToStringJsonConverter : JsonConverter
+    public class EnumNameJsonConverter : JsonConverter
     {
-        public override bool CanConvert(Type objectType) => true;
+        public override bool CanConvert(Type objectType) => objectType.IsEnum;
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            writer.WriteValue(value.ToString());
+            writer.WriteValue((value as Enum).GetDisplayName());
         }
 
         public override bool CanRead => false;

@@ -10,6 +10,7 @@ using MCMS.Common.Translations.Languages;
 using MCMS.Common.Translations.Seed;
 using MCMS.Common.Translations.Translations.Item;
 using MCMS.Data;
+using MCMS.SwaggerFormly;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.JsonPatch.Adapters;
 using Microsoft.EntityFrameworkCore;
@@ -26,12 +27,17 @@ namespace MCMS.Common.Translations.Translations
 
         private readonly LanguagesRepository _langsRepo;
         private readonly ILogger<TranslationsRepository> _logger;
+        private readonly SwaggerConfigService _swaggerConfigService;
 
-        public TranslationsRepository(BaseDbContext dbContext, LanguagesRepository langsRepo,
-            ILogger<TranslationsRepository> logger) : base(dbContext)
+        public TranslationsRepository(
+            BaseDbContext dbContext,
+            LanguagesRepository langsRepo,
+            ILogger<TranslationsRepository> logger,
+            SwaggerConfigService swaggerConfigService) : base(dbContext)
         {
             _langsRepo = langsRepo;
             _logger = logger;
+            _swaggerConfigService = swaggerConfigService;
         }
 
 
@@ -52,6 +58,7 @@ namespace MCMS.Common.Translations.Translations
             var entries = all.ToDictionary(t => t.Slug, t => new TranslationCacheEntry
                 {
                     IsRichText = t.IsRichText,
+                    Tag = t.Tag,
                     Value = t.Items.OrderBy(i => i.Language.Code == langCode ? 0 : langs.IndexOf(i.Language.Code) + 1)
                         .FirstOrDefault()?.Value
                 }
@@ -86,6 +93,7 @@ namespace MCMS.Common.Translations.Translations
 
         public string Language => DefaultLanguage;
 
+
         public Task<string> Format(string slug, params object[] args)
         {
             return Format(slug, null, args);
@@ -95,6 +103,7 @@ namespace MCMS.Common.Translations.Translations
         {
             _logger.LogDebug("Clear cache.");
             Cache.Clear();
+            _swaggerConfigService.ClearTranslationsFromCache();
         }
 
         public override Task<TranslationEntity> Add(TranslationEntity e)
@@ -188,6 +197,18 @@ namespace MCMS.Common.Translations.Translations
 
 
             return entries;
+        }
+
+        public async Task<Dictionary<string, string>> GetAll(string langCode = null, string tag = null)
+        {
+            langCode ??= Language;
+            var trans = await GetForLanguage(langCode);
+            if (tag != null)
+            {
+                trans = trans.Where(kvp => kvp.Value.Tag == tag).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+            }
+
+            return trans.ToDictionary(kvp => kvp.Key, kvp => kvp.Value.Value);
         }
     }
 }

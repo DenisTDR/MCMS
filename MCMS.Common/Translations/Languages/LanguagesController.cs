@@ -11,7 +11,7 @@ namespace MCMS.Common.Translations.Languages
         LanguagesController : GenericModalAdminUiController<LanguageEntity, LanguageFormModel, LanguageViewModel,
             LanguagesAdminApiController>
     {
-        protected override async Task<ModelDisplayTableConfig> TableConfigForIndex()
+        public override async Task<ModelDisplayTableConfig> TableConfigForIndex()
         {
             var config = await base.TableConfigForIndex();
             config.TableItemActions = config.TableItemActions.Where(tia => tia.Tag != "details").ToList();

@@ -17,7 +17,10 @@
     ViewBag.ModalCallback = "reloadTable" + tableId;
 }
 
-<h3 class="mt-4 mb-4">@ViewBag.Title</h3>
+@if (!string.IsNullOrEmpty(ViewBag.Title))
+{
+    <h3 class="mt-4 mb-4">@ViewBag.Title</h3>
+}
 @if (Model.CreateNewItemLink != null)
 {
     <div class="mb-3 d-flex justify-content-end">
@@ -73,10 +76,10 @@
     <script>
     function reloadTable@(tableId)(sender, params) {
         if(params && params.params) {
-            table.ajax.reload();
+            table@(tableId).ajax.reload();
         }
     }
-    var table = bindDefaultDataTables(
+    var table@(tableId) = bindDefaultDataTables(
         $("#table-@tableId"),   
         "@Model.TableItemsApiUrl", 
         @Html.Raw(Model.TableColumnsSerializedForDataTables),

@@ -2,7 +2,10 @@ function bindDefaultDataTables(tableElem, url, columns, actionsColumnContent, ha
     columns = columns.slice();
     var shouldMakeActionsCellContent = actionsColumnContent.trim().length > 0;
 
-    var langConfig = {'ro': {"url": "/lib/datatables/Romanian.json"}};
+    var langConfig = {
+        'en': {"url": "/lib/datatables/English.json"},
+        'ro': {"url": "/lib/datatables/Romanian.json"}
+    };
 
     var config = {
         processing: true,
@@ -28,7 +31,7 @@ function bindDefaultDataTables(tableElem, url, columns, actionsColumnContent, ha
             headerOffset: 50
         },
         language: langConfig[lang],
-        dom: "<'row'<'col-sm-12 col-md-6'l><'col-sm-12 col-md-6'<f>>>" +
+        dom: "<'processing-overlay'><'row'<'col-sm-12 col-md-6'l><'col-sm-12 col-md-6'<f>>>" +
             "<'row'<'col-sm-12'tr>>" +
             "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7 d-flex justify-content-between'pB>>",
         buttons: [
@@ -65,6 +68,16 @@ function bindDefaultDataTables(tableElem, url, columns, actionsColumnContent, ha
             });
         }).draw();
     }
+
+    table.on('processing.dt', function (e, settings, processing) {
+        var overlay = $(e.currentTarget).closest('.dataTables_wrapper').find('.processing-overlay');
+        if (processing) {
+            overlay.show();
+        } else {
+            overlay.hide();
+        }
+    });
+
     return table;
 }
 

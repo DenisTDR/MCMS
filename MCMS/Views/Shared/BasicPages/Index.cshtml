@@ -1,5 +1,4 @@
 @model MCMS.Display.ModelDisplay.ModelDisplayTableConfig
-@using MCMS.Base.Helpers
 @using MCMS.Base.Exceptions
 @using MCMS.Base.Extensions
 @using MCMS.Base.Repositories
@@ -7,14 +6,13 @@
 
 @{
     // var returnUrl = Context.Request.Query.ContainsKey("returnUrl") ? (string) Context.Request.Query["returnUrl"] : Url.Action("Index");
-    var tableId = Utils.GenerateRandomHexString();
     ViewBag.Title = Model?.IndexPageTitle ?? "Null model or title";
     if (Model == null)
     {
         throw new KnownException("Invalid model provided for this view.", 500);
     }
 
-    ViewBag.ModalCallback = "reloadTable" + tableId;
+    ViewBag.ModalCallback = "reloadTable" + Model.TableId;
 }
 
 @if (!string.IsNullOrEmpty(ViewBag.Title))
@@ -27,7 +25,7 @@
         <partial name="Partials/_MRichLink" model="Model.CreateNewItemLink"/>
     </div>
 }
-<table id="table-@tableId" class="table table-striped table-bordered">
+<table id="table-@Model.TableId" class="table table-striped table-bordered ttttaaaaabbbbblleeee">
     <thead>
     <tr>
         @if (Model.HasTableIndexColumn)
@@ -64,7 +62,7 @@
     </tfoot>
 </table>
 
-<div id="actions-cell-template-@tableId" class="d-none">
+<div id="actions-cell-template-@Model.TableId" class="d-none">
     @foreach (var action in Model.TableItemActions)
     {
         <partial name="Partials/_MRichLink" model="action"/>
@@ -74,16 +72,16 @@
 @using (Html.BeginMPageScripts())
 {
     <script>
-    function reloadTable@(tableId)(sender, params) {
+    function reloadTable@(Model.TableId)(sender, params) {
         if(params && params.params) {
-            table@(tableId).ajax.reload();
+            table@(Model.TableId).ajax.reload();
         }
     }
-    var table@(tableId) = bindDefaultDataTables(
-        $("#table-@tableId"),   
+    var table@(Model.TableId) = bindDefaultDataTables(
+        $("#table-@Model.TableId"),   
         "@Model.TableItemsApiUrl", 
         @Html.Raw(Model.TableColumnsSerializedForDataTables),
-        $("#actions-cell-template-@tableId").html(), 
+        $("#actions-cell-template-@Model.TableId").html(), 
         @Model.HasTableIndexColumn.ToString().ToLower(),
         '@TransRepo.Language');
     </script>

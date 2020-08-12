@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.JsonPatch.Adapters;
 using Microsoft.EntityFrameworkCore;
 
-namespace MCMS.Data
+namespace MCMS.Base.Data
 {
     public interface IRepository<T> where T : class, IEntity
     {

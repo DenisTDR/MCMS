@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using MCMS.Auth;
 using MCMS.Base.Attributes;
 using MCMS.Base.Auth;
+using MCMS.Base.Data;
 using MCMS.Controllers.Api;
 using MCMS.Data;
 using Microsoft.AspNetCore.Authorization;

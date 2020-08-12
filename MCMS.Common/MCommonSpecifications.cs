@@ -1,9 +1,9 @@
 using MCMS.Base.Builder;
+using MCMS.Base.Data;
 using MCMS.Base.Repositories;
 using MCMS.Common.Translations.Languages;
 using MCMS.Common.Translations.Seed;
 using MCMS.Common.Translations.Translations;
-using MCMS.Data;
 using MCMS.Data.Seeder;
 using Microsoft.Extensions.DependencyInjection;
 

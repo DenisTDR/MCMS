@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
+using MCMS.Base.Data;
 using MCMS.Common.Translations.Languages;
 using MCMS.Controllers.Api;
-using MCMS.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;

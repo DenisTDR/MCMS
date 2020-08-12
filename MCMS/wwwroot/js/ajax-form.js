@@ -39,7 +39,12 @@ function ajaxForm(form, asModal, callback, method) {
                     callback(false);
                 }
                 if (e.responseJSON) {
-                    alertModalText(e.responseText, "Json Error")
+                    var obj = e.responseJSON;
+                    if (obj.error) {
+                        alertModalText(obj.error, "Error");
+                    } else {
+                        alertModalText(e.responseText, "Json Error");
+                    }
                 } else {
                     alertModal(e.responseText);
                 }

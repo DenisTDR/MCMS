@@ -31,12 +31,12 @@ namespace MCMS.Display.ModelDisplay
             {
                 IndexPageTitle = TypeHelpers.GetDisplayName<TUiController>(),
                 ModelName = TypeHelpers.GetDisplayName<TVm>(),
-                TableColumns = await GetTableColumns(),
+                TableColumns = await GetTableColumns(viewBag.ExcludeActionsColumn as bool? == true),
                 HasTableIndexColumn = true,
                 TableItemsApiUrl = url.ActionLink(nameof(IReadOnlyApiController<TVm>.Index),
                     TypeHelpers.GetControllerName(typeof(TApiController)), viewBag.TableItemsApiUrlValues as object,
                     protocol: Utils.GetExternalProtocol()),
-                TableItemActions = GetDefaultTableItemActions(viewBag)
+                TableItemActions = GetTableItemActions(viewBag, viewBag.ExcludeActionsColumn as bool? == true)
             };
             if (createNewLink)
             {
@@ -55,8 +55,13 @@ namespace MCMS.Display.ModelDisplay
         }
 
 
-        public virtual List<MRichLink> GetDefaultTableItemActions(dynamic viewBag)
+        public virtual List<MRichLink> GetTableItemActions(dynamic viewBag, bool excludeDefault = false)
         {
+            if (excludeDefault)
+            {
+                return new List<MRichLink>();
+            }
+
             return new List<MRichLink>
             {
                 new MRichLink("", typeof(TUiController),

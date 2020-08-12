@@ -1,6 +1,6 @@
 function bindDefaultDataTables(tableElem, url, columns, actionsColumnContent, hasStaticIndexColumn, lang) {
-    // {"data": "index"},
     columns = columns.slice();
+    var shouldMakeActionsCellContent = actionsColumnContent.trim().length > 0;
 
     var langConfig = {'ro': {"url": "/lib/datatables/Romanian.json"}};
 
@@ -13,7 +13,9 @@ function bindDefaultDataTables(tableElem, url, columns, actionsColumnContent, ha
                     if (hasStaticIndexColumn) {
                         json[i].dataTablesIndex = '#';
                     }
-                    json[i]._actions = actionsColumnContent.replace(/ENTITY_ID/g, json[i].id);
+                    if (shouldMakeActionsCellContent) {
+                        json[i]._actions = actionsColumnContent.replace(/ENTITY_ID/g, json[i].id);
+                    }
                 }
                 return json;
             }

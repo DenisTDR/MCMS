@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reflection;
 using MCMS.Base.Data.FormModels;
@@ -100,7 +101,7 @@ namespace MCMS.Base.Attributes
                 }
 
                 object obj = nfm;
-                
+
                 // TODO: generalize this
                 if (obj.GetType().GetProperty(splitPath[0].ToPascalCase()) is {} prop &&
                     splitPath[1].ToPascalCase() != "Id" &&
@@ -138,6 +139,36 @@ namespace MCMS.Base.Attributes
                 .ToList();
             var diff = keys.Except(updatedPaths).ToList();
             diff.ForEach(d => context.ModelState.Remove(d));
+
+            if (!context.ModelState.IsValid)
+            {
+                return false;
+            }
+
+
+            var legitValidationResults = new List<ValidationResult>();
+            var items = new Dictionary<object, object>();
+
+            var validationContext =
+                new ValidationContext(nfm, context.HttpContext.RequestServices, items);
+            var isValid = Validator.TryValidateObject(nfm, validationContext, legitValidationResults, true);
+
+            if (isValid)
+            {
+                return true;
+            }
+
+            legitValidationResults =
+                legitValidationResults.Where(vr => vr.MemberNames.Any(mn => updatedPaths.Contains(mn))).ToList();
+
+
+            if (legitValidationResults.Any())
+            {
+                foreach (var vr in legitValidationResults)
+                {
+                    context.ModelState.AddModelError(string.Join(",", vr.MemberNames), vr.ErrorMessage);
+                }
+            }
 
             return context.ModelState.IsValid;
         }

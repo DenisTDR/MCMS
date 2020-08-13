@@ -18,6 +18,7 @@ namespace MCMS.Base.SwaggerFormly.Formly.Fields
         public string[] Wrappers { get; set; }
         public string ClassName { get; set; }
         public bool HasCustomValidators { get; set; }
+        public bool Disabled { get; set; }
 
 
         public override void Patch(OpenApiSchema schema, OpenApiObject xProps, OpenApiObject templateOptions,
@@ -48,6 +49,11 @@ namespace MCMS.Base.SwaggerFormly.Formly.Fields
                 var arr = new OpenApiArray();
                 arr.AddRange(from object o in Wrappers select OpenApiExtensions.ToOpenApi(o));
                 xProps["wrappers"] = arr;
+            }
+
+            if (Disabled)
+            {
+                templateOptions["disabled"] = OpenApiExtensions.ToOpenApi(true);
             }
         }
 

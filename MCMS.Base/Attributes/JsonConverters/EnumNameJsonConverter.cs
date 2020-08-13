@@ -1,4 +1,5 @@
 using System;
+using MCMS.Base.Exceptions;
 using MCMS.Base.Extensions;
 using Newtonsoft.Json;
 
@@ -13,9 +14,25 @@ namespace MCMS.Base.Attributes.JsonConverters
             writer.WriteValue((value as Enum).GetDisplayName());
         }
 
-        public override bool CanRead => false;
-
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue,
-            JsonSerializer serializer) => throw new NotImplementedException();
+            JsonSerializer serializer)
+        {
+            if (reader.ValueType != typeof(string))
+            {
+                throw new KnownException($"Can't convert '{reader.ValueType.Name}' to '{objectType.Name}'.");
+            }
+
+            var str = reader.Value as string;
+
+            foreach (Enum value in Enum.GetValues(objectType))
+            {
+                if (value.GetDisplayName() == str)
+                {
+                    return value;
+                }
+            }
+
+            return existingValue;
+        }
     }
 }

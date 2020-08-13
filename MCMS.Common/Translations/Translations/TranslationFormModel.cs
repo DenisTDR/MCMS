@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using MCMS.Base.Data.FormModels;
-using MCMS.Base.SwaggerFormly.Formly;
 using MCMS.Base.SwaggerFormly.Formly.Fields;
 using MCMS.Common.Translations.Translations.Item;
 
@@ -16,12 +15,9 @@ namespace MCMS.Common.Translations.Translations
         [FormlyField(ClassName = "d-flex col-12 col-sm-6 col-md-4")]
         public string Tag { get; set; }
 
-        [FormlyField(DefaultValue = false)]
-        public bool IsRichText { get; set; }
+        [FormlyField(DefaultValue = false)] public bool IsRichText { get; set; }
 
-        [FormlyFieldProp("fieldGroupClassName", "d-flex")]
-        [FormlyFieldProp("addDisabled", true, "templateOptions")]
-        [FormlyFieldProp("removeDisabled", true, "templateOptions")]
+        [FormlyArray(AddDisabled = true, RemoveDisabled = true, FieldGroupClassName = "d-flex")]
         public List<ItemForTranslationFormModel> Items { get; set; }
     }
 }

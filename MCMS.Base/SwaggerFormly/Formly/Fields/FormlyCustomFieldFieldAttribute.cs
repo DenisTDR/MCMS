@@ -34,13 +34,16 @@ namespace MCMS.Base.SwaggerFormly.Formly.Fields
         {
             base.Patch(schema, xProps, templateOptions, linkGenerator, validators);
             schema.AllOf = new List<OpenApiSchema>();
-            if (AsOpenApi)
+            if (!string.IsNullOrEmpty(Type))
             {
-                schema.Type = Type;
-            }
-            else
-            {
-                xProps["type"] = OpenApiExtensions.ToOpenApi(Type);
+                if (AsOpenApi)
+                {
+                    schema.Type = Type;
+                }
+                else
+                {
+                    xProps["type"] = OpenApiExtensions.ToOpenApi(Type);
+                }
             }
 
             var customFieldConfig = GetOpenApiConfig(linkGenerator);

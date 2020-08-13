@@ -183,6 +183,7 @@ namespace MCMS.Common.Translations.Translations
                 {
                     t.Slug,
                     t.IsRichText,
+                    t.Tag,
                     Items = t.Items.OrderBy(i => i.Language.Code)
                         .Select(i => new {lang = i.Language.Code, value = i.Value}).ToList()
                 }
@@ -192,6 +193,7 @@ namespace MCMS.Common.Translations.Translations
             {
                 Slug = ae.Slug,
                 IsRichText = ae.IsRichText,
+                Tag = ae.Tag,
                 Items = ae.Items.ToDictionary(i => i.lang, i => i.value),
             }).OrderBy(t => t.Slug).ToList();
 

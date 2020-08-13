@@ -37,6 +37,7 @@ namespace MCMS.Common.Translations.Seed
                 {
                     Slug = translationSeedEntry.Slug,
                     IsRichText = translationSeedEntry.IsRichText,
+                    Tag = translationSeedEntry.Tag,
                     Items = translationSeedEntry.Items.Select(kvp => new TranslationItemEntity
                     {
                         Value = kvp.Value,

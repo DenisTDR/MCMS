@@ -15,7 +15,8 @@ namespace MCMS.Common.Translations.Translations
         [FormlyField(ClassName = "d-flex col-12 col-sm-6 col-md-4")]
         public string Tag { get; set; }
 
-        [FormlyField(DefaultValue = false)] public bool IsRichText { get; set; }
+        [FormlyField(DefaultValue = false, ClassName = "d-flex col-12 col-sm-6 col-md-4")]
+        public bool IsRichText { get; set; }
 
         [FormlyArray(AddDisabled = true, RemoveDisabled = true, FieldGroupClassName = "d-flex")]
         public List<ItemForTranslationFormModel> Items { get; set; }

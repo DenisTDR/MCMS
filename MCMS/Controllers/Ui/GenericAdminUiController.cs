@@ -3,6 +3,7 @@ using MCMS.Base.Data;
 using MCMS.Base.Data.Entities;
 using MCMS.Base.Data.FormModels;
 using MCMS.Base.Data.ViewModels;
+using MCMS.Base.Extensions;
 using MCMS.Base.Helpers;
 using MCMS.Controllers.Api;
 using MCMS.Display.ModelDisplay;
@@ -28,7 +29,7 @@ namespace MCMS.Controllers.Ui
         protected virtual FormParamsService FormParamsService =>
             ServiceProvider.GetService<FormParamsForControllerService<TApiController, TFm>>();
 
-        protected virtual IRepository<TE> Repo => ServiceProvider.GetService<IRepository<TE>>();
+        protected virtual IRepository<TE> Repo => ServiceProvider.GetRepo<TE>();
 
         public override void OnActionExecuting(ActionExecutingContext context)
         {

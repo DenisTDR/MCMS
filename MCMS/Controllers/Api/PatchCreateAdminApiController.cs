@@ -4,6 +4,7 @@ using MCMS.Base.Attributes;
 using MCMS.Base.Data;
 using MCMS.Base.Data.Entities;
 using MCMS.Base.Data.FormModels;
+using MCMS.Base.Extensions;
 using MCMS.Base.JsonPatch;
 using MCMS.Models;
 using Microsoft.AspNetCore.JsonPatch;
@@ -16,7 +17,7 @@ namespace MCMS.Controllers.Api
     public abstract class PatchCreateAdminApiController<TE, TFm> : AdminApiController, IPatchCreateApiController<TFm>
         where TE : Entity where TFm : class, IFormModel
     {
-        protected virtual IRepository<TE> Repo => ServiceProvider.GetService<IRepository<TE>>();
+        protected virtual IRepository<TE> Repo => ServiceProvider.GetRepo<TE>();
 
         [Route("{id}")]
         [HttpGet]

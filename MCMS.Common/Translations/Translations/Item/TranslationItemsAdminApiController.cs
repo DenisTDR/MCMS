@@ -1,11 +1,10 @@
 using System.Threading.Tasks;
-using MCMS.Base.Data;
+using MCMS.Base.Extensions;
 using MCMS.Common.Translations.Languages;
 using MCMS.Controllers.Api;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace MCMS.Common.Translations.Translations.Item
 {
@@ -22,7 +21,7 @@ namespace MCMS.Common.Translations.Translations.Item
 
         protected override Task PatchBeforeSaveNew(TranslationItemEntity e)
         {
-            var repo = ServiceProvider.GetService<IRepository<LanguageEntity>>();
+            var repo = ServiceProvider.GetRepo<LanguageEntity>();
             repo.Attach(e.Language);
             return Task.CompletedTask;
         }

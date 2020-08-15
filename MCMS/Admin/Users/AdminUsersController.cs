@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using MCMS.Base.Attributes;
 using MCMS.Base.Auth;
 using MCMS.Base.Data;
+using MCMS.Base.Extensions;
 using MCMS.Base.Helpers;
 using MCMS.Controllers.Ui;
 using MCMS.Display.ModelDisplay;
@@ -19,7 +20,7 @@ namespace MCMS.Admin.Users
     [Authorize(Roles = "Admin, Moderator")]
     public class AdminUsersController : AdminUiController
     {
-        protected IRepository<User> Repo => ServiceProvider.GetService<IRepository<User>>();
+        protected IRepository<User> Repo => ServiceProvider.GetRepo<User>();
 
         protected IModelDisplayConfigService ModelDisplayConfigService =>
             ServiceProvider.GetService<UsersTableModelDisplayConfigService>();

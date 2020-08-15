@@ -5,6 +5,7 @@ using MCMS.Auth;
 using MCMS.Base.Attributes;
 using MCMS.Base.Auth;
 using MCMS.Base.Data;
+using MCMS.Base.Extensions;
 using MCMS.Controllers.Api;
 using MCMS.Data;
 using Microsoft.AspNetCore.Authorization;
@@ -19,7 +20,7 @@ namespace MCMS.Admin.Users
     [Authorize(Roles = "Admin, Moderator")]
     public class AdminUsersAdminApiController : AdminApiController
     {
-        protected IRepository<User> Repo => ServiceProvider.GetService<IRepository<User>>();
+        protected IRepository<User> Repo => ServiceProvider.GetRepo<User>();
         protected BaseDbContext DbContext => ServiceProvider.GetService<BaseDbContext>();
         private IEmailSender EmailSender => ServiceProvider.GetService<IEmailSender>();
 

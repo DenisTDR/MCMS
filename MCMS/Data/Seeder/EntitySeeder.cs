@@ -32,7 +32,7 @@ namespace MCMS.Data.Seeder
         public virtual async Task Seed(IServiceProvider serviceProvider, JArray seedData)
         {
             var entityData = seedData.ToObject<List<T>>();
-            await Seed(serviceProvider.GetService<IRepository<T>>(), entityData,
+            await Seed(serviceProvider.GetRepo<T>(), entityData,
                 serviceProvider.GetService<ILogger<EntitySeeder<T>>>());
         }
 

@@ -45,7 +45,7 @@ namespace MCMS.Files.Controllers
         }
 
 
-        protected override async Task<ModelDisplayTableConfig> TableConfigForIndex()
+        public override async Task<ModelDisplayTableConfig> TableConfigForIndex()
         {
             var config = await base.TableConfigForIndex();
             ViewBag.CreateNewLinkValues = null;

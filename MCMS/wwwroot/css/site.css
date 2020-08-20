@@ -120,3 +120,7 @@ body {
     font-size: .75em;
     outline-offset: -1px;
 }
+
+.modal.stacked-modal.shown-modal {
+    z-index: 1040 !important;
+}

@@ -13,6 +13,7 @@ function displayLoadingModal() {
     closeWaitModal = false;
     waitModal.modal('show');
 }
+
 function hideLoadingModal() {
     closeWaitModal = true;
     waitModal.modal('hide');
@@ -25,14 +26,14 @@ body.on('click', 'button[data-toggle="ajax-modal"], a[data-toggle="ajax-modal"]'
     }
     var button = $(this);
     var url = button.data('url') || button.attr('href');
-    if(!url) {
+    if (!url) {
         console.error('Modal triggered by', this);
         throw new Error('But url for modal content not found!');
     }
     displayLoadingModal()
     $.get(url).done(function (data) {
         hideLoadingModal();
-        onButtonActionResponse(data, button);
+        displayModal(data, button);
     }).fail(function (e) {
         hideLoadingModal();
         alertModal(e.responseText);
@@ -40,7 +41,7 @@ body.on('click', 'button[data-toggle="ajax-modal"], a[data-toggle="ajax-modal"]'
     });
 });
 
-function onButtonActionResponse(data, button) {
+function displayModal(data, button) {
     closeWaitModal = true;
     var newElement = $("<div></div>");
     newElement.append($(data));
@@ -56,6 +57,15 @@ function onButtonActionResponse(data, button) {
         setTimeout(function () {
             newElement.detach();
         }, 1000);
+    });
+    modal.on("shown.bs.modal", function (e) {
+        if (!modal.hasClass('stacked-modal')) {
+            return;
+        }
+        var backDrop = newElement.next();
+        backDrop.detach();
+        newElement.before(backDrop);
+        modal.addClass('shown-modal');
     });
     modal.modal({backdrop: button.data('modal-backdrop')});
     modal.modal('show');

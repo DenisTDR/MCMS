@@ -63,10 +63,13 @@
 </table>
 
 <div id="actions-cell-template-@Model.TableId" class="d-none">
-    @foreach (var action in Model.TableItemActions)
-    {
-        <partial name="Partials/_MRichLink" model="action"/>
-    }
+    <div class="d-flex flex-wrap mb-n1">
+        @foreach (var action in Model.TableItemActions)
+        {
+            action.CssClasses += " mr-1 mb-1";
+            <partial name="Partials/_MRichLink" model="action"/>
+        }
+    </div>
 </div>
 
 @using (Html.BeginMPageScripts())
@@ -80,7 +83,7 @@
     var table@(Model.TableId) = bindDefaultDataTables(
         $("#table-@Model.TableId"),   
         "@Model.TableItemsApiUrl", 
-        @Html.Raw(Model.TableColumnsSerializedForDataTables),
+        @Html.Raw(Model.ConfigObject),
         $("#actions-cell-template-@Model.TableId").html(), 
         @Model.HasTableIndexColumn.ToString().ToLower(),
         '@TransRepo.Language');

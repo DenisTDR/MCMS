@@ -1,7 +1,6 @@
-function bindDefaultDataTables(tableElem, url, columns, actionsColumnContent, hasStaticIndexColumn, lang) {
-    columns = columns.slice();
+function bindDefaultDataTables(tableElem, url, initialConfig, actionsColumnContent, hasStaticIndexColumn, lang) {
+    initialConfig.columns = initialConfig.columns.slice();
     var shouldMakeActionsCellContent = actionsColumnContent.trim().length > 0;
-
     var langConfig = {
         'en': {"url": "/lib/datatables/English.json"},
         'ro': {"url": "/lib/datatables/Romanian.json"}
@@ -23,7 +22,6 @@ function bindDefaultDataTables(tableElem, url, columns, actionsColumnContent, ha
                 return json;
             }
         },
-        columns: columns,
         bAutoWidth: false,
         iDisplayLength: 50,
         lengthMenu: [[10, 25, 50, 100, 250, 500, -1], [10, 25, 50, 100, 250, 500, "All"]],
@@ -51,8 +49,11 @@ function bindDefaultDataTables(tableElem, url, columns, actionsColumnContent, ha
             }
         ]
     };
+    
+    config = Object.assign(config, initialConfig);
+    
     if (hasStaticIndexColumn) {
-        columns.splice(0, 0, {"data": "dataTablesIndex"});
+        config.columns.splice(0, 0, {"data": "dataTablesIndex"});
         config.columnDefs = [{
             searchable: false,
             orderable: false,

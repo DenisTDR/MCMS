@@ -16,6 +16,7 @@ namespace MCMS.Base.Display.ModelDisplay
             OrderIndex = attr?.OrderIndex ?? 0;
             Searchable = attr?.Searchable ?? true;
             Orderable = attr?.Orderable ?? true;
+            RowGroups = attr?.RowGroup ?? false;
         }
 
         public TableColumn(string name, string key)
@@ -32,6 +33,8 @@ namespace MCMS.Base.Display.ModelDisplay
         public string Key { get; set; }
         public bool Searchable { get; set; }
         public bool Orderable { get; set; }
+
+        public bool RowGroups { get; set; }
 
         public override string ToString()
         {

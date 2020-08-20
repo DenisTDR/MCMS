@@ -21,5 +21,20 @@ namespace MCMS.Display.ModelDisplay
 
         public string TableColumnsSerializedForDataTables =>
             JsonConvert.SerializeObject(TableColumnsOrdered?.Select(tc => tc.GetDataTablesObject()));
+
+        public object RowGroupForDataTables
+        {
+            get
+            {
+                var cols = TableColumnsOrdered?.Where(tc => tc.RowGroups).ToList();
+                return cols == null || !cols.Any() ? null : new {dataSrc = cols.Select(c => c.Key)};
+            }
+        }
+
+        public string ConfigObject => JsonConvert.SerializeObject(new
+        {
+            columns = TableColumnsOrdered?.Select(tc => tc.GetDataTablesObject()),
+            rowGroup = RowGroupForDataTables
+        });
     }
 }

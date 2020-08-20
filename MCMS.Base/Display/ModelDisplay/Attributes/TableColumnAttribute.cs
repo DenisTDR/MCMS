@@ -18,5 +18,6 @@ namespace MCMS.Base.Display.ModelDisplay.Attributes
         public bool Hidden { get; set; }
         public bool Searchable { get; set; } = true;
         public bool Orderable { get; set; } = true;
+        public bool RowGroup { get; set; }
     }
 }

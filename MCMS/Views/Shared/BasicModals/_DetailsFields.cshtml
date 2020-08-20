@@ -11,7 +11,7 @@
 @foreach (var detailsField in fields)
 {
     <div class="row @detailsField.ClassName">
-        <div class="col-12 col-sm-4 col-md-3">@detailsField.Name</div>
+        <div class="col-12 col-sm-4 col-md-3">@Html.Raw(detailsField.Name)</div>
         <div class="col-12 col-sm-8 col-md-9">@Html.Raw(DisplayValueService.GetDisplayValue(detailsField.PropertyInfo, Model) ?? "<span class='st-text'>null/empty</i>")</div>
     </div>
 }

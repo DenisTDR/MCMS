@@ -1,8 +1,7 @@
 @using MCMS.Display.Link
 @model MCMS.Display.Link.MRichLink
-
 <a href="@Model.BuildUrl(Url)"
-   class="@Model.CssClasses"
+   class="@Model.CssClasses mr-1 mb-1"
    target="@Model.Target"
    @if (Model.AsModal)
    {

@@ -34,7 +34,7 @@
         }
         @foreach (var tableColumn in Model.TableColumnsOrdered)
         {
-            <th>@tableColumn.Name</th>
+            <th>@Html.Raw(tableColumn.Name)</th>
         }
     </tr>
     </thead>
@@ -46,7 +46,7 @@
         }
         @foreach (var tableColumn in Model.TableColumnsOrdered)
         {
-            <th>@tableColumn.Name</th>
+            <th>@Html.Raw(tableColumn.Name)</th>
         }
     </tr>
     <tr class="column-search-row">
@@ -56,7 +56,7 @@
         }
         @foreach (var tableColumn in Model.TableColumnsOrdered)
         {
-            <th>@tableColumn.Name</th>
+            <th>@Html.Raw(tableColumn.Name)</th>
         }
     </tr>
     </tfoot>

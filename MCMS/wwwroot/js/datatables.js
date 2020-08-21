@@ -37,7 +37,7 @@ function bindDefaultDataTables(tableElem, url, initialConfig, actionsColumnConte
                 text: '<i class="fas fa-grip-lines-vertical fa-fw"></i><i class="fas fa-search fa-fw"></i>',
                 className: 'btn-light btn-outline-info',
                 action: function (e, dt, node, config) {
-                    toggleDataTablesColumnSearch(tableElem, columns);
+                    toggleDataTablesColumnSearch(tableElem, initialConfig.columns);
                 }
             },
             {
@@ -49,9 +49,9 @@ function bindDefaultDataTables(tableElem, url, initialConfig, actionsColumnConte
             }
         ]
     };
-    
+
     config = Object.assign(config, initialConfig);
-    
+
     if (hasStaticIndexColumn) {
         config.columns.splice(0, 0, {"data": "dataTablesIndex"});
         config.columnDefs = [{

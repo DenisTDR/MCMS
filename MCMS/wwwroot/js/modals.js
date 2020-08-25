@@ -30,15 +30,22 @@ body.on('click', 'button[data-toggle="ajax-modal"], a[data-toggle="ajax-modal"]'
         console.error('Modal triggered by', this);
         throw new Error('But url for modal content not found!');
     }
-    displayLoadingModal()
-    $.get(url).done(function (data) {
-        hideLoadingModal();
-        displayModal(data, button);
-    }).fail(function (e) {
-        hideLoadingModal();
-        alertModal(e.responseText);
-    }).always(function () {
-    });
+    displayLoadingModal();
+    var headers = {'X-Request-Modal': 'true'};
+    var requestOptions = {
+        url,
+        headers,
+        type: 'GET'
+    }
+    $.ajax(requestOptions)
+        .done(function (data) {
+            hideLoadingModal();
+            displayModal(data, button);
+        })
+        .fail(function (e) {
+            hideLoadingModal();
+            alertModal(e.responseText);
+        });
 });
 
 function displayModal(data, button) {
@@ -49,8 +56,6 @@ function displayModal(data, button) {
     var modal = newElement.find('.modal');
     modal.on("hidden.bs.modal", function () {
         var callback = button.data('modal-callback');
-        // console.log('modal closed!');
-        // console.log(modal.data("result"));
         if (callback && window.hasOwnProperty(callback) && typeof window[callback] === 'function') {
             window[callback](button, modal.data("result"));
         }

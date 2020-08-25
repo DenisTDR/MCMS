@@ -5,7 +5,7 @@
     }
     else
     {
-        if (Context.Request.Headers.ContainsKey("X-Request-Modal") && Context.Request.Headers["X-Request-Modal"] == "true")
+        if (Context.Request.Headers.TryGetValue("X-Request-Modal", out var value) && value.ToString().ToLower() == "true")
         {
             Layout = "_ModalLayout";
         }

@@ -42,7 +42,15 @@ namespace MCMS.Controllers.Ui
 
         public override async Task<IActionResult> Index()
         {
-            return View("BasicPages/Index", await TableConfigForIndex());
+            if (HttpContext.Request.Headers.TryGetValue("X-Request-Modal", out var value) &&
+                value.ToString().ToLower() == "true")
+            {
+                return View("BasicModals/IndexModal", await TableConfigForIndex());
+            }
+            else
+            {
+                return View("BasicPages/Index", await TableConfigForIndex());
+            }
         }
 
         public virtual Task<ModelDisplayTableConfig> TableConfigForIndex()

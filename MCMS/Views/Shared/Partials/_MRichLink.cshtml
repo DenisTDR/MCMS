@@ -7,8 +7,8 @@
    {
        @Html.Raw("data-toggle=\"ajax-modal\"")
        @Html.Raw("data-modal-backdrop=\"" + Model.ModalBackdrop + "\"")
-       if (Model.ModalSuccessAction == ModalSuccessAction.ReloadTable && !string.IsNullOrEmpty(ViewBag.ModalCallback))
+       if (Model.ModalSuccessAction == ModalSuccessAction.RunCallback && !string.IsNullOrEmpty(Model.ModalSuccessCallback ?? ViewBag.ModalCallback))
        {
-           @Html.Raw("data-modal-callback=\"" + ViewBag.ModalCallback + "\"")
+           @Html.Raw("data-modal-callback=\"" + (Model.ModalSuccessCallback ?? ViewBag.ModalCallback) + "\"")
        }
    }>@Html.Raw(Model.BuildText())</a>

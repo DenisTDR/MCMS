@@ -148,10 +148,10 @@ namespace MCMS.Data
 
         public T Attach(T e)
         {
-            var localExisting = DbSet.Local.FirstOrDefault(localE => localE.Id == e.Id);
-            if (localExisting != null)
+            var localEntity = DbSet.Local.FirstOrDefault(localE => localE.Id == e.Id);
+            if (localEntity != null)
             {
-                return localExisting;
+                return localEntity;
             }
 
             return DbContext.Attach(e).Entity;
@@ -160,6 +160,11 @@ namespace MCMS.Data
         public T Attach(string id)
         {
             return Attach(new T {Id = id});
+        }
+
+        public async Task Reload(T e)
+        {
+            await DbContext.Entry(e).ReloadAsync();
         }
 
         public Task SaveChanges() => DbContext.SaveChangesAsync();

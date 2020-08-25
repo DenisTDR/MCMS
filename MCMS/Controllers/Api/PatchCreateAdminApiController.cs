@@ -15,7 +15,7 @@ using Microsoft.Extensions.DependencyInjection;
 namespace MCMS.Controllers.Api
 {
     public abstract class PatchCreateAdminApiController<TE, TFm> : AdminApiController, IPatchCreateApiController<TFm>
-        where TE : Entity where TFm : class, IFormModel
+        where TE : class, IEntity where TFm : class, IFormModel
     {
         protected virtual IRepository<TE> Repo => ServiceProvider.GetRepo<TE>();
 
@@ -52,8 +52,9 @@ namespace MCMS.Controllers.Api
         public virtual async Task<ActionResult<ModelResponse<TFm>>> Create([FromBody] TFm fm)
         {
             var e = MapF(fm);
-            await PatchBeforeSaveNew(e);
+            await BeforeSaveNewHook(e);
             e = await Repo.Add(e);
+            await AfterSaveNewHook(e);
             fm = MapF(e);
             return OkModel(fm);
         }
@@ -68,7 +69,12 @@ namespace MCMS.Controllers.Api
             return Mapper.Map<TE>(vm);
         }
 
-        protected virtual Task PatchBeforeSaveNew(TE e)
+        protected virtual Task BeforeSaveNewHook(TE e)
+        {
+            return Task.CompletedTask;
+        }
+
+        protected virtual Task AfterSaveNewHook(TE e)
         {
             return Task.CompletedTask;
         }

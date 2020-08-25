@@ -15,7 +15,7 @@ namespace MCMS.Display.Link
         }
 
         public static T WithModal<T>(this T value, string backdrop = "static",
-            ModalSuccessAction modalSuccessAction = ModalSuccessAction.ReloadTable) where T : MRichLink
+            ModalSuccessAction modalSuccessAction = ModalSuccessAction.RunCallback) where T : MRichLink
         {
             value.ModalBackdrop = backdrop;
             value.AsModal = true;

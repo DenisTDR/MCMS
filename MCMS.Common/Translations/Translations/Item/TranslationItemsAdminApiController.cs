@@ -19,7 +19,7 @@ namespace MCMS.Common.Translations.Translations.Item
             Repo.ChainQueryable(q => q.Include(t => t.Language));
         }
 
-        protected override Task PatchBeforeSaveNew(TranslationItemEntity e)
+        protected override Task BeforeSaveNewHook(TranslationItemEntity e)
         {
             var repo = ServiceProvider.GetRepo<LanguageEntity>();
             repo.Attach(e.Language);

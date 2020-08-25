@@ -20,11 +20,11 @@ namespace MCMS.Controllers.Ui
         where TVm : class, IViewModel
         where TApiController : IGenericApiController<TFm, TVm>
     {
-        protected virtual IModelDisplayConfigService ModelDisplayConfigService =>
+        protected virtual IModelDisplayConfigForControllerService ModelDisplayConfigService =>
             ServiceProvider.GetService(
                 ModelDisplayConfigForControllerService<TE, TFm, TVm,
                         GenericAdminUiController<TE, TFm, TVm, TApiController>, TApiController>
-                    .MakeGenericTypeWithUiControllerType(GetType())) as IModelDisplayConfigService;
+                    .MakeGenericTypeWithUiControllerType(GetType())) as IModelDisplayConfigForControllerService;
 
         protected virtual FormParamsService FormParamsService =>
             ServiceProvider.GetService<FormParamsForControllerService<TApiController, TFm>>();
@@ -53,12 +53,7 @@ namespace MCMS.Controllers.Ui
         [HttpGet("{id}")]
         public virtual async Task<IActionResult> Details([FromRoute] string id)
         {
-            var e = await Repo.GetOne(id);
-            if (e == null)
-            {
-                return NotFound();
-            }
-
+            var e = await Repo.GetOneOrThrow(id);
             var vm = Mapper.Map<TVm>(e);
             return View(vm);
         }

@@ -31,6 +31,7 @@ namespace MCMS.Base.Data
         IRepository<T> ChainQueryable(Func<IQueryable<T>, IQueryable<T>> func);
         T Attach(T e);
         T Attach(string id);
+        Task Reload(T e);
         Task SaveChanges();
         bool SkipSaving { get; set; }
         DbSet<T> DbSet { get; }

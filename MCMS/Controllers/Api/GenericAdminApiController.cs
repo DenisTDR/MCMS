@@ -11,7 +11,7 @@ namespace MCMS.Controllers.Api
 {
     public class GenericAdminApiController<TE, TFm, TVm> : PatchCreateAdminApiController<TE, TFm>,
         IGenericApiController<TFm, TVm>
-        where TE : Entity, new() where TFm : class, IFormModel where TVm : class, IViewModel
+        where TE : class, IEntity, new() where TFm : class, IFormModel where TVm : class, IViewModel
     {
         [AdminApiRoute("/[controller]")]
         [HttpGet]

@@ -13,6 +13,7 @@ namespace MCMS.Display.Link
         public string ModalBackdrop { get; set; }
         public object Values { get; set; }
         public ModalSuccessAction ModalSuccessAction { get; set; }
+        public string ModalSuccessCallback { get; set; }
 
 
         public MRichLink(string text, Type controller, MethodInfo action = null) : base(text, controller,
@@ -43,6 +44,6 @@ namespace MCMS.Display.Link
     public enum ModalSuccessAction
     {
         [EnumMember(Value = null)] None,
-        [EnumMember(Value = "reloadTable")] ReloadTable
+        [EnumMember(Value = "runCallback")] RunCallback
     }
 }

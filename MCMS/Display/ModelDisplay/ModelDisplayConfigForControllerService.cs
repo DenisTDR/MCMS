@@ -15,7 +15,8 @@ using Microsoft.AspNetCore.Mvc;
 namespace MCMS.Display.ModelDisplay
 {
     public class
-        ModelDisplayConfigForControllerService<TE, TFm, TVm, TUiController, TApiController> : ModelDisplayConfigService
+        ModelDisplayConfigForControllerService<TE, TFm, TVm, TUiController, TApiController> : ModelDisplayConfigService,
+            IModelDisplayConfigForControllerService
         where TUiController : GenericAdminUiController<TE, TFm, TVm, TApiController>
         where TE : class, IEntity
         where TFm : class, IFormModel

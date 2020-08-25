@@ -1,0 +1,18 @@
+@inject ITranslationsRepository TransRepo
+@using MCMS.Base.Repositories
+@model MCMS.Display.ModelDisplay.ModelDisplayTableConfig
+
+@{
+    ViewBag.Title = Model.IndexPageTitle;
+    ViewBag.ModalDialogClasses = "modal-xl";
+    Model.IndexPageTitle = "";
+}
+
+<div class="modal-body">
+    <div class="container-fluid">
+        <partial name="BasicPages/Index"/>
+    </div>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-secondary" data-dismiss="modal">@await TransRepo.GetValueOrSlug("close")</button>
+</div>

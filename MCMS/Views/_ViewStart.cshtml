@@ -5,9 +5,16 @@
     }
     else
     {
-        if (Context.Request.Headers.ContainsKey("X-Request-Modal") && Context.Request.Headers["X-Request-Modal"] == "true")
+        if (Context.Request.Headers.TryGetValue("X-Request-Modal", out var value))
         {
-            Layout = "_ModalLayout";
+            if (value.ToString().ToLower() == "true")
+            {
+                Layout = "_ModalLayout";
+            }
+            else
+            {
+                Layout = "_Layout";
+            }
         }
         else
         {

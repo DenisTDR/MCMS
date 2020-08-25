@@ -11,7 +11,7 @@ waitModal.on("shown.bs.modal", function (e) {
 
 function displayLoadingModal() {
     closeWaitModal = false;
-    waitModal.modal('show');
+    customShowModal(waitModal);
 }
 
 function hideLoadingModal() {
@@ -33,7 +33,7 @@ body.on('click', 'button[data-toggle="ajax-modal"], a[data-toggle="ajax-modal"]'
     displayLoadingModal()
     $.get(url).done(function (data) {
         hideLoadingModal();
-        displayModal(data, button);
+        displayResponseModal(data, button);
     }).fail(function (e) {
         hideLoadingModal();
         alertModal(e.responseText);
@@ -41,13 +41,18 @@ body.on('click', 'button[data-toggle="ajax-modal"], a[data-toggle="ajax-modal"]'
     });
 });
 
-function displayModal(data, button) {
+function displayResponseModal(data, button) {
     closeWaitModal = true;
     var newElement = $("<div></div>");
     newElement.append($(data));
     body.append(newElement);
     var modal = newElement.find('.modal');
-    modal.on("hidden.bs.modal", function () {
+    modal.on("hidden.bs.modal", function (a, b, c) {
+        var result = modal.data('result');
+        if (result && result.reload) {
+            button.click();
+            return;
+        }
         var callback = button.data('modal-callback');
         // console.log('modal closed!');
         // console.log(modal.data("result"));
@@ -68,7 +73,7 @@ function displayModal(data, button) {
         modal.addClass('shown-modal');
     });
     modal.modal({backdrop: button.data('modal-backdrop')});
-    modal.modal('show');
+    customShowModal(modal);
 }
 
 
@@ -90,11 +95,28 @@ function alertModal(modalHtml) {
         }, 1000);
     });
     modal.modal({backdrop: 'static'});
-    // modal.modal('show');
+    customShowModal(modal);
 }
 
 function alertModalText(text, title) {
     _alertModal.find(".title").html(title);
     _alertModal.find(".modal-body").html(text);
-    _alertModal.modal('show');
+    customShowModal(_alertModal);
+}
+
+var visibleModals = 0;
+
+function customShowModal(modal) {
+    modal.on("shown.bs.modal", function (e) {
+        visibleModals++;
+        $(body).addClass('modal-open');
+    });
+
+    modal.on("hidden.bs.modal", function (e) {
+        visibleModals--;
+        if (visibleModals > 0) {
+            $(body).addClass('modal-open');
+        }
+    });
+    modal.modal('show');
 }

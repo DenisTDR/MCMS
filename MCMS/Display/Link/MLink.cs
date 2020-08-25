@@ -11,7 +11,7 @@ namespace MCMS.Display.Link
         public string Text { get; }
         public string Url { get; }
         public Type Controller { get; }
-        public MethodInfo Action { get; internal set; }
+        public MethodInfo Action { get; set; }
         public string Target { get; internal set; }
         public string ControllerName => Controller != null ? TypeHelpers.GetControllerName(Controller) : null;
         public string ActionName => Action != null ? Action.Name : "Index";

@@ -8,7 +8,7 @@ namespace MCMS.Display.Link
 {
     public class MLink : IItemWithIcon
     {
-        public string Text { get; }
+        public string Text { get; set; }
         public string Url { get; }
         public Type Controller { get; }
         public MethodInfo Action { get; set; }

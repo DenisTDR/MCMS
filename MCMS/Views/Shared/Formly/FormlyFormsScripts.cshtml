@@ -11,20 +11,8 @@
         <script>
             var openApiConfigUrl = '@FormParamsService.GetOpenApiConfigUrl(Url)'
         </script>
-
-        <script src="@basePath/formly-form/runtime.js" defer asp-append-version="true"></script>
-        <script src="@basePath/formly-form/polyfills.js" defer asp-append-version="true"></script>
-        <script src="@basePath/formly-form/styles.js" defer asp-append-version="true"></script>
-        <script src="@basePath/formly-form/main.js" defer asp-append-version="true"></script>
-@*         <script src="@basePath/formly-form/runtime-es2015.js" type="module" asp-append-version="true"></script> *@
-@*         <script src="@basePath/formly-form/runtime-es5.js" nomodule defer asp-append-version="true"></script> *@
-@*         <script src="@basePath/formly-form/polyfills-es5.js" nomodule defer asp-append-version="true"></script> *@
-@*         <script src="@basePath/formly-form/polyfills-es2015.js" type="module" asp-append-version="true"></script> *@
-@*         <script src="@basePath/formly-form/styles-es2015.js" type="module" asp-append-version="true"></script> *@
-@*         <script src="@basePath/formly-form/styles-es5.js" nomodule defer asp-append-version="true"></script> *@
-@* $1$     <script src="@basePath/formly-form/vendor-es2015.js" type="module" asp-append-version="true"></script> #1# *@
-@* $1$     <script src="@basePath/formly-form/vendor-es5.js" nomodule defer asp-append-version="true"></script> #1# *@
-@*         <script src="@basePath/formly-form/main-es2015.js" type="module" asp-append-version="true"></script> *@
-@*         <script src="@basePath/formly-form/main-es5.js" nomodule defer asp-append-version="true"></script> *@
+        <link rel="stylesheet" href="@basePath/mcms-form/styles.css" asp-append-version="true"/>
+        <script src="@basePath/mcms-form/mcms-form.polyfills.js" defer asp-append-version="true"></script>
+        <script src="@basePath/mcms-form/mcms-form.main.js" defer asp-append-version="true"></script>
     }
 }

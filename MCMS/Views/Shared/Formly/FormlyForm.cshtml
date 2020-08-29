@@ -4,7 +4,7 @@
 @model MCMS.SwaggerFormly.Models.FormlyFormParams
 @if (!Env.GetBool("FORMLY_DEBUG"))
 {
-    <ce-formly-form-params
+    <mcms-form-params-wrapper
         schema-name="@Model.SchemaName"
         model-id="@Model.ModelId"
         action="@Model.Action.GetCustomValue()"
@@ -15,11 +15,12 @@
         form-instance-id="@Model.FormInstanceId"
         options="@JsonConvert.SerializeObject(Model.Options, Utils.DefaultJsonSerializerSettings())">
         Loading form ... (check developer console if you still see this)
-    </ce-formly-form-params>
+    </mcms-form-params-wrapper>
 }
 else
 {
-    <iframe src="/formly-proxy?@Model.ToUrlQuery()" class="col-12" id="@Model.FormInstanceId"></iframe>
+    <iframe src="/mcms-forms?@Model.ToUrlQuery()" class="col-12" id="@Model.FormInstanceId"></iframe>
+    <style></style>
 }
 @using (Html.BeginMPageScripts())
 {
@@ -35,8 +36,8 @@ else
     @if (!Env.GetBool("FORMLY_DEBUG"))
     {
         <script>
-            var formElement = document.getElementById('@Model.FormInstanceId');
-            formElement.addEventListener('done', function(e) { formDone@(Model.FormInstanceId)(e.detail); });
+            var formElement@(Model.FormInstanceId) = document.getElementById('@Model.FormInstanceId');
+            formElement@(Model.FormInstanceId).addEventListener('done', function(e) { formDone@(Model.FormInstanceId)(e.detail); });
             $("#@Model.FormInstanceId-submit-button").on('click', function() {
                 $("#@Model.FormInstanceId .submit-button").click();
             });
@@ -49,12 +50,12 @@ else
                   if(!e || !e.data || !e.data.id || e.data.senderId !== '@Model.FormInstanceId') {
                       return;
                   }
-                  if(e.data.id === 'formly-form-height-changed') {
+                  if(e.data.id === 'mcms-form-height-changed') {
                       var iFrame = document.getElementById("@Model.FormInstanceId");
                       if(iFrame) {
                           iFrame.style.height = e.data.height + 50 + "px";
                       }
-                  }  else if(e.data.id === 'formly-form-done') {
+                  }  else if(e.data.id === 'mcms-form-done') {
                       formDone@(Model.FormInstanceId)(e.data.data); 
                   }
               });

@@ -12,7 +12,7 @@ namespace MCMS.SwaggerFormly.Middlewares
     // https://auth0.com/blog/building-a-reverse-proxy-in-dot-net-core/
     // https://github.com/andychiare/netcore2-reverse-proxy
     // and adjusted by TDR
-    
+
     // ReSharper disable once ClassNeverInstantiated.Global
     public class ReverseProxyMiddleware
     {
@@ -51,7 +51,7 @@ namespace MCMS.SwaggerFormly.Middlewares
             var content = await responseMessage.Content.ReadAsByteArrayAsync();
             await context.Response.Body.WriteAsync(content);
         }
-        
+
         private HttpRequestMessage CreateTargetMessage(HttpContext context, Uri targetUri)
         {
             var requestMessage = new HttpRequestMessage();
@@ -131,6 +131,6 @@ namespace MCMS.SwaggerFormly.Middlewares
         }
 
         private readonly Dictionary<string, string> _proxyRules = new Dictionary<string, string>
-            {{"/formly-proxy", Utils.UrlCombine(Env.GetOrThrow("FORMLY_SERVE_URL"), "formly-proxy/")}};
+            {{"/mcms-forms", Utils.UrlCombine(Env.GetOrThrow("FORMLY_SERVE_URL"), "mcms-forms/")}};
     }
 }

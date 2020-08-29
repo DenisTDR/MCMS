@@ -21,10 +21,10 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Compile Remove="wwwroot\formly-form\**" />
-        <EmbeddedResource Remove="wwwroot\formly-form\**" />
-        <None Remove="wwwroot\formly-form\**" />
-        <Content Remove="wwwroot\formly-form\**" />
+        <Compile Remove="wwwroot\mcms-form\**" />
+        <EmbeddedResource Remove="wwwroot\mcms-form\**" />
+        <None Remove="wwwroot\mcms-form\**" />
+        <Content Remove="wwwroot\mcms-form\**" />
     </ItemGroup>
 
     <ItemGroup>

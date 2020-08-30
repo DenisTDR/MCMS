@@ -5,7 +5,7 @@
 @if (!Env.GetBool("FORMLY_DEBUG"))
 {
     var basePath = Env.Get("FORMLY_SCRIPTS_PATH") is {} path && !string.IsNullOrEmpty(path) ? path : "~";
-    @using (Html.BeginMPageScripts())
+    @using (Html.BeginMScripts())
     {
         <script>
             var openApiConfigUrl = '@FormParamsService.GetOpenApiConfigUrl(Url)';

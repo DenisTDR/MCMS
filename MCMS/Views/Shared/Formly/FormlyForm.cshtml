@@ -14,13 +14,15 @@
         id="@Model.FormInstanceId"
         form-instance-id="@Model.FormInstanceId"
         options="@JsonConvert.SerializeObject(Model.Options, Utils.DefaultJsonSerializerSettings())">
-        Loading form ... (check developer console if you still see this)
+        <div class="d-flex flex-column justify-content-center align-items-center">
+            <div class="spinner-border text-primary mb-3" role="status"></div>
+            Loading up form ...
+        </div>
     </mcms-form-params-wrapper>
 }
 else
 {
     <iframe src="/mcms-forms?@Model.ToUrlQuery()" class="col-12" id="@Model.FormInstanceId"></iframe>
-    <style></style>
 }
 @using (Html.BeginMPageScripts())
 {
@@ -41,6 +43,7 @@ else
             $("#@Model.FormInstanceId-submit-button").on('click', function() {
                 $("#@Model.FormInstanceId .submit-button").click();
             });
+            mcmsFormScripts.load();
         </script>
     }
     else

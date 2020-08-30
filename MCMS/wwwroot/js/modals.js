@@ -33,8 +33,8 @@ body.on('click', 'button[data-toggle="ajax-modal"], a[data-toggle="ajax-modal"]'
     displayLoadingModal();
     var headers = {'X-Request-Modal': 'true'};
     var requestOptions = {
-        url,
-        headers,
+        url: url,
+        headers: headers,
         type: 'GET'
     }
     $.ajax(requestOptions)
@@ -72,7 +72,7 @@ function displayResponseModal(data, button) {
         if (!modal.hasClass('stacked-modal')) {
             return;
         }
-        var backDrop = newElement.next();
+        var backDrop = newElement.nextAll(".modal-backdrop");
         backDrop.detach();
         newElement.before(backDrop);
         modal.addClass('shown-modal');

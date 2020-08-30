@@ -3,7 +3,10 @@
 
 // Write your JavaScript code.
 
-function formatDate(date, separator = '/') {
+function formatDate(date, separator) {
+    if (typeof separator === 'undefined') {
+        separator = '/';
+    }
     if (typeof date === 'string') {
         date = new Date(date);
     }

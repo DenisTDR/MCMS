@@ -1,7 +1,7 @@
 function ajaxForm(form, asModal, callback, method) {
     form.submit(function (event) {
         event.preventDefault();
-        displayLoadingModal();
+        mModals.loadingUpModal.show();
 
         function close(result) {
             var modal = form.closest(".modal");
@@ -13,14 +13,13 @@ function ajaxForm(form, asModal, callback, method) {
             type: this.method || 'POST',
             url: this.action,
             data: JSON.stringify(serializeFormAsJson(form)),
-            // encode: true,
             contentType: "application/json; charset=utf-8",
             headers: {
                 'X-Request-Modal': asModal
             }
         })
             .done(function () {
-                hideLoadingModal();
+                mModals.loadingUpModal.hide();
                 if (asModal) {
                     close(true);
                 }
@@ -29,7 +28,7 @@ function ajaxForm(form, asModal, callback, method) {
                 }
             })
             .fail(function (e) {
-                hideLoadingModal();
+                mModals.loadingUpModal.hide();
                 console.log('error')
                 console.error(e);
                 if (asModal) {
@@ -41,12 +40,12 @@ function ajaxForm(form, asModal, callback, method) {
                 if (e.responseJSON) {
                     var obj = e.responseJSON;
                     if (obj.error) {
-                        alertModalText(obj.error, "Error");
+                        mModals.alertModalText(obj.error, "Error");
                     } else {
-                        alertModalText(e.responseText, "Json Error");
+                        mModals.alertModalText(e.responseText, "Json Error");
                     }
                 } else {
-                    alertModal(e.responseText);
+                    mModals.alertModal(e.responseText);
                 }
             });
     });

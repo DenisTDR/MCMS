@@ -1,127 +1,139 @@
-var waitModal = $("#processing-modal").find('.modal');
-var _alertModal = $("#alert-modal").find('.modal');
-
-var closeWaitModal = false;
-waitModal.on("shown.bs.modal", function (e) {
-    if (closeWaitModal) {
-        waitModal.modal('hide');
-        closeWaitModal = false;
-    }
-});
-
-function displayLoadingModal() {
-    closeWaitModal = false;
-    customShowModal(waitModal);
-}
-
-function hideLoadingModal() {
-    closeWaitModal = true;
-    waitModal.modal('hide');
-}
-
-var body = $('body');
-body.on('click', 'button[data-toggle="ajax-modal"], a[data-toggle="ajax-modal"]', function (event) {
-    if (event) {
-        event.preventDefault();
-    }
-    var button = $(this);
-    var url = button.data('url') || button.attr('href');
-    if (!url) {
-        console.error('Modal triggered by', this);
-        throw new Error('But url for modal content not found!');
-    }
-    displayLoadingModal();
-    var headers = {'X-Request-Modal': 'true'};
-    var requestOptions = {
-        url: url,
-        headers: headers,
-        type: 'GET'
-    }
-    $.ajax(requestOptions)
-        .done(function (data) {
-            hideLoadingModal();
-            displayResponseModal(data, button);
-        })
-        .fail(function (e) {
-            hideLoadingModal();
-            alertModal(e.responseText);
+var mModals = {
+    waitModal: $("#processing-modal").find('.modal'),
+    _alertModal: $("#alert-modal").find('.modal'),
+    closeWaitModal: false,
+    visibleModals: 0,
+    body: $('body'),
+    init: function () {
+        this.waitModal.on("shown.bs.modal", function (e) {
+            if (mModals.closeWaitModal) {
+                mModals.waitModal.modal('hide');
+                mModals.closeWaitModal = false;
+            }
         });
-});
 
-function displayResponseModal(data, button) {
-    closeWaitModal = true;
-    var newElement = $("<div></div>");
-    newElement.append($(data));
-    body.append(newElement);
-    var modal = newElement.find('.modal');
-    modal.on("hidden.bs.modal", function (a, b, c) {
-        var result = modal.data('result');
-        if (result && result.reload) {
-            button.click();
-            return;
+        mModals.body.on('click', '[data-toggle="ajax-modal"]', function (event) {
+            if (event) {
+                event.preventDefault();
+            }
+            var button = $(this);
+            var url = button.data('url') || button.attr('href');
+            if (!url) {
+                console.error('Modal triggered by', this);
+                throw new Error('But url for modal content not found!');
+            }
+            mModals.loadingUpModal.show();
+            var headers = {'X-Request-Modal': 'true'};
+            var requestOptions = {
+                url: url,
+                headers: headers,
+                type: 'GET'
+            }
+            $.ajax(requestOptions)
+                .done(function (data) {
+                    // alert(1);
+                    mModals.loadingUpModal.hide();
+                    mModals.displayModalLinkResponse(data, button);
+                })
+                .fail(function (e) {
+                    mModals.loadingUpModal.hide();
+                    mModals.alertModal(e.responseText);
+                });
+        });
+        this.initAlertModal();
+    },
+    loadingUpModal: {
+        show: function () {
+            mModals.closeWaitModal = false;
+            mModals.customShowModal(mModals.waitModal);
+        },
+        hide: function () {
+            mModals.closeWaitModal = true;
+            mModals.waitModal.modal('hide');
         }
-        var callback = button.data('modal-callback');
-        if (callback && window.hasOwnProperty(callback) && typeof window[callback] === 'function') {
-            window[callback](button, modal.data("result"));
+    },
+    initialScrollPosition: {x: 0, y: 0},
+    customShowModal: function (modal) {
+        if (!modal.data('custom-modal-patched')) {
+            modal.data('custom-modal-patched', true);
+            modal.on("show.bs.modal", function (e) {
+                if (mModals.visibleModals === 0) {
+                    mModals.body.addClass('forced-modal-open');
+
+                    mModals.initialScrollPosition = {x: window.scrollX, y: window.scrollY};
+                    window.scrollTo(0, 0);
+                }
+                mModals.visibleModals++;
+            });
+
+            modal.on("hidden.bs.modal", function (e) {
+                mModals.visibleModals--;
+                if (mModals.visibleModals === 0) {
+                    mModals.body.removeClass('forced-modal-open');
+
+                    window.scrollTo(mModals.initialScrollPosition.x, mModals.initialScrollPosition.y);
+                }
+            });
         }
-        setTimeout(function () {
-            newElement.detach();
-        }, 1000);
-    });
-    modal.on("shown.bs.modal", function (e) {
-        if (!modal.hasClass('stacked-modal')) {
-            return;
-        }
-        var backDrop = newElement.nextAll(".modal-backdrop");
-        backDrop.detach();
-        newElement.before(backDrop);
-        modal.addClass('shown-modal');
-    });
-    modal.modal({backdrop: button.data('modal-backdrop')});
-    customShowModal(modal);
+        modal.modal('show');
+    },
+    initAlertModal: function () {
+        mModals._alertModal.on('hidden.bs.modal', function () {
+            mModals._alertModal.find(".title").html("");
+            mModals._alertModal.find(".modal-body").html("");
+        });
+    },
+    alertModalText: function (text, title) {
+        mModals._alertModal.find(".title").html(title);
+        mModals._alertModal.find(".modal-body").html(text);
+        this.customShowModal(mModals._alertModal);
+    },
+    alertModal: function (modalHtml) {
+        var newElement = $("<div></div>");
+        newElement.append($(modalHtml));
+        body.append(newElement);
+        var modal = newElement.find('.modal');
+        modal.on("hidden.bs.modal", function () {
+            setTimeout(function () {
+                newElement.detach();
+            }, 1000);
+        });
+        modal.modal({backdrop: 'static'});
+        this.customShowModal(modal);
+    },
+    displayModalLinkResponse: function (data, button) {
+        mModals.closeWaitModal = true;
+        var newElement = $("<div></div>");
+        newElement.append($(data));
+        this.body.append(newElement);
+        var modal = newElement.find('.modal');
+        modal.on("hidden.bs.modal", function (a, b, c) {
+            var result = modal.data('result');
+            if (result && result.reload) {
+                button.click();
+                return;
+            }
+            var callback = button.data('modal-callback');
+            var callbackFn = window[callback];
+            if (typeof callbackFn === 'function') {
+                callbackFn(button, modal.data("result"));
+            }
+            setTimeout(function () {
+                newElement.detach();
+            }, 1000);
+        });
+        modal.on("shown.bs.modal", function (e) {
+            if (!modal.hasClass('stacked-modal')) {
+                return;
+            }
+            var backDrop = newElement.nextAll(".modal-backdrop");
+            backDrop.detach();
+            newElement.before(backDrop);
+            modal.addClass('shown-modal');
+        });
+        modal.modal({show: false, backdrop: button.data('modal-backdrop')});
+        this.customShowModal(modal);
+    }
 }
 
-
-function initAlertModal() {
-    _alertModal.on('hidden.bs.modal', function () {
-        _alertModal.find(".title").html("");
-        _alertModal.find(".modal-body").html("");
-    });
-}
-
-function alertModal(modalHtml) {
-    var newElement = $("<div></div>");
-    newElement.append($(modalHtml));
-    body.append(newElement);
-    var modal = newElement.find('.modal');
-    modal.on("hidden.bs.modal", function () {
-        setTimeout(function () {
-            newElement.detach();
-        }, 1000);
-    });
-    modal.modal({backdrop: 'static'});
-    customShowModal(modal);
-}
-
-function alertModalText(text, title) {
-    _alertModal.find(".title").html(title);
-    _alertModal.find(".modal-body").html(text);
-    customShowModal(_alertModal);
-}
-
-var visibleModals = 0;
-
-function customShowModal(modal) {
-    modal.on("shown.bs.modal", function (e) {
-        visibleModals++;
-        $(body).addClass('modal-open');
-    });
-
-    modal.on("hidden.bs.modal", function (e) {
-        visibleModals--;
-        if (visibleModals > 0) {
-            $(body).addClass('modal-open');
-        }
-    });
-    modal.modal('show');
-}
+mModals.init();

@@ -4,7 +4,11 @@
 
 @if (!Env.GetBool("FORMLY_DEBUG"))
 {
-    var basePath = Env.Get("FORMLY_SCRIPTS_PATH") is {} path && !string.IsNullOrEmpty(path) ? path : "~";
+    var basePath = Env.Get("FORMLY_SCRIPTS_PATH") is {} path && !string.IsNullOrEmpty(path) ? path : "/";
+    if (basePath.EndsWith("/"))
+    {
+        basePath = basePath.Substring(0, basePath.Length - 1);
+    }
     @using (Html.BeginMScripts())
     {
         <script>

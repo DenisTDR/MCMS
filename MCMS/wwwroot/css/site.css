@@ -75,7 +75,7 @@ body {
 
 /* ckeditor balloon modal z-index */
 :root {
-    --ck-z-modal: 1069 !important;
+    --ck-z-default: 60 !important;
 }
 
 /* semi-transparent text */
@@ -119,6 +119,10 @@ body {
     padding: .6em;
     font-size: .75em;
     outline-offset: -1px;
+}
+
+body.forced-modal-open {
+    overflow: hidden;
 }
 
 .modal.stacked-modal.shown-modal {

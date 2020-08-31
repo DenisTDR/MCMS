@@ -9,6 +9,7 @@ using MCMS.Base.Data.ViewModels;
 using MCMS.Base.Extensions;
 using MCMS.Base.JsonPatch;
 using MCMS.Base.SwaggerFormly.Formly;
+using MCMS.Base.SwaggerFormly.Formly.Fields;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.JsonPatch.Adapters;
 using Microsoft.AspNetCore.JsonPatch.Operations;
@@ -95,29 +96,28 @@ namespace MCMS.Base.Attributes
                     }
                 }
 
-                if (splitPath.Length == 1)
-                {
-                    continue;
-                }
-
                 object obj = nfm;
-
-                // TODO: generalize this
-                if (obj.GetType().GetProperty(splitPath[0].ToPascalCase()) is {} prop &&
-                    splitPath[1].ToPascalCase() != "Id" &&
-                    prop.GetCustomAttribute<DisablePatchSubPropertiesAttribute>() != null)
+                if (splitPath.Length != 1)
                 {
-                    doc.Operations.Remove(op);
-                    i--;
-                    continue;
+                    // TODO: generalize this
+                    if (obj.GetType().GetProperty(splitPath[0].ToPascalCase()) is {} prop &&
+                        splitPath[1].ToPascalCase() != "Id" &&
+                        prop.GetCustomAttribute<DisablePatchSubPropertiesAttribute>() != null)
+                    {
+                        doc.Operations.Remove(op);
+                        i--;
+                        continue;
+                    }
+
+                    foreach (var pathPart in splitPath.Take(splitPath.Length - 1))
+                    {
+                        obj = EnsureSubPropertyExists(obj, pathPart);
+                    }
                 }
 
-                foreach (var pathPart in splitPath.Take(splitPath.Length - 1))
-                {
-                    obj = EnsureSubPropertyExists(obj, pathPart);
-                }
-
-                if (obj.GetType().GetProperty(splitPath[^1].ToPascalCase())?.CanWrite == false)
+                var finalProp = obj.GetType().GetProperty(splitPath[^1].ToPascalCase());
+                if (finalProp?.CanWrite == false ||
+                    finalProp?.GetCustomAttributes<FormlyFieldAttribute>().LastOrDefault()?.Disabled == true)
                 {
                     doc.Operations.Remove(op);
                     i--;

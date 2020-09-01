@@ -78,6 +78,10 @@ body {
     --ck-z-default: 60 !important;
 }
 
+.dropdown-menu.show {
+    z-index: 1050;
+}
+
 /* semi-transparent text */
 .st-text {
     opacity: .2;

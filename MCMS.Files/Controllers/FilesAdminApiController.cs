@@ -33,6 +33,21 @@ namespace MCMS.Files.Controllers
             Repo.ChainQueryable(q => q.OrderByDescending(f => f.Created));
         }
 
+        public override async Task<ActionResult<List<FileViewModel>>> Index()
+        {
+            var all = await Repo.GetAll();
+            var allVm = Map(all);
+            foreach (var file in allVm)
+            {
+                if (!file.IsPublic)
+                {
+                    file.Url = file.GetPrivateLink(Url);
+                }
+            }
+
+            return Ok(allVm);
+        }
+
         public override async Task<ActionResult<FileUploadFormModel>> Get(string id)
         {
             var e = await Repo.GetOneOrThrow(id);

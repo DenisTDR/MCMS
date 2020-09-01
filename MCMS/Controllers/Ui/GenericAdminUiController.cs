@@ -53,6 +53,7 @@ namespace MCMS.Controllers.Ui
             }
         }
 
+        [NonAction]
         public virtual Task<ModelDisplayTableConfig> TableConfigForIndex()
         {
             return ModelDisplayConfigService.GetTableConfig(Url, ViewBag);

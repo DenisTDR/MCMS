@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using MCMS.Base.Attributes;
+using MCMS.Base.Helpers;
 using MCMS.Base.JsonPatch;
 using MCMS.Controllers.Api;
 using MCMS.Files.Models;
@@ -96,16 +97,35 @@ namespace MCMS.Files.Controllers
         [HttpPost]
         [ModelValidation]
         [RequestSizeLimit(135266304)]
+        [AllowAnonymous]
         // [RequestSizeLimit((128 + 1) * 1024 * 1024)]
         public async Task<ActionResult<FileUploadFormModel>> Upload([Required] IFormFile file,
             [FromQuery] [Required] string purpose)
         {
+            var requiredRoles = (Env.Get("FILE_UPLOAD_REQUIRED_ROLES") ?? "Admin").Split(",").Select(r => r.Trim());
+            var matchRoles = 0;
+            
+            foreach (var requiredRole in requiredRoles)
+            {
+                if (User.IsInRole(requiredRole))
+                {
+                    matchRoles++;
+                    break;
+                }   
+            }
+
+            if (matchRoles == 0)
+            {
+                return Forbid();
+            }
+
             Logger.LogInformation("in Upload, file: \nname=" + file.FileName + "\nsize=" + file.Length + "\nname=" +
                                   file.Name);
             var fileE = await FileUploadManager.SaveFile(file, purpose);
             var fileViewModel = Mapper.Map<FileViewModel>(fileE);
             return Ok(fileViewModel);
         }
+
 
         [HttpDelete]
         public async Task<IActionResult> Delete([FromQuery] string id, [FromQuery] string ownerToken)

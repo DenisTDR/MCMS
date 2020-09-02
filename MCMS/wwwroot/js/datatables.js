@@ -20,6 +20,11 @@ function bindDefaultDataTables(tableElem, url, initialConfig, actionsColumnConte
                     }
                 }
                 return json;
+            },
+            error: function (jqXHR, textStatus, errorThrown, c) {
+                var msg = (jqXHR.responseJSON ? jqXHR.responseJSON.error : jqXHR.responseText) || "An error occurred while trying to access data. Please try again123.";
+                alert(msg);
+                tableJQuery._fnProcessingDisplay(false);
             }
         },
         bAutoWidth: false,
@@ -61,7 +66,9 @@ function bindDefaultDataTables(tableElem, url, initialConfig, actionsColumnConte
         }];
         config.aaSorting = [];
     }
-    var table = tableElem.DataTable(config);
+    var tableJQuery = tableElem.dataTable(config);
+    var table = tableJQuery.api();
+
     if (hasStaticIndexColumn) {
         table.on('order.dt search.dt', function () {
             table.column(0, {search: 'applied', order: 'applied'}).nodes().each(function (cell, i) {

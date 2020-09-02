@@ -91,7 +91,7 @@ var mModals = {
     alertModal: function (modalHtml) {
         var newElement = $("<div></div>");
         newElement.append($(modalHtml));
-        body.append(newElement);
+        mModals.body.append(newElement);
         var modal = newElement.find('.modal');
         modal.on("hidden.bs.modal", function () {
             setTimeout(function () {

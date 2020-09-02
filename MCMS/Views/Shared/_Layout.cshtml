@@ -12,7 +12,7 @@
     <title> @(ViewData.ContainsKey("Title") ? ViewData["Title"] + " |" : "") @(SiteConfig.Value.SiteName ?? "MCMS") </title>
     @foreach (var valueLayoutInclude in LayoutIncludes.Value.GetAllForPage)
     {
-        @(await Html.BlindPartialAsync(valueLayoutInclude, null, ViewData))
+        <partial name="@valueLayoutInclude"/>
     }
     <partial name="Partials/_Styles"/>
     @await RenderSectionAsync("Styles", required: false)

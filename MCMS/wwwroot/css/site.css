@@ -133,6 +133,10 @@ body.forced-modal-open {
     z-index: 1040 !important;
 }
 
+.modal-full-height .modal-content {
+    height: 100% !important;
+}
+
 @media (min-width: 650px) and (max-width: 992px) {
     .modal-xl {
         max-width: 600px;

@@ -11,6 +11,7 @@ using MCMS.Display.ModelDisplay;
 using MCMS.Files.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.StaticFiles;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Primitives;
 
 namespace MCMS.Files.Controllers
@@ -85,25 +86,7 @@ namespace MCMS.Files.Controllers
                 return RedirectToAction(nameof(DownloadFile), new {id, fileName = e.OriginalName});
             }
 
-            var filePath = e.PhysicalFullPath;
-            if (!System.IO.File.Exists(filePath))
-            {
-                throw new KnownException("File not found on disk.", 404);
-            }
-
-            fileName = HttpUtility.UrlPathEncode(fileName).Replace(",", "%2C");
-            var disposition = string.Format("inline; filename=\"{0}\"; filename*=UTF-8''{0}", fileName);
-            HttpContext.Response.Headers.Add("Content-Disposition", new StringValues(disposition));
-
-            var stream = new FileStream(filePath, FileMode.Open);
-
-            var provider = new FileExtensionContentTypeProvider();
-            if (!provider.TryGetContentType(fileName, out var contentType))
-            {
-                contentType = "application/octet-stream";
-            }
-
-            return File(stream, contentType);
+            return ServiceProvider.GetService<FilesService>().GetFileResult(e);
         }
     }
 }

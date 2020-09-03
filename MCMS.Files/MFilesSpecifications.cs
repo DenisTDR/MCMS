@@ -18,11 +18,10 @@ namespace MCMS.Files
         {
             services.AddOptions<UploadPurposeOptions>();
             services.AddTransient<FileUploadManager>();
-            services.ConfigureSwaggerGen(options =>
-            {
-                options.SchemaFilter<SwaggerFilePurposesFilter>();
-            });
+            services.ConfigureSwaggerGen(options => { options.SchemaFilter<SwaggerFilePurposesFilter>(); });
             services.AddScoped<IRepository<FileEntity>, FilesRepository>();
+            services.AddScoped<FilesRepository>();
+            services.AddScoped<FilesService>();
         }
 
         public override void Configure(IApplicationBuilder app, IServiceProvider serviceProvider)

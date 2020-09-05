@@ -1,8 +1,6 @@
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using System.IO;
 using System.Threading.Tasks;
-using System.Web;
 using MCMS.Base.Attributes;
 using MCMS.Base.Exceptions;
 using MCMS.Controllers.Ui;
@@ -10,9 +8,7 @@ using MCMS.Display.Link;
 using MCMS.Display.ModelDisplay;
 using MCMS.Files.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Primitives;
 
 namespace MCMS.Files.Controllers
 {

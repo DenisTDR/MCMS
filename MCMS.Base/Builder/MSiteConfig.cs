@@ -1,4 +1,4 @@
-namespace MCMS.Builder
+namespace MCMS.Base.Builder
 {
     public class SiteConfig
     {

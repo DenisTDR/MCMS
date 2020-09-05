@@ -33,7 +33,4 @@ git submodule add ssh://git@git.ligaac.ro:5022/upt/mcms.git MCMS
     * `DEFAULT_LANGUAGE` - defaults tot `en`
     * `HIDE_PRIVACY_POLICY` - boolean - hide privacy policy link in footer
     * Emailing
-        * if `SENDGRID_KEY` is not set then emails are logged in stdout
-        * SendGrid
-          * `SENDGRID_KEY`
-          * `SENDGRID_DEFAULT_SENDER`
+      * [MCMS.Emailing/README.md](./MCMS.Emailing/README.md)

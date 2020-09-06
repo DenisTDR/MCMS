@@ -4,43 +4,11 @@
 
 @if (!Env.GetBool("FORMLY_DEBUG"))
 {
-    var basePath = Env.Get("FORMLY_SCRIPTS_PATH") is {} path && !string.IsNullOrEmpty(path) ? path : "/";
-    if (basePath.EndsWith("/"))
-    {
-        basePath = basePath.Substring(0, basePath.Length - 1);
-    }
     @using (Html.BeginMScripts())
     {
         <script>
             var openApiConfigUrl = '@FormParamsService.GetOpenApiConfigUrl(Url)';
-            var mcmsFormScripts = {
-                load: function () {
-                    if (this.loaded) { return; }
-                    this.loaded = true;
-                    for (var i = 0; i < this.files.js.length; i++) {
-                        var script = document.createElement('script');
-                        script.src = this.files.js[i];
-                        document.body.appendChild(script);
-                    }
-                    for (var j = 0; j < this.files.css.length; j++) {
-                        var link = document.createElement('link');
-                        link.href = this.files.css[j];
-                        link.rel = 'stylesheet';
-                        document.head.appendChild(link);
-                    }
-                },
-                loaded: false,
-                files: {
-                    js: [
-                       "@basePath/mcms-form/mcms-form.polyfills.js",
-                       "@basePath/mcms-form/mcms-form.main.js"
-                    ],
-                    css:  ["@basePath/mcms-form/styles.css"]
-                }
-            }
         </script>
-@*         <link rel="stylesheet" href="@basePath/mcms-form/styles.css" asp-append-version="true"/> *@
-@*         <script src="@basePath/mcms-form/mcms-form.polyfills.js" defer asp-append-version="true"></script> *@
-@*         <script src="@basePath/mcms-form/mcms-form.main.js" defer asp-append-version="true"></script> *@
+        @Html.RenderBlindPartialAsync("/MCMSFormScripts.cshtml")
     }
 }

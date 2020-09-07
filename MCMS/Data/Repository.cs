@@ -24,6 +24,11 @@ namespace MCMS.Data
         {
             DbContext = dbContext;
             DbSet = dbContext.Set<T>();
+            BuildQueryable();
+        }
+
+        private void BuildQueryable()
+        {
             Queryable = DbSet;
             if (typeof(IOrderable).IsAssignableFrom(typeof(T)))
             {
@@ -135,12 +140,16 @@ namespace MCMS.Data
             return Queryable.AnyAsync(predicate);
         }
 
-        public void RebuildQueryable(Func<IQueryable<T>, IQueryable<T>> func)
+        public virtual void RebuildQueryable(Func<IQueryable<T>, IQueryable<T>> func = null)
         {
-            Queryable = func(DbSet);
+            BuildQueryable();
+            if (func != null)
+            {
+                Queryable = func(DbSet);
+            }
         }
 
-        public IRepository<T> ChainQueryable(Func<IQueryable<T>, IQueryable<T>> func)
+        public virtual IRepository<T> ChainQueryable(Func<IQueryable<T>, IQueryable<T>> func)
         {
             Queryable = func(Queryable);
             return this;

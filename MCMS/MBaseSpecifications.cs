@@ -10,7 +10,6 @@ using MCMS.Data;
 using MCMS.Data.Seeder;
 using MCMS.Display.ModelDisplay;
 using MCMS.Filters;
-using MCMS.Forms;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.JsonPatch.Adapters;
 using Microsoft.AspNetCore.Mvc;
@@ -32,7 +31,6 @@ namespace MCMS
         public override void ConfigureServices(IServiceCollection services)
         {
             RegisterViewsPathsFromEnvVar(services);
-            services.AddMCMSForms();
             
             services.AddCors();
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));

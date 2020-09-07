@@ -9,6 +9,6 @@
         <script>
             var openApiConfigUrl = '@FormParamsService.GetOpenApiConfigUrl(Url)';
         </script>
-        @Html.RenderBlindPartialAsync("/MCMSFormScripts.cshtml")
+        @(await Html.BlindPartialAsync("/MCMSFormScripts.cshtml"))
     }
 }

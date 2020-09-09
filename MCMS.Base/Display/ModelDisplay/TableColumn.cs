@@ -17,6 +17,7 @@ namespace MCMS.Base.Display.ModelDisplay
             Searchable = attr?.Searchable ?? true;
             Orderable = attr?.Orderable ?? true;
             RowGroups = attr?.RowGroup ?? false;
+            SumTotal = attr?.SumTotal ?? false;
         }
 
         public TableColumn(string name, string key)
@@ -33,8 +34,8 @@ namespace MCMS.Base.Display.ModelDisplay
         public string Key { get; set; }
         public bool Searchable { get; set; }
         public bool Orderable { get; set; }
-
         public bool RowGroups { get; set; }
+        public object SumTotal { get; set; }
 
         public override string ToString()
         {
@@ -48,7 +49,8 @@ namespace MCMS.Base.Display.ModelDisplay
                 data = Key,
                 defaultContent = "<span class='st-text'>null/empty</i>",
                 orderable = Orderable,
-                searchable = Searchable
+                searchable = Searchable,
+                sumTotal = SumTotal
             };
         }
     }

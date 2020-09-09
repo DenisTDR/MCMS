@@ -1,12 +1,13 @@
-tr.column-search-row {
+tr.column-search-row,
+tr.sum-total-row {
     display: none;
 }
 
-tr.column-search-row th {
+tr.column-search-row td {
     position: relative;
 }
 
-tr.column-search-row th input {
+tr.column-search-row td input {
     position: absolute;
     width: 100%;
     height: 100%;

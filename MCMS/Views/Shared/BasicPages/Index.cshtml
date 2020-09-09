@@ -39,7 +39,19 @@
     </tr>
     </thead>
     <tfoot>
-    <tr>
+    <tr class="column-search-row">
+        @* Table footer search row *@
+        @if (Model.HasTableIndexColumn)
+        {
+            <td></td>
+        }
+        @foreach (var tableColumn in Model.TableColumnsOrdered)
+        {
+            <td>@Html.Raw(tableColumn.Name)</td>
+        }
+    </tr>
+    <tr class="sum-total-row">
+        @* Table footer sum total row *@
         @if (Model.HasTableIndexColumn)
         {
             <th></th>
@@ -49,7 +61,8 @@
             <th>@Html.Raw(tableColumn.Name)</th>
         }
     </tr>
-    <tr class="column-search-row">
+    <tr>
+        @* Table footer column names *@
         @if (Model.HasTableIndexColumn)
         {
             <th></th>
@@ -82,7 +95,7 @@
     }
     var table@(Model.TableId) = bindDefaultDataTables(
         $("#table-@Model.TableId"),   
-        "@Model.TableItemsApiUrl", 
+        "@Html.Raw(Model.TableItemsApiUrl)", 
         @Html.Raw(Model.ConfigObject),
         $("#actions-cell-template-@Model.TableId").html(), 
         @Model.HasTableIndexColumn.ToString().ToLower(),

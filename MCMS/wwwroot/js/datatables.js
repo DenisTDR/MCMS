@@ -66,6 +66,8 @@ function bindDefaultDataTables(tableElem, url, initialConfig, actionsColumnConte
         }];
         config.aaSorting = [];
     }
+    sumTotalRowIfNeeded(config);
+
     var tableJQuery = tableElem.dataTable(config);
     var table = tableJQuery.api();
 
@@ -89,15 +91,57 @@ function bindDefaultDataTables(tableElem, url, initialConfig, actionsColumnConte
     return table;
 }
 
-function toggleDataTablesColumnSearch(table, columns) {
+function sumTotalRowIfNeeded(config) {
+    if (!config.columns.some(function (c) {
+        return c.sumTotal;
+    })) {
+        return;
+    }
+    var oldDrawCallback = config.drawCallback;
+    config.drawCallback = function () {
+        if (oldDrawCallback) {
+            oldDrawCallback.call(this);
+        }
+        var row = this.find(".sum-total-row");
+        if (!row.data("build")) {
+            row.toggle().data("build", true);
+            var cols = row.find('th')
+            cols.each(function (index) {
+                $(this).html('');
+            });
+            cols.first().html("Total");
+        }
+        var api = this.api();
+        api.columns().every(function (index) {
+            var sumTotalOpt = config.columns[index].sumTotal;
+            if (!sumTotalOpt)
+                return;
+            var sum = "";
+            if (sumTotalOpt === true) {
+                sum = api.column(index, {page: 'current'}).data().sumTotal;
+            } else {
+                var data = api.column(index, {page: 'current'}).data();
+                if (typeof sumTotalOpt === "string" && data.hasOwnProperty(sumTotalOpt)) {
+                    sum = data[sumTotalOpt];
+                }
+            }
+            if (typeof sum === 'function') {
+                sum = sum();
+            }
+            row.children().eq(index).html(sum + "");
+        });
+    }
+}
+
+function toggleDataTablesColumnSearch(table, columnsConfig) {
     var searchRow = table.find('tfoot tr.column-search-row');
     searchRow.toggle();
     if (!searchRow.data('build')) {
         searchRow.data('build', true)
 
-        var searchCells = searchRow.find('th');
+        var searchCells = searchRow.find('td');
         searchCells.each(function (index) {
-            if (!columns[index].searchable) {
+            if (!columnsConfig[index].searchable) {
                 $(this).html('');
                 return;
             }
@@ -106,12 +150,24 @@ function toggleDataTablesColumnSearch(table, columns) {
         });
 
         table.dataTable().api().columns().every(function (index) {
-            var that = this;
+            var column = this;
             $(searchCells[index]).find("input").on('keyup change clear', function () {
-                if (that.search() !== this.value) {
-                    that.search(this.value).draw();
+                if (column.search() !== this.value) {
+                    column.search(this.value).draw();
                 }
             });
         });
     }
 }
+
+jQuery.fn.dataTable.Api.register('sumTotal', function () {
+    return this.flatten().reduce(function (a, b) {
+        if (typeof a === 'string') {
+            a = a.replace(/[^\d.-]/g, '') * 1;
+        }
+        if (typeof b === 'string') {
+            b = b.replace(/[^\d.-]/g, '') * 1;
+        }
+        return a + b;
+    }, 0);
+});

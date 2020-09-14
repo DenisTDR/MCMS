@@ -90,6 +90,7 @@
     <script>
     function reloadTable@(Model.TableId)(sender, params) {
         if(params && params.params) {
+            $("#table-@(Model.TableId)").closest(".modal").data("result", params);
             table@(Model.TableId).ajax.reload();
         }
     }

@@ -116,7 +116,7 @@ var mModals = {
             var callback = button.data('modal-callback');
             var callbackFn = window[callback];
             if (typeof callbackFn === 'function') {
-                callbackFn(button, modal.data("result"));
+                callbackFn(button, result);
             }
             setTimeout(function () {
                 newElement.detach();

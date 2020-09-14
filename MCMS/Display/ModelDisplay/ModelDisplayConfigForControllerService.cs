@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using MCMS.Base.Data.Entities;
 using MCMS.Base.Data.FormModels;
 using MCMS.Base.Data.ViewModels;
+using MCMS.Base.Extensions;
 using MCMS.Base.Helpers;
 using MCMS.Base.Repositories;
 using MCMS.Controllers.Api;
@@ -42,7 +43,7 @@ namespace MCMS.Display.ModelDisplay
             if (createNewLink)
             {
                 config.CreateNewItemLink = new MRichLink(
-                        $"{await TranslationsRepository.GetValueOrSlug("create")} {TypeHelpers.GetDisplayName(typeof(TVm))}",
+                        $"{await TranslationsRepository.GetValueOrSlug("create")} {TypeHelpers.GetDisplayName(typeof(TVm)).ToLowerFirstChar()}",
                         typeof(TUiController), nameof(GenericAdminUiController<TE, TFm, TVm, TApiController>.Create))
                     .AsButton("outline-primary").WithIconClasses("fas fa-plus")
                     .WithValues(viewBag.CreateNewLinkValues as object);

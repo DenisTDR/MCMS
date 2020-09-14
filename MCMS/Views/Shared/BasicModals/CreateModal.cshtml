@@ -4,7 +4,7 @@
 @using MCMS.Base.Repositories
 @inject ITranslationsRepository TransRepo
 @{
-    ViewBag.Title = $"{await TransRepo.GetValueOrSlug("create")} {ViewBag.ModelName}";
+    ViewBag.Title = $"{await TransRepo.GetValueOrSlug("create")} {StringExtensions.ToLowerFirstChar(ViewBag.ModelName)}";
     var formParams = ViewBag.FormParams as FormlyFormParams ?? (ViewBag.FormParamsService as FormParamsService)?.ForCreate() ?? throw new Exception("Don't have form params :(");
     formParams.Options = new {hideSubmitButton = true};
 }

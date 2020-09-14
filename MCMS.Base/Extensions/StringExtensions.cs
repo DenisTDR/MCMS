@@ -76,5 +76,15 @@ namespace MCMS.Base.Extensions
             return string.Concat(source.Select((x, i) => i > 0 && char.IsUpper(x) ? "-" + x : x.ToString()))
                 .ToLower();
         }
+
+        public static string ToLowerFirstChar(this string source)
+        {
+            if (string.IsNullOrEmpty(source) || char.IsLower(source[0]))
+            {
+                return source;
+            }
+
+            return char.ToLower(source[0]) + source.Substring(1);
+        }
     }
 }

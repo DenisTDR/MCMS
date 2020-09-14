@@ -5,7 +5,7 @@
 @model MCMS.Base.Data.Entities.IEntity
 @inject ITranslationsRepository TransRepo
 @{
-    ViewBag.Title = $"{await TransRepo.GetValueOrSlug("edit")} {ViewBag.ModelName} {(!string.IsNullOrEmpty(Model.ToString()) ? $"'{Model}'" : "")}";
+    ViewBag.Title = $"{await TransRepo.GetValueOrSlug("edit")} {StringExtensions.ToLowerFirstChar(ViewBag.ModelName)} {(!string.IsNullOrEmpty(Model.ToString()) ? $"'{Model}'" : "")}";
     var formParams = ViewBag.FormParams as FormlyFormParams ?? (ViewBag.FormParamsService as FormParamsService)?.ForPatch(Model.Id) ?? throw new Exception("Don't have form params :(");
     formParams.Options = new {hideSubmitButton = true};
     ViewBag.ModalDialogClasses = "modal-xl";

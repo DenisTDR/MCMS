@@ -22,7 +22,10 @@ function bindDefaultDataTables(tableElem, url, initialConfig, actionsColumnConte
                 return json;
             },
             error: function (jqXHR, textStatus, errorThrown, c) {
-                var msg = (jqXHR.responseJSON ? jqXHR.responseJSON.error : jqXHR.responseText) || "An error occurred while trying to access data. Please try again123.";
+                if(errorThrown === 'abort') {
+                    return;
+                }
+                var msg = (jqXHR.responseJSON ? jqXHR.responseJSON.error : jqXHR.responseText) || "An error occurred while trying to access data. Please try again.";
                 alert(msg);
                 tableJQuery._fnProcessingDisplay(false);
             }

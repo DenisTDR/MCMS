@@ -42,6 +42,7 @@ namespace MCMS.Controllers.Api
             var eDoc = doc.CloneFor<TFm, TE>();
 
             var e = await Repo.Patch(id, eDoc, ServiceProvider.GetService<IAdapterFactory>());
+            await AfterPatchHook(e);
             var fm = MapF(e);
 
             return OkModel(fm);
@@ -75,6 +76,10 @@ namespace MCMS.Controllers.Api
         }
 
         protected virtual Task AfterSaveNewHook(TE e)
+        {
+            return Task.CompletedTask;
+        }
+        protected virtual Task AfterPatchHook(TE e)
         {
             return Task.CompletedTask;
         }

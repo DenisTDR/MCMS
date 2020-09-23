@@ -1,3 +1,4 @@
+using MCMS.Base.SwaggerFormly.Extensions;
 using Microsoft.OpenApi.Any;
 
 namespace MCMS.Base.SwaggerFormly.Models
@@ -15,7 +16,7 @@ namespace MCMS.Base.SwaggerFormly.Models
             Args = args;
         }
 
-        public string Name { get; set; } 
+        public string Name { get; set; }
         public string Message { get; set; }
         public object Args { get; set; }
 
@@ -27,8 +28,9 @@ namespace MCMS.Base.SwaggerFormly.Models
             };
             if (Args?.ToString() != null)
             {
-                oaObject["args"] = new OpenApiString(Args.ToString());
+                oaObject["args"] = OpenApiExtensions.ToOpenApi(Args);
             }
+
             if (!string.IsNullOrEmpty(Message))
             {
                 oaObject["message"] = new OpenApiString(Message);

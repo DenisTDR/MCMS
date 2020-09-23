@@ -9,7 +9,7 @@ using Microsoft.OpenApi.Models;
 
 namespace MCMS.Base.SwaggerFormly.Formly.Fields
 {
-    [AttributeUsage(AttributeTargets.Property, Inherited = true)]
+    [AttributeUsage(AttributeTargets.Property)]
     public class FormlyFieldAttribute : FormlyConfigPatcherAttribute
     {
         public bool IgnoreField { get; set; }

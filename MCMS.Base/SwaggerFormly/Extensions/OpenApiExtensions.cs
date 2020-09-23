@@ -11,6 +11,10 @@ namespace MCMS.Base.SwaggerFormly.Extensions
     {
         public static IOpenApiAny ToOpenApi(object obj)
         {
+            if (obj is IOpenApiAny objOa)
+            {
+                return objOa;
+            }
             switch (obj)
             {
                 case string s:

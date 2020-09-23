@@ -83,7 +83,6 @@ namespace MCMS.SwaggerFormly.Filters
                 xProps[fieldPropertyAttribute.FullPath] = OpenApiExtensions.ToOpenApi(fieldPropertyAttribute.Value);
             }
 
-
             foreach (var patchAttr in GetAttributes<FormlyConfigPatcherAttribute>(propertyInfo, declaringType))
             {
                 patchAttr.Patch(schema, xProps, templateOptions, _linkGenerator, validators);

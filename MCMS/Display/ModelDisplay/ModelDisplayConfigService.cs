@@ -32,7 +32,7 @@ namespace MCMS.Display.ModelDisplay
             var tableColumnProps = props.Where(prop =>
             {
                 var attr = prop.GetCustomAttributes<TableColumnAttribute>().FirstOrDefault();
-                return attr != null && !attr.Hidden;
+                return attr != null && (!attr.Hidden || attr.RowGroup);
             }).ToList();
             if (tableColumnProps.Count == 0)
             {
@@ -42,7 +42,7 @@ namespace MCMS.Display.ModelDisplay
             tableColumnProps = tableColumnProps.Where(prop =>
             {
                 var attr = prop.GetCustomAttributes<TableColumnAttribute>().FirstOrDefault();
-                return attr == null || !attr.Hidden;
+                return attr == null || !attr.Hidden || attr.RowGroup;
             }).ToList();
 
             var list = tableColumnProps.Select(prop => new TableColumn(TypeHelpers.GetDisplayName(prop),

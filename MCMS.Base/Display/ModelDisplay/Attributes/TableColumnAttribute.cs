@@ -20,5 +20,6 @@ namespace MCMS.Base.Display.ModelDisplay.Attributes
         public bool Orderable { get; set; } = true;
         public bool RowGroup { get; set; }
         public object SumTotal { get; set; }
+        public string Tag { get; set; }
     }
 }

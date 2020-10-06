@@ -19,6 +19,7 @@ namespace MCMS.Base.Display.ModelDisplay
             RowGroups = attr?.RowGroup ?? false;
             SumTotal = attr?.SumTotal ?? false;
             Hidden = attr?.Hidden ?? false;
+            Tag = attr?.Tag;
         }
 
         public TableColumn(string name, string key)
@@ -38,6 +39,7 @@ namespace MCMS.Base.Display.ModelDisplay
         public bool RowGroups { get; set; }
         public object SumTotal { get; set; }
         public bool Hidden { get; set; }
+        public string Tag { get; set; }
 
         public override string ToString()
         {
@@ -53,7 +55,8 @@ namespace MCMS.Base.Display.ModelDisplay
                 orderable = Orderable,
                 searchable = Searchable,
                 sumTotal = SumTotal,
-                visible = !Hidden
+                visible = !Hidden,
+                tag = Tag,
             };
         }
     }

@@ -22,7 +22,7 @@ function bindDefaultDataTables(tableElem, url, initialConfig, actionsColumnConte
                 return json;
             },
             error: function (jqXHR, textStatus, errorThrown, c) {
-                if(errorThrown === 'abort') {
+                if (errorThrown === 'abort') {
                     return;
                 }
                 var msg = (jqXHR.responseJSON ? jqXHR.responseJSON.error : jqXHR.responseText) || "An error occurred while trying to access data. Please try again.";
@@ -90,6 +90,8 @@ function bindDefaultDataTables(tableElem, url, initialConfig, actionsColumnConte
             overlay.hide();
         }
     });
+
+    properlyDestroyInModal(tableElem, table);
 
     return table;
 }
@@ -161,6 +163,16 @@ function toggleDataTablesColumnSearch(table, columnsConfig) {
             });
         });
     }
+}
+
+function properlyDestroyInModal(tableElem, datatable) {
+    var modal = tableElem.closest(".modal");
+    if (!modal.length) {
+        return;
+    }
+    modal.on('hide.bs.modal', function () {
+        datatable.destroy();
+    });
 }
 
 jQuery.fn.dataTable.Api.register('sumTotal', function () {

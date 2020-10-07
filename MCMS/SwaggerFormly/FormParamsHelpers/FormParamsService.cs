@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using MCMS.Base.Helpers;
 using MCMS.SwaggerFormly.Controllers;
 using MCMS.SwaggerFormly.Models;
@@ -11,7 +12,7 @@ namespace MCMS.SwaggerFormly.FormParamsHelpers
         protected string ControllerName { get; set; }
         public string SchemaName { get; set; }
         protected object AdditionalData { get; set; }
-        protected object Options { get; set; }
+        protected Dictionary<string, object> Options { get; set; }
 
         protected string GetActionName { get; set; }
         public string SubmitActionName { get; set; }
@@ -34,7 +35,7 @@ namespace MCMS.SwaggerFormly.FormParamsHelpers
             return config;
         }
 
-        public virtual FormlyFormParams ForCreate(object additionalData = null, object options = null)
+        public virtual FormlyFormParams ForCreate(object additionalData = null, Dictionary<string, object> options = null)
         {
             AdditionalData = additionalData;
             Options = options;

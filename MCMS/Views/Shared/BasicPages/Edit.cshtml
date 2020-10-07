@@ -1,14 +1,14 @@
 @using MCMS.SwaggerFormly.FormParamsHelpers
 @using MCMS.Base.Extensions
 @using MCMS.Base.Repositories
+@using MCMS.SwaggerFormly
 @using MCMS.SwaggerFormly.Models
 @model MCMS.Base.Data.Entities.IEntity
 @inject ITranslationsRepository TransRepo
 @{
     ViewBag.Title = $"{await TransRepo.GetValueOrSlug("edit")} {StringExtensions.ToLowerFirstChar(ViewBag.ModelName)} {(!string.IsNullOrEmpty(Model.ToString()) ? $"'{Model}'" : "")}";
     var formParams = ViewBag.FormParams as FormlyFormParams ?? (ViewBag.FormParamsService as FormParamsService)?.ForPatch(Model.Id) ?? throw new Exception("Don't have form params :(");
-    formParams.Options = new {hideSubmitButton = true};
-
+    formParams.AddOption("hideSubmitButton", true);
     var returnUrl = Context.Request.Query.ContainsKey("returnUrl") ? (string) Context.Request.Query["returnUrl"] : null;
 }
 
@@ -16,7 +16,6 @@
 <div class="container">
     <div class="row">
         <div class="col-12">
-            @* <div class="col-12"> *@
             @await Html.BlindPartialAsync("Formly/FormlyForm", formParams)
         </div>
     </div>

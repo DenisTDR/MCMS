@@ -2,11 +2,12 @@
 @using MCMS.SwaggerFormly.Models
 @using MCMS.Base.Extensions
 @using MCMS.Base.Repositories
+@using MCMS.SwaggerFormly
 @inject ITranslationsRepository TransRepo
 @{
     ViewBag.Title = $"{await TransRepo.GetValueOrSlug("create")} {StringExtensions.ToLowerFirstChar(ViewBag.ModelName)}";
     var formParams = ViewBag.FormParams as FormlyFormParams ?? (ViewBag.FormParamsService as FormParamsService)?.ForCreate() ?? throw new Exception("Don't have form params :(");
-    formParams.Options = new {hideSubmitButton = true};
+    formParams.AddOption("hideSubmitButton", true);
 }
 <div class="modal-body" id="@formParams.FormInstanceId-modal-body">
     @await Html.BlindPartialAsync("Formly/FormlyForm", formParams)

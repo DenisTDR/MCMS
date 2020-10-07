@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Web;
@@ -17,7 +18,8 @@ namespace MCMS.SwaggerFormly.Models
         public object AdditionalFields { get; set; }
         public string ModelId { get; set; }
         public string FormInstanceId { get; set; }
-        public object Options { get; set; }
+        public Dictionary<string, object> Options { get; set; }
+
 
         public string ToUrlQuery()
         {

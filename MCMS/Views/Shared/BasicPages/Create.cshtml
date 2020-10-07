@@ -1,12 +1,13 @@
 @using MCMS.SwaggerFormly.FormParamsHelpers
 @using MCMS.Base.Extensions
 @using MCMS.Base.Repositories
+@using MCMS.SwaggerFormly
 @using MCMS.SwaggerFormly.Models
 @inject ITranslationsRepository TransRepo
 @{
     ViewBag.Title = $"{await TransRepo.GetValueOrSlug("create")} {ViewBag.ModelName}";
     var formParams = ViewBag.FormParams as FormlyFormParams ?? (ViewBag.FormParamsService as FormParamsService)?.ForCreate() ?? throw new Exception("Don't have form params :(");
-    formParams.Options = new {hideSubmitButton = true};
+    formParams.AddOption("hideSubmitButton", true);
 
     var returnUrl = Context.Request.Query.ContainsKey("returnUrl") ? (string) Context.Request.Query["returnUrl"] : null;
 }

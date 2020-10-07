@@ -14,9 +14,9 @@ namespace MCMS.Base.SwaggerFormly.Formly
         }
 
         public string Expression { get; set; }
-        public bool OnlyIfUntouched { get; set; }
-        public bool CheckIfTouchedOnInit { get; set; }
-        public bool ForceEnableIfSourceChanged { get; set; }
+        public bool OnlyIfUntouched { get; set; } = true;
+        public bool CheckIfTouchedOnInit { get; set; } = true;
+        public bool ForceEnableIfSourceChanged { get; set; } = true;
 
         public override void Patch(OpenApiSchema schema, OpenApiObject xProps, OpenApiObject templateOptions,
             LinkGenerator linkGenerator, List<ValidatorModel> validators)

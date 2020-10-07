@@ -1,18 +1,10 @@
-
 @using MCMS.SwaggerFormly.FormParamsHelpers
 @using MCMS.SwaggerFormly.Models
 @using MCMS.Base.Extensions
+@using MCMS.SwaggerFormly
 @{
     ViewBag.Title = "Upload new file ";
 }
-@* <div class="modal-body"> *@
-@*     <h1>blabla !!!</h1> *@
-@* </div> *@
-@* <div class="modal-footer"> *@
-@*     <button type="button" class="btn btn-secondary" data-dismiss="modal">Închide</button> *@
-@* </div> *@
-@* *@
-
 
 @{
     var formParams = ViewBag.FormParams as FormlyFormParams ?? (ViewBag.FormParamsService as FormParamsService)?.ForCreate();
@@ -20,7 +12,7 @@
     {
         throw new Exception("Don't have form params :(");
     }
-    formParams.Options = new {hideSubmitButton = true};
+    formParams.AddOption("hideSubmitButton", true);
 }
 <div class="modal-body" id="@formParams.FormInstanceId-modal-body">
     @await Html.BlindPartialAsync("Formly/FormlyForm", formParams)

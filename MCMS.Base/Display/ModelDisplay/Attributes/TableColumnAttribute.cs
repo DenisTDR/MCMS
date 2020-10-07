@@ -21,5 +21,6 @@ namespace MCMS.Base.Display.ModelDisplay.Attributes
         public bool RowGroup { get; set; }
         public object SumTotal { get; set; }
         public string Tag { get; set; }
+        public bool Invisible { get; set; }
     }
 }

@@ -20,6 +20,7 @@ namespace MCMS.Base.Display.ModelDisplay
             SumTotal = attr?.SumTotal ?? false;
             Hidden = attr?.Hidden ?? false;
             Tag = attr?.Tag;
+            Invisible = attr?.Invisible ?? false;
         }
 
         public TableColumn(string name, string key)
@@ -40,6 +41,7 @@ namespace MCMS.Base.Display.ModelDisplay
         public object SumTotal { get; set; }
         public bool Hidden { get; set; }
         public string Tag { get; set; }
+        public bool Invisible { get; set; }
 
         public override string ToString()
         {
@@ -55,7 +57,7 @@ namespace MCMS.Base.Display.ModelDisplay
                 orderable = Orderable,
                 searchable = Searchable,
                 sumTotal = SumTotal,
-                visible = !Hidden,
+                visible = !Hidden && !Invisible,
                 tag = Tag,
             };
         }

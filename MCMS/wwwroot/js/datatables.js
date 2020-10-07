@@ -121,6 +121,15 @@ function sumTotalRowIfNeeded(config) {
             var sumTotalOpt = config.columns[index].sumTotal;
             if (!sumTotalOpt)
                 return;
+
+            var col = api.column(index);
+            if (!col.visible())
+                return;
+
+            var htmlElementIndex = $(col.footer()).index();
+            if (htmlElementIndex === -1)
+                return;
+
             var sum = "";
             if (sumTotalOpt === true) {
                 sum = api.column(index, {page: 'current'}).data().sumTotal;
@@ -133,7 +142,8 @@ function sumTotalRowIfNeeded(config) {
             if (typeof sum === 'function') {
                 sum = sum();
             }
-            row.children().eq(index).html(sum + "");
+
+            row.children().eq(htmlElementIndex).html(sum + "");
         });
     }
 }

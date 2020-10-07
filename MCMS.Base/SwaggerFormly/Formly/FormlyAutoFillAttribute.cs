@@ -18,6 +18,8 @@ namespace MCMS.Base.SwaggerFormly.Formly
         public bool CheckIfTouchedOnInit { get; set; } = true;
         public bool ForceEnableIfSourceChanged { get; set; } = true;
 
+        public string EnableExpression { get; set; }
+
         public override void Patch(OpenApiSchema schema, OpenApiObject xProps, OpenApiObject templateOptions,
             LinkGenerator linkGenerator, List<ValidatorModel> validators)
         {
@@ -27,7 +29,8 @@ namespace MCMS.Base.SwaggerFormly.Formly
                 ["enabled"] = new OpenApiBoolean(!OnlyIfUntouched),
                 ["onlyIfUntouched"] = new OpenApiBoolean(OnlyIfUntouched),
                 ["checkIfTouchedOnInit"] = new OpenApiBoolean(CheckIfTouchedOnInit),
-                ["forceEnableIfSourceChanged"] = new OpenApiBoolean(ForceEnableIfSourceChanged)
+                ["forceEnableIfSourceChanged"] = new OpenApiBoolean(ForceEnableIfSourceChanged),
+                ["enableExpression"] = new OpenApiString(EnableExpression),
             };
             templateOptions["autoFill"] = config;
         }

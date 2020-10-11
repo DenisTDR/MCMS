@@ -40,9 +40,9 @@ namespace MCMS.Controllers.Api
             }
 
             var eDoc = doc.CloneFor<TFm, TE>();
-
+            await OnPatching(id, eDoc);
             var e = await Repo.Patch(id, eDoc, ServiceProvider.GetService<IAdapterFactory>());
-            await AfterPatchHook(e);
+            await OnPatched(e);
             var fm = MapF(e);
 
             return OkModel(fm);
@@ -53,9 +53,9 @@ namespace MCMS.Controllers.Api
         public virtual async Task<ActionResult<ModelResponse<TFm>>> Create([FromBody] TFm fm)
         {
             var e = MapF(fm);
-            await BeforeSaveNewHook(e);
+            await OnCreating(e);
             e = await Repo.Add(e);
-            await AfterSaveNewHook(e);
+            await OnCreated(e);
             fm = MapF(e);
             return OkModel(fm);
         }
@@ -70,18 +70,25 @@ namespace MCMS.Controllers.Api
             return Mapper.Map<TE>(vm);
         }
 
-        protected virtual Task BeforeSaveNewHook(TE e)
+        protected virtual Task OnCreating(TE e)
         {
             return Task.CompletedTask;
         }
 
-        protected virtual Task AfterSaveNewHook(TE e)
+        protected virtual Task OnCreated(TE e)
         {
             return Task.CompletedTask;
         }
-        protected virtual Task AfterPatchHook(TE e)
+
+        protected virtual Task OnPatching(string id, JsonPatchDocument<TE> patchDoc)
         {
             return Task.CompletedTask;
         }
+
+        protected virtual Task OnPatched(TE e)
+        {
+            return Task.CompletedTask;
+        }
+        
     }
 }

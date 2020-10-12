@@ -18,6 +18,8 @@ namespace MCMS.Base.SwaggerFormly.Formly
         public bool CheckIfTouchedOnInit { get; set; } = true;
         public bool ForceEnableIfSourceChanged { get; set; } = true;
 
+        public bool AlwaysEnabled { get; set; } = false;
+
         public string EnableExpression { get; set; }
 
         public override void Patch(OpenApiSchema schema, OpenApiObject xProps, OpenApiObject templateOptions,
@@ -26,10 +28,10 @@ namespace MCMS.Base.SwaggerFormly.Formly
             var config = new OpenApiObject
             {
                 ["expression"] = new OpenApiString(Expression),
-                ["enabled"] = new OpenApiBoolean(!OnlyIfUntouched),
-                ["onlyIfUntouched"] = new OpenApiBoolean(OnlyIfUntouched),
-                ["checkIfTouchedOnInit"] = new OpenApiBoolean(CheckIfTouchedOnInit),
-                ["forceEnableIfSourceChanged"] = new OpenApiBoolean(ForceEnableIfSourceChanged),
+                ["enabled"] = new OpenApiBoolean(AlwaysEnabled || !OnlyIfUntouched),
+                ["onlyIfUntouched"] = new OpenApiBoolean(OnlyIfUntouched && !AlwaysEnabled),
+                ["checkIfTouchedOnInit"] = new OpenApiBoolean(CheckIfTouchedOnInit && !AlwaysEnabled),
+                ["forceEnableIfSourceChanged"] = new OpenApiBoolean(ForceEnableIfSourceChanged && !AlwaysEnabled),
                 ["enableExpression"] = new OpenApiString(EnableExpression),
             };
             templateOptions["autoFill"] = config;

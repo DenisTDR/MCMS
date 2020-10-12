@@ -55,7 +55,7 @@ namespace MCMS.Builder
             mvcBuilder = _specifications.Aggregate(mvcBuilder,
                 (current, mSpecifications) => mSpecifications.MvcChain(current));
 
-            if (HostEnvironment.IsDevelopment())
+            if (HostEnvironment.IsDevelopment() && Env.GetBool("RAZOR_RUNTIME_COMPILATION"))
             {
                 mvcBuilder.AddRazorRuntimeCompilation();
             }

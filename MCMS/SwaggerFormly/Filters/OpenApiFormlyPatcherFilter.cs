@@ -6,6 +6,7 @@ using System.Reflection;
 using MCMS.Base.Data.FormModels;
 using MCMS.Base.Extensions;
 using MCMS.Base.Helpers;
+using MCMS.Base.SwaggerFormly;
 using MCMS.Base.SwaggerFormly.Extensions;
 using MCMS.Base.SwaggerFormly.Formly;
 using MCMS.Base.SwaggerFormly.Formly.Fields;
@@ -140,10 +141,16 @@ namespace MCMS.SwaggerFormly.Filters
                     new ValidatorModel("pattern", regExpAttr.Pattern, regExpAttr.ErrorMessage));
             }
 
-            foreach (var reqAttr in propertyInfo.GetCustomAttributes<RequiredAttribute>())
+            if (propertyInfo.GetCustomAttribute<RequiredAttribute>() is {} requiredAttribute)
             {
-                validators.Add(
-                    new ValidatorModel("required", message: reqAttr.ErrorMessage ?? "field-required"));
+                validators.Add(new ValidatorModel("required",
+                    message: requiredAttribute.ErrorMessage ?? "field-required"));
+            }
+
+            if (propertyInfo.GetCustomAttribute<FormOnlyRequiredAttribute>() is {} formOnlyRequiredAttribute)
+            {
+                validators.Add(new ValidatorModel("required",
+                    message: formOnlyRequiredAttribute.ErrorMessage ?? "field-required"));
             }
 
             var rangeAttr = propertyInfo.GetCustomAttribute<RangeAttribute>();

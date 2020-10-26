@@ -9,6 +9,7 @@ using MCMS.SwaggerFormly.Models;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Infrastructure;
 
 namespace MCMS.Builder
 {
@@ -45,11 +46,16 @@ namespace MCMS.Builder
 
         private Action<IServiceCollection> _addDbContextAction;
 
-        public MAppBuilder WithPostgres<T>() where T : BaseDbContext
+        public MAppBuilder WithPostgres<T>(Action<NpgsqlDbContextOptionsBuilder> pgOptionsBuilder = null)
+            where T : BaseDbContext
         {
             _addDbContextAction = services =>
             {
-                services.AddDbContext<T>(optionsBuilder => { optionsBuilder.UseNpgsql(Env.GetOrThrow("DB_URL")); });
+                services.AddDbContext<T>(optionsBuilder =>
+                {
+                    optionsBuilder.UseNpgsql(Env.GetOrThrow("DB_URL"),
+                        o => { pgOptionsBuilder?.Invoke(o); });
+                });
 
                 // this is required because service provider must use the same instance for T and for BaseDbContext 
                 // otherwise there will be two scoped instances and we don't like that

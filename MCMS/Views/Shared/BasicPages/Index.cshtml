@@ -94,11 +94,18 @@
             table@(Model.TableId).ajax.reload();
         }
     }
+    var actionsColumnContent = $("#actions-cell-template-@Model.TableId").html();
+    
+    @if (!Model.TableItemActions.Any())
+    {
+        @Html.Raw("actionsColumnContent = null;");
+    }
+    
     var table@(Model.TableId) = bindDefaultDataTables(
         $("#table-@Model.TableId"),   
         "@Html.Raw(Model.TableItemsApiUrl)", 
         @Html.Raw(Model.ConfigObject),
-        $("#actions-cell-template-@Model.TableId").html(), 
+        actionsColumnContent, 
         @Model.HasTableIndexColumn.ToString().ToLower(),
         '@TransRepo.Language');
     </script>

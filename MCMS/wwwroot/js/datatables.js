@@ -1,6 +1,6 @@
 function bindDefaultDataTables(tableElem, url, initialConfig, actionsColumnContent, hasStaticIndexColumn, lang) {
     initialConfig.columns = initialConfig.columns.slice();
-    var shouldMakeActionsCellContent = actionsColumnContent.trim().length > 0;
+    var shouldMakeActionsCellContent = actionsColumnContent && actionsColumnContent.trim().length > 0;
     var langConfig = {
         'en': {"url": "/lib/datatables/English.json"},
         'ro': {"url": "/lib/datatables/Romanian.json"}

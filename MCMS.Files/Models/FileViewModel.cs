@@ -44,6 +44,7 @@ namespace MCMS.Files.Models
                 new {id = Id, fileName = OriginalName});
         }
 
-        public bool IsPublic => VirtualPath.StartsWith(MFiles.PublicVirtualPath);
+        public bool IsPublic =>
+            !string.IsNullOrEmpty(VirtualPath) && VirtualPath.StartsWith(MFiles.PublicVirtualPath);
     }
 }

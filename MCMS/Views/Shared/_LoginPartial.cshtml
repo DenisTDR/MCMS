@@ -1,5 +1,6 @@
 ﻿@using Microsoft.AspNetCore.Identity
 @using MCMS.Base.Auth
+@using MCMS.Base.Helpers
 @inject SignInManager<User> SignInManager
 @inject UserManager<User> UserManager
 
@@ -17,9 +18,12 @@
     }
     else
     {
-        <li class="nav-item">
-            <a class="nav-link text-light" asp-area="Identity" asp-page="/Account/Register">Register</a>
-        </li>
+        if (!Env.GetBool("DISABLE_REGISTRATION"))
+        {
+            <li class="nav-item">
+                <a class="nav-link text-light" asp-area="Identity" asp-page="/Account/Register">Register</a>
+            </li>
+        }
         <li class="nav-item">
             <a class="nav-link text-light" asp-area="Identity" asp-page="/Account/Login">Login</a>
         </li>

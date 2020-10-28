@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -5,6 +6,7 @@ using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using MCMS.Base.Auth;
+using MCMS.Base.Exceptions;
 using MCMS.Base.Helpers;
 using MCMS.Data;
 using Microsoft.AspNetCore.Authentication;
@@ -71,12 +73,20 @@ namespace MCMS.Areas.Identity.Pages.Account
 
         public async Task OnGetAsync(string returnUrl = null)
         {
+            if (Env.GetBool("DISABLE_REGISTRATION"))
+            {
+                throw new Exception("Registration is disabled.");
+            }
             ReturnUrl = returnUrl;
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
         }
 
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
+            if (Env.GetBool("DISABLE_REGISTRATION"))
+            {
+                throw new Exception("Registration is disabled.");
+            }
             returnUrl ??= Url.Content("~/");
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             await using (var transaction = await _dbContext.Database.BeginTransactionAsync())

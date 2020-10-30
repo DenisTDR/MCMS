@@ -8,9 +8,7 @@ namespace MCMS.Base.Data.Entities
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public string Id { get; set; }
 
-        public DateTime Created { get; set; }
-        public DateTime Updated { get; set; }
-
-   
+        public virtual DateTime Created { get; set; }
+        public virtual DateTime Updated { get; set; }
     }
 }

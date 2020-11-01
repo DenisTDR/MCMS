@@ -10,7 +10,7 @@
 
     <ItemGroup>
         <PackageReference Include="Google.Apis.Gmail.v1" Version="1.49.0.2088" />
-        <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="3.1.8" />
+        <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="3.1.9" />
         <PackageReference Include="MimeKitLite" Version="2.9.2" />
         <PackageReference Include="SendGrid" Version="9.21.0" />
     </ItemGroup>

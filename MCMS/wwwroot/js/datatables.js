@@ -1,9 +1,10 @@
 function bindDefaultDataTables(tableElem, url, initialConfig, actionsColumnContent, hasStaticIndexColumn, lang) {
     initialConfig.columns = initialConfig.columns.slice();
     var shouldMakeActionsCellContent = actionsColumnContent && actionsColumnContent.trim().length > 0;
+    var langConfigBasePath = typeof basePath !== 'undefined' ? basePath : '';
     var langConfig = {
-        'en': {"url": "/lib/datatables/English.json"},
-        'ro': {"url": "/lib/datatables/Romanian.json"}
+        'en': {"url": langConfigBasePath + "/lib/datatables/English.json"},
+        'ro': {"url": langConfigBasePath + "/lib/datatables/Romanian.json"}
     };
 
     var config = {

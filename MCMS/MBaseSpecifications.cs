@@ -10,6 +10,7 @@ using MCMS.Data;
 using MCMS.Data.Seeder;
 using MCMS.Display.ModelDisplay;
 using MCMS.Filters;
+using MCMS.Forms;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.JsonPatch.Adapters;
 using Microsoft.AspNetCore.Mvc;
@@ -26,12 +27,13 @@ namespace MCMS
         {
             AddCorsFromEnv(app);
             RegisterWwwrootPaths(app);
+            app.UseMCMSFormsStaticFiles();
         }
 
         public override void ConfigureServices(IServiceCollection services)
         {
             RegisterViewsPathsFromEnvVar(services);
-            
+
             services.AddCors();
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
             services.AddScoped<DataSeeder>();
@@ -112,7 +114,10 @@ namespace MCMS
                 if (Directory.Exists(path))
                 {
                     app.UseStaticFiles(new StaticFileOptions
-                        {FileProvider = new PhysicalFileProvider(path), RequestPath = ""});
+                    {
+                        FileProvider = new PhysicalFileProvider(path),
+                        RequestPath = ""
+                    });
                 }
             }
         }

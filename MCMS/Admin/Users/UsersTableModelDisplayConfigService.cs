@@ -24,7 +24,7 @@ namespace MCMS.Admin.Users
                 HasTableIndexColumn = true,
                 TableItemsApiUrl = url.ActionLink(nameof(AdminUsersAdminApiController.Index),
                     TypeHelpers.GetControllerName(typeof(AdminUsersAdminApiController)),
-                    viewBag.TableItemsApiUrlValues as object, protocol: Utils.GetExternalProtocol()),
+                    viewBag.TableItemsApiUrlValues as object),
                 TableItemActions = GetDefaultTableItemActions(viewBag)
             };
             return config;

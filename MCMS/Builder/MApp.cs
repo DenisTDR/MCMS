@@ -10,6 +10,7 @@ using MCMS.Data.Seeder;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -87,7 +88,10 @@ namespace MCMS.Builder
 
         public void Configure(IApplicationBuilder app, IServiceProvider serviceProvider)
         {
+            app.UsePathBase(Utils.RoutePrefix.TrimEnd('/'));
+         
             app.UseForwardedHeaders();
+            
             var logger = serviceProvider.GetService<ILogger<MApp>>();
             if (HostEnvironment.IsDevelopment())
             {

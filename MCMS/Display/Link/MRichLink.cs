@@ -36,9 +36,8 @@ namespace MCMS.Display.Link
                 return Url;
             }
 
-            return urlHelper.ActionLink(ActionName, ControllerName, Values, protocol: Utils.GetExternalProtocol());
+            return urlHelper.ActionLink(ActionName, ControllerName, Values);
         }
-
     }
 
     public enum ModalSuccessAction

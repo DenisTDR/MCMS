@@ -43,6 +43,8 @@ namespace MCMS.Base.SwaggerFormly.Formly.Fields
                 ? linkGenerator.GetAbsolutePathByAction(OptionsActionName,
                     TypeHelpers.GetControllerName(OptionsControllerType))
                 : OptionsUrl;
+            // linkGenerator.Getur()
+            // Console.WriteLine(optionsUrl);
             obj["optionsUrl"] = new OpenApiString(optionsUrl);
             return obj;
         }

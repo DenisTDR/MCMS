@@ -26,7 +26,7 @@ namespace MCMS.Display.Link
                 return Url;
             }
 
-            return urlHelper.ActionLink(ActionName, ControllerName, protocol: Utils.GetExternalProtocol());
+            return urlHelper.ActionLink(ActionName, ControllerName);
         }
 
         public MLink(string text, Type controller, MethodInfo action = null)

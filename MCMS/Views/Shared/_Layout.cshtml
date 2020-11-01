@@ -7,6 +7,7 @@
 <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <link rel="icon" type="image/x-icon" href="~/favicon.ico">
     <title> @(ViewData.ContainsKey("Title") ? ViewData["Title"] + " |" : "") @(SiteConfig.Value.SiteName ?? "MCMS") </title>
     @foreach (var valueLayoutInclude in LayoutIncludes.Value.GetAllForPage)
     {
@@ -14,6 +15,9 @@
     }
     <partial name="Partials/_Styles"/>
     @await RenderSectionAsync("Styles", required: false)
+    <script>
+        var basePath = '@Url.Content("~")';
+    </script>
 </head>
 <body class="sb-nav-fixed">
 <partial name="Partials/_Navbar"/>

@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using MCMS.Base.Data.ViewModels;
 using MCMS.Base.Display.ModelDisplay.Attributes;
+using MCMS.Base.Helpers;
 using MCMS.Files.Controllers;
 using Microsoft.AspNetCore.Mvc;
 
@@ -21,7 +22,7 @@ namespace MCMS.Files.Models
         public string Url
         {
             get => _url ??= !string.IsNullOrEmpty(VirtualPath) && !string.IsNullOrEmpty(Name)
-                ? Path.Combine(VirtualPath, Name + Extension)
+                ? Path.Combine(Utils.RoutePrefix, VirtualPath.TrimStart('/'), Name + Extension)
                 : null;
             set => _url = value;
         }

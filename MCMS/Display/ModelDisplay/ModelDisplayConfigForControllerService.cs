@@ -36,8 +36,7 @@ namespace MCMS.Display.ModelDisplay
                 TableColumns = await GetTableColumns(viewBag.ExcludeActionsColumn as bool? == true),
                 HasTableIndexColumn = true,
                 TableItemsApiUrl = url.ActionLink(nameof(IReadOnlyApiController<TVm>.Index),
-                    TypeHelpers.GetControllerName(typeof(TApiController)), viewBag.TableItemsApiUrlValues as object,
-                    protocol: Utils.GetExternalProtocol()),
+                    TypeHelpers.GetControllerName(typeof(TApiController)), viewBag.TableItemsApiUrlValues as object),
                 TableItemActions = GetTableItemActions(viewBag, viewBag.ExcludeActionsColumn as bool? == true)
             };
             if (createNewLink)

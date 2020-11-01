@@ -29,25 +29,25 @@ namespace MCMS.SwaggerFormly.FormParamsHelpers
         {
             var config = CommonConfig(FormActionType.Patch);
             config.GetUrl = GetUrlFor(ControllerName, GetGetActionName(), new {id});
-            config.SubmitUrl = UrlHelper.ActionLink(GetSubmitActionName(FormActionType.Patch), ControllerName, new {id},
-                protocol: Utils.GetExternalProtocol());
+            config.SubmitUrl =
+                UrlHelper.ActionLink(GetSubmitActionName(FormActionType.Patch), ControllerName, new {id});
             config.ModelId = id;
             return config;
         }
 
-        public virtual FormlyFormParams ForCreate(object additionalData = null, Dictionary<string, object> options = null)
+        public virtual FormlyFormParams ForCreate(object additionalData = null,
+            Dictionary<string, object> options = null)
         {
             AdditionalData = additionalData;
             Options = options;
             var config = CommonConfig(FormActionType.Create);
-            config.SubmitUrl = UrlHelper.ActionLink(GetSubmitActionName(FormActionType.Create), ControllerName,
-                protocol: Utils.GetExternalProtocol());
+            config.SubmitUrl = UrlHelper.ActionLink(GetSubmitActionName(FormActionType.Create), ControllerName);
             return config;
         }
 
         protected virtual FormlyFormParams CommonConfig(FormActionType action)
         {
-            return new FormlyFormParams
+            var formParams = new FormlyFormParams
             {
                 SchemaName = SchemaName,
                 Action = action,
@@ -56,12 +56,14 @@ namespace MCMS.SwaggerFormly.FormParamsHelpers
                 AdditionalFields = AdditionalData,
                 Options = Options
             };
+            formParams.AddOption("basePath", UrlHelper.Content("~"));
+            return formParams;
         }
 
         public static string GetOpenApiConfigUrl(IUrlHelper urlHelper)
         {
             return urlHelper.ActionLink(nameof(OpenApiConfigController.Get),
-                TypeHelpers.GetControllerName(typeof(OpenApiConfigController)), protocol: Utils.GetExternalProtocol());
+                TypeHelpers.GetControllerName(typeof(OpenApiConfigController)));
         }
 
         protected virtual string GetSubmitActionName(FormActionType actionType)
@@ -76,7 +78,7 @@ namespace MCMS.SwaggerFormly.FormParamsHelpers
 
         protected virtual string GetUrlFor(string controllerName, string actionName, object values = null)
         {
-            var url = UrlHelper.ActionLink(actionName, controllerName, values, protocol: Utils.GetExternalProtocol());
+            var url = UrlHelper.ActionLink(actionName, controllerName, values);
             return url;
         }
     }

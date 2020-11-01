@@ -1,5 +1,4 @@
 using System;
-using MCMS.Base.Helpers;
 using Microsoft.AspNetCore.Mvc.Routing;
 
 namespace MCMS.Base.Attributes
@@ -17,13 +16,22 @@ namespace MCMS.Base.Attributes
                 throw new ArgumentNullException(nameof(template));
             }
 
-            if (template.StartsWith("/"))
+            if (template.StartsWith("~") && !template.StartsWith("~/"))
             {
-                Template = "/" + GetBasePath() + template;
+                throw new Exception("A route template can't start with ~ (tilda) not followed by a / (slash).");
+            }
+
+            if (template.StartsWith("~/"))
+            {
+                Template = GetBasePath + template.Substring(2);
+            }
+            else if (template.StartsWith("/"))
+            {
+                Template = template;
             }
             else
             {
-                Template = GetBasePath() + "/" + template;
+                Template = GetBasePath + template;
             }
         }
 
@@ -31,9 +39,6 @@ namespace MCMS.Base.Attributes
         public int? Order { get; }
         public string Template { get; set; }
 
-        public static string GetBasePath()
-        {
-            return Env.Get("ADMIN_ROUTE_PREFIX");
-        }
+        public static string GetBasePath => "~/";
     }
 }

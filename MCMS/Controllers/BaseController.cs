@@ -8,7 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace MCMS.Controllers
 {
-    [Route("[controller]/[action]")]
+    [Route("~/[controller]/[action]")]
     public class BaseController : Controller
     {
         protected IServiceProvider ServiceProvider => HttpContext.RequestServices;

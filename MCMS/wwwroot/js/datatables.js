@@ -94,6 +94,13 @@ function bindDefaultDataTables(tableElem, url, initialConfig, actionsColumnConte
 
     properlyDestroyInModal(tableElem, table);
 
+    document.addEventListener('side-menu-toggled', function () {
+        table.fixedHeader.adjust();
+        setTimeout(function () {
+            table.fixedHeader.adjust();
+        }, 500);
+    });
+
     return table;
 }
 

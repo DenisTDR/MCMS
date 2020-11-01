@@ -38,8 +38,8 @@ namespace MCMS.SwaggerFormly
                 uiOptions.SwaggerEndpoint(
                     Utils.UrlCombine(Utils.RoutePrefix, $"api/docs/{_swaggerConfigOptions.Name}/swagger.json"),
                     _swaggerConfigOptions.Title + " " + _swaggerConfigOptions.Version);
-                uiOptions.InjectStylesheet("/api/docs/swagger-ui-theme.css");
-                uiOptions.InjectJavascript("/api/docs/swagger-ui-theme.js");
+                uiOptions.InjectStylesheet(Utils.UrlCombine(Utils.RoutePrefix, "api/docs/swagger-ui-theme.css"));
+                uiOptions.InjectJavascript(Utils.UrlCombine(Utils.RoutePrefix, "api/docs/swagger-ui-theme.js"));
                 uiOptions.RoutePrefix = "api/docs";
             });
         }

@@ -68,15 +68,6 @@ namespace MCMS.Base.Helpers
                 if (_routePrefix != null) return _routePrefix;
                 _routePrefix = Env.Get("ROUTE_PREFIX");
                 if (string.IsNullOrEmpty(_routePrefix)) _routePrefix = "/";
-                if (!_routePrefix.StartsWith("/"))
-                {
-                    DieWith("Env var 'ROUTE_PREFIX' should start with a / (slash).");
-                }
-
-                if (!_routePrefix.EndsWith("/"))
-                {
-                    DieWith("Env var 'ROUTE_PREFIX' should end with a / (slash).");
-                }
 
                 return _routePrefix;
             }

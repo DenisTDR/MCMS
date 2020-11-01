@@ -89,9 +89,9 @@ namespace MCMS.Builder
         public void Configure(IApplicationBuilder app, IServiceProvider serviceProvider)
         {
             app.UsePathBase(Utils.RoutePrefix.TrimEnd('/'));
-         
+
             app.UseForwardedHeaders();
-            
+
             var logger = serviceProvider.GetService<ILogger<MApp>>();
             if (HostEnvironment.IsDevelopment())
             {
@@ -153,10 +153,16 @@ namespace MCMS.Builder
                 serviceProvider.GetService<DataSeeder>().SeedFromFile().Wait();
             }
 
-            // assert that variable is set correctly
+            // assert that variables are set correctly
             if (!(Env.GetOrThrow("EXTERNAL_URL") is { } url) || url.EndsWith('/') || !url.Contains("http"))
             {
                 Utils.DieWith("EXTERNAL_URL must include protocol and must not end with /");
+            }
+
+            var routePrefix = Env.Get("ROUTE_PREFIX");
+            if (!string.IsNullOrEmpty(routePrefix) && (!routePrefix.StartsWith("/") || !routePrefix.EndsWith("/")))
+            {
+                Utils.DieWith("Env var 'ROUTE_PREFIX' should start with a / (slash) and end with a / (slash).");
             }
         }
     }

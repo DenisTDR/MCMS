@@ -18,7 +18,7 @@ namespace MCMS.Controllers
             _logger = logger;
         }
 
-        [AdminRoute("/")]
+        [AdminRoute("~/")]
         public override Task<IActionResult> Index()
         {
             return Task.FromResult(View() as IActionResult);

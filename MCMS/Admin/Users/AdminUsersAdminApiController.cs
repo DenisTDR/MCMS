@@ -24,7 +24,7 @@ namespace MCMS.Admin.Users
         protected BaseDbContext DbContext => ServiceProvider.GetService<BaseDbContext>();
         private IEmailSender EmailSender => ServiceProvider.GetService<IEmailSender>();
 
-        [AdminApiRoute("/[controller]")]
+        [AdminApiRoute("~/[controller]")]
         [HttpGet]
         public virtual async Task<ActionResult<List<UserViewModel>>> Index()
         {

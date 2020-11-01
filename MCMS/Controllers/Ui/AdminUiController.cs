@@ -12,7 +12,7 @@ namespace MCMS.Controllers.Ui
         protected bool UsesModals { get; set; }
 
         [HttpGet]
-        [AdminRoute("/[controller]")]
+        [AdminRoute("~/[controller]")]
         public abstract Task<IActionResult> Index();
 
         protected Task<IActionResult> CustomIndex()

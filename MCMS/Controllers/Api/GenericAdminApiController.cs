@@ -13,7 +13,7 @@ namespace MCMS.Controllers.Api
         IGenericApiController<TFm, TVm>
         where TE : class, IEntity, new() where TFm : class, IFormModel where TVm : class, IViewModel
     {
-        [AdminApiRoute("/[controller]")]
+        [AdminApiRoute("~/[controller]")]
         [HttpGet]
         public virtual async Task<ActionResult<List<TVm>>> Index()
         {
@@ -22,7 +22,7 @@ namespace MCMS.Controllers.Api
             return Ok(allVm);
         }
 
-        [AdminApiRoute("/[controller]/light")]
+        [AdminApiRoute("~/[controller]/light")]
         [HttpGet]
         public virtual Task<ActionResult<List<TVm>>> IndexLight()
         {

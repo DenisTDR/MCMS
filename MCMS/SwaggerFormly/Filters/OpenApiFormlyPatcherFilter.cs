@@ -100,15 +100,14 @@ namespace MCMS.SwaggerFormly.Filters
             }
         }
 
-        private void PatchFieldTexts(OpenApiObject templateOptions, PropertyInfo propertyInfo, Type declaringType, FormlyFieldAttribute fieldAttr)
+        private void PatchFieldTexts(OpenApiObject templateOptions, PropertyInfo propertyInfo, Type declaringType,
+            FormlyFieldAttribute fieldAttr)
         {
             if (!templateOptions.ContainsKey("label"))
             {
-                var label = fieldAttr?.GetDisplayName(propertyInfo);
-                if (label != null)
-                {
-                    templateOptions["label"] = Oas(label);
-                }
+                var label = fieldAttr?.GetDisplayName(propertyInfo) ??
+                            TypeHelpers.GetDisplayNameOrDefault(propertyInfo);
+                templateOptions["label"] = Oas(label);
             }
 
             if (!templateOptions.ContainsKey("description"))
@@ -150,13 +149,13 @@ namespace MCMS.SwaggerFormly.Filters
                     new ValidatorModel("pattern", regExpAttr.Pattern, regExpAttr.ErrorMessage));
             }
 
-            if (propertyInfo.GetCustomAttribute<RequiredAttribute>() is {} requiredAttribute)
+            if (propertyInfo.GetCustomAttribute<RequiredAttribute>() is { } requiredAttribute)
             {
                 validators.Add(new ValidatorModel("required",
                     message: requiredAttribute.ErrorMessage ?? "field-required"));
             }
 
-            if (propertyInfo.GetCustomAttribute<FormOnlyRequiredAttribute>() is {} formOnlyRequiredAttribute)
+            if (propertyInfo.GetCustomAttribute<FormOnlyRequiredAttribute>() is { } formOnlyRequiredAttribute)
             {
                 validators.Add(new ValidatorModel("required",
                     message: formOnlyRequiredAttribute.ErrorMessage ?? "field-required"));

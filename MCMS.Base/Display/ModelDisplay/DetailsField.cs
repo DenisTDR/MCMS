@@ -8,7 +8,7 @@ namespace MCMS.Base.Display.ModelDisplay
     {
         public double OrderIndex { get; set; }
         public string Tag { get; set; }
-        public string Name => TypeHelpers.GetDisplayName(PropertyInfo);
+        public string Name => TypeHelpers.GetDisplayNameOrDefault(PropertyInfo);
         public string Description => TypeHelpers.GetDescription(PropertyInfo);
         public PropertyInfo PropertyInfo { get; set; }
         public string ClassName { get; set; }

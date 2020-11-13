@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using MCMS.Base.Helpers;
 using MCMS.Base.SwaggerFormly.Extensions;
 using MCMS.Base.SwaggerFormly.Models;
 using Microsoft.AspNetCore.Routing;
@@ -60,6 +62,11 @@ namespace MCMS.Base.SwaggerFormly.Formly.Fields
         public virtual List<ValidatorModel> GetCustomValidators()
         {
             return null;
+        }
+
+        public virtual string GetDisplayName(PropertyInfo prop)
+        {
+            return TypeHelpers.GetDisplayNameOrDefault(prop);
         }
     }
 }

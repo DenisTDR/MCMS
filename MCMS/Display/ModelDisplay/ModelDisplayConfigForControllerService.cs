@@ -31,8 +31,8 @@ namespace MCMS.Display.ModelDisplay
         {
             var config = new ModelDisplayTableConfig
             {
-                IndexPageTitle = TypeHelpers.GetDisplayName<TUiController>(),
-                ModelName = TypeHelpers.GetDisplayName<TVm>(),
+                IndexPageTitle = TypeHelpers.GetDisplayNameOrDefault<TUiController>(),
+                ModelName = TypeHelpers.GetDisplayNameOrDefault<TVm>(),
                 TableColumns = await GetTableColumns(viewBag.ExcludeActionsColumn as bool? == true),
                 HasTableIndexColumn = true,
                 TableItemsApiUrl = url.ActionLink(nameof(IReadOnlyApiController<TVm>.Index),
@@ -42,7 +42,7 @@ namespace MCMS.Display.ModelDisplay
             if (createNewLink)
             {
                 config.CreateNewItemLink = new MRichLink(
-                        $"{await TranslationsRepository.GetValueOrSlug("create")} {TypeHelpers.GetDisplayName(typeof(TVm)).ToLowerFirstChar()}",
+                        $"{await TranslationsRepository.GetValueOrSlug("create")} {TypeHelpers.GetDisplayNameOrDefault(typeof(TVm)).ToLowerFirstChar()}",
                         typeof(TUiController), nameof(GenericAdminUiController<TE, TFm, TVm, TApiController>.Create))
                     .AsButton("outline-primary").WithIconClasses("fas fa-plus")
                     .WithValues(viewBag.CreateNewLinkValues as object);

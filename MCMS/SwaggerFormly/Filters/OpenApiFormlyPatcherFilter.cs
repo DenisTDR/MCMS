@@ -67,8 +67,8 @@ namespace MCMS.SwaggerFormly.Filters
             var templateOptions = new OpenApiObject();
             schema.Extensions.Add("x-templateOptions", templateOptions);
             var validators = new List<ValidatorModel>();
-            PatchFieldTexts(templateOptions, propertyInfo, declaringType);
-            ProcessFieldAttributes(schema, templateOptions, propertyInfo, declaringType, validators);
+            ProcessFieldAttributes(schema, templateOptions, propertyInfo, declaringType, validators, out var fieldAttr);
+            PatchFieldTexts(templateOptions, propertyInfo, declaringType, fieldAttr);
             PatchDataTypeAttribute(propertyInfo, schema, templateOptions, validators);
             PatchEnumProperties(propertyInfo, templateOptions, schema);
             PatchValidators(propertyInfo, schema, validators);
@@ -76,8 +76,9 @@ namespace MCMS.SwaggerFormly.Filters
 
         private void ProcessFieldAttributes(OpenApiSchema schema,
             OpenApiObject templateOptions, PropertyInfo propertyInfo, Type declaringType,
-            List<ValidatorModel> validators)
+            List<ValidatorModel> validators, out FormlyFieldAttribute fieldAttr)
         {
+            fieldAttr = null;
             var xProps = new OpenApiObject();
             foreach (var fieldPropertyAttribute in GetAttributes<FormlyFieldPropAttribute>(propertyInfo, declaringType))
             {
@@ -87,6 +88,10 @@ namespace MCMS.SwaggerFormly.Filters
             foreach (var patchAttr in GetAttributes<FormlyConfigPatcherAttribute>(propertyInfo, declaringType))
             {
                 patchAttr.Patch(schema, xProps, templateOptions, _linkGenerator, validators);
+                if (patchAttr is FormlyFieldAttribute fAttr)
+                {
+                    fieldAttr = fAttr;
+                }
             }
 
             if (xProps.Count > 0)
@@ -95,11 +100,15 @@ namespace MCMS.SwaggerFormly.Filters
             }
         }
 
-        private void PatchFieldTexts(OpenApiObject templateOptions, PropertyInfo propertyInfo, Type declaringType)
+        private void PatchFieldTexts(OpenApiObject templateOptions, PropertyInfo propertyInfo, Type declaringType, FormlyFieldAttribute fieldAttr)
         {
             if (!templateOptions.ContainsKey("label"))
             {
-                templateOptions["label"] = Oas(TypeHelpers.GetDisplayName(propertyInfo) ?? propertyInfo.Name);
+                var label = fieldAttr?.GetDisplayName(propertyInfo);
+                if (label != null)
+                {
+                    templateOptions["label"] = Oas(label);
+                }
             }
 
             if (!templateOptions.ContainsKey("description"))

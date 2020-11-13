@@ -45,7 +45,7 @@ namespace MCMS.Display.ModelDisplay
                 return attr == null || !attr.Hidden || attr.RowGroup;
             }).ToList();
 
-            var list = tableColumnProps.Select(prop => new TableColumn(TypeHelpers.GetDisplayName(prop),
+            var list = tableColumnProps.Select(prop => new TableColumn(TypeHelpers.GetDisplayNameOrDefault(prop),
                 prop.Name.ToCamelCase(), prop.GetCustomAttributes<TableColumnAttribute>().FirstOrDefault())).ToList();
             if (!excludeActionsColumn)
             {

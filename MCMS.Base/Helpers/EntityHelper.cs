@@ -14,7 +14,7 @@ namespace MCMS.Base.Helpers
     {
         public static string GetEntityName<T>() where T : IEntity
         {
-            return TypeHelpers.GetDisplayName(typeof(T));
+            return TypeHelpers.GetDisplayNameOrDefault(typeof(T));
         }
 
 

@@ -23,7 +23,7 @@ namespace MCMS.Admin.Users
         protected IRepository<User> Repo => ServiceProvider.GetRepo<User>();
 
         protected IModelDisplayConfigService ModelDisplayConfigService =>
-            ServiceProvider.GetService<UsersTableModelDisplayConfigService>();
+            ServiceProvider.GetRequiredService<UsersTableModelDisplayConfigService>();
 
         public override void OnActionExecuting(ActionExecutingContext context)
         {
@@ -54,7 +54,7 @@ namespace MCMS.Admin.Users
         public async Task<IActionResult> ChangeRoles([FromRoute] string id)
         {
             var userVm = await GetUserWithRoles(id);
-            ViewBag.Roles = await ServiceProvider.GetService<RoleManager<Role>>().Roles.Select(role => role.Name)
+            ViewBag.Roles = await ServiceProvider.GetRequiredService<RoleManager<Role>>().Roles.Select(role => role.Name)
                 .Where(role => role != "God").ToListAsync();
             return View(userVm);
         }
@@ -97,7 +97,7 @@ namespace MCMS.Admin.Users
                 return BadRequest("Can't delete your own user.");
             }
 
-            var usersManager = ServiceProvider.GetService<UserManager<User>>();
+            var usersManager = ServiceProvider.GetRequiredService<UserManager<User>>();
             var user = await usersManager.FindByIdAsync(id);
             if (user == null)
             {
@@ -112,7 +112,7 @@ namespace MCMS.Admin.Users
         {
             var user = await Repo.GetOneOrThrow(id);
             var userVm = Mapper.Map<UserViewModel>(user);
-            userVm.RolesList = (await ServiceProvider.GetService<UserManager<User>>().GetRolesAsync(user)).ToList();
+            userVm.RolesList = (await ServiceProvider.GetRequiredService<UserManager<User>>().GetRolesAsync(user)).ToList();
             return userVm;
         }
     }

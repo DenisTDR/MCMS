@@ -21,13 +21,13 @@ namespace MCMS.Controllers.Ui
         where TApiController : IGenericApiController<TFm, TVm>
     {
         protected virtual IModelDisplayConfigForControllerService ModelDisplayConfigService =>
-            ServiceProvider.GetService(
+            ServiceProvider.GetRequiredService(
                 ModelDisplayConfigForControllerService<TE, TFm, TVm,
                         GenericAdminUiController<TE, TFm, TVm, TApiController>, TApiController>
                     .MakeGenericTypeWithUiControllerType(GetType())) as IModelDisplayConfigForControllerService;
 
         protected virtual FormParamsService FormParamsService =>
-            ServiceProvider.GetService<FormParamsForControllerService<TApiController, TFm>>();
+            ServiceProvider.GetRequiredService<FormParamsForControllerService<TApiController, TFm>>();
 
         protected virtual IRepository<TE> Repo => ServiceProvider.GetRepo<TE>();
 

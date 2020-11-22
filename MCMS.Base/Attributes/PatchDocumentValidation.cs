@@ -124,7 +124,7 @@ namespace MCMS.Base.Attributes
                 }
             }
 
-            var adapterFactory = context.HttpContext.RequestServices.GetService<IAdapterFactory>() ??
+            var adapterFactory = context.HttpContext.RequestServices.GetRequiredService<IAdapterFactory>() ??
                                  new AdapterFactory();
             doc.ApplyTo(nfm, adapterFactory, context.ModelState);
             if (!context.ModelState.IsValid)

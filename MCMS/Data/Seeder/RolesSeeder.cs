@@ -17,8 +17,8 @@ namespace MCMS.Data.Seeder
     {
         public async Task Seed(IServiceProvider serviceProvider, JArray seedData)
         {
-            var roleManager = serviceProvider.GetService<RoleManager<Role>>();
-            var logger = serviceProvider.GetService<ILogger<RolesSeeder>>();
+            var roleManager = serviceProvider.GetRequiredService<RoleManager<Role>>();
+            var logger = serviceProvider.GetRequiredService<ILogger<RolesSeeder>>();
             var seedRoles = seedData.ToObject<List<string>>();
             var existingRoles = await roleManager.Roles.Select(r => r.Name).ToListAsync();
             var rolesToAdd = seedRoles.Except(existingRoles);
@@ -31,7 +31,7 @@ namespace MCMS.Data.Seeder
 
         public async Task<JArray> BuildSeed(IServiceProvider serviceProvider)
         {
-            var roleManager = serviceProvider.GetService<RoleManager<Role>>();
+            var roleManager = serviceProvider.GetRequiredService<RoleManager<Role>>();
             var roles = await roleManager.Roles.Select(role => role.Name).OrderBy(rn => rn).ToListAsync();
             return JsonConvert.DeserializeObject<JArray>(JsonConvert.SerializeObject(roles,
                 Utils.DefaultJsonSerializerSettings()));

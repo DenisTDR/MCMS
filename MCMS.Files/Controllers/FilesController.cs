@@ -82,7 +82,7 @@ namespace MCMS.Files.Controllers
                 return RedirectToAction(nameof(DownloadFile), new {id, fileName = e.OriginalName});
             }
 
-            return ServiceProvider.GetService<FilesService>().GetFileResult(e);
+            return ServiceProvider.GetRequiredService<FilesService>().GetFileResult(e);
         }
     }
 }

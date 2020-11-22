@@ -10,7 +10,6 @@ using MCMS.Data.Seeder;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -25,7 +24,7 @@ namespace MCMS.Builder
         public IEnumerable<MSpecifications> Specifications => _specifications.ToList();
         private readonly IList<MSpecifications> _specifications;
         private readonly Action<IServiceCollection> _addDbContextAction;
-        public IWebHostEnvironment HostEnvironment { get; }
+        private IWebHostEnvironment HostEnvironment { get; }
 
         public MApp(IWebHostEnvironment hostEnvironment, IList<MSpecifications> specifications,
             Action<IServiceCollection> addDbContextAction)
@@ -37,6 +36,11 @@ namespace MCMS.Builder
 
         public void ConfigureServices(IServiceCollection services)
         {
+            if (HostEnvironment.IsDevelopment())
+            {
+                services.AddDatabaseDeveloperPageExceptionFilter();
+            }
+
             var mvcBuilder = services
                 .AddMvc(options =>
                 {
@@ -92,11 +96,11 @@ namespace MCMS.Builder
 
             app.UseForwardedHeaders();
 
-            var logger = serviceProvider.GetService<ILogger<MApp>>();
+            var logger = serviceProvider.GetRequiredService<ILogger<MApp>>();
             if (HostEnvironment.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseDatabaseErrorPage();
+                app.UseMigrationsEndPoint();
             }
             else
             {
@@ -108,7 +112,7 @@ namespace MCMS.Builder
             app.UseStatusCodePagesWithReExecute("/Home/Error", "?code={0}");
             app.Use(async (ctx, next) =>
             {
-                if (ctx.Request.Path.Value.StartsWith("/api", StringComparison.OrdinalIgnoreCase))
+                if (ctx.Request.Path.Value?.StartsWith("/api", StringComparison.OrdinalIgnoreCase) == true)
                 {
                     var statusCodeFeature = ctx.Features.Get<IStatusCodePagesFeature>();
 
@@ -140,7 +144,7 @@ namespace MCMS.Builder
             if (Env.GetBool("MIGRATE_ON_START"))
             {
                 logger.LogInformation("Checking pending migrations.");
-                var dbContext = serviceProvider.GetService<BaseDbContext>();
+                var dbContext = serviceProvider.GetRequiredService<BaseDbContext>();
                 if (dbContext.Database.GetPendingMigrations().Any())
                 {
                     logger.LogWarning("Migrating database...");
@@ -150,7 +154,7 @@ namespace MCMS.Builder
 
             if (Env.GetBool("SEED_ON_START"))
             {
-                serviceProvider.GetService<DataSeeder>().SeedFromFile().Wait();
+                serviceProvider.GetRequiredService<DataSeeder>().SeedFromFile().Wait();
             }
 
             // assert that variables are set correctly

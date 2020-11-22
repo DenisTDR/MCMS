@@ -10,7 +10,7 @@ namespace MCMS.Base.Extensions
     {
         public static IRepository<T> GetRepo<T>(this IServiceProvider serviceProvider) where T : class, IEntity
         {
-            return serviceProvider.GetService<IRepository<T>>();
+            return serviceProvider.GetRequiredService<IRepository<T>>();
         }
 
         public static object GetRepo(this IServiceProvider serviceProvider, Type entityType)

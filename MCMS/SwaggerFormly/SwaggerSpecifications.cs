@@ -27,7 +27,7 @@ namespace MCMS.SwaggerFormly
         {
             if (Env.GetBool("FORMLY_DEBUG"))
             {
-                var logger = serviceProvider.GetService<ILogger<SwaggerSpecifications>>();
+                var logger = serviceProvider.GetRequiredService<ILogger<SwaggerSpecifications>>();
                 logger.LogWarning("FORMLY_DEBUG=True => enabling reverse proxy middleware");
                 app.UseMiddleware<ReverseProxyMiddleware>();
             }

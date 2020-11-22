@@ -11,7 +11,7 @@ namespace MCMS.Builder.Helpers
 {
     public class MAppEntitiesHelper
     {
-        private MApp _app;
+        private readonly MApp _app;
 
         public MAppEntitiesHelper(MApp app)
         {
@@ -23,7 +23,7 @@ namespace MCMS.Builder.Helpers
             services.AddOptions<EntitiesConfig>().Configure(config => { config.EntityStacks.AddRange(ProcessSpecifications()); });
         }
 
-        public List<EntityTypeStack> ProcessSpecifications()
+        private List<EntityTypeStack> ProcessSpecifications()
         {
             var allTypes =
                 new MSpecificationsTypeFilter().FilterMapped(_app, true)

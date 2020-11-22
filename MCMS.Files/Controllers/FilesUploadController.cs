@@ -15,10 +15,10 @@ namespace MCMS.Files.Controllers
     [Authorize]
     public class FilesUploadController : ApiController
     {
-        private FileUploadManager FileUploadManager => ServiceProvider.GetService<FileUploadManager>();
+        private FileUploadManager FileUploadManager => ServiceProvider.GetRequiredService<FileUploadManager>();
 
         private ILogger<FilesUploadController> Logger =>
-            ServiceProvider.GetService<ILogger<FilesUploadController>>();
+            ServiceProvider.GetRequiredService<ILogger<FilesUploadController>>();
 
         [HttpPost]
         [ModelValidation]

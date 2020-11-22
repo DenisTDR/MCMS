@@ -41,7 +41,7 @@ namespace MCMS.Controllers.Api
 
             var eDoc = doc.CloneFor<TFm, TE>();
             await OnPatching(id, eDoc);
-            var e = await Repo.Patch(id, eDoc, ServiceProvider.GetService<IAdapterFactory>());
+            var e = await Repo.Patch(id, eDoc, ServiceProvider.GetRequiredService<IAdapterFactory>());
             await OnPatched(e);
             var fm = MapF(e);
 

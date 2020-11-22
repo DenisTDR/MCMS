@@ -12,7 +12,7 @@ namespace MCMS.Builder.Helpers
 {
     public class MAppMappingHelper
     {
-        private MApp _app;
+        private readonly MApp _app;
 
         public MAppMappingHelper(MApp app)
         {
@@ -29,7 +29,7 @@ namespace MCMS.Builder.Helpers
             return mappingConfigs;
         }
 
-        public List<IMappingConfig> BuildStacks()
+        private List<IMappingConfig> BuildStacks()
         {
             var listMappingConfigs = new List<IMappingConfig>();
 

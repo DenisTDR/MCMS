@@ -21,8 +21,8 @@ namespace MCMS.Admin.Users
     public class AdminUsersAdminApiController : AdminApiController
     {
         protected IRepository<User> Repo => ServiceProvider.GetRepo<User>();
-        protected BaseDbContext DbContext => ServiceProvider.GetService<BaseDbContext>();
-        private IEmailSender EmailSender => ServiceProvider.GetService<IEmailSender>();
+        protected BaseDbContext DbContext => ServiceProvider.GetRequiredService<BaseDbContext>();
+        private IEmailSender EmailSender => ServiceProvider.GetRequiredService<IEmailSender>();
 
         [AdminApiRoute("~/[controller]")]
         [HttpGet]
@@ -54,9 +54,9 @@ namespace MCMS.Admin.Users
             [FromBody] Dictionary<string, object> roles)
         {
             var asMod = !UserFromClaims.HasRole("Admin");
-            var userManager = ServiceProvider.GetService<UserManager<User>>();
+            var userManager = ServiceProvider.GetRequiredService<UserManager<User>>();
             var user = await Repo.GetOneOrThrow(id);
-            var allRoles = await ServiceProvider.GetService<RoleManager<Role>>().Roles.Select(role => role.Name)
+            var allRoles = await ServiceProvider.GetRequiredService<RoleManager<Role>>().Roles.Select(role => role.Name)
                 .ToListAsync();
             var existingRoles = await userManager.GetRolesAsync(user);
             var newRoles = allRoles.Where(roles.ContainsKey)
@@ -93,7 +93,7 @@ namespace MCMS.Admin.Users
         [Route("{id}")]
         public virtual async Task<ActionResult<UserViewModel>> ConfirmEmail([FromRoute] string id)
         {
-            // var userManager = ServiceProvider.GetService<UserManager<User>>();
+            // var userManager = ServiceProvider.GetRequiredService<UserManager<User>>();
             var user = await Repo.GetOneOrThrow(id);
             user.EmailConfirmed = true;
             await Repo.SaveChanges();
@@ -106,7 +106,7 @@ namespace MCMS.Admin.Users
         {
             var user = await Repo.GetOneOrThrow(id);
 
-            await ServiceProvider.GetService<AuthService>().SendActivationEmail(user, Url, Request.Scheme);
+            await ServiceProvider.GetRequiredService<AuthService>().SendActivationEmail(user, Url, Request.Scheme);
 
             return Ok();
         }

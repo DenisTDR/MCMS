@@ -26,7 +26,7 @@ namespace MCMS.Common.Translations.Translations
         public async Task<ActionResult<TranslationFormModel>> GetInitialData()
         {
             var model = new TranslationFormModel();
-            var langs = await ServiceProvider.GetService<LanguagesRepository>().GetAll();
+            var langs = await ServiceProvider.GetRequiredService<LanguagesRepository>().GetAll();
             model.Items = langs.OrderBy(lang => lang.Code).Select(lang => new ItemForTranslationFormModel
                 {Language = new LanguageViewModel {Id = lang.Id}}).ToList();
             return model;

@@ -31,7 +31,7 @@ namespace MCMS.Files
 
         private void CreateAndRegisterDirectories(IApplicationBuilder app, IServiceProvider serviceProvider)
         {
-            var logger = serviceProvider.GetService<ILogger<MFilesSpecifications>>();
+            var logger = serviceProvider.GetRequiredService<ILogger<MFilesSpecifications>>();
             var neededDirs = new[] {MFiles.PublicPath, MFiles.PrivatePath};
             foreach (var neededDir in neededDirs)
             {

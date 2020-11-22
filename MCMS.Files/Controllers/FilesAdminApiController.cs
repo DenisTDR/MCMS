@@ -24,9 +24,9 @@ namespace MCMS.Files.Controllers
     public class FilesAdminApiController : GenericAdminApiController<FileEntity, FileUploadFormModel, FileViewModel>
     {
         private ILogger<FilesAdminApiController> Logger =>
-            ServiceProvider.GetService<ILogger<FilesAdminApiController>>();
+            ServiceProvider.GetRequiredService<ILogger<FilesAdminApiController>>();
 
-        private FileUploadManager FileUploadManager => ServiceProvider.GetService<FileUploadManager>();
+        private FileUploadManager FileUploadManager => ServiceProvider.GetRequiredService<FileUploadManager>();
 
         public override void OnActionExecuting(ActionExecutingContext context)
         {
@@ -76,7 +76,7 @@ namespace MCMS.Files.Controllers
 
             var eDoc = doc.CloneFor<FileFormModel, FileEntity>();
 
-            var e = await Repo.Patch(id, eDoc, ServiceProvider.GetService<IAdapterFactory>());
+            var e = await Repo.Patch(id, eDoc, ServiceProvider.GetRequiredService<IAdapterFactory>());
             var fm = Mapper.Map<FileFormModel>(e);
 
             return OkModel(fm);

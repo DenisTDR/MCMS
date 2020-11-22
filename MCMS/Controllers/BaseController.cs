@@ -12,7 +12,7 @@ namespace MCMS.Controllers
     public class BaseController : Controller
     {
         protected IServiceProvider ServiceProvider => HttpContext.RequestServices;
-        protected IMapper Mapper => ServiceProvider.GetService<IMapper>();
+        protected IMapper Mapper => ServiceProvider.GetRequiredService<IMapper>();
 
         private UserWithRoles _user;
 

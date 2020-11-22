@@ -28,7 +28,7 @@ namespace MCMS.Controllers
         [HttpPost, ActionName("Seed")]
         public async Task<IActionResult> BuildSeed()
         {
-            var dataSeeder = ServiceProvider.GetService<DataSeeder>();
+            var dataSeeder = ServiceProvider.GetRequiredService<DataSeeder>();
             var seedData = await dataSeeder.BuildSeed();
             return View(seedData);
         }
@@ -36,7 +36,7 @@ namespace MCMS.Controllers
         [HttpPost]
         public async Task<IActionResult> SeedRoles()
         {
-            var roleManager = ServiceProvider.GetService<RoleManager<Role>>();
+            var roleManager = ServiceProvider.GetRequiredService<RoleManager<Role>>();
             if (!await roleManager.Roles.AnyAsync(r => r.Name == "Admin"))
             {
                 await roleManager.CreateAsync(new Role {Name = "Admin"});
@@ -63,7 +63,7 @@ namespace MCMS.Controllers
             }
 
             obj["headers"] = headers;
-            obj["Request RemoteIp"] = HttpContext.Connection.RemoteIpAddress.ToString();
+            obj["Request RemoteIp"] = HttpContext.Connection.RemoteIpAddress?.ToString();
 
             return Ok(obj);
         }

@@ -56,7 +56,7 @@ namespace MCMS.Emailing.Clients.Gmail
 
             var to = $"<{toAddr.Address}> {toAddr.Name}";
 
-            _logger.LogWarning("Sending mail with Gmail:\nTo: " + to + "\nSubject: " + mimeMessage.Subject);
+            _logger.LogInformation("Sending mail with Gmail:\nTo: " + to + "\nSubject: " + mimeMessage.Subject);
 
             var ms = new MemoryStream();
             await mimeMessage.WriteToAsync(ms);

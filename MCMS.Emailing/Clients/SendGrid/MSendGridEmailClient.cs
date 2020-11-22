@@ -58,7 +58,7 @@ namespace MCMS.Emailing.Clients.SendGrid
                 msg.ReplyTo = new EmailAddress(replyTo.Address, replyTo.Name);
             }
 
-            _logger.LogWarning("Sending mail with SendGrid:\nTo: " + to + "\nSubject: " + msg.Subject);
+            _logger.LogInformation("Sending mail with SendGrid:\nTo: " + to + "\nSubject: " + msg.Subject);
 
             msg.SetClickTracking(false, false);
             var response = await Client.SendEmailAsync(msg);

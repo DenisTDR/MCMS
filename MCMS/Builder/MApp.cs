@@ -92,7 +92,7 @@ namespace MCMS.Builder
 
         public void Configure(IApplicationBuilder app, IServiceProvider serviceProvider)
         {
-            app.UsePathBase(Utils.RoutePrefix.TrimEnd('/'));
+            app.UsePathBase(RoutePrefixes.RoutePrefix.TrimEnd('/'));
 
             app.UseForwardedHeaders();
 
@@ -163,11 +163,7 @@ namespace MCMS.Builder
                 Utils.DieWith("EXTERNAL_URL must include protocol and must not end with /");
             }
 
-            var routePrefix = Env.Get("ROUTE_PREFIX");
-            if (!string.IsNullOrEmpty(routePrefix) && (!routePrefix.StartsWith("/") || !routePrefix.EndsWith("/")))
-            {
-                Utils.DieWith("Env var 'ROUTE_PREFIX' should start with a / (slash) and end with a / (slash).");
-            }
+            RoutePrefixes.CheckRoutePrefixVars();
         }
     }
 }

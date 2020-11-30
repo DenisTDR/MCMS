@@ -1,3 +1,4 @@
+using MCMS.Base.Attributes;
 using MCMS.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -6,6 +7,7 @@ namespace MCMS.Controllers.Api
 {
 
     [Authorize]
+    [AdminApiRoute("[controller]/[action]")]
     public class AdminApiController : ApiController
     {
         protected virtual OkObjectResult OkModel<T>(T model)

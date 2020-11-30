@@ -58,19 +58,5 @@ namespace MCMS.Base.Helpers
 
             return settings;
         }
-
-        private static string _routePrefix;
-
-        public static string RoutePrefix
-        {
-            get
-            {
-                if (_routePrefix != null) return _routePrefix;
-                _routePrefix = Env.Get("ROUTE_PREFIX");
-                if (string.IsNullOrEmpty(_routePrefix)) _routePrefix = "/";
-
-                return _routePrefix;
-            }
-        }
     }
 }

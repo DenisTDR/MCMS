@@ -16,13 +16,22 @@ namespace MCMS.Base.Attributes
                 throw new ArgumentNullException(nameof(template));
             }
 
-            if (template.StartsWith("/"))
+            if (template.StartsWith("~") && !template.StartsWith("~/"))
             {
-                Template = "/api" + template;
+                throw new Exception("A route template can't start with ~ (tilda) not followed by a / (slash).");
+            }
+
+            if (template.StartsWith("~/"))
+            {
+                Template = "~/api" + template.Substring(2);
+            }
+            else if (template.StartsWith("/"))
+            {
+                Template = template;
             }
             else
             {
-                Template = "api/" + template;
+                Template = "~/api/" + template;
             }
         }
 

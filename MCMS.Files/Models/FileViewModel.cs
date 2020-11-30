@@ -22,7 +22,7 @@ namespace MCMS.Files.Models
         public string Url
         {
             get => _url ??= !string.IsNullOrEmpty(VirtualPath) && !string.IsNullOrEmpty(Name)
-                ? Path.Combine(Utils.RoutePrefix, VirtualPath.TrimStart('/'), Name + Extension)
+                ? Path.Combine(RoutePrefixes.RoutePrefix, VirtualPath.TrimStart('/'), Name + Extension)
                 : null;
             set => _url = value;
         }

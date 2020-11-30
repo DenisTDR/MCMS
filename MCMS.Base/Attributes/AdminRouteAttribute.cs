@@ -1,4 +1,5 @@
 using System;
+using MCMS.Base.Helpers;
 using Microsoft.AspNetCore.Mvc.Routing;
 
 namespace MCMS.Base.Attributes
@@ -23,7 +24,7 @@ namespace MCMS.Base.Attributes
 
             if (template.StartsWith("~/"))
             {
-                Template = GetBasePath + template.Substring(2);
+                Template = RoutePrefixes.AdminRouteBasePath + template.Substring(2);
             }
             else if (template.StartsWith("/"))
             {
@@ -31,14 +32,12 @@ namespace MCMS.Base.Attributes
             }
             else
             {
-                Template = GetBasePath + template;
+                Template = RoutePrefixes.AdminRouteBasePath + template;
             }
         }
 
         public string Name { get; }
         public int? Order { get; }
         public string Template { get; set; }
-
-        public static string GetBasePath => "~/";
     }
 }

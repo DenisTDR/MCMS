@@ -1,5 +1,4 @@
 using System;
-using System.IO;
 using MCMS.Base.Builder;
 using MCMS.Base.Files.UploadPurpose;
 using MCMS.Base.Helpers;
@@ -36,10 +35,10 @@ namespace MCMS.SwaggerFormly
             app.UseSwaggerUI(uiOptions =>
             {
                 uiOptions.SwaggerEndpoint(
-                    Utils.UrlCombine(Utils.RoutePrefix, $"api/docs/{_swaggerConfigOptions.Name}/swagger.json"),
+                    Utils.UrlCombine(RoutePrefixes.RoutePrefix, $"api/docs/{_swaggerConfigOptions.Name}/swagger.json"),
                     _swaggerConfigOptions.Title + " " + _swaggerConfigOptions.Version);
-                uiOptions.InjectStylesheet(Utils.UrlCombine(Utils.RoutePrefix, "api/docs/swagger-ui-theme.css"));
-                uiOptions.InjectJavascript(Utils.UrlCombine(Utils.RoutePrefix, "api/docs/swagger-ui-theme.js"));
+                uiOptions.InjectStylesheet(Utils.UrlCombine(RoutePrefixes.RoutePrefix, "api/docs/swagger-ui-theme.css"));
+                uiOptions.InjectJavascript(Utils.UrlCombine(RoutePrefixes.RoutePrefix, "api/docs/swagger-ui-theme.js"));
                 uiOptions.RoutePrefix = "api/docs";
             });
         }
@@ -50,7 +49,7 @@ namespace MCMS.SwaggerFormly
             services.AddSwaggerGen(swagger =>
             {
                 _swaggerConfigOptions.Description =
-                    $"<a href='{Utils.RoutePrefix}'>Back to home page</a>{_swaggerConfigOptions.Description}";
+                    $"<a href='{RoutePrefixes.RoutePrefix}'>Back to home page</a>{_swaggerConfigOptions.Description}";
                 swagger.SwaggerDoc(_swaggerConfigOptions.Name,
                     new OpenApiInfo
                     {

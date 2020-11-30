@@ -13,7 +13,10 @@ namespace MCMS.Controllers.Ui
 
         [HttpGet]
         [AdminRoute("~/[controller]")]
-        public abstract Task<IActionResult> Index();
+        public virtual Task<IActionResult> Index()
+        {
+            return Task.FromResult(View() as IActionResult);
+        }
 
         protected Task<IActionResult> CustomIndex()
         {

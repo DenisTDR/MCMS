@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using MCMS.Base.Attributes;
 using MCMS.Controllers.Api;
 using MCMS.Files.Models;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,9 +10,7 @@ using Microsoft.Extensions.Logging;
 
 namespace MCMS.Files.Controllers
 {
-    [ApiRoute("[controller]/[action]")]
-    [Authorize]
-    public class FilesUploadController : ApiController
+    public class FilesUploadController : AdminApiController
     {
         private FileUploadManager FileUploadManager => ServiceProvider.GetRequiredService<FileUploadManager>();
 

@@ -64,9 +64,10 @@ namespace MCMS.Builder
             return this;
         }
 
-        public MAppBuilder WithSwagger(SwaggerConfigOptions swaggerConfigOptions = null)
+        public MAppBuilder WithSwagger(SwaggerConfigOptions swaggerConfigOptions = null,
+            SwaggerConfigOptions apiSwaggerConfigOptions = null)
         {
-            return AddSpecifications(new SwaggerSpecifications(swaggerConfigOptions));
+            return AddSpecifications(new SwaggerSpecifications(swaggerConfigOptions, apiSwaggerConfigOptions));
         }
 
         public MApp Build()

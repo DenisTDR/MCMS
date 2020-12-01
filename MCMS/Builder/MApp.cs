@@ -44,7 +44,6 @@ namespace MCMS.Builder
             var mvcBuilder = services
                 .AddMvc(options =>
                 {
-                    // options.Conventions.Insert(0, new MRouteConvention(Env.Get("ADMIN_ROUTE_PREFIX")));
                     foreach (var mSpecifications in _specifications)
                     {
                         mSpecifications.ConfigMvc(options);

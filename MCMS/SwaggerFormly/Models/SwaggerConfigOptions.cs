@@ -1,12 +1,11 @@
 ﻿using System;
 using System.IO;
-using MCMS.Base.Helpers;
 
 namespace MCMS.SwaggerFormly.Models
 {
     public class SwaggerConfigOptions
     {
-        public string Name { get; set; }
+        internal string Name { get; set; }
         public string Title { get; set; }
         public string Version { get; set; }
         public string Description { get; set; }

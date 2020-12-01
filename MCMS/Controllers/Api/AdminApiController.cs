@@ -5,9 +5,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace MCMS.Controllers.Api
 {
-
     [Authorize]
     [AdminApiRoute("[controller]/[action]")]
+    [ApiExplorerSettings(GroupName = "admin-api")]
     public class AdminApiController : ApiController
     {
         protected virtual OkObjectResult OkModel<T>(T model)

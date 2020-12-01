@@ -6,7 +6,6 @@ using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using MCMS.Base.Auth;
-using MCMS.Base.Exceptions;
 using MCMS.Base.Helpers;
 using MCMS.Data;
 using Microsoft.AspNetCore.Authentication;

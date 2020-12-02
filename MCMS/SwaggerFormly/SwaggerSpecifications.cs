@@ -15,14 +15,13 @@ namespace MCMS.SwaggerFormly
 {
     public class SwaggerSpecifications : MSpecifications
     {
-        private readonly SwaggerConfigOptions _swaggerConfigOptions;
-        private readonly SwaggerConfigOptions _apiSwaggerConfigOptions;
+        private readonly SwaggerConfigOptions _adminConfigOptions;
+        private readonly SwaggerConfigOptions _apiConfigOptions;
 
-        public SwaggerSpecifications(SwaggerConfigOptions swaggerConfigOptions,
-            SwaggerConfigOptions apiSwaggerConfigOptions)
+        public SwaggerSpecifications(SwaggerConfigOptions adminConfigOptions, SwaggerConfigOptions apiConfigOptions)
         {
-            _swaggerConfigOptions = swaggerConfigOptions;
-            _apiSwaggerConfigOptions = apiSwaggerConfigOptions;
+            _adminConfigOptions = adminConfigOptions;
+            _apiConfigOptions = apiConfigOptions;
         }
 
         public override void Configure(IApplicationBuilder app, IServiceProvider serviceProvider)
@@ -34,57 +33,43 @@ namespace MCMS.SwaggerFormly
                 app.UseMiddleware<ReverseProxyMiddleware>();
             }
 
-            app.UseSwagger(options => options.RouteTemplate = _swaggerConfigOptions.RouteTemplate);
-            var prefix = RoutePrefixes.RoutePrefix;
-            app.UseSwaggerUI(uiOptions =>
-            {
-                uiOptions.SwaggerEndpoint(
-                    Utils.UrlCombine(prefix, $"api/docs/{_swaggerConfigOptions.Name}/swagger.json"),
-                    _swaggerConfigOptions.Title + " " + _swaggerConfigOptions.Version);
-                if (_apiSwaggerConfigOptions != null)
-                {
-                    uiOptions.SwaggerEndpoint(
-                        Utils.UrlCombine(prefix, $"api/docs/{_apiSwaggerConfigOptions.Name}/swagger.json"),
-                        _apiSwaggerConfigOptions.Title + " " + _apiSwaggerConfigOptions.Version);
-                }
+            app.UseSwagger(options => options.RouteTemplate = _adminConfigOptions.RouteTemplate);
 
-                uiOptions.InjectStylesheet(Utils.UrlCombine(prefix, "api/docs/swagger-ui-theme.css"));
-                uiOptions.InjectJavascript(Utils.UrlCombine(prefix, "api/docs/swagger-ui-theme.js"));
-                uiOptions.RoutePrefix = "api/docs";
-            });
+            RegisterUi(app);
         }
 
         public override void ConfigureServices(IServiceCollection services)
         {
-            _swaggerConfigOptions.Name = "admin-api";
-            if (_apiSwaggerConfigOptions != null)
+            _adminConfigOptions.Name = "admin-api";
+            if (_apiConfigOptions != null)
             {
-                _apiSwaggerConfigOptions.Name = "api";
+                _apiConfigOptions.Name = "api";
             }
 
-            services.AddOptions<SwaggerConfigOptions>().Configure(c => { c.Name = _swaggerConfigOptions.Name; });
+            services.AddOptions<SwaggerConfigOptions>().Configure(c => { c.Name = _adminConfigOptions.Name; });
             services.AddSwaggerGen(swagger =>
             {
                 PatchDescriptions();
-                swagger.SwaggerDoc("admin-api",
+                swagger.SwaggerDoc(_adminConfigOptions.Name,
                     new OpenApiInfo
                     {
-                        Title = _swaggerConfigOptions.Title,
-                        Version = _swaggerConfigOptions.Version,
-                        Description = _swaggerConfigOptions.Description,
+                        Title = _adminConfigOptions.Title,
+                        Version = _adminConfigOptions.Version,
+                        Description = _adminConfigOptions.Description,
                     });
-                if (_apiSwaggerConfigOptions != null)
+                if (_apiConfigOptions != null)
                 {
-                    swagger.SwaggerDoc(_apiSwaggerConfigOptions.Name,
+                    swagger.SwaggerDoc(_apiConfigOptions.Name,
                         new OpenApiInfo
                         {
-                            Title = _apiSwaggerConfigOptions.Title,
-                            Version = _apiSwaggerConfigOptions.Version,
-                            Description = _apiSwaggerConfigOptions.Description,
+                            Title = _apiConfigOptions.Title,
+                            Version = _apiConfigOptions.Version,
+                            Description = _apiConfigOptions.Description,
                         });
                 }
 
                 swagger.SchemaFilter<OpenApiFormlyPatcherSchemaFilter>();
+                swagger.OperationFilter<DefaultSummaryOperationFilter>();
                 swagger.SchemaFilter<EnumSchemaFilter>();
                 swagger.UseAllOfToExtendReferenceSchemas();
             });
@@ -103,13 +88,59 @@ namespace MCMS.SwaggerFormly
             });
         }
 
+
+        private void RegisterUi(IApplicationBuilder app)
+        {
+            var prefix = RoutePrefixes.RoutePrefix;
+
+            if (_adminConfigOptions.UiType.UseSwaggerUi() || _apiConfigOptions?.UiType.UseSwaggerUi() == true)
+            {
+                app.UseSwaggerUI(uiOptions =>
+                {
+                    if (_adminConfigOptions.UiType.UseSwaggerUi())
+                    {
+                        uiOptions.SwaggerEndpoint(_adminConfigOptions.GetEndpointUrl(prefix),
+                            _adminConfigOptions.GetEndpointName());
+                    }
+
+                    if (_apiConfigOptions?.UiType.UseSwaggerUi() == true)
+                    {
+                        uiOptions.SwaggerEndpoint(_apiConfigOptions.GetEndpointUrl(prefix),
+                            _apiConfigOptions.GetEndpointName());
+                    }
+
+                    uiOptions.InjectStylesheet(Utils.UrlCombine(prefix, "api/docs/swagger-ui-theme.css"));
+                    uiOptions.InjectJavascript(Utils.UrlCombine(prefix, "api/docs/swagger-ui-theme.js"));
+                    uiOptions.RoutePrefix = "api/docs";
+                });
+            }
+
+            if (_adminConfigOptions.UiType.UseReDoc())
+            {
+                app.UseReDoc(c =>
+                {
+                    c.RoutePrefix = "api/redoc/" + _adminConfigOptions.Name;
+                    c.SpecUrl(_adminConfigOptions.GetEndpointUrl());
+                });
+            }
+
+            if (_apiConfigOptions?.UiType.UseReDoc() == true)
+            {
+                app.UseReDoc(c =>
+                {
+                    c.RoutePrefix = "api/redoc/" + _apiConfigOptions.Name;
+                    c.SpecUrl(_apiConfigOptions.GetEndpointUrl());
+                });
+            }
+        }
+
         private void PatchDescriptions()
         {
             var homeUrl = $"<a href='{RoutePrefixes.RoutePrefix}'>Back to home page</a>";
-            _swaggerConfigOptions.Description = $"{homeUrl}{_swaggerConfigOptions.Description}";
-            if (_apiSwaggerConfigOptions != null)
+            _adminConfigOptions.Description = $"{homeUrl}{_adminConfigOptions.Description}";
+            if (_apiConfigOptions != null)
             {
-                _apiSwaggerConfigOptions.Description = $"{homeUrl}{_apiSwaggerConfigOptions.Description}";
+                _apiConfigOptions.Description = $"{homeUrl}{_apiConfigOptions.Description}";
             }
         }
     }

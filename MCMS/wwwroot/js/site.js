@@ -3,6 +3,12 @@
 
 // Write your JavaScript code.
 
+function main() {
+    document.addEventListener('side-menu-toggled', function (e) {
+        document.cookie = "side-menu-toggled=" + (e && typeof e.detail !== 'undefined' && e.detail ? 1 : 0) + ";path=/;max-age=86400";
+    });
+}
+
 function formatDate(date, separator) {
     if (typeof separator === 'undefined') {
         separator = '/';
@@ -16,3 +22,5 @@ function formatDate(date, separator) {
     if (month < 10) month = "0" + month;
     return day + separator + month + separator + date.getFullYear();
 }
+
+main();

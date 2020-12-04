@@ -19,7 +19,7 @@
         e.preventDefault();
         $("body").toggleClass("sb-sidenav-toggled");
         setTimeout(function () {
-            document.dispatchEvent(new Event('side-menu-toggled'));
+            document.dispatchEvent(new CustomEvent('side-menu-toggled', {detail: $("body").hasClass("sb-sidenav-toggled")}));
         }, 200);
     });
 })(jQuery);

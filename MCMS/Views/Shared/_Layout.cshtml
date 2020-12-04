@@ -2,6 +2,11 @@
 @using MCMS.Base.Builder
 @inject IOptions<SiteConfig> SiteConfig
 @inject IOptions<LayoutIncludesOptions> LayoutIncludes
+
+@{
+    var sideMenuToggled = Context.Request.Cookies.TryGetValue("side-menu-toggled", out var val) && val == "1";
+}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -19,7 +24,7 @@
         var basePath = '@Url.Content("~")';
     </script>
 </head>
-<body class="sb-nav-fixed">
+<body class="sb-nav-fixed @Html.Raw(sideMenuToggled ? "sb-sidenav-toggled" : "")">
 <partial name="Partials/_Navbar"/>
 <div class="sb-layout-sidenav">
     <partial name="Partials/_Sidenav"/>

@@ -136,7 +136,8 @@ namespace MCMS.SwaggerFormly
 
         private void PatchDescriptions()
         {
-            var homeUrl = $"<a href='{RoutePrefixes.RoutePrefix}'>Back to home page</a>";
+            var homeUrl =
+                $"<a href='{Utils.UrlCombine(RoutePrefixes.RoutePrefix, RoutePrefixes.AdminRoutePrefix.Substring(1))}'>Back to admin page</a>";
             _adminConfigOptions.Description = $"{homeUrl}{_adminConfigOptions.Description}";
             if (_apiConfigOptions != null)
             {

@@ -5,7 +5,7 @@ namespace MCMS.Base.Files.UploadPurpose
     public class UploadPurposeOptions
     {
         private Dictionary<string, IFileUploadPurpose> _registeredPurposes =
-            new Dictionary<string, IFileUploadPurpose>();
+            new();
 
         public void Register(string purposeName, IFileUploadPurpose purpose)
         {

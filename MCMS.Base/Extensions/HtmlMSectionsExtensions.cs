@@ -45,7 +45,7 @@ namespace MCMS.Base.Extensions
 
         public static HtmlString RenderMSection(this IHtmlHelper helper, string sectionKey)
         {
-            return new HtmlString(string.Join(Environment.NewLine,
+            return new(string.Join(Environment.NewLine,
                 GetMSectionList(helper.ViewContext.HttpContext, sectionKey)));
         }
 

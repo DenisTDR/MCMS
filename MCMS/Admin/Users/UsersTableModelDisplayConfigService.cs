@@ -32,7 +32,7 @@ namespace MCMS.Admin.Users
 
         public virtual List<MRichLink> GetDefaultTableItemActions(dynamic viewBag)
         {
-            return new List<MRichLink>
+            return new()
             {
                 new MRichLink("", typeof(AdminUsersController), nameof(AdminUsersController.Details)).WitTag("details")
                     .AsButton("outline-info").WithModal().WithIconClasses("far fa-eye")

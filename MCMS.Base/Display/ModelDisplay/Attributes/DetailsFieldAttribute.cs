@@ -26,7 +26,7 @@ namespace MCMS.Base.Display.ModelDisplay.Attributes
 
         public DetailsField ToDetailsField()
         {
-            return new DetailsField
+            return new()
             {
                 OrderIndex = OrderIndex,
                 Tag = Tag,

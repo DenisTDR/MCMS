@@ -4,6 +4,6 @@ namespace MCMS.Display.Menu
 {
     public class MenuConfig
     {
-        public List<IMenuItem> Items { get; } = new List<IMenuItem>();
+        public List<IMenuItem> Items { get; } = new();
     }
 }

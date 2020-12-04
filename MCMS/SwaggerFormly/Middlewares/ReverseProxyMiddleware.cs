@@ -16,7 +16,7 @@ namespace MCMS.SwaggerFormly.Middlewares
     // ReSharper disable once ClassNeverInstantiated.Global
     public class ReverseProxyMiddleware
     {
-        private static readonly HttpClient HttpClient = new HttpClient();
+        private static readonly HttpClient HttpClient = new();
         private readonly RequestDelegate _nextMiddleware;
 
         public ReverseProxyMiddleware(RequestDelegate nextMiddleware)
@@ -130,7 +130,6 @@ namespace MCMS.SwaggerFormly.Middlewares
             return _proxyRules.Keys.Any(key => request.Path.StartsWithSegments(key));
         }
 
-        private readonly Dictionary<string, string> _proxyRules = new Dictionary<string, string>
-            {{"/mcms-forms", Utils.UrlCombine(Env.GetOrThrow("FORMLY_SERVE_URL"), "mcms-forms/")}};
+        private readonly Dictionary<string, string> _proxyRules = new() {{"/mcms-forms", Utils.UrlCombine(Env.GetOrThrow("FORMLY_SERVE_URL"), "mcms-forms/")}};
     }
 }

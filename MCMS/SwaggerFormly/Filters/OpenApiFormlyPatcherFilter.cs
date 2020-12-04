@@ -222,7 +222,7 @@ namespace MCMS.SwaggerFormly.Filters
 
         private OpenApiString Oas(string str)
         {
-            return new OpenApiString(str);
+            return new(str);
         }
 
         private bool IsFormlyIgnored(PropertyInfo propertyInfo, out double orderIndex)

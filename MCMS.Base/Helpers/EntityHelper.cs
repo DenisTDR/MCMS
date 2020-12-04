@@ -20,10 +20,10 @@ namespace MCMS.Base.Helpers
 
 
         private static readonly ConcurrentDictionary<Type, List<PropertyInfo>> UpdatablePrimitiveProperties =
-            new ConcurrentDictionary<Type, List<PropertyInfo>>();
+            new();
 
         private static readonly ConcurrentDictionary<Type, List<PropertyInfo>> UpdatableEntityProperties =
-            new ConcurrentDictionary<Type, List<PropertyInfo>>();
+            new();
 
 
         public static List<PropertyInfo> GetPrimitiveProperties<T>(IEnumerable<string> withNames = null)

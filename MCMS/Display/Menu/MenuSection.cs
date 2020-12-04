@@ -8,7 +8,7 @@ namespace MCMS.Display.Menu
     {
         public string Name { get; set; }
         public bool IsCollapsed { get; set; }
-        public List<IMenuItem> Items = new List<IMenuItem>();
+        public List<IMenuItem> Items = new();
         public string Id { get; } = "menu-section-" + Utils.GenerateRandomHexString();
         public int Index { get; set; }
         public string IconClasses { get; set; }

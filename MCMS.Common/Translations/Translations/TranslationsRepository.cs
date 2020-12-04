@@ -22,8 +22,7 @@ namespace MCMS.Common.Translations.Translations
     {
         public static string DefaultLanguage = Env.Get("DEFAULT_LANGUAGE") is { } str ? str : "en";
 
-        private static readonly ConcurrentDictionary<string, Dictionary<string, TranslationCacheEntry>> Cache =
-            new ConcurrentDictionary<string, Dictionary<string, TranslationCacheEntry>>();
+        private static readonly ConcurrentDictionary<string, Dictionary<string, TranslationCacheEntry>> Cache = new();
 
         private readonly LanguagesRepository _langsRepo;
         private readonly ILogger<TranslationsRepository> _logger;

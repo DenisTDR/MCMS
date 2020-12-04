@@ -26,7 +26,7 @@ namespace MCMS.Base.JsonPatch
         public static Operation<TOut> CloneFor<TIn, TOut>(this Operation<TIn> source)
             where TIn : class where TOut : class
         {
-            return new Operation<TOut>
+            return new()
             {
                 from = source.from,
                 path = source.path,
@@ -37,7 +37,7 @@ namespace MCMS.Base.JsonPatch
 
         public static Operation<TOut> CloneFor<TOut>(this Operation source) where TOut : class
         {
-            return new Operation<TOut>
+            return new()
             {
                 from = source.from,
                 path = source.path,

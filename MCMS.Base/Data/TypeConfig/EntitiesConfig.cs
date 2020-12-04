@@ -4,6 +4,6 @@ namespace MCMS.Base.Data.TypeConfig
 {
     public class EntitiesConfig
     {
-        public List<EntityTypeStack> EntityStacks { get; } = new List<EntityTypeStack>();
+        public List<EntityTypeStack> EntityStacks { get; } = new();
     }
 }

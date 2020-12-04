@@ -9,7 +9,7 @@ namespace MCMS.Base.Helpers
 {
     public class Env
     {
-        private static ConcurrentDictionary<string, string> cache = new ConcurrentDictionary<string, string>();
+        private static ConcurrentDictionary<string, string> cache = new();
 
         public static string GetOrThrow(string name)
         {

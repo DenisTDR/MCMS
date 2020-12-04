@@ -8,7 +8,7 @@ namespace MCMS.Base.Display.DisplayValue
     {
         public delegate bool TryDisplayDelegate(PropertyInfo pInfo, object obj, out object value);
         
-        private readonly List<TryDisplayDelegate> _formatters = new List<TryDisplayDelegate>();
+        private readonly List<TryDisplayDelegate> _formatters = new();
         public List<TryDisplayDelegate> Formatters => _formatters.ToList();
 
         public void Add(TryDisplayDelegate formatter)

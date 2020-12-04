@@ -13,7 +13,7 @@ namespace MCMS.SwaggerFormly
         private readonly ISwaggerProvider _swaggerProvider;
         private readonly SwaggerConfigOptions _options;
         private JObject _cache;
-        private readonly object _cacheLock = new object();
+        private readonly object _cacheLock = new();
 
         public SwaggerConfigService(
             ISwaggerProvider swaggerProvider,

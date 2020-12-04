@@ -24,7 +24,7 @@ namespace MCMS.Builder
         public IEnumerable<MSpecifications> Specifications => _specifications.ToList();
         private readonly IList<MSpecifications> _specifications;
         private readonly Action<IServiceCollection> _addDbContextAction;
-        private IWebHostEnvironment HostEnvironment { get; }
+        public IWebHostEnvironment HostEnvironment { get; }
 
         public MApp(IWebHostEnvironment hostEnvironment, IList<MSpecifications> specifications,
             Action<IServiceCollection> addDbContextAction)

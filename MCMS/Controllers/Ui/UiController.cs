@@ -1,3 +1,4 @@
+using MCMS.Base.Controllers;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MCMS.Controllers.Ui

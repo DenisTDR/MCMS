@@ -6,7 +6,7 @@ using MCMS.Base.Auth;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace MCMS.Controllers
+namespace MCMS.Base.Controllers
 {
     [Route("~/[controller]/[action]")]
     public class BaseController : Controller

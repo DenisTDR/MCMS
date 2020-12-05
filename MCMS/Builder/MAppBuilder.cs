@@ -26,6 +26,7 @@ namespace MCMS.Builder
 
         public MAppBuilder AddSpecifications(MSpecifications specifications, int? index = null)
         {
+            specifications.Environment = _hostEnvironment;
             if (index != null)
             {
                 _specifications.Insert(index.Value, specifications);

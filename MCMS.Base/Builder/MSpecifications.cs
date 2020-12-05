@@ -1,5 +1,6 @@
 using System;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -7,6 +8,7 @@ namespace MCMS.Base.Builder
 {
     public abstract class MSpecifications
     {
+        public IWebHostEnvironment Environment { get; set; }
         public virtual void ConfigureServices(IServiceCollection services)
         {
         }

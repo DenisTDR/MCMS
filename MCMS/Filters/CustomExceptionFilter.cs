@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Linq;
 using System.Reflection;
+using MCMS.Base.Controllers.Api;
 using MCMS.Base.Exceptions;
-using MCMS.Controllers.Api;
 using MCMS.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Controllers;

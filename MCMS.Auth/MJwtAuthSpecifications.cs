@@ -5,9 +5,11 @@ using MCMS.Auth.Jwt;
 using MCMS.Auth.Models;
 using MCMS.Base.Builder;
 using MCMS.Base.Helpers;
+using MCMS.Base.SwaggerFormly.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 
 namespace MCMS.Auth
 {
@@ -15,9 +17,30 @@ namespace MCMS.Auth
     {
         private string _keyDir;
 
+        private bool _excludeJwtTokenPersistenceInSwaggerUi;
+
+        public MJwtAuthSpecifications(bool excludeJwtTokenPersistenceInSwaggerUi = false)
+        {
+            _excludeJwtTokenPersistenceInSwaggerUi = excludeJwtTokenPersistenceInSwaggerUi;
+        }
+
+        public MJwtAuthSpecifications()
+        {
+        }
+
+
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<IJwtFactory, JwtFactory>();
+            if (!_excludeJwtTokenPersistenceInSwaggerUi)
+            {
+                services.Configure<SwaggerConfigsOptions>(c =>
+                {
+                    c.JavascriptFiles.Add("lib/jquery/dist/jquery.min.js");
+                    c.JavascriptFiles.Add("api/docs/swagger-jwt-persist.js");
+                });
+            }
+
             ConfigureJwtOptions(services);
         }
 
@@ -57,11 +80,25 @@ namespace MCMS.Auth
                         ClockSkew = TimeSpan.FromMinutes(5)
                     };
                 });
+            services.AddSwaggerGen(swagger =>
+            {
+                swagger.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "Bearer",
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header,
+                    Description =
+                        "JWT Authorization header using the Bearer scheme. \r\n\r\n Enter your token in the text input below (without the 'Bearer ' part)'.",
+                });
+                swagger.OperationFilter<AddAuthorizationHeaderOperationFilter>();
+            });
         }
 
         private async Task<JwtKeyModel> GetOrCreateKey()
         {
-            var keyPath = Path.Combine(_keyDir, "key.json");
+            var keyPath = Path.Combine(_keyDir, "jwt.json");
             JwtKeyModel model = null;
             if (File.Exists(keyPath))
             {

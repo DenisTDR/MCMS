@@ -6,7 +6,7 @@ namespace MCMS.Base.Controllers.Api
     [ApiRoute("[controller]/[action]")]
     [Produces("application/json")]
     [ApiExplorerSettings(GroupName = "api")]
-    public class ApiController : BaseController
+    public class BaseApiController : BaseController
     {
     }
 }

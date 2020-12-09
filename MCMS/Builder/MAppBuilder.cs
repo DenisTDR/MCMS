@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using MCMS.Base.Builder;
 using MCMS.Base.Helpers;
+using MCMS.Base.SwaggerFormly.Models;
 using MCMS.Data;
 using MCMS.SwaggerFormly;
-using MCMS.SwaggerFormly.Models;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -65,10 +65,9 @@ namespace MCMS.Builder
             return this;
         }
 
-        public MAppBuilder WithSwagger(SwaggerConfigOptions swaggerConfigOptions = null,
-            SwaggerConfigOptions apiSwaggerConfigOptions = null)
+        public MAppBuilder WithSwagger(params SwaggerConfigOptions[] configOptions)
         {
-            return AddSpecifications(new SwaggerSpecifications(swaggerConfigOptions, apiSwaggerConfigOptions));
+            return AddSpecifications(new SwaggerSpecifications(configOptions));
         }
 
         public MApp Build()

@@ -13,7 +13,8 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace MCMS.Auth.Controllers
 {
-    public abstract class AuthBaseController<TLogin> : JwtApiController where TLogin : LoginRequestModel
+    [Authorize]
+    public abstract class AuthBaseController<TLogin> : ApiController where TLogin : LoginRequestModel
     {
         protected UserManager<User> UserManager => ServiceProvider.GetRequiredService<UserManager<User>>();
         protected SignInManager<User> SignInManager => ServiceProvider.GetRequiredService<SignInManager<User>>();
@@ -38,27 +39,21 @@ namespace MCMS.Auth.Controllers
             }
 
             var roles = await UserManager.GetRolesAsync(user);
-            var session = JwtFactory.GenerateSession(user.UserName, roles, user.Id);
+            var session = JwtFactory.GenerateSession(user, roles, user.Id);
 
             return Ok(session);
         }
 
         [HttpGet]
-        [Authorize]
         public virtual IActionResult IsAuthorized()
         {
-            var claims = User.Claims.Select(c =>
-                new
-                {
-                    Type = c.Type,
-                    Value = c.Value
-                });
+            var claims = User.Claims.Select(c => new {c.Type, c.Value});
             return Ok(claims);
         }
 
         [HttpGet]
         [Authorize(Roles = "Moderator")]
-        public virtual IActionResult IsAuthorizedUser()
+        public virtual IActionResult IsAuthorizedModerator()
         {
             return IsAuthorized();
         }

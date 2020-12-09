@@ -4,6 +4,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using MCMS.Auth.Models;
+using MCMS.Base.Auth;
 using Microsoft.Extensions.Options;
 
 namespace MCMS.Auth.Jwt
@@ -35,12 +36,14 @@ namespace MCMS.Auth.Jwt
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
-        public Session GenerateSession(string username, IEnumerable<string> roles, string id)
+        public Session GenerateSession(User user, IEnumerable<string> roles, string id)
         {
+            var username = user.UserName;
             var rolesList = roles.ToList();
             return new Session
             {
                 TokenType = "Bearer",
+                Fullname = user.FullName,
                 Token = GenerateToken(username, rolesList, id),
                 Username = username,
                 Roles = string.Join(",", rolesList),

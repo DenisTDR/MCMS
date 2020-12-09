@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 namespace MCMS.Auth.Controllers
 {
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public abstract class JwtApiController : ApiController
+    public abstract class ApiController : BaseApiController
     {
     }
 }

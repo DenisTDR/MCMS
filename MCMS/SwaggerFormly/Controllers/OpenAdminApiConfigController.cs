@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using MCMS.Base.Helpers;
 using MCMS.Base.Repositories;
@@ -24,12 +25,21 @@ namespace MCMS.SwaggerFormly.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Get([FromQuery] string lang = null,
+        public async Task<IActionResult> Get(
+            [FromQuery] string name = "admin-api",
+            [FromQuery] string lang = null,
             [FromHeader(Name = "X-LANG")] string headerLang = null)
         {
-            var config = _swaggerConfigService.GetConfig();
-            await EnsureTranslationsForLanguage(config, lang ?? headerLang);
-            return Ok(config);
+            try
+            {
+                var config = _swaggerConfigService.GetConfig(name);
+                await EnsureTranslationsForLanguage(config, lang ?? headerLang);
+                return Ok(config);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
         }
 
         [HttpGet]

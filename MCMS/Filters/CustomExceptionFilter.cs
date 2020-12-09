@@ -74,7 +74,7 @@ namespace MCMS.Filters
 
             if (!pAttrs.Any())
             {
-                return typeof(ApiController).IsAssignableFrom(actionDescriptor.ControllerTypeInfo);
+                return typeof(BaseApiController).IsAssignableFrom(actionDescriptor.ControllerTypeInfo);
             }
 
             return pAttrs.Any(a => a.ContentTypes.Any(c => c.ToLower().StartsWith("application/json")));

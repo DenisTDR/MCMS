@@ -1,19 +1,20 @@
 ﻿using System;
 using System.IO;
 using MCMS.Base.Helpers;
+using Microsoft.OpenApi.Models;
 
-namespace MCMS.SwaggerFormly.Models
+namespace MCMS.Base.SwaggerFormly.Models
 {
     public class SwaggerConfigOptions
     {
-        internal string Name { get; set; }
+        public string Name { get; set; }
         public string Title { get; set; }
         public string Version { get; set; }
         public string Description { get; set; }
         public string RouteTemplate { get; set; } = "api/docs/{documentName}/swagger.json";
         public Func<Stream> IndexStreamAction { get; set; }
 
-        public SwaggerUiType UiType { get; set; } = SwaggerUiType.SwaggerUi;
+        public DocsUiType UiType { get; set; } = DocsUiType.SwaggerUi;
 
         public string GetEndpointUrl(string prefix = null)
         {
@@ -25,9 +26,19 @@ namespace MCMS.SwaggerFormly.Models
         {
             return Title + " " + Version;
         }
+
+        public OpenApiInfo ToOpenApiInfo()
+        {
+            return new OpenApiInfo
+            {
+                Title = Title,
+                Version = Version,
+                Description = Description,
+            };
+        }
     }
 
-    public enum SwaggerUiType
+    public enum DocsUiType
     {
         None,
         SwaggerUi,
@@ -37,13 +48,14 @@ namespace MCMS.SwaggerFormly.Models
 
     public static class SwaggerUiTypeExtensions
     {
-        public static bool UseSwaggerUi(this SwaggerUiType type)
+        public static bool UseSwaggerUi(this SwaggerConfigOptions config)
         {
-            return type == SwaggerUiType.SwaggerUi || type == SwaggerUiType.Both;
+            return config != null && (config.UiType == DocsUiType.SwaggerUi || config.UiType == DocsUiType.Both);
         }
-        public static bool UseReDoc(this SwaggerUiType type)
+
+        public static bool UseReDoc(this SwaggerConfigOptions config)
         {
-            return type == SwaggerUiType.ReDoc || type == SwaggerUiType.Both;
+            return config != null && (config.UiType == DocsUiType.ReDoc || config.UiType == DocsUiType.Both);
         }
     }
 }

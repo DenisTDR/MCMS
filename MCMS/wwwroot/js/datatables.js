@@ -1,4 +1,6 @@
-function bindDefaultDataTables(tableElem, url, initialConfig, actionsColumnContent, hasStaticIndexColumn, lang) {
+function bindDefaultDataTables(selector, url, initialConfig, actionsColumnContent, hasStaticIndexColumn, lang) {
+    var tableElem = $(selector);
+    
     initialConfig.columns = initialConfig.columns.slice();
     var shouldMakeActionsCellContent = actionsColumnContent && actionsColumnContent.trim().length > 0;
     var langConfigBasePath = typeof basePath !== 'undefined' ? basePath : '';

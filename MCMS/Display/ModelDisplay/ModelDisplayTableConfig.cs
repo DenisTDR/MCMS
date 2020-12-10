@@ -19,9 +19,6 @@ namespace MCMS.Display.ModelDisplay
         public MRichLink CreateNewItemLink { get; set; }
         public string TableItemsApiUrl { get; set; }
 
-        public string TableColumnsSerializedForDataTables =>
-            JsonConvert.SerializeObject(TableColumnsOrdered?.Select(tc => tc.GetDataTablesObject()));
-
         public object RowGroupForDataTables
         {
             get

@@ -102,7 +102,7 @@
     }
     
     var table@(Model.TableId) = bindDefaultDataTables(
-        $("#table-@Model.TableId"),   
+        "#table-@Model.TableId",   
         "@Html.Raw(Model.TableItemsApiUrl)", 
         @Html.Raw(Model.ConfigObject),
         actionsColumnContent, 

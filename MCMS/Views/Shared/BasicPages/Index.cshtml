@@ -1,8 +1,5 @@
-@model MCMS.Display.ModelDisplay.ModelDisplayTableConfig
+@model MCMS.Display.ModelDisplay.IndexPageConfig
 @using MCMS.Base.Exceptions
-@using MCMS.Base.Extensions
-@using MCMS.Base.Repositories
-@inject ITranslationsRepository TransRepo;
 
 @{
     // var returnUrl = Context.Request.Query.ContainsKey("returnUrl") ? (string) Context.Request.Query["returnUrl"] : Url.Action("Index");
@@ -11,102 +8,10 @@
     {
         throw new KnownException("Invalid model provided for this view.", 500);
     }
-
-    ViewBag.ModalCallback = "reloadTable" + Model.TableId;
 }
 
 @if (!string.IsNullOrEmpty(ViewBag.Title))
 {
     <h3 class="mt-4 mb-4">@ViewBag.Title</h3>
 }
-@if (Model.CreateNewItemLink != null)
-{
-    <div class="mb-3 d-flex justify-content-end">
-        <partial name="Partials/_MRichLink" model="Model.CreateNewItemLink"/>
-    </div>
-}
-<table id="table-@Model.TableId" class="table table-striped table-bordered">
-    <thead>
-    <tr>
-        @if (Model.HasTableIndexColumn)
-        {
-            <th></th>
-        }
-        @foreach (var tableColumn in Model.TableColumnsOrdered)
-        {
-            <th>@Html.Raw(tableColumn.Name)</th>
-        }
-    </tr>
-    </thead>
-    <tfoot>
-    <tr class="column-search-row">
-        @* Table footer search row *@
-        @if (Model.HasTableIndexColumn)
-        {
-            <td></td>
-        }
-        @foreach (var tableColumn in Model.TableColumnsOrdered)
-        {
-            <td>@Html.Raw(tableColumn.Name)</td>
-        }
-    </tr>
-    <tr class="sum-total-row">
-        @* Table footer sum total row *@
-        @if (Model.HasTableIndexColumn)
-        {
-            <th></th>
-        }
-        @foreach (var tableColumn in Model.TableColumnsOrdered)
-        {
-            <th>@Html.Raw(tableColumn.Name)</th>
-        }
-    </tr>
-    <tr>
-        @* Table footer column names *@
-        @if (Model.HasTableIndexColumn)
-        {
-            <th></th>
-        }
-        @foreach (var tableColumn in Model.TableColumnsOrdered)
-        {
-            <th>@Html.Raw(tableColumn.Name)</th>
-        }
-    </tr>
-    </tfoot>
-</table>
-
-<div id="actions-cell-template-@Model.TableId" class="d-none">
-    <div class="d-flex flex-wrap mb-n1">
-        @foreach (var action in Model.TableItemActions)
-        {
-            action.CssClasses += " mr-1 mb-1";
-            <partial name="Partials/_MRichLink" model="action"/>
-        }
-    </div>
-</div>
-
-@using (Html.BeginMPageScripts())
-{
-    <script>
-    function reloadTable@(Model.TableId)(sender, params) {
-        if(params && params.params) {
-            $("#table-@(Model.TableId)").closest(".modal").data("result", params);
-            table@(Model.TableId).ajax.reload();
-        }
-    }
-    var actionsColumnContent = $("#actions-cell-template-@Model.TableId").html();
-    
-    @if (!Model.TableItemActions.Any())
-    {
-        @Html.Raw("actionsColumnContent = null;");
-    }
-    
-    var table@(Model.TableId) = bindDefaultDataTables(
-        "#table-@Model.TableId",   
-        "@Html.Raw(Model.TableItemsApiUrl)", 
-        @Html.Raw(Model.ConfigObject),
-        actionsColumnContent, 
-        @Model.HasTableIndexColumn.ToString().ToLower(),
-        '@TransRepo.Language');
-    </script>
-}
+<partial name="_McmsTable" model="Model.TableConfig"/>

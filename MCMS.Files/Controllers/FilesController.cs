@@ -59,16 +59,17 @@ namespace MCMS.Files.Controllers
         }
 
 
-        public override async Task<ModelDisplayTableConfig> TableConfigForIndex()
+        public override async Task<IndexPageConfig> GetIndexPageConfig()
         {
-            var config = await base.TableConfigForIndex();
+            var config = await base.GetIndexPageConfig();
             ViewBag.CreateNewLinkValues = null;
 
-            config.CreateNewItemLink = new MRichLink("Upload new file", typeof(FilesController), nameof(Upload))
-                .WithModal()
-                .AsButton("outline-primary")
-                .WithIconClasses("fas fa-plus")
-                .WithValues(null);
+            config.TableConfig.CreateNewItemLink =
+                new MRichLink("Upload new file", typeof(FilesController), nameof(Upload))
+                    .WithModal()
+                    .AsButton("outline-primary")
+                    .WithIconClasses("fas fa-plus")
+                    .WithValues(null);
             return config;
         }
 
@@ -82,7 +83,7 @@ namespace MCMS.Files.Controllers
                 return RedirectToAction(nameof(DownloadFile), new {id, fileName = e.OriginalName});
             }
 
-            return ServiceProvider.GetRequiredService<FilesService>().GetFileResult(e);
+            return ServiceProvider.GetRequiredService<FilesService>().GetFileResult(e, fileName);
         }
     }
 }

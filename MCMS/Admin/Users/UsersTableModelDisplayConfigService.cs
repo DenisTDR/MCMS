@@ -13,34 +13,43 @@ namespace MCMS.Admin.Users
     {
         public override Type ViewModelType => typeof(UserViewModel);
 
-        public override async Task<ModelDisplayTableConfig> GetTableConfig(IUrlHelper url, dynamic viewBag,
+        public override async Task<IndexPageConfig> GetIndexPageConfig(IUrlHelper url, dynamic viewBag,
             bool createNewLink = true)
         {
-            var config = new ModelDisplayTableConfig
+            var config = new IndexPageConfig
             {
                 IndexPageTitle = "Users",
+                TableConfig = await GetTableConfig(url, viewBag, createNewLink)
+            };
+            return config;
+        }
+
+        public override async Task<TableDisplayConfig> GetTableConfig(IUrlHelper url, dynamic viewBag,
+            bool createNewLink = true)
+        {
+            return new TableDisplayConfig()
+            {
                 ModelName = "User",
                 TableColumns = await GetTableColumns(),
                 HasTableIndexColumn = true,
                 TableItemsApiUrl = url.ActionLink(nameof(AdminUsersAdminApiController.Index),
                     TypeHelpers.GetControllerName(typeof(AdminUsersAdminApiController)),
                     viewBag.TableItemsApiUrlValues as object),
-                TableItemActions = GetDefaultTableItemActions(viewBag)
+                ItemActions = GetDefaultTableItemActions(viewBag)
             };
-            return config;
         }
 
         public virtual List<MRichLink> GetDefaultTableItemActions(dynamic viewBag)
         {
             return new()
             {
-                new MRichLink("", typeof(AdminUsersController), nameof(AdminUsersController.Details)).WitTag("details")
+                new MRichLink("", typeof(AdminUsersController), nameof(AdminUsersController.Details)).WithTag("details")
                     .AsButton("outline-info").WithModal().WithIconClasses("far fa-eye")
                     .WithValues(new {id = "ENTITY_ID"}),
                 new MRichLink("", typeof(AdminUsersController), nameof(AdminUsersController.ChangeRoles))
-                    .WitTag("roles").AsButton("outline-primary").WithModal().WithIconClasses("fas fa-tags")
+                    .WithTag("roles").AsButton("outline-primary").WithModal().WithIconClasses("fas fa-tags")
                     .WithValues(new {id = "ENTITY_ID"}),
-                new MRichLink("", typeof(AdminUsersController), nameof(AdminUsersController.Delete)).WitTag("delete")
+                new MRichLink("", typeof(AdminUsersController), nameof(AdminUsersController.Delete)).WithTag("delete")
                     .AsButton("outline-danger").WithModal().WithIconClasses("fas fa-trash-alt")
                     .WithValues(new {id = "ENTITY_ID"})
             };

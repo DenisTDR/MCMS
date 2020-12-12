@@ -43,6 +43,9 @@ namespace MCMS.Base.Display.ModelDisplay
         public string Tag { get; set; }
         public bool Invisible { get; set; }
 
+        public string DefaultContent { get; set; }
+        public string ClassName { get; set; }
+
         public override string ToString()
         {
             return $"{Key} as {Name} at {OrderIndex}";
@@ -53,12 +56,13 @@ namespace MCMS.Base.Display.ModelDisplay
             return new
             {
                 data = Key,
-                defaultContent = "<span class='st-text'>null/empty</i>",
+                defaultContent = DefaultContent ?? "<span class='st-text'>null/empty</i>",
                 orderable = Orderable,
                 searchable = Searchable,
                 sumTotal = SumTotal,
                 visible = !Hidden && !Invisible,
                 tag = Tag,
+                className = ClassName
             };
         }
     }

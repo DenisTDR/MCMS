@@ -1,4 +1,4 @@
-function ajaxForm(form, asModal, callback, method) {
+function ajaxForm(form, asModal, callback) {
     form.submit(function (event) {
         event.preventDefault();
         mModals.loadingUpModal.show();
@@ -12,13 +12,13 @@ function ajaxForm(form, asModal, callback, method) {
         $.ajax({
             type: this.method || 'POST',
             url: this.action,
-            data: JSON.stringify(serializeFormAsJson(form)),
+            data: JSON.stringify(serializeFormAsObject(form)),
             contentType: "application/json; charset=utf-8",
             headers: {
                 'X-Request-Modal': asModal
             }
         })
-            .done(function () {
+            .done(function (e) {
                 mModals.loadingUpModal.hide();
                 if (asModal) {
                     close(true);
@@ -51,7 +51,7 @@ function ajaxForm(form, asModal, callback, method) {
     });
 }
 
-function serializeFormAsJson(form) {
+function serializeFormAsObject(form) {
     var jsonArray = form.serializeArray();
     var jsonObj = {};
     for (var i = 0; i < jsonArray.length; i++) {

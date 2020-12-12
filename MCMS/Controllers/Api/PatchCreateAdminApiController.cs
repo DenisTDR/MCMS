@@ -43,9 +43,7 @@ namespace MCMS.Controllers.Api
             await OnPatching(id, eDoc);
             var e = await Repo.Patch(id, eDoc, ServiceProvider.GetRequiredService<IAdapterFactory>());
             await OnPatched(e);
-            var fm = MapF(e);
-
-            return OkModel(fm);
+            return Ok(await GetPatchResponseModel(e));
         }
 
         [HttpPost]
@@ -56,8 +54,7 @@ namespace MCMS.Controllers.Api
             await OnCreating(e);
             e = await Repo.Add(e);
             await OnCreated(e);
-            fm = MapF(e);
-            return OkModel(fm);
+            return Ok(await GetCreateResponseModel(e));
         }
 
         protected virtual TFm MapF(TE e)
@@ -69,6 +66,9 @@ namespace MCMS.Controllers.Api
         {
             return Mapper.Map<TE>(vm);
         }
+
+
+        #region Hooks
 
         protected virtual Task OnCreating(TE e)
         {
@@ -89,6 +89,19 @@ namespace MCMS.Controllers.Api
         {
             return Task.CompletedTask;
         }
-        
+
+        #endregion
+
+        protected virtual Task<ModelResponse<TFm>> GetPatchResponseModel(TE e)
+        {
+            var fm = MapF(e);
+            return Task.FromResult(new ModelResponse<TFm>(fm, e.Id));
+        }
+
+        protected virtual Task<ModelResponse<TFm>> GetCreateResponseModel(TE e)
+        {
+            var fm = MapF(e);
+            return Task.FromResult(new ModelResponse<TFm>(fm, e.Id));
+        }
     }
 }

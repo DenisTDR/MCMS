@@ -45,18 +45,18 @@ namespace MCMS.Controllers.Ui
             if (HttpContext.Request.Headers.TryGetValue("X-Request-Modal", out var value) &&
                 value.ToString().ToLower() == "true")
             {
-                return View("BasicModals/IndexModal", await TableConfigForIndex());
+                return View("BasicModals/IndexModal", await GetIndexPageConfig());
             }
             else
             {
-                return View("BasicPages/Index", await TableConfigForIndex());
+                return View("BasicPages/Index", await GetIndexPageConfig());
             }
         }
 
         [NonAction]
-        public virtual Task<ModelDisplayTableConfig> TableConfigForIndex()
+        public virtual Task<IndexPageConfig> GetIndexPageConfig()
         {
-            return ModelDisplayConfigService.GetTableConfig(Url, ViewBag);
+            return ModelDisplayConfigService.GetIndexPageConfig(Url, ViewBag);
         }
 
         [HttpGet("{id}")]

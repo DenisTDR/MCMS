@@ -17,7 +17,7 @@
     @if (!Model.EmailConfirmed)
     {
         var confirmEmailLink = new MRichLink(await TransRepo.GetValueOrSlug("confirm_email"), typeof(AdminUsersController),
-            nameof(AdminUsersController.ConfirmEmail)).WithValues(new {Model.Id}).WitTag("confirm-email")
+            nameof(AdminUsersController.ConfirmEmail)).WithValues(new {Model.Id}).WithTag("confirm-email")
             .AsButton("outline-secondary").WithModal()
             .WithIconClasses("fas fa-check");
 
@@ -26,7 +26,7 @@
     }
     @{
         var resendResetLink = new MRichLink(await TransRepo.GetValueOrSlug("resend_activation_email"), typeof(AdminUsersController),
-            nameof(AdminUsersController.ResendActivationMail)).WithValues(new {Model.Id}).WitTag("confirm-email")
+            nameof(AdminUsersController.ResendActivationMail)).WithValues(new {Model.Id}).WithTag("confirm-email")
             .AsButton("outline-secondary").WithModal()
             .WithIconClasses("fas fa-envelope");
 

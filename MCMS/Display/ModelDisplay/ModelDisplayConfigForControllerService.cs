@@ -26,24 +26,36 @@ namespace MCMS.Display.ModelDisplay
     {
         public override Type ViewModelType => typeof(TVm);
 
-        public override async Task<ModelDisplayTableConfig> GetTableConfig(IUrlHelper url, dynamic viewBag,
+        public override async Task<IndexPageConfig> GetIndexPageConfig(IUrlHelper url, dynamic viewBag,
             bool createNewLink = true)
         {
-            var config = new ModelDisplayTableConfig
+            var config = new IndexPageConfig
             {
                 IndexPageTitle = TypeHelpers.GetDisplayNameOrDefault<TUiController>(),
+                TableConfig = await GetTableConfig(url, viewBag, createNewLink)
+            };
+            return config;
+        }
+
+        public override async Task<TableDisplayConfig> GetTableConfig(IUrlHelper url, dynamic viewBag,
+            bool createNewLink = true)
+        {
+            var config = new TableDisplayConfig
+            {
                 ModelName = TypeHelpers.GetDisplayNameOrDefault<TVm>(),
                 TableColumns = await GetTableColumns(viewBag.ExcludeActionsColumn as bool? == true),
                 HasTableIndexColumn = true,
+                CheckboxSelection = true,
                 TableItemsApiUrl = url.ActionLink(nameof(IReadOnlyApiController<TVm>.Index),
                     TypeHelpers.GetControllerName(typeof(TApiController)), viewBag.TableItemsApiUrlValues as object),
-                TableItemActions = GetTableItemActions(viewBag, viewBag.ExcludeActionsColumn as bool? == true)
+                ItemActions = GetItemActions(viewBag, viewBag.ExcludeActionsColumn as bool? == true)
             };
             if (createNewLink)
             {
                 config.CreateNewItemLink = new MRichLink(
                         $"{await TranslationsRepository.GetValueOrSlug("create")} {TypeHelpers.GetDisplayNameOrDefault(typeof(TVm)).ToLowerFirstChar()}",
                         typeof(TUiController), nameof(GenericAdminUiController<TE, TFm, TVm, TApiController>.Create))
+                    .WithTag("create")
                     .AsButton("outline-primary").WithIconClasses("fas fa-plus")
                     .WithValues(viewBag.CreateNewLinkValues as object);
                 if (viewBag.UsesModals)
@@ -56,7 +68,7 @@ namespace MCMS.Display.ModelDisplay
         }
 
 
-        public virtual List<MRichLink> GetTableItemActions(dynamic viewBag, bool excludeDefault = false)
+        public virtual List<MRichLink> GetItemActions(dynamic viewBag, bool excludeDefault = false)
         {
             if (excludeDefault)
             {
@@ -66,15 +78,15 @@ namespace MCMS.Display.ModelDisplay
             return new List<MRichLink>
             {
                 new MRichLink("", typeof(TUiController),
-                        nameof(GenericAdminUiController<TE, TFm, TVm, TApiController>.Details)).WitTag("details")
+                        nameof(GenericAdminUiController<TE, TFm, TVm, TApiController>.Details)).WithTag("details")
                     .AsButton("outline-info").WithModal().ToggleModal((bool) viewBag.UsesModals)
                     .WithIconClasses("far fa-eye").WithValues(new {id = "ENTITY_ID"}),
                 new MRichLink("", typeof(TUiController),
-                        nameof(GenericAdminUiController<TE, TFm, TVm, TApiController>.Edit)).WitTag("edit")
+                        nameof(GenericAdminUiController<TE, TFm, TVm, TApiController>.Edit)).WithTag("edit")
                     .AsButton("outline-primary").WithModal().ToggleModal((bool) viewBag.UsesModals)
                     .WithIconClasses("fas fa-pencil-alt"),
                 new MRichLink("", typeof(TUiController),
-                        nameof(GenericAdminUiController<TE, TFm, TVm, TApiController>.Delete)).WitTag("delete")
+                        nameof(GenericAdminUiController<TE, TFm, TVm, TApiController>.Delete)).WithTag("delete")
                     .AsButton("outline-danger").WithModal().WithIconClasses("fas fa-trash-alt")
             }.Select(l => l.WithValues(new {id = "ENTITY_ID"})).ToList();
         }

@@ -12,10 +12,10 @@ namespace MCMS.Common.Translations.Translations.Item
         TranslationItemViewModel,
         TranslationItemsAdminApiController>
     {
-        public override async Task<ModelDisplayTableConfig> TableConfigForIndex()
+        public override async Task<IndexPageConfig> GetIndexPageConfig()
         {
-            var config = await base.TableConfigForIndex();
-            config.TableItemActions = config.TableItemActions.Where(tia => tia.Tag != "details").ToList();
+            var config = await base.GetIndexPageConfig();
+            config.TableConfig.ItemActions = config.TableConfig.ItemActions.Where(tia => tia.Tag != "details").ToList();
             return config;
         }
     }

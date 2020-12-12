@@ -4,7 +4,7 @@
   "sZeroRecords": "Nu sunt înregistrări de afișat.",
   "sInfo": "Afișate de la _START_ la _END_ din _TOTAL_ înregistrări",
   "sInfoEmpty": "Afișate de la 0 la 0 din 0 înregistrări",
-  "sInfoFiltered": "(filtrate dintr-un total de _MAX_ înregistrări)",
+  "sInfoFiltered": "(filtrate din _MAX_ înregistrări)",
   "sInfoPostFix": "",
   "sSearch": "Caută:",
   "sUrl": "",
@@ -13,5 +13,12 @@
     "sPrevious": "Precedenta",
     "sNext": "Următoarea",
     "sLast": "Ultima"
+  },
+  "select": {
+    "rows": {
+      "_": "%d înregistrări selectate",
+      "0": "",
+      "1": "1 înregistrare selectată"
+    }
   }
 }

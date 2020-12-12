@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.Serialization;
 using Microsoft.AspNetCore.Mvc;
@@ -7,12 +8,12 @@ namespace MCMS.Display.Link
 {
     public class MRichLink : MLink
     {
-        public bool AsModal { get; set; }
         public string CssClasses { get; set; }
-        public string ModalBackdrop { get; set; }
         public object Values { get; set; }
-        public ModalSuccessAction ModalSuccessAction { get; set; }
+        // public ModalSuccessAction ModalSuccessAction { get; set; }
         public string ModalSuccessCallback { get; set; }
+        
+        public Dictionary<string, object> AnchorData { get; set; }
 
 
         public MRichLink(string text, Type controller, MethodInfo action = null) : base(text, controller,

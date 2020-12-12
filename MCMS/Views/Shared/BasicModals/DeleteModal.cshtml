@@ -21,7 +21,6 @@
 @using (Html.BeginMPageScripts())
 {
     <script>
-         var form = $("#@formId");
-         ajaxForm(form, true);
-     </script>
+         ajaxForm($("#@formId"), true);
+    </script>
 }

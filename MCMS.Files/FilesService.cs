@@ -17,13 +17,14 @@ namespace MCMS.Files
             Repo = repo;
         }
 
-        public FileResult GetFileResult(FileEntity file)
+        public FileResult GetFileResult(FileEntity file, string fileName = null)
         {
             if (file == null)
             {
                 throw new ArgumentNullException(nameof(file));
             }
-            var fileName = file.OriginalName;
+
+            fileName ??= file.OriginalName;
             var filePath = file.PhysicalFullPath;
             if (!File.Exists(filePath))
             {

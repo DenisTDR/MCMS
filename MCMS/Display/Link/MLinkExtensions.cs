@@ -21,7 +21,7 @@ namespace MCMS.Display.Link
             return link;
         }
         
-        public static T WitTag<T>(this T item, string tag) where T : MLink
+        public static T WithTag<T>(this T item, string tag) where T : MLink
         {
             item.Tag = tag;
             return item;

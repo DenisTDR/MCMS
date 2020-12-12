@@ -12,9 +12,9 @@ namespace MCMS.Controllers.Api
     [ApiExplorerSettings(GroupName = "admin-api")]
     public class AdminApiController : BaseController
     {
-        protected virtual OkObjectResult OkModel<T>(T model)
+        protected virtual OkObjectResult OkModel<T>(T model, string id = null)
         {
-            return Ok(new ModelResponse<T>(model));
+            return Ok(new ModelResponse<T>(model, id));
         }
 
         protected virtual ObjectResult StatusModel<T>(int code, T model)

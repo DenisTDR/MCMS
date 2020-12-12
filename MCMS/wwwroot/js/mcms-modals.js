@@ -31,11 +31,11 @@ var mModals = {
             }
             $.ajax(requestOptions)
                 .done(function (data) {
-                    // alert(1);
                     mModals.loadingUpModal.hide();
                     mModals.displayModalLinkResponse(data, button);
                 })
                 .fail(function (e) {
+                    console.log('failed');
                     mModals.loadingUpModal.hide();
                     mModals.alertModal(e.responseText);
                 });
@@ -95,7 +95,7 @@ var mModals = {
         var modal = newElement.find('.modal');
         modal.on("hidden.bs.modal", function () {
             setTimeout(function () {
-                newElement.detach();
+                newElement.remove();
             }, 1000);
         });
         modal.modal({backdrop: 'static'});
@@ -109,17 +109,33 @@ var mModals = {
         var modal = newElement.find('.modal');
         modal.on("hidden.bs.modal", function (a, b, c) {
             var result = modal.data('result');
-            if (result && result.reload) {
+            if (result && result.reloadModal) {
                 button.click();
                 return;
             }
             var callback = button.data('modal-callback');
-            var callbackFn = window[callback];
-            if (typeof callbackFn === 'function') {
-                callbackFn(button, result);
+            if(callback) {
+                var callbackFn = window[callback];
+                if (callback.indexOf(".") > -1) {
+                    var callbackParts = callback.split('.');
+                    var crtObj = window;
+                    while (callbackParts.length) {
+                        if (crtObj[callbackParts[0]]) {
+                            crtObj = crtObj[callbackParts[0]];
+                        } else {
+                            crtObj = null;
+                            break;
+                        }
+                        callbackParts.splice(0, 1);
+                    }
+                    callbackFn = crtObj;
+                }
+                if (typeof callbackFn === 'function') {
+                    callbackFn(button, result);
+                }
             }
             setTimeout(function () {
-                newElement.detach();
+                newElement.remove();
             }, 1000);
         });
         modal.on("shown.bs.modal", function (e) {
@@ -127,7 +143,7 @@ var mModals = {
                 return;
             }
             var backDrop = newElement.nextAll(".modal-backdrop");
-            backDrop.detach();
+            backDrop.remove();
             newElement.before(backDrop);
             modal.addClass('shown-modal');
         });

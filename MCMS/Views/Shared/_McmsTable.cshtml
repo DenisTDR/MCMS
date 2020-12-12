@@ -1,0 +1,180 @@
+@using MCMS.Base.Extensions
+@using MCMS.Base.Repositories
+@using MCMS.Display.Link
+
+@model MCMS.Display.ModelDisplay.TableDisplayConfig
+
+@inject ITranslationsRepository TransRepo;
+
+@{
+    foreach (var link in Model.ItemActions)
+    {
+        link.WithData("modal-callback-target", "ENTITY_ID");
+    }
+    foreach (var link in Model.ItemActions.Concat(Model.CreateNewItemLink != null ? new[] {Model.CreateNewItemLink} : Array.Empty<MRichLink>()))
+    {
+        link.SetData("modal-callback", "table" + Model.Id + ".mcms.callbacks.modalClosed");
+    }
+}
+
+@if (Model.CreateNewItemLink != null)
+{
+    <div class="mb-3 d-flex justify-content-end">
+        <partial name="Partials/_MRichLink" model="Model.CreateNewItemLink"/>
+    </div>
+}
+<table id="table-@Model.Id" class="table table-striped table-bordered">
+    <thead>
+    <tr>
+        @if (Model.CheckboxSelection)
+        {
+            <th class="select-all-checkbox">
+                <i class="far fa-square"></i>
+            </th>
+        }
+        @if (Model.HasTableIndexColumn)
+        {
+            <th>#</th>
+        }
+        @foreach (var tableColumn in Model.TableColumnsOrdered)
+        {
+            <th>@Html.Raw(tableColumn.Name)</th>
+        }
+    </tr>
+    </thead>
+    <tbody>
+    <tr class="odd">
+        <td colspan="@(Model.TableColumns.Count + (Model.HasTableIndexColumn ? 1 : 0) + (Model.CheckboxSelection ? 1 : 0))" class="dataTables_empty text-center">Loading...</td>
+    </tr>
+    </tbody>
+    <tfoot>
+    <tr class="column-search-row">
+        @* Table footer search row *@
+        @if (Model.CheckboxSelection)
+        {
+            <td></td>
+        }
+        @if (Model.HasTableIndexColumn)
+        {
+            <td></td>
+        }
+        @foreach (var tableColumn in Model.TableColumnsOrdered)
+        {
+            <td>@Html.Raw(tableColumn.Name)</td>
+        }
+    </tr>
+    <tr class="sum-total-row">
+        @* Table footer sum total row *@
+        @if (Model.CheckboxSelection)
+        {
+            <th></th>
+        }
+        @if (Model.HasTableIndexColumn)
+        {
+            <th></th>
+        }
+        @foreach (var tableColumn in Model.TableColumnsOrdered)
+        {
+            <th>@Html.Raw(tableColumn.Name)</th>
+        }
+    </tr>
+    <tr>
+        @* Table footer column names *@
+        @if (Model.CheckboxSelection)
+        {
+            <th class="select-all-checkbox">
+                <i class="far fa-square"></i>
+            </th>
+        }
+        @if (Model.HasTableIndexColumn)
+        {
+            <th>#</th>
+        }
+        @foreach (var tableColumn in Model.TableColumnsOrdered)
+        {
+            <th>@Html.Raw(tableColumn.Name)</th>
+        }
+    </tr>
+    </tfoot>
+</table>
+
+<div id="actions-cell-template-@Model.Id" class="d-none">
+    <div class="d-flex flex-wrap mb-n1">
+        @foreach (var action in Model.ItemActions)
+        {
+            action.CssClasses += " mr-1 mb-1";
+            <partial name="Partials/_MRichLink" model="action"/>        }
+    </div>
+</div>
+
+@using (Html.BeginMPageScripts())
+{
+    <script>
+    
+    @if (Model.ItemActions.Any())
+    {
+        @Html.Raw("var actionsColumnContent = $('#actions-cell-template-" + Model.Id + "').html();")
+    }
+    else
+    {
+        @Html.Raw("var actionsColumnContent = null;")
+    }
+    
+    var table@(Model.Id) = mcmsDatatables.bindDefaultDataTables(
+        "#table-@Model.Id", @Html.Raw(Model.ConfigObject), actionsColumnContent, '@TransRepo.Language'
+        );
+    
+    table@(Model.Id).mcms.getDataIndexById = function (data, id) {
+        for (var i = 0 ; i < data.length; i ++) {
+            if (data[i] && data[i].id === id) {
+                return i;
+            }
+        }
+        return -1;
+    };
+    
+    table@(Model.Id).mcms.callbacks = {
+        modalClosed: function (sender, params) {
+            console.log('modalClosed', sender, params);
+            if (!params) return;
+            if(params.reload) {
+                table@(Model.Id).ajax.reload();
+                return;
+            }
+            var senderData = sender.data();
+            var tableApi = table@(Model.Id);
+            switch (senderData.tag) {
+                case 'delete':
+                   var index = tableApi.mcms.getDataIndexById(tableApi.data(), senderData.modalCallbackTarget);
+                   if (index>=0) {
+                       tableApi.rows(index).remove();
+                       tableApi.draw();
+                   }
+                   break;
+                case 'create':
+                    var model = params && params.params && (params.params.secondaryModel || params.params.model);
+                    if (model && typeof model === 'object') {
+                        model.id = params.params.id;
+                        tableApi.mcms.customMethods.initialPatchRowData(model);
+                        tableApi.row.add(model).draw(false);    
+                    }
+                    break;
+                case 'edit':
+                    var model = params && params.params && (params.params.secondaryModel || params.params.model);
+                    if (model && typeof model === 'object') {
+                        var index = tableApi.mcms.getDataIndexById(tableApi.data(), senderData.modalCallbackTarget);
+                        if (index>=0) {
+                            tableApi.mcms.customMethods.initialPatchRowData(model);
+                            tableApi.row(index).data(model).draw();
+                        }
+                    }
+                    break;
+                default:
+                    console.log(senderData.modalCallbackTag);
+                    console.log(params);
+                    break;
+            }
+        },
+    };
+    </script>
+}

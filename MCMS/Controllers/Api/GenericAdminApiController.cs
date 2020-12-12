@@ -5,6 +5,7 @@ using MCMS.Base.Attributes;
 using MCMS.Base.Data.Entities;
 using MCMS.Base.Data.FormModels;
 using MCMS.Base.Data.ViewModels;
+using MCMS.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MCMS.Controllers.Api
@@ -47,6 +48,20 @@ namespace MCMS.Controllers.Api
         protected virtual TVm MapV(TE e)
         {
             return Mapper.Map<TVm>(e);
+        }
+
+        protected override Task<ModelResponse<TFm>> GetPatchResponseModel(TE e)
+        {
+            var fm = MapF(e);
+            var vm = MapV(e);
+            return Task.FromResult(new DoubleModelResponse<TFm, TVm>(fm, vm, e.Id) as ModelResponse<TFm>);
+        }
+
+        protected override Task<ModelResponse<TFm>> GetCreateResponseModel(TE e)
+        {
+            var fm = MapF(e);
+            var vm = MapV(e);
+            return Task.FromResult(new DoubleModelResponse<TFm, TVm>(fm, vm, e.Id) as ModelResponse<TFm>);
         }
     }
 }

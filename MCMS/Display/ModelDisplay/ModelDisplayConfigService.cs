@@ -17,7 +17,10 @@ namespace MCMS.Display.ModelDisplay
         protected ITranslationsRepository TranslationsRepository { get; }
         public abstract Type ViewModelType { get; }
 
-        public abstract Task<ModelDisplayTableConfig> GetTableConfig(IUrlHelper url, dynamic viewBag,
+        public abstract Task<IndexPageConfig> GetIndexPageConfig(IUrlHelper url, dynamic viewBag,
+            bool createNewLink = true);
+
+        public abstract Task<TableDisplayConfig> GetTableConfig(IUrlHelper url, dynamic viewBag,
             bool createNewLink = true);
 
 

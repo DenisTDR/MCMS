@@ -1,0 +1,73 @@
+tr.column-search-row,
+tr.sum-total-row {
+    display: none;
+}
+
+tr.column-search-row td {
+    position: relative;
+}
+
+tr.column-search-row td input {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+}
+
+.dataTables_wrapper {
+    position: relative;
+}
+
+.dataTables_wrapper .dataTables_processing {
+    z-index: 2;
+}
+
+.dataTables_wrapper .processing-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    background-color: rgba(0, 0, 0, 0.05);
+    box-shadow: 0 0 48px 0 rgba(0, 0, 0, 0.1);
+}
+
+.dataTables_wrapper .processing-overlay.shown {
+    display: block;
+}
+
+
+table.dataTable tbody > tr.row-selected,
+table.dataTable tbody > tr > .row-selected {
+    background-color: rgba(2, 102, 253, 0.25);
+}
+
+table.dataTable tr.row-selected td.select-checkbox::after,
+table.dataTable tr.row-selected th.select-checkbox::after {
+    content: '\2714';
+    margin-top: -11px;
+    margin-left: -4px;
+    text-align: center;
+    text-shadow: 1px 1px #B0BED9, -1px -1px #B0BED9, 1px -1px #B0BED9, -1px 1px #B0BED9;
+}
+
+
+table.dataTable:not(.vertical-align-top) tbody tr td {
+    vertical-align: middle;
+}
+
+table.dataTable:not(.vertical-align-top) tbody td.select-checkbox::before,
+table.dataTable:not(.vertical-align-top) tbody td.select-checkbox::after
+{
+    top: 50%;
+}
+
+table.dataTable thead th.select-all-checkbox,
+table.dataTable tfoot th.select-all-checkbox {
+    text-align: center;
+}
+
+/*table.dataTable:not(.vertical-align-top) tbody th.select-checkbox::before,*/
+/*table.dataTable:not(.vertical-align-top) tbody th.select-checkbox::after*/ 

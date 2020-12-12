@@ -6,11 +6,13 @@ namespace MCMS.Models
         {
         }
 
-        public ModelResponse(T model)
+        public ModelResponse(T model, string id = null)
         {
             Model = model;
+            Id = id;
         }
 
         public T Model { get; set; }
+        public string Id { get; set; }
     }
 }

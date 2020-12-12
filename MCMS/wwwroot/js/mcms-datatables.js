@@ -88,7 +88,7 @@ var mcmsDatatables = {
         var table = tableJQuery.api();
 
 
-        table.mcms = {customMethods: {initialPatchRowData: initialPatchRowData}, $: tableJQuery};
+        table.mcms = {customMethods: {initialPatchRowData: initialPatchRowData}, $: tableJQuery, callbacks: {}};
 
         if (!config.skipDefaultModalEventHandlers) {
             mcmsDatatables.bindDefaultModalEventHandlers(table);
@@ -309,6 +309,15 @@ var mcmsDatatables = {
                     break;
             }
         });
+
+        table.mcms.getDataIndexById = function (data, id) {
+            for (var i = 0 ; i < data.length; i ++) {
+                if (data[i] && data[i].id === id) {
+                    return i;
+                }
+            }
+            return -1;
+        };
     }
 }
 

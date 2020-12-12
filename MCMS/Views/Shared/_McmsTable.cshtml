@@ -123,29 +123,13 @@
     var initTable@(Model.Id) = function () {
         var table = window['table@(Model.Id)'] = mcmsDatatables.bindDefaultDataTables(
                 "#table-@Model.Id", @Html.Raw(Model.ConfigObject), actionsColumnContent, '@TransRepo.Language'
-                );
-        
-            
-        table.mcms.getDataIndexById = function (data, id) {
-            for (var i = 0 ; i < data.length; i ++) {
-                if (data[i] && data[i].id === id) {
-                    return i;
-                }
-            }
-            return -1;
-        };
-        
-        table.mcms.callbacks = {
-            modalClosed: function (sender, params) {
-                table.mcms.$.trigger("modalClosed.mcms", [sender,  params]);
-            }
+        );
+               
+        table.mcms.callbacks.modalClosed= function (sender, params) {
+             table.mcms.$.trigger("modalClosed.mcms", [sender,  params]);
         };
     }
     
     initTable@(Model.Id)();
-    
-   
-
-    
     </script>
 }

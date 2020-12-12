@@ -45,13 +45,16 @@
     </tr>
     </tbody>
     <tfoot>
-    <tr class="column-search-row">
-        @* Table footer search row *@
-        @foreach (var col in columns)
-        {
-            <td>@Html.Raw(col.Name)</td>
-        }
-    </tr>
+    @if (Model.EnableColumnSearch)
+    {
+        <tr class="column-search-row">
+            @* Table footer column search row *@
+            @foreach (var col in columns)
+            {
+                <td>@Html.Raw(col.Name)</td>
+            }
+        </tr>
+    }
     <tr class="sum-total-row">
         @* Table footer sum total row *@
         @foreach (var tableColumn in columns)

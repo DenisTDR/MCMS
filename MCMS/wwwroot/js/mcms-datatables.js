@@ -60,13 +60,6 @@ var mcmsDatatables = {
                 "<'row footer-table-row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7 d-flex justify-content-between'pB>>",
             buttons: [
                 {
-                    text: '<i class="fas fa-grip-lines-vertical fa-fw"></i><i class="fas fa-search fa-fw"></i>',
-                    className: 'btn-light btn-outline-info',
-                    action: function (e, dt, node, conf) {
-                        mcmsDatatables.toggleDataTablesColumnSearch(tableElem, config.columns);
-                    }
-                },
-                {
                     text: '<i class="fas fa-sync-alt"></i>',
                     className: 'btn-light btn-outline-info',
                     action: function (e, dt, node, config) {
@@ -92,6 +85,9 @@ var mcmsDatatables = {
 
         if (!config.skipDefaultModalEventHandlers) {
             mcmsDatatables.bindDefaultModalEventHandlers(table);
+        }
+        if (config.enableColumnSearch) {
+            mcmsDatatables.enableColumnSearchRow(config, tableJQuery);
         }
 
         if (config.hasStaticIndexColumn) {
@@ -191,7 +187,7 @@ var mcmsDatatables = {
             });
         }
     },
-    toggleDataTablesColumnSearch: function (table, columnsConfig) {
+    toggleColumnSearchRow: function (table, columnsConfig) {
         var searchRow = table.find('tfoot tr.column-search-row');
         searchRow.toggle();
         if (!searchRow.data('build')) {
@@ -204,7 +200,7 @@ var mcmsDatatables = {
                     return;
                 }
                 var title = $(this).text();
-                $(this).html('&nbsp;<input type="text" placeholder="Search ' + title + '" />');
+                $(this).html('&nbsp;<input type="text" placeholder="🔍 ' + title + '" />');
             });
 
             table.dataTable().api().columns().every(function (index) {
@@ -216,6 +212,16 @@ var mcmsDatatables = {
                 });
             });
         }
+    },
+    enableColumnSearchRow: function (config, tableJq) {
+        config.buttons.splice(0, 0,
+            {
+                text: '<i class="fas fa-grip-lines-vertical fa-fw"></i>🔍',
+                className: 'btn-light btn-outline-info',
+                action: function (e, dt, node, conf) {
+                    mcmsDatatables.toggleColumnSearchRow(tableJq, config.columns);
+                }
+            });
     },
     properlyDestroyInModal: function (tableElem, datatable) {
         var modal = tableElem.closest(".modal");
@@ -311,7 +317,7 @@ var mcmsDatatables = {
         });
 
         table.mcms.getDataIndexById = function (data, id) {
-            for (var i = 0 ; i < data.length; i ++) {
+            for (var i = 0; i < data.length; i++) {
                 if (data[i] && data[i].id === id) {
                     return i;
                 }

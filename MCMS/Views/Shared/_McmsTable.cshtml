@@ -120,61 +120,32 @@
         @Html.Raw("var actionsColumnContent = null;")
     }
     
-    var table@(Model.Id) = mcmsDatatables.bindDefaultDataTables(
-        "#table-@Model.Id", @Html.Raw(Model.ConfigObject), actionsColumnContent, '@TransRepo.Language'
-        );
+    var initTable@(Model.Id) = function () {
+        var table = window['table@(Model.Id)'] = mcmsDatatables.bindDefaultDataTables(
+                "#table-@Model.Id", @Html.Raw(Model.ConfigObject), actionsColumnContent, '@TransRepo.Language'
+                );
+        
+            
+        table.mcms.getDataIndexById = function (data, id) {
+            for (var i = 0 ; i < data.length; i ++) {
+                if (data[i] && data[i].id === id) {
+                    return i;
+                }
+            }
+            return -1;
+        };
+        
+        table.mcms.callbacks = {
+            modalClosed: function (sender, params) {
+                table.mcms.$.trigger("modalClosed.mcms", [sender,  params]);
+            }
+        };
+    }
     
-    table@(Model.Id).mcms.getDataIndexById = function (data, id) {
-        for (var i = 0 ; i < data.length; i ++) {
-            if (data[i] && data[i].id === id) {
-                return i;
-            }
-        }
-        return -1;
-    };
+    initTable@(Model.Id)();
     
-    table@(Model.Id).mcms.callbacks = {
-        modalClosed: function (sender, params) {
-            console.log('modalClosed', sender, params);
-            if (!params) return;
-            if(params.reload) {
-                table@(Model.Id).ajax.reload();
-                return;
-            }
-            var senderData = sender.data();
-            var tableApi = table@(Model.Id);
-            switch (senderData.tag) {
-                case 'delete':
-                   var index = tableApi.mcms.getDataIndexById(tableApi.data(), senderData.modalCallbackTarget);
-                   if (index>=0) {
-                       tableApi.rows(index).remove();
-                       tableApi.draw();
-                   }
-                   break;
-                case 'create':
-                    var model = params && params.params && (params.params.secondaryModel || params.params.model);
-                    if (model && typeof model === 'object') {
-                        model.id = params.params.id;
-                        tableApi.mcms.customMethods.initialPatchRowData(model);
-                        tableApi.row.add(model).draw(false);    
-                    }
-                    break;
-                case 'edit':
-                    var model = params && params.params && (params.params.secondaryModel || params.params.model);
-                    if (model && typeof model === 'object') {
-                        var index = tableApi.mcms.getDataIndexById(tableApi.data(), senderData.modalCallbackTarget);
-                        if (index>=0) {
-                            tableApi.mcms.customMethods.initialPatchRowData(model);
-                            tableApi.row(index).data(model).draw();
-                        }
-                    }
-                    break;
-                default:
-                    console.log(senderData.modalCallbackTag);
-                    console.log(params);
-                    break;
-            }
-        },
-    };
+   
+
+    
     </script>
 }

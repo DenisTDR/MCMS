@@ -88,9 +88,11 @@ var mcmsDatatables = {
         var table = tableJQuery.api();
 
 
-        table.mcms = {customMethods: {}};
+        table.mcms = {customMethods: {initialPatchRowData: initialPatchRowData}, $: tableJQuery};
 
-        table.mcms.customMethods.initialPatchRowData = initialPatchRowData;
+        if (!config.skipDefaultModalEventHandlers) {
+            mcmsDatatables.bindDefaultModalEventHandlers(table);
+        }
 
         if (config.hasStaticIndexColumn) {
             var staticIndexColumnIndex = config.checkboxSelection ? 1 : 0;
@@ -265,6 +267,47 @@ var mcmsDatatables = {
                     }
                 }
             ]
+        });
+    },
+    bindDefaultModalEventHandlers: function (table) {
+        table.on("modalClosed.mcms", function (e, sender, params) {
+            if (!params) return;
+            if (params.reload) {
+                table.ajax.reload();
+                return;
+            }
+            var senderData = sender.data();
+            switch (senderData.tag) {
+                case 'delete':
+                    var index = table.mcms.getDataIndexById(table.data(), senderData.modalCallbackTarget);
+                    if (index >= 0) {
+                        table.rows(index).remove();
+                        table.draw();
+                    }
+                    break;
+                case 'create':
+                    var model = params && params.params && (params.params.secondaryModel || params.params.model);
+                    if (model && typeof model === 'object') {
+                        model.id = params.params.id;
+                        table.mcms.customMethods.initialPatchRowData(model);
+                        table.row.add(model).draw(false);
+                    }
+                    break;
+                case 'edit':
+                    var model = params && params.params && (params.params.secondaryModel || params.params.model);
+                    if (model && typeof model === 'object') {
+                        var index = table.mcms.getDataIndexById(table.data(), senderData.modalCallbackTarget);
+                        if (index >= 0) {
+                            table.mcms.customMethods.initialPatchRowData(model);
+                            table.row(index).data(model).draw();
+                        }
+                    }
+                    break;
+                default:
+                    console.log(senderData.modalCallbackTag);
+                    console.log(params);
+                    break;
+            }
         });
     }
 }

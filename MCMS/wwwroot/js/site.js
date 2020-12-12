@@ -24,6 +24,33 @@ function formatDate(date, separator) {
     return day + separator + month + separator + date.getFullYear();
 }
 
+function getFnRefByDottedName(fnName, rootObject) {
+    if (typeof fnName !== 'string') {
+        throw new Error('Invalid function name');
+    }
+    if (!rootObject) {
+        rootObject = window;
+    }
+    var callbackFn;
+    if (fnName.indexOf(".") > -1) {
+        var callbackParts = fnName.split('.');
+        var crtObj = rootObject;
+        while (callbackParts.length) {
+            if (crtObj[callbackParts[0]]) {
+                crtObj = crtObj[callbackParts[0]];
+            } else {
+                crtObj = null;
+                break;
+            }
+            callbackParts.splice(0, 1);
+        }
+        callbackFn = crtObj;
+    } else {
+        callbackFn = rootObject[fnName];
+    }
+    return callbackFn;
+}
+
 function bindSideMenuCollapseSectionsPersistence() {
     if (!sessionStorage) return;
 
@@ -32,13 +59,13 @@ function bindSideMenuCollapseSectionsPersistence() {
     if (statesStr) {
         try {
             states = JSON.parse(statesStr);
-            for (let sectionId in states) {
+            for (var sectionId in states) {
                 if (!states.hasOwnProperty(sectionId)) continue;
                 if (states[sectionId]) {
                     $("#" + sectionId).addClass('show');
                 }
             }
-        } catch {
+        } catch (e) {
         }
     }
     var saveStates = function () {

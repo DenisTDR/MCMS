@@ -19,6 +19,7 @@ namespace MCMS.Display.ModelDisplay
         public string ModelName { get; set; }
         public MRichLink CreateNewItemLink { get; set; }
         public string TableItemsApiUrl { get; set; }
+        public bool SkipDefaultModalEventHandlers { get; set; }
 
         public object RowGroupForDataTables
         {
@@ -36,6 +37,7 @@ namespace MCMS.Display.ModelDisplay
             ajax = new {url = TableItemsApiUrl},
             hasStaticIndexColumn = HasTableIndexColumn,
             checkboxSelection = CheckboxSelection,
+            skipDefaultModalEventHandlers = SkipDefaultModalEventHandlers
         });
 
         public IEnumerable<TableColumn> GetColumnsOrdered()

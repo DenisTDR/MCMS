@@ -114,22 +114,8 @@ var mModals = {
                 return;
             }
             var callback = button.data('modal-callback');
-            if(callback) {
-                var callbackFn = window[callback];
-                if (callback.indexOf(".") > -1) {
-                    var callbackParts = callback.split('.');
-                    var crtObj = window;
-                    while (callbackParts.length) {
-                        if (crtObj[callbackParts[0]]) {
-                            crtObj = crtObj[callbackParts[0]];
-                        } else {
-                            crtObj = null;
-                            break;
-                        }
-                        callbackParts.splice(0, 1);
-                    }
-                    callbackFn = crtObj;
-                }
+            if (callback) {
+                var callbackFn = getFnRefByDottedName(callback);
                 if (typeof callbackFn === 'function') {
                     callbackFn(button, result);
                 }

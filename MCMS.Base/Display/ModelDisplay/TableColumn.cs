@@ -45,6 +45,7 @@ namespace MCMS.Base.Display.ModelDisplay
 
         public string DefaultContent { get; set; }
         public string ClassName { get; set; }
+        public string HeaderClassName { get; set; }
 
         public override string ToString()
         {
@@ -64,6 +65,15 @@ namespace MCMS.Base.Display.ModelDisplay
                 tag = Tag,
                 className = ClassName
             };
+        }
+    }
+
+    public static class TableColumnExtensions
+    {
+        public static string BuildHeaderClassSyntax(this TableColumn col)
+        {
+            if (string.IsNullOrEmpty(col.HeaderClassName)) return null;
+            return "class=\"" + col.HeaderClassName + "\"";
         }
     }
 }

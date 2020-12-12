@@ -1,4 +1,3 @@
-
 using System.Collections.Generic;
 using System.Linq;
 using MCMS.Base.Display.ModelDisplay;
@@ -20,40 +19,49 @@ namespace MCMS.Display.ModelDisplay
         public MRichLink CreateNewItemLink { get; set; }
         public string TableItemsApiUrl { get; set; }
         public bool SkipDefaultModalEventHandlers { get; set; }
+        public bool EnableColumnSearch { get; set; }
 
-        public object RowGroupForDataTables
+        public object BuildRowGroupObject(List<TableColumn> columns)
         {
-            get
-            {
-                var cols = TableColumnsOrdered?.Where(tc => tc.RowGroups).ToList();
-                return cols == null || !cols.Any() ? null : new {dataSrc = cols.Select(c => c.Key)};
-            }
+            var cols = columns?.Where(tc => tc.RowGroups).ToList();
+            return cols == null || !cols.Any() ? null : new {dataSrc = cols.Select(c => c.Key)};
         }
 
-        public string ConfigObject => JsonConvert.SerializeObject(new
+        public string GetConfigObjectSerialized()
         {
-            columns = GetColumnsOrdered().Select(tc => tc.GetDataTablesObject()),
-            rowGroup = RowGroupForDataTables,
-            ajax = new {url = TableItemsApiUrl},
-            hasStaticIndexColumn = HasTableIndexColumn,
-            checkboxSelection = CheckboxSelection,
-            skipDefaultModalEventHandlers = SkipDefaultModalEventHandlers
-        });
+            var columns = GetColumnsOrdered();
+            return JsonConvert.SerializeObject(new
+            {
+                columns = columns.Select(tc => tc.GetDataTablesObject()),
+                rowGroup = BuildRowGroupObject(columns),
+                ajax = new {url = TableItemsApiUrl},
+                hasStaticIndexColumn = HasTableIndexColumn,
+                checkboxSelection = CheckboxSelection,
+                skipDefaultModalEventHandlers = SkipDefaultModalEventHandlers,
+                enableColumnSearch = EnableColumnSearch
+            });
+        }
 
-        public IEnumerable<TableColumn> GetColumnsOrdered()
+        public List<TableColumn> GetColumnsOrdered()
         {
             var columns = TableColumns.OrderBy(tc => tc.OrderIndex).AsEnumerable();
             if (HasTableIndexColumn)
             {
-                columns = columns.Prepend(new TableColumn());
+                columns = columns.Prepend(new TableColumn {Name = "#"});
             }
 
             if (CheckboxSelection)
             {
-                columns = columns.Prepend(new TableColumn {DefaultContent = "", ClassName = "select-checkbox"});
+                columns = columns.Prepend(new TableColumn
+                {
+                    Name = "<i class=\"far fa-square\"></i>",
+                    DefaultContent = "",
+                    ClassName = "select-checkbox",
+                    HeaderClassName = "select-all-checkbox"
+                });
             }
 
-            return columns;
+            return columns.ToList();
         }
     }
 }

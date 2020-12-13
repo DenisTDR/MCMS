@@ -10,7 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace MCMS.Common.Translations.Translations
 {
-    public class TranslationsAdminApiController : GenericAdminApiController<TranslationEntity, TranslationFormModel,
+    public class TranslationsAdminApiController : CrudAdminApiController<TranslationEntity, TranslationFormModel,
         TranslationViewModel>
     {
         public override void OnActionExecuting(ActionExecutingContext context)

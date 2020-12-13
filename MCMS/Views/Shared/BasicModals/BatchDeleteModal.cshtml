@@ -1,16 +1,16 @@
 @using MCMS.Base.Helpers
-@using MCMS.Base.Extensions
 @using MCMS.Base.Repositories
-@model MCMS.Base.Data.Entities.IEntity
+@using MCMS.Base.Extensions
+@model List<string>
 @inject ITranslationsRepository TransRepo
 
 @{
-    ViewBag.Title = await TransRepo.Format("delete_confirm_format", new object[] {ViewBag.ModelName, Model});
+    ViewBag.Title = await TransRepo.Format("delete_batch_confirm_format", new object[] {Model.Count, ViewBag.ModelName});
     var formId = Utils.GenerateRandomHexString();
     Layout = "_ModalLayout";
 }
 <form data-ajax-method="delete" id="@formId"
-      action="@Url.ActionLink("Delete", ViewBag.ApiControllerName as string, new {id = Model.Id})">
+      action="@Url.ActionLink("BatchDelete", ViewBag.ApiControllerName as string, new {ids = Model})">
     <div class="modal-body">
     </div>
     <div class="modal-footer">

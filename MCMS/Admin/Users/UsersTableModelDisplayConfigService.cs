@@ -27,7 +27,7 @@ namespace MCMS.Admin.Users
         public override async Task<TableDisplayConfig> GetTableConfig(IUrlHelper url, dynamic viewBag,
             bool createNewLink = true)
         {
-            return new TableDisplayConfig()
+            return new()
             {
                 ModelName = "User",
                 TableColumns = await GetTableColumns(),

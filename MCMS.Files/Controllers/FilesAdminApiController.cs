@@ -21,7 +21,7 @@ using Microsoft.Extensions.Logging;
 namespace MCMS.Files.Controllers
 {
     [Authorize(Roles = "Admin")]
-    public class FilesAdminApiController : GenericAdminApiController<FileEntity, FileUploadFormModel, FileViewModel>
+    public class FilesAdminApiController : CrudAdminApiController<FileEntity, FileUploadFormModel, FileViewModel>
     {
         private ILogger<FilesAdminApiController> Logger =>
             ServiceProvider.GetRequiredService<ILogger<FilesAdminApiController>>();
@@ -104,14 +104,14 @@ namespace MCMS.Files.Controllers
         {
             var requiredRoles = (Env.Get("FILE_UPLOAD_REQUIRED_ROLES") ?? "Admin").Split(",").Select(r => r.Trim());
             var matchRoles = 0;
-            
+
             foreach (var requiredRole in requiredRoles)
             {
                 if (User.IsInRole(requiredRole))
                 {
                     matchRoles++;
                     break;
-                }   
+                }
             }
 
             if (matchRoles == 0)
@@ -126,6 +126,11 @@ namespace MCMS.Files.Controllers
             return Ok(fileViewModel);
         }
 
+        [ApiExplorerSettings(IgnoreApi = true)]
+        public override Task<ActionResult<string>> Delete(string id)
+        {
+            throw new NotImplementedException();
+        }
 
         [HttpDelete]
         public async Task<IActionResult> Delete([FromQuery] string id, [FromQuery] string ownerToken)

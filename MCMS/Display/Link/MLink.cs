@@ -16,7 +16,7 @@ namespace MCMS.Display.Link
         public string ControllerName => Controller != null ? TypeHelpers.GetControllerName(Controller) : null;
         public string ActionName => Action != null ? Action.Name : "Index";
         public string IconClasses { get; set; }
-        public string Tag { get; set; }
+        public virtual string Tag { get; set; }
         public string[] RequiredRoles { get; set; }
 
         public virtual string BuildUrl(IUrlHelper urlHelper = null)

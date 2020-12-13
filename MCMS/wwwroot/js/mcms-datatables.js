@@ -5,16 +5,6 @@ var mcmsDatatables = {
         initialConfig.columns = initialConfig.columns.slice();
         var shouldMakeActionsCellContent = actionsColumnContent && actionsColumnContent.trim().length > 0;
 
-        /*
-        var datas = table4cae39a53c3449059084.rows( { selected: true } ).data();
-        var ids = [];
-        for(var i = 0; i < datas.length; i++) {
-            ids.push(datas[i].id);
-        }
-        console.log(ids);
-        
-         */
-
         var initialPatchRowData = function (rowData) {
             if (shouldMakeActionsCellContent) {
                 rowData._actions = actionsColumnContent.replace(/ENTITY_ID/g, rowData.id);
@@ -22,12 +12,6 @@ var mcmsDatatables = {
         }
 
         var config = {
-            select: {
-                style: 'multi+shift',
-                // style: 'os',
-                className: 'row-selected',
-                selector: 'td:first-child'
-            },
             processing: true,
             ajax: {
                 dataSrc: function (json) {
@@ -50,11 +34,9 @@ var mcmsDatatables = {
             bAutoWidth: false,
             iDisplayLength: 50,
             lengthMenu: [[10, 25, 50, 100, 250, 500, -1], [10, 25, 50, 100, 250, 500, "All"]],
-            fixedHeader: {
-                headerOffset: 50
-            },
+            fixedHeader: {headerOffset: 50},
             language: mcmsDatatables.getLang(lang),
-            dom: "<'processing-overlay'><'row'<'col-sm-12 col-md-6'l><'col-sm-12 col-md-6'<f>>>" +
+            dom: "<'processing-overlay'><'row'<'col-sm-12 col-md-6 table-actions-container'><'col-sm-12 col-md-6'f>>" +
                 "<'row'<'col-sm-12'tr>>" +
                 "<'row'<'col-12 batch-actions-container'>>" +
                 "<'row footer-table-row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7 d-flex justify-content-between'pB>>",
@@ -71,8 +53,16 @@ var mcmsDatatables = {
 
         config = deepmerge(initialConfig, config);
 
-        if (config.hasStaticIndexColumn) {
+        if (config.hasStaticIndexColumn || config.checkboxSelection) {
             config.aaSorting = [];
+        }
+        if (config.checkboxSelection) {
+            config.select = {
+                style: 'multi+shift',
+                // style: 'os',
+                className: 'row-selected',
+                selector: 'td:first-child'
+            };
         }
 
         mcmsDatatables.sumTotalRowIfNeeded(config);
@@ -103,10 +93,11 @@ var mcmsDatatables = {
         }
 
         if (config.checkboxSelection) {
-            mcmsDatatables.enableCheckboxSelection(table, tableJQuery);
-            mcmsDatatables.enableBatchActionButtons(table);
+            mcmsDatatables.enableBatchActions(table, tableJQuery, config);
         }
-
+        if (config.tableActions && config.tableActions.length) {
+            mcmsDatatables.enableTableActions(table, tableJQuery, config);
+        }
 
         table.on('processing.dt', function (e, settings, processing) {
             var overlay = $(e.currentTarget).closest('.dataTables_wrapper').find('.processing-overlay');
@@ -147,8 +138,9 @@ var mcmsDatatables = {
             if (oldDrawCallback) {
                 oldDrawCallback.call(this);
             }
-            var row = this.find(".sum-total-row");
+            var row = this.find("tfoot tr.sum-total-row");
             if (!row.data("build")) {
+                row.removeClass("d-none");
                 row.toggle().data("build", true);
                 var cols = row.find('th')
                 cols.each(function (index) {
@@ -192,6 +184,7 @@ var mcmsDatatables = {
         searchRow.toggle();
         if (!searchRow.data('build')) {
             searchRow.data('build', true)
+            searchRow.removeClass("d-none");
 
             var searchCells = searchRow.find('td');
             searchCells.each(function (index) {
@@ -244,53 +237,79 @@ var mcmsDatatables = {
             table.updateSelectAllCheckbox(table, tableJQuery);
         });
         table.on('xhr', function (e, dt, type, indexes) {
-            table.mcms.justFiredXhr = true;
+            table.mcms.dataJustUpdated = true;
         });
         table.on('draw', function (e, dt, type, indexes) {
-            if (table.mcms.justFiredXhr) {
-                table.mcms.justFiredXhr = false;
+            if (table.mcms.dataJustUpdated) {
+                table.mcms.dataJustUpdated = false;
                 table.updateSelectAllCheckbox(table, tableJQuery);
             }
         });
     },
-    enableBatchActionButtons: function (table) {
-        table.mcms.batchActionButtons = new $.fn.dataTable.Buttons(table, {
-            buttons: [
-                {
-                    text: '<i class="fas fa-trash"></i>',
-                    className: 'btn-light btn-outline-danger',
-                    name: 'delete',
-                    action: function (e, dt, node, config) {
-                        dt.ajax.reload();
-                    }
-                },
-                {
-                    text: 'xyyyy',
-                    className: 'btn-light btn-outline-warning',
-                    name: 'blabla',
-                    action: function (e, dt, node, config) {
-                        dt.ajax.reload();
-                    }
+    enableBatchActions: function (table, tableJQuery, config) {
+        if (!config.batchActions || !config.batchActions.length) {
+            return;
+        }
+        mcmsDatatables.enableCheckboxSelection(table, tableJQuery);
+
+        for (var i = 0; i < config.batchActions.length; i++) {
+            var ba = config.batchActions[i];
+            ba.action = function (e, dt, node, config) {
+                if (!config.data || config.data.toggle !== 'ajax-modal') {
+                    console.error(config);
+                    return;
                 }
-            ]
+                var cnt = dt.rows({selected: true}).count();
+                var sdt = dt.rows({selected: true}).data();
+                var ids = [];
+                for (var i = 0; i < sdt.length; i++) {
+                    ids.push(encodeURIComponent(sdt[i].id));
+                }
+                var pn = config.data['url-arg-name'];
+                var url = config.data['url'] + '?' + pn + '=' + ids.join('&' + pn + '=');
+                var vEl = $("<div></div>");
+                var dataCloned = deepmerge({}, config.data);
+                dataCloned.url = url;
+                dataCloned['modal-callback'] = table.mcms.callbacks.modalClosed;
+                dataCloned['modal-callback-target'] = ids;
+                vEl.data(dataCloned);
+                mModals.ajaxModalItemAction.apply(vEl[0]);
+            }
+        }
+        table.one('init', function (e, settings, data) {
+            var bab = new $.fn.dataTable.Buttons(table, {
+                buttons: config.batchActions
+            });
+            var babContainer = bab.dom.container;
+            babContainer.appendTo(tableJQuery.closest(".dataTables_wrapper").find(".batch-actions-container"));
+        });
+    },
+    enableTableActions: function (table, tableJQuery, config) {
+        for (var i = 0; i < config.tableActions.length; i++) {
+            var ta = config.tableActions[i];
+            if (typeof ta === 'string') {
+                config.tableActions[i] = ta = {extend: ta};
+            }
+            ta.className = "btn-light btn-outline-secondary";
+        }
+
+        table.one('init', function (e, settings, data) {
+            var tab = new $.fn.dataTable.Buttons(table, {
+                buttons: config.tableActions
+            });
+            var babContainer = tab.dom.container;
+            babContainer.appendTo(tableJQuery.closest(".dataTables_wrapper").find(".table-actions-container"));
         });
     },
     bindDefaultModalEventHandlers: function (table) {
         table.on("modalClosed.mcms", function (e, sender, params) {
-            if (!params) return;
+            if (!params || params.failed) return;
             if (params.reload) {
                 table.ajax.reload();
                 return;
             }
             var senderData = sender.data();
             switch (senderData.tag) {
-                case 'delete':
-                    var index = table.mcms.getDataIndexById(table.data(), senderData.modalCallbackTarget);
-                    if (index >= 0) {
-                        table.rows(index).remove();
-                        table.draw();
-                    }
-                    break;
                 case 'create':
                     var model = params && params.params && (params.params.secondaryModel || params.params.model);
                     if (model && typeof model === 'object') {
@@ -309,6 +328,21 @@ var mcmsDatatables = {
                         }
                     }
                     break;
+                case 'delete':
+                    table.mcms.removeRowWithDataId(table, table.data(), senderData.modalCallbackTarget);
+                    table.mcms.dataJustUpdated = true;
+                    table.draw();
+                    break;
+                case 'batch-delete':
+                    if (!senderData.modalCallbackTarget) {
+                        return;
+                    }
+                    for (var i = 0; i < senderData.modalCallbackTarget.length; i++) {
+                        table.mcms.removeRowWithDataId(table, table.data(), senderData.modalCallbackTarget[i]);
+                    }
+                    table.mcms.dataJustUpdated = true;
+                    table.draw();
+                    break;
                 default:
                     console.log(senderData.modalCallbackTag);
                     console.log(params);
@@ -317,12 +351,20 @@ var mcmsDatatables = {
         });
 
         table.mcms.getDataIndexById = function (data, id) {
+            if (!id) return -1;
             for (var i = 0; i < data.length; i++) {
                 if (data[i] && data[i].id === id) {
                     return i;
                 }
             }
             return -1;
+        };
+        table.mcms.removeRowWithDataId = function (table, data, id) {
+            if (!id) return;
+            var index = table.mcms.getDataIndexById(data, id);
+            if (index >= 0) {
+                table.rows(index).remove();
+            }
         };
     }
 }
@@ -338,31 +380,41 @@ jQuery.fn.dataTable.Api.register('sumTotal', function () {
         return a + b;
     }, 0);
 });
-
 jQuery.fn.dataTable.Api.register('updateSelectAllCheckbox', function (table, tableJq) {
     window.tableJq = tableJq;
     var selectionLength = this.rows({selected: true}).count();
     var allSelected = selectionLength > 0 && selectionLength === this.rows().count();
-
-    if (allSelected !== this.mcms.batchActionButtons.allSelected) {
-        this.mcms.batchActionButtons.allSelected = allSelected;
-        var checkTh = table.header().toJQuery().add(table.footer().toJQuery()).find("th.select-all-checkbox i");
-        checkTh.toggleClass("fa-square", !allSelected);
-        checkTh.toggleClass("fa-check-square", allSelected);
+    if (!this.mcms.selectAllThi) {
+        this.mcms.selectAllThi = table.header().toJQuery().add(table.footer().toJQuery()).find("th.select-all-checkbox i");
     }
-
-    var anySelection = selectionLength > 0;
-    if (anySelection !== this.mcms.batchActionButtons.anySelection) {
-        this.mcms.batchActionButtons.anySelection = anySelection;
-        var babContainer = this.mcms.batchActionButtons.dom.container;
-        if (!babContainer.data('attached')) {
-            babContainer.appendTo(tableJq.closest(".dataTables_wrapper").find(".batch-actions-container"));
-            babContainer.data('attached', true);
-        }
-        if (anySelection) {
-            babContainer.show();
-        } else {
-            babContainer.hide();
-        }
-    }
+    this.mcms.selectAllThi.toggleClass("fa-square", !allSelected);
+    this.mcms.selectAllThi.toggleClass("fa-check-square", allSelected);
 });
+jQuery.fn.dataTable.ext.buttons.mcmsColVis = {
+    extend: 'collection',
+    text: '<i class="fas fa-grip-lines-vertical fa-fw"></i> <i class="fas fa-eye-slash fa-fw"></i> ',
+    buttons: [
+        {
+            extend: 'columnsToggle',
+            columns: ':not(.non-toggleable)'
+        },
+        {
+            extend: 'columnToggle',
+            text: 'Show all',
+            visibility: true,
+            className: 'mt-3 forever-inactive',
+            columns: ':not(.non-toggleable)'
+        },
+        {
+            extend: 'columnToggle',
+            text: 'Hide all',
+            className: 'forever-inactive',
+            visibility: false,
+            columns: ':not(.non-toggleable)'
+        },
+        {
+            extend: 'colvisRestore',
+            text: 'Restore'
+        }
+    ]
+};

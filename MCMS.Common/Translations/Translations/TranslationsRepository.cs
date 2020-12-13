@@ -123,7 +123,7 @@ namespace MCMS.Common.Translations.Translations
             return base.Patch(id, patchDoc, adapterFactory);
         }
 
-        public override Task<bool> Delete(Expression<Func<TranslationEntity, bool>> predicate)
+        public override Task<int> Delete(Expression<Func<TranslationEntity, bool>> predicate)
         {
             ClearCache();
             return base.Delete(predicate);

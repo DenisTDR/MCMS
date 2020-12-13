@@ -47,7 +47,7 @@
     <tfoot>
     @if (Model.EnableColumnSearch)
     {
-        <tr class="column-search-row">
+        <tr class="column-search-row d-none">
             @* Table footer column search row *@
             @foreach (var col in columns)
             {
@@ -55,7 +55,7 @@
             }
         </tr>
     }
-    <tr class="sum-total-row">
+    <tr class="sum-total-row d-none">
         @* Table footer sum total row *@
         @foreach (var tableColumn in columns)
         {
@@ -98,11 +98,11 @@
     
     var initTable@(Model.Id) = function () {
         var table = window['table@(Model.Id)'] = mcmsDatatables.bindDefaultDataTables(
-                "#table-@Model.Id", @Html.Raw(Model.GetConfigObjectSerialized()), actionsColumnContent, '@TransRepo.Language'
+                "#table-@Model.Id", @Html.Raw(Model.GetConfigObjectSerialized(Url)), actionsColumnContent, '@TransRepo.Language'
         );
                
-        table.mcms.callbacks.modalClosed= function (sender, params) {
-             table.mcms.$.trigger("modalClosed.mcms", [sender,  params]);
+        table.mcms.callbacks.modalClosed = function (sender, params) {
+            table.mcms.$.trigger("modalClosed.mcms", [sender,  params]);
         };
     }
     

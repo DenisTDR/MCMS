@@ -106,6 +106,8 @@ namespace MCMS.Data
             return e;
         }
 
+        #region Delete
+
         public virtual async Task<bool> Delete(string id)
         {
             if (!await Any(id))
@@ -123,12 +125,16 @@ namespace MCMS.Data
             return true;
         }
 
-        public virtual async Task<bool> Delete(Expression<Func<T, bool>> predicate)
+        public virtual Task<int> Delete(IEnumerable<string> ids)
         {
-            DbSet.RemoveRange(DbSet.Where(predicate));
-            await SaveChangesAsyncIfNeeded();
-            return true;
+            return Delete(e => ids.Contains(e.Id));
         }
+
+        public virtual Task<int> Delete(Expression<Func<T, bool>> predicate)
+        {
+            return DbSet.Where(predicate).DeleteFromQueryAsync();
+        }
+        #endregion
 
         public virtual Task<bool> Any(string id)
         {

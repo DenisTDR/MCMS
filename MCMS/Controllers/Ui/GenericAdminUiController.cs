@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using MCMS.Base.Data;
 using MCMS.Base.Data.Entities;
 using MCMS.Base.Data.FormModels;
@@ -18,7 +19,7 @@ namespace MCMS.Controllers.Ui
         where TE : class, IEntity
         where TFm : class, IFormModel
         where TVm : class, IViewModel
-        where TApiController : IGenericApiController<TFm, TVm>
+        where TApiController : ICrudAdminApiController<TFm, TVm>
     {
         protected virtual IModelDisplayConfigForControllerService ModelDisplayConfigService =>
             ServiceProvider.GetRequiredService(
@@ -38,6 +39,7 @@ namespace MCMS.Controllers.Ui
             ViewBag.FormParamsService = FormParamsService;
             ViewBag.ModelDisplayConfigService = ModelDisplayConfigService;
             ViewBag.UsesModals = UsesModals;
+            ViewBag.ApiControllerName = TypeHelpers.GetControllerName(typeof(TApiController));
         }
 
         public override async Task<IActionResult> Index()
@@ -47,10 +49,8 @@ namespace MCMS.Controllers.Ui
             {
                 return View("BasicModals/IndexModal", await GetIndexPageConfig());
             }
-            else
-            {
-                return View("BasicPages/Index", await GetIndexPageConfig());
-            }
+
+            return View("BasicPages/Index", await GetIndexPageConfig());
         }
 
         [NonAction]
@@ -87,12 +87,10 @@ namespace MCMS.Controllers.Ui
             return View("BasicModals/DeleteModal", e);
         }
 
-        [HttpPost("{id}"), ActionName("Delete")]
-        [Produces("application/json")]
-        public virtual async Task<IActionResult> DeleteConfirmed([FromRoute] string id)
+        [HttpGet]
+        public virtual Task<IActionResult> BatchDelete([FromQuery] List<string> ids)
         {
-            await Repo.Delete(id);
-            return Ok();
+            return Task.FromResult(View("BasicModals/BatchDeleteModal", ids) as IActionResult);
         }
     }
 }

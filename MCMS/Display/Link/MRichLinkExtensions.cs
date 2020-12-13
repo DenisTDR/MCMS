@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 
 namespace MCMS.Display.Link
 {
@@ -12,7 +13,6 @@ namespace MCMS.Display.Link
 
         public static T ToggleModal<T>(this T value, bool isWith) where T : MRichLink
         {
-            // value.AsModal = isWith;
             if (value.GetData("toggle") is string str && str == "ajax-modal")
             {
                 if (!isWith)
@@ -33,8 +33,6 @@ namespace MCMS.Display.Link
         {
             value.SetData("toggle", "ajax-modal");
             value.SetData("modal-backdrop", backdrop);
-            // value.AsModal = true;
-            // value.ModalSuccessAction = modalSuccessAction;
             return value;
         }
 
@@ -66,12 +64,22 @@ namespace MCMS.Display.Link
             return link.AnchorData[key];
         }
 
+        public static Dictionary<string, object> GetData<T>(this T link) where T : MRichLink
+        {
+            return link.AnchorData ?? new Dictionary<string, object>();
+        }
+
         public static void RemoveData<T>(this T link, string key) where T : MRichLink
         {
             if (link.AnchorData != null && link.AnchorData.ContainsKey(key))
             {
                 link.AnchorData.Remove(key);
             }
+        }
+
+        public static bool HasData<T>(this T link) where T : MRichLink
+        {
+            return link.AnchorData != null && link.AnchorData.Any();
         }
     }
 }

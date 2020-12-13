@@ -3,6 +3,7 @@ using System.Linq;
 using MCMS.Base.Display.ModelDisplay;
 using MCMS.Base.Helpers;
 using MCMS.Display.Link;
+using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
 namespace MCMS.Display.ModelDisplay
@@ -14,12 +15,15 @@ namespace MCMS.Display.ModelDisplay
         public List<TableColumn> TableColumns { get; set; }
         public IEnumerable<TableColumn> TableColumnsOrdered => TableColumns.OrderBy(tc => tc.OrderIndex);
         public bool HasTableIndexColumn { get; set; }
-        public bool CheckboxSelection { get; set; }
+        public bool CheckboxSelection => BatchActions?.Any() == true;
         public string ModelName { get; set; }
         public MRichLink CreateNewItemLink { get; set; }
         public string TableItemsApiUrl { get; set; }
         public bool SkipDefaultModalEventHandlers { get; set; }
-        public bool EnableColumnSearch { get; set; }
+        public bool EnableColumnSearch { get; set; } = true;
+
+        public List<BatchAction> BatchActions { get; set; }
+        public List<object> TableActions { get; set; }
 
         public object BuildRowGroupObject(List<TableColumn> columns)
         {
@@ -27,7 +31,7 @@ namespace MCMS.Display.ModelDisplay
             return cols == null || !cols.Any() ? null : new {dataSrc = cols.Select(c => c.Key)};
         }
 
-        public string GetConfigObjectSerialized()
+        public string GetConfigObjectSerialized(IUrlHelper url)
         {
             var columns = GetColumnsOrdered();
             return JsonConvert.SerializeObject(new
@@ -36,9 +40,11 @@ namespace MCMS.Display.ModelDisplay
                 rowGroup = BuildRowGroupObject(columns),
                 ajax = new {url = TableItemsApiUrl},
                 hasStaticIndexColumn = HasTableIndexColumn,
-                checkboxSelection = CheckboxSelection,
                 skipDefaultModalEventHandlers = SkipDefaultModalEventHandlers,
-                enableColumnSearch = EnableColumnSearch
+                enableColumnSearch = EnableColumnSearch,
+                checkboxSelection = CheckboxSelection,
+                batchActions = BatchActions?.Select(ba => ba.GetConfigObject(url)),
+                tableActions = TableActions
             });
         }
 
@@ -47,7 +53,7 @@ namespace MCMS.Display.ModelDisplay
             var columns = TableColumns.OrderBy(tc => tc.OrderIndex).AsEnumerable();
             if (HasTableIndexColumn)
             {
-                columns = columns.Prepend(new TableColumn {Name = "#"});
+                columns = columns.Prepend(new TableColumn {Name = "#", ClassName = "non-toggleable"});
             }
 
             if (CheckboxSelection)
@@ -56,7 +62,7 @@ namespace MCMS.Display.ModelDisplay
                 {
                     Name = "<i class=\"far fa-square\"></i>",
                     DefaultContent = "",
-                    ClassName = "select-checkbox",
+                    ClassName = "select-checkbox non-toggleable",
                     HeaderClassName = "select-all-checkbox"
                 });
             }

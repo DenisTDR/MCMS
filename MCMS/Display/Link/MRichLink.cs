@@ -8,11 +8,25 @@ namespace MCMS.Display.Link
 {
     public class MRichLink : MLink
     {
+        private string _tag;
+
+        public override string Tag
+        {
+            get => _tag;
+            set
+            {
+                this.SetData("tag", value);
+                _tag = value;
+            }
+        }
+
         public string CssClasses { get; set; }
+
         public object Values { get; set; }
+
         // public ModalSuccessAction ModalSuccessAction { get; set; }
         public string ModalSuccessCallback { get; set; }
-        
+
         public Dictionary<string, object> AnchorData { get; set; }
 
 
@@ -33,7 +47,7 @@ namespace MCMS.Display.Link
         {
             if (urlHelper == null || Controller == null)
             {
-                return Url;
+                return urlHelper?.Content(Url);
             }
 
             return urlHelper.ActionLink(ActionName, ControllerName, Values);

@@ -33,7 +33,7 @@ namespace MCMS.Files
             return await base.Delete(e);
         }
 
-        public override async Task<bool> Delete(Expression<Func<FileEntity, bool>> predicate)
+        public override async Task<int> Delete(Expression<Func<FileEntity, bool>> predicate)
         {
             var files = await DbSet.Where(predicate).ToListAsync();
             foreach (var fileEntity in files)
@@ -43,7 +43,7 @@ namespace MCMS.Files
 
             DbSet.RemoveRange(files);
             await SaveChangesAsyncIfNeeded();
-            return true;
+            return files.Count;
         }
 
         private async Task<FileEntity> DeleteFile(FileEntity e)

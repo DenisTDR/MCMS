@@ -56,20 +56,29 @@ function bindSideMenuCollapseSectionsPersistence() {
 
     var states = {};
     var statesStr = sessionStorage.getItem('side-menu-section-states');
+    var saveStates = function () {
+        sessionStorage.setItem('side-menu-section-states', JSON.stringify(states));
+    }
     if (statesStr) {
+        var shouldSave = false;
         try {
             states = JSON.parse(statesStr);
             for (var sectionId in states) {
                 if (!states.hasOwnProperty(sectionId)) continue;
                 if (states[sectionId]) {
-                    $("#" + sectionId).addClass('show');
+                    var section = $("#" + sectionId);
+                    section.addClass('show');
+                    if (!section.length) {
+                        delete states[sectionId];
+                        shouldSave = true;
+                    }
                 }
             }
         } catch (e) {
         }
-    }
-    var saveStates = function () {
-        sessionStorage.setItem('side-menu-section-states', JSON.stringify(states));
+        if (shouldSave) {
+            saveStates();
+        }
     }
 
     var sectionLinks = $(document.body).find('#sidenavAccordion .collapse');

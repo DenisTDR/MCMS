@@ -13,34 +13,37 @@ var mModals = {
         });
 
         mModals.body.on('click', '[data-toggle="ajax-modal"]', function (event) {
-            if (event) {
-                event.preventDefault();
-            }
-            var button = $(this);
-            var url = button.data('url') || button.attr('href');
-            if (!url) {
-                console.error('Modal triggered by', this);
-                throw new Error('But url for modal content not found!');
-            }
-            mModals.loadingUpModal.show();
-            var headers = {'X-Request-Modal': 'true'};
-            var requestOptions = {
-                url: url,
-                headers: headers,
-                type: 'GET'
-            }
-            $.ajax(requestOptions)
-                .done(function (data) {
-                    mModals.loadingUpModal.hide();
-                    mModals.displayModalLinkResponse(data, button);
-                })
-                .fail(function (e) {
-                    console.log('failed');
-                    mModals.loadingUpModal.hide();
-                    mModals.alertModal(e.responseText);
-                });
+            mModals.ajaxModalItemAction.apply(this, [event]);
         });
         this.initAlertModal();
+    },
+    ajaxModalItemAction: function (event) {
+        if (event) {
+            event.preventDefault();
+        }
+        var button = $(this);
+        var url = button.data('url') || button.attr('href');
+        if (!url) {
+            console.error('Modal triggered by', this);
+            throw new Error('But url for modal content not found!');
+        }
+        mModals.loadingUpModal.show();
+        var headers = {'X-Request-Modal': 'true'};
+        var requestOptions = {
+            url: url,
+            headers: headers,
+            type: 'GET'
+        }
+        $.ajax(requestOptions)
+            .done(function (data) {
+                mModals.loadingUpModal.hide();
+                mModals.displayModalLinkResponse(data, button);
+            })
+            .fail(function (e) {
+                console.log('failed');
+                mModals.loadingUpModal.hide();
+                mModals.alertModal(e.responseText);
+            });
     },
     loadingUpModal: {
         show: function () {
@@ -114,11 +117,13 @@ var mModals = {
                 return;
             }
             var callback = button.data('modal-callback');
-            if (callback) {
+            if (typeof callback === 'string') {
                 var callbackFn = getFnRefByDottedName(callback);
                 if (typeof callbackFn === 'function') {
                     callbackFn(button, result);
                 }
+            } else if (typeof callback === 'function') {
+                callback(button, result);
             }
             setTimeout(function () {
                 newElement.remove();

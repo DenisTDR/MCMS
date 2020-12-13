@@ -6,12 +6,13 @@ using MCMS.Base.Extensions;
 using MCMS.Base.Helpers;
 using MCMS.Base.JsonPatch;
 using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.EntityFrameworkCore;
 
-namespace MCMS.Data
+namespace MCMS.Base.Data
 {
     public static class ForeignEntityPatchHelper
     {
-        public static void PatchEntityProperties<T>(T e, BaseDbContext dbContext, JsonPatchDocument<T> patchDocument)
+        public static void PatchEntityProperties<T>(T e, DbContext dbContext, JsonPatchDocument<T> patchDocument)
             where T : class, IEntity
         {
             var eProps = EntityHelper.GetEntityProperties<T>();

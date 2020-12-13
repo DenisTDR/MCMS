@@ -10,7 +10,7 @@ namespace MCMS.Common.Translations.Translations.Item
 {
     [Authorize(Roles = "Admin")]
     public class
-        TranslationItemsAdminApiController : GenericAdminApiController<TranslationItemEntity, TranslationItemFormModel,
+        TranslationItemsAdminApiController : CrudAdminApiController<TranslationItemEntity, TranslationItemFormModel,
             TranslationItemViewModel>
     {
         public override void OnActionExecuting(ActionExecutingContext context)

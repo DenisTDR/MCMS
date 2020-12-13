@@ -20,9 +20,15 @@ namespace MCMS.Base.Data
         Task<T> Patch(string id, JsonPatchDocument<T> eub);
         Task<T> Patch(string id, JsonPatchDocument<T> eub, IAdapterFactory adapterFactory);
 
+        #region Delete
+
         Task<bool> Delete(string id);
         Task<bool> Delete(T e);
-        Task<bool> Delete(Expression<Func<T, bool>> predicate);
+
+        Task<int> Delete(IEnumerable<string> ids);
+        Task<int> Delete(Expression<Func<T, bool>> predicate);
+
+        #endregion
 
         Task<bool> Any(string id);
         Task<bool> Any(Expression<Func<T, bool>> predicate);

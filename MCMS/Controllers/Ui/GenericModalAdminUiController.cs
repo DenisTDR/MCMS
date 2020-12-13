@@ -14,7 +14,7 @@ namespace MCMS.Controllers.Ui
         where T : class, IEntity
         where TFm : class, IFormModel
         where TVm : class, IViewModel
-        where TApiController : IGenericApiController<TFm, TVm>
+        where TApiController : ICrudAdminApiController<TFm, TVm>
     {
         public GenericModalAdminUiController()
         {
@@ -32,19 +32,6 @@ namespace MCMS.Controllers.Ui
         {
             var e = await Repo.GetOneOrThrow(id);
             return View("BasicModals/EditModal", e);
-        }
-
-        [ViewLayout("_ModalLayout")]
-        public override async Task<IActionResult> Delete(string id)
-        {
-            var e = await Repo.GetOneOrThrow(id);
-            return View("BasicModals/DeleteModal", e);
-        }
-
-        [ViewLayout("_ModalLayout")]
-        public override Task<IActionResult> DeleteConfirmed(string id)
-        {
-            return base.DeleteConfirmed(id);
         }
     }
 }

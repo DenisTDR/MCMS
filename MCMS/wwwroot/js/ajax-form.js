@@ -3,14 +3,18 @@ function ajaxForm(form, asModal, callback) {
         event.preventDefault();
         mModals.loadingUpModal.show();
 
-        function close(result) {
+        function close(result, failed) {
             var modal = form.closest(".modal");
-            modal.data('result', {params: result});
+            result = {params: result};
+            if (failed) {
+                result.failed = failed;
+            }
+            modal.data('result', result);
             modal.modal('hide');
         }
 
         $.ajax({
-            type: this.method || 'POST',
+            type: $(this).data("ajax-method") || this.method || 'POST',
             url: this.action,
             data: JSON.stringify(serializeFormAsObject(form)),
             contentType: "application/json; charset=utf-8",
@@ -32,7 +36,7 @@ function ajaxForm(form, asModal, callback) {
                 console.log('error')
                 console.error(e);
                 if (asModal) {
-                    close(false);
+                    close(false, true);
                 }
                 if (typeof callback === 'function') {
                     callback(false);

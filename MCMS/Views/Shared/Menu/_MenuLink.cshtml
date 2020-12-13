@@ -3,17 +3,9 @@
 <a class="nav-link"
    href="@Model.BuildUrl(Url)"
    target="@Model.Target"
-   @* @if (Model.AsModal) *@
-   @* { *@
-   @*     @Html.Raw("data-toggle=\"ajax-modal\"") *@
-   @*     if (Model.ModalSuccessAction == ModalSuccessAction.RunCallback && !string.IsNullOrEmpty(Model.ModalSuccessCallback ?? ViewBag.ModalCallback)) *@
-   @*     { *@
-   @*         @Html.Raw("data-modal-callback=\"" + (Model.ModalSuccessCallback ?? ViewBag.ModalCallback) + "\"") *@
-   @*     } *@
-   @* } *@
-   @if (Model.AnchorData != null)
+   @if (Model.HasData())
    {
-       foreach (var kvp in Model.AnchorData)
+       foreach (var kvp in Model.GetData())
        {
            @Html.Raw("data-" + kvp.Key + "=\"" + kvp.Value + "\"")
        }

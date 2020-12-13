@@ -22,7 +22,7 @@ namespace MCMS.Display.ModelDisplay
         where TE : class, IEntity
         where TFm : class, IFormModel
         where TVm : class, IViewModel
-        where TApiController : IGenericApiController<TFm, TVm>
+        where TApiController : ICrudAdminApiController<TFm, TVm>
     {
         public override Type ViewModelType => typeof(TVm);
 
@@ -45,18 +45,18 @@ namespace MCMS.Display.ModelDisplay
                 ModelName = TypeHelpers.GetDisplayNameOrDefault<TVm>(),
                 TableColumns = await GetTableColumns(viewBag.ExcludeActionsColumn as bool? == true),
                 HasTableIndexColumn = true,
-                CheckboxSelection = true,
                 TableItemsApiUrl = url.ActionLink(nameof(IReadOnlyApiController<TVm>.Index),
                     TypeHelpers.GetControllerName(typeof(TApiController)), viewBag.TableItemsApiUrlValues as object),
-                ItemActions = GetItemActions(viewBag, viewBag.ExcludeActionsColumn as bool? == true)
+                ItemActions = GetItemActions(viewBag, viewBag.ExcludeActionsColumn as bool? == true),
+                BatchActions = GetBatchActions(),
+                TableActions = GetTableActions()
             };
             if (createNewLink)
             {
                 config.CreateNewItemLink = new MRichLink(
                         $"{await TranslationsRepository.GetValueOrSlug("create")} {TypeHelpers.GetDisplayNameOrDefault(typeof(TVm)).ToLowerFirstChar()}",
                         typeof(TUiController), nameof(GenericAdminUiController<TE, TFm, TVm, TApiController>.Create))
-                    .WithTag("create")
-                    .AsButton("outline-primary").WithIconClasses("fas fa-plus")
+                    .WithTag("create").AsButton("outline-primary").WithIconClasses("fas fa-plus")
                     .WithValues(viewBag.CreateNewLinkValues as object);
                 if (viewBag.UsesModals)
                 {
@@ -89,6 +89,37 @@ namespace MCMS.Display.ModelDisplay
                         nameof(GenericAdminUiController<TE, TFm, TVm, TApiController>.Delete)).WithTag("delete")
                     .AsButton("outline-danger").WithModal().WithIconClasses("fas fa-trash-alt")
             }.Select(l => l.WithValues(new {id = "ENTITY_ID"})).ToList();
+        }
+
+        public virtual List<BatchAction> GetBatchActions(bool excludeDefault = false)
+        {
+            if (excludeDefault)
+            {
+                return new();
+            }
+
+            return new()
+            {
+                new BatchAction("", typeof(TUiController),
+                            nameof(GenericAdminUiController<TE, TFm, TVm, TApiController>.BatchDelete))
+                        {TitleAttr = "Delete selected items"}
+                    .WithTag("batch-delete").WithIconClasses("fas fa-trash").AsButton("outline-danger btn-light")
+                    .WithModal()
+            };
+        }
+
+        public virtual List<object> GetTableActions(bool excludeDefault = false)
+        {
+            if (excludeDefault)
+            {
+                return new();
+            }
+
+            return new()
+            {
+                "mcmsColVis",
+                "pageLength"
+            };
         }
 
         public static Type MakeGenericTypeWithUiControllerType(Type uiControllerType)

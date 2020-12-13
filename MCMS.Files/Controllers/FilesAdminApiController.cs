@@ -34,19 +34,20 @@ namespace MCMS.Files.Controllers
             Repo.ChainQueryable(q => q.OrderByDescending(f => f.Created));
         }
 
-        public override async Task<ActionResult<List<FileViewModel>>> Index()
+        protected override FileViewModel MapV(FileEntity e)
         {
-            var all = await Repo.GetAll();
-            var allVm = Map(all);
-            foreach (var file in allVm)
+            var vm = base.MapV(e);
+            if (!vm.IsPublic)
             {
-                if (!file.IsPublic)
-                {
-                    file.Url = file.GetPrivateLink(Url);
-                }
+                vm.Url = vm.GetPrivateLink(Url);
             }
 
-            return Ok(allVm);
+            return vm;
+        }
+
+        protected override List<FileViewModel> Map(List<FileEntity> entities)
+        {
+            return entities.Select(MapV).ToList();
         }
 
         public override async Task<ActionResult<FileUploadFormModel>> Get(string id)
@@ -77,9 +78,15 @@ namespace MCMS.Files.Controllers
             var eDoc = doc.CloneFor<FileFormModel, FileEntity>();
 
             var e = await Repo.Patch(id, eDoc, ServiceProvider.GetRequiredService<IAdapterFactory>());
-            var fm = Mapper.Map<FileFormModel>(e);
 
-            return OkModel(fm);
+            return Ok(GetPatchResponseModel2(e));
+        }
+
+        private ModelResponse<FileFormModel> GetPatchResponseModel2(FileEntity e)
+        {
+            var fm = Mapper.Map<FileFormModel>(e);
+            var vm = MapV(e);
+            return new DoubleModelResponse<FileFormModel, FileViewModel>(fm, vm, e.Id);
         }
 
         [ModelValidation]
@@ -91,7 +98,9 @@ namespace MCMS.Files.Controllers
             fileE.Protected = fm.Protected;
             fileE.OwnerToken = null;
             await Repo.SaveChanges();
-            return OkModel(fm);
+
+            var vm = MapV(fileE);
+            return Ok(new DoubleModelResponse<FileUploadFormModel, FileViewModel>(fm, vm, fileE.Id));
         }
 
         [HttpPost]

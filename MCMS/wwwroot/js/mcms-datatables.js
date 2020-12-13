@@ -344,7 +344,7 @@ var mcmsDatatables = {
                     table.draw();
                     break;
                 default:
-                    console.log(senderData.modalCallbackTag);
+                    console.log(senderData.tag);
                     console.log(params);
                     break;
             }

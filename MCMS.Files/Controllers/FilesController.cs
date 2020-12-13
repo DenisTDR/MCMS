@@ -69,6 +69,7 @@ namespace MCMS.Files.Controllers
                     .WithModal()
                     .AsButton("outline-primary")
                     .WithIconClasses("fas fa-plus")
+                    .WithTag("create")
                     .WithValues(null);
             return config;
         }

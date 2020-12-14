@@ -1,5 +1,6 @@
 var mcmsDatatables = {
     bindDefaultDataTables: function (selector, initialConfig, actionsColumnContent, lang) {
+        var tableId = selector.replace("#", "");
         var tableElem = $(selector);
 
         initialConfig.columns = initialConfig.columns.slice();
@@ -71,7 +72,10 @@ var mcmsDatatables = {
         var table = tableJQuery.api();
 
 
-        table.mcms = {customMethods: {initialPatchRowData: initialPatchRowData}, $: tableJQuery, callbacks: {}};
+        table.mcms = {
+            id: tableId, $: tableJQuery, callbacks: {},
+            customMethods: {initialPatchRowData: initialPatchRowData}
+        };
 
         if (!config.skipDefaultModalEventHandlers) {
             mcmsDatatables.bindDefaultModalEventHandlers(table);

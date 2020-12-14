@@ -35,7 +35,8 @@ namespace MCMS.Admin.Users
 
         public override async Task<IActionResult> Index()
         {
-            return View("BasicPages/Index", await ModelDisplayConfigService.GetTableConfig(Url, ViewBag, false));
+            ModelDisplayConfigService.UseCreateNewItemLink = false;
+            return View("BasicPages/Index", await ModelDisplayConfigService.GetIndexPageConfig(Url));
         }
 
         [HttpGet]
@@ -54,7 +55,8 @@ namespace MCMS.Admin.Users
         public async Task<IActionResult> ChangeRoles([FromRoute] string id)
         {
             var userVm = await GetUserWithRoles(id);
-            ViewBag.Roles = await ServiceProvider.GetRequiredService<RoleManager<Role>>().Roles.Select(role => role.Name)
+            ViewBag.Roles = await ServiceProvider.GetRequiredService<RoleManager<Role>>().Roles
+                .Select(role => role.Name)
                 .Where(role => role != "God").ToListAsync();
             return View(userVm);
         }
@@ -68,8 +70,8 @@ namespace MCMS.Admin.Users
             var userVm = Mapper.Map<UserViewModel>(user);
             return View(userVm);
         }
-        
-        
+
+
         [HttpGet]
         [Route("{id}")]
         [ViewLayout("_ModalLayout")]
@@ -112,7 +114,8 @@ namespace MCMS.Admin.Users
         {
             var user = await Repo.GetOneOrThrow(id);
             var userVm = Mapper.Map<UserViewModel>(user);
-            userVm.RolesList = (await ServiceProvider.GetRequiredService<UserManager<User>>().GetRolesAsync(user)).ToList();
+            userVm.RolesList = (await ServiceProvider.GetRequiredService<UserManager<User>>().GetRolesAsync(user))
+                .ToList();
             return userVm;
         }
     }

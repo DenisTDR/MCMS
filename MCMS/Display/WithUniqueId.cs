@@ -10,7 +10,7 @@ namespace MCMS.Display
 
         private string BuildUniqueId()
         {
-            return FastHash.Hash(GetHashSource());
+            return FastHash.Hash(GetHashSource() ?? Utils.GenerateRandomHexString());
         }
     }
 }

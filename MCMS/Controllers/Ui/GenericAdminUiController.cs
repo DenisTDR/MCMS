@@ -21,13 +21,13 @@ namespace MCMS.Controllers.Ui
         where TVm : class, IViewModel
         where TApiController : ICrudAdminApiController<TFm, TVm>
     {
-        protected virtual IModelDisplayConfigForControllerService ModelDisplayConfigService =>
+        public virtual IModelDisplayConfigForControllerService ModelDisplayConfigService =>
             ServiceProvider.GetRequiredService(
                 ModelDisplayConfigForControllerService<TE, TFm, TVm,
                         GenericAdminUiController<TE, TFm, TVm, TApiController>, TApiController>
                     .MakeGenericTypeWithUiControllerType(GetType())) as IModelDisplayConfigForControllerService;
 
-        protected virtual FormParamsService FormParamsService =>
+        public virtual FormParamsService FormParamsService =>
             ServiceProvider.GetRequiredService<FormParamsForControllerService<TApiController, TFm>>();
 
         protected virtual IRepository<TE> Repo => ServiceProvider.GetRepo<TE>();
@@ -38,7 +38,7 @@ namespace MCMS.Controllers.Ui
             ViewBag.ModelName = TypeHelpers.GetDisplayNameOrDefault<TVm>();
             ViewBag.FormParamsService = FormParamsService;
             ViewBag.ModelDisplayConfigService = ModelDisplayConfigService;
-            ViewBag.UsesModals = UsesModals;
+            ModelDisplayConfigService.UseModals = UsesModals;
             ViewBag.ApiControllerName = TypeHelpers.GetControllerName(typeof(TApiController));
         }
 
@@ -56,7 +56,7 @@ namespace MCMS.Controllers.Ui
         [NonAction]
         public virtual Task<IndexPageConfig> GetIndexPageConfig()
         {
-            return ModelDisplayConfigService.GetIndexPageConfig(Url, ViewBag);
+            return ModelDisplayConfigService.GetIndexPageConfig(Url);
         }
 
         [HttpGet("{id}")]

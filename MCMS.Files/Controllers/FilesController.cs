@@ -62,7 +62,6 @@ namespace MCMS.Files.Controllers
         public override async Task<IndexPageConfig> GetIndexPageConfig()
         {
             var config = await base.GetIndexPageConfig();
-            ViewBag.CreateNewLinkValues = null;
 
             config.TableConfig.CreateNewItemLink =
                 new MRichLink("Upload new file", typeof(FilesController), nameof(Upload))

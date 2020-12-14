@@ -25,40 +25,38 @@ namespace MCMS.Display.ModelDisplay
         where TApiController : ICrudAdminApiController<TFm, TVm>
     {
         public override Type ViewModelType => typeof(TVm);
-
-        public override async Task<IndexPageConfig> GetIndexPageConfig(IUrlHelper url, dynamic viewBag,
-            bool createNewLink = true)
+     
+        public override async Task<IndexPageConfig> GetIndexPageConfig(IUrlHelper url)
         {
             var config = new IndexPageConfig
             {
                 IndexPageTitle = TypeHelpers.GetDisplayNameOrDefault<TUiController>(),
-                TableConfig = await GetTableConfig(url, viewBag, createNewLink)
+                TableConfig = await GetTableConfig(url)
             };
             return config;
         }
 
-        public override async Task<TableDisplayConfig> GetTableConfig(IUrlHelper url, dynamic viewBag,
-            bool createNewLink = true)
+        public override async Task<TableDisplayConfig> GetTableConfig(IUrlHelper url)
         {
             var config = new TableDisplayConfig
             {
                 ModelName = TypeHelpers.GetDisplayNameOrDefault<TVm>(),
-                TableColumns = await GetTableColumns(viewBag.ExcludeActionsColumn as bool? == true),
+                TableColumns = await GetTableColumns(),
                 HasTableIndexColumn = true,
                 TableItemsApiUrl = url.ActionLink(nameof(IReadOnlyApiController<TVm>.Index),
-                    TypeHelpers.GetControllerName(typeof(TApiController)), viewBag.TableItemsApiUrlValues as object),
-                ItemActions = GetItemActions(viewBag, viewBag.ExcludeActionsColumn as bool? == true),
+                    TypeHelpers.GetControllerName(typeof(TApiController)), TableItemsApiUrlValues),
+                ItemActions = GetItemActions(),
                 BatchActions = GetBatchActions(),
                 TableActions = GetTableActions()
             };
-            if (createNewLink)
+            if (UseCreateNewItemLink)
             {
                 config.CreateNewItemLink = new MRichLink(
                         $"{await TranslationsRepository.GetValueOrSlug("create")} {TypeHelpers.GetDisplayNameOrDefault(typeof(TVm)).ToLowerFirstChar()}",
                         typeof(TUiController), nameof(GenericAdminUiController<TE, TFm, TVm, TApiController>.Create))
                     .WithTag("create").AsButton("outline-primary").WithIconClasses("fas fa-plus")
-                    .WithValues(viewBag.CreateNewLinkValues as object);
-                if (viewBag.UsesModals)
+                    .WithValues(CreateNewItemLinkValues);
+                if (UseModals)
                 {
                     config.CreateNewItemLink.WithModal();
                 }
@@ -68,9 +66,9 @@ namespace MCMS.Display.ModelDisplay
         }
 
 
-        public virtual List<MRichLink> GetItemActions(dynamic viewBag, bool excludeDefault = false)
+        public virtual List<MRichLink> GetItemActions()
         {
-            if (excludeDefault)
+            if (ExcludeDefaultItemActions)
             {
                 return new List<MRichLink>();
             }
@@ -79,11 +77,11 @@ namespace MCMS.Display.ModelDisplay
             {
                 new MRichLink("", typeof(TUiController),
                         nameof(GenericAdminUiController<TE, TFm, TVm, TApiController>.Details)).WithTag("details")
-                    .AsButton("outline-info").WithModal().ToggleModal((bool) viewBag.UsesModals)
+                    .AsButton("outline-info").WithModal().ToggleModal(UseModals)
                     .WithIconClasses("far fa-eye").WithValues(new {id = "ENTITY_ID"}),
                 new MRichLink("", typeof(TUiController),
                         nameof(GenericAdminUiController<TE, TFm, TVm, TApiController>.Edit)).WithTag("edit")
-                    .AsButton("outline-primary").WithModal().ToggleModal((bool) viewBag.UsesModals)
+                    .AsButton("outline-primary").WithModal().ToggleModal(UseModals)
                     .WithIconClasses("fas fa-pencil-alt"),
                 new MRichLink("", typeof(TUiController),
                         nameof(GenericAdminUiController<TE, TFm, TVm, TApiController>.Delete)).WithTag("delete")

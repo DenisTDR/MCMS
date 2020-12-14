@@ -15,13 +15,19 @@ namespace MCMS.Display.ModelDisplay
     public abstract class ModelDisplayConfigService : IModelDisplayConfigService
     {
         protected ITranslationsRepository TranslationsRepository { get; }
+
         public abstract Type ViewModelType { get; }
 
-        public abstract Task<IndexPageConfig> GetIndexPageConfig(IUrlHelper url, dynamic viewBag,
-            bool createNewLink = true);
+        public bool ExcludeActionsColumn { get; set; }
+        public object TableItemsApiUrlValues { get; set; }
+        public bool UseCreateNewItemLink { get; set; } = true;
+        public object CreateNewItemLinkValues { get; set; }
+        public bool UseModals { get; set; }
+        public bool ExcludeDefaultItemActions { get; set; }
 
-        public abstract Task<TableDisplayConfig> GetTableConfig(IUrlHelper url, dynamic viewBag,
-            bool createNewLink = true);
+        public abstract Task<IndexPageConfig> GetIndexPageConfig(IUrlHelper url);
+
+        public abstract Task<TableDisplayConfig> GetTableConfig(IUrlHelper url);
 
 
         public ModelDisplayConfigService(ITranslationsRepository translationsRepository)
@@ -29,7 +35,7 @@ namespace MCMS.Display.ModelDisplay
             TranslationsRepository = translationsRepository;
         }
 
-        public virtual async Task<List<TableColumn>> GetTableColumns(bool excludeActionsColumn = false)
+        public virtual async Task<List<TableColumn>> GetTableColumns()
         {
             var props = ViewModelType.GetProperties().ToList();
             var tableColumnProps = props.Where(prop =>
@@ -50,7 +56,7 @@ namespace MCMS.Display.ModelDisplay
 
             var list = tableColumnProps.Select(prop => new TableColumn(TypeHelpers.GetDisplayNameOrDefault(prop),
                 prop.Name.ToCamelCase(), prop.GetCustomAttributes<TableColumnAttribute>().FirstOrDefault())).ToList();
-            if (!excludeActionsColumn)
+            if (!ExcludeActionsColumn)
             {
                 list.Add(new TableColumn(await TranslationsRepository.GetValueOrSlug("actions"), "_actions", 100)
                     {Orderable = false, Searchable = false});
@@ -81,7 +87,7 @@ namespace MCMS.Display.ModelDisplay
             var list = detailsFields
                 .Select(prop =>
                 {
-                    var field = prop.GetCustomAttributes<DetailsFieldAttribute>().FirstOrDefault() is {} attr
+                    var field = prop.GetCustomAttributes<DetailsFieldAttribute>().FirstOrDefault() is { } attr
                         ? attr.ToDetailsField()
                         : new DetailsField();
                     field.PropertyInfo = prop;

@@ -13,19 +13,17 @@ namespace MCMS.Admin.Users
     {
         public override Type ViewModelType => typeof(UserViewModel);
 
-        public override async Task<IndexPageConfig> GetIndexPageConfig(IUrlHelper url, dynamic viewBag,
-            bool createNewLink = true)
+        public override async Task<IndexPageConfig> GetIndexPageConfig(IUrlHelper url)
         {
             var config = new IndexPageConfig
             {
                 IndexPageTitle = "Users",
-                TableConfig = await GetTableConfig(url, viewBag, createNewLink)
+                TableConfig = await GetTableConfig(url)
             };
             return config;
         }
 
-        public override async Task<TableDisplayConfig> GetTableConfig(IUrlHelper url, dynamic viewBag,
-            bool createNewLink = true)
+        public override async Task<TableDisplayConfig> GetTableConfig(IUrlHelper url)
         {
             return new()
             {
@@ -33,13 +31,12 @@ namespace MCMS.Admin.Users
                 TableColumns = await GetTableColumns(),
                 HasTableIndexColumn = true,
                 TableItemsApiUrl = url.ActionLink(nameof(AdminUsersAdminApiController.Index),
-                    TypeHelpers.GetControllerName(typeof(AdminUsersAdminApiController)),
-                    viewBag.TableItemsApiUrlValues as object),
-                ItemActions = GetDefaultTableItemActions(viewBag)
+                    TypeHelpers.GetControllerName(typeof(AdminUsersAdminApiController))),
+                ItemActions = GetDefaultTableItemActions()
             };
         }
 
-        public virtual List<MRichLink> GetDefaultTableItemActions(dynamic viewBag)
+        public virtual List<MRichLink> GetDefaultTableItemActions()
         {
             return new()
             {

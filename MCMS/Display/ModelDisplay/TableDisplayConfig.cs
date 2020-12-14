@@ -1,16 +1,18 @@
 using System.Collections.Generic;
 using System.Linq;
 using MCMS.Base.Display.ModelDisplay;
-using MCMS.Base.Helpers;
 using MCMS.Display.Link;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
 namespace MCMS.Display.ModelDisplay
 {
-    public class TableDisplayConfig
+    public class TableDisplayConfig : WithUniqueId
     {
-        public string Id { get; set; } = Utils.GenerateRandomHexString();
+        public int Index { get; set; }
+
+        // public string Id { get; set; } = Utils.GenerateRandomHexString();
+        public string Id => UniqueId;
         public List<MRichLink> ItemActions { get; set; }
         public List<TableColumn> TableColumns { get; set; }
         public IEnumerable<TableColumn> TableColumnsOrdered => TableColumns.OrderBy(tc => tc.OrderIndex);
@@ -68,6 +70,12 @@ namespace MCMS.Display.ModelDisplay
             }
 
             return columns.ToList();
+        }
+
+        protected override string GetHashSource()
+        {
+            // Console.WriteLine(TableItemsApiUrl);
+            return TableItemsApiUrl.Split("?").FirstOrDefaultDynamic() + "-" + Index;
         }
     }
 }

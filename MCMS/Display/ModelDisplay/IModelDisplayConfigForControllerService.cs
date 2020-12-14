@@ -5,6 +5,6 @@ namespace MCMS.Display.ModelDisplay
 {
     public interface IModelDisplayConfigForControllerService : IModelDisplayConfigService
     {
-        public List<MRichLink> GetItemActions(dynamic viewBag, bool excludeDefault = false);
+        public List<MRichLink> GetItemActions();
     }
 }

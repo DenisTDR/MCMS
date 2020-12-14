@@ -90,7 +90,8 @@ namespace MCMS.Files.Controllers
         }
 
         [ModelValidation]
-        public override async Task<ActionResult<ModelResponse<FileUploadFormModel>>> Create(FileUploadFormModel fm)
+        public override async Task<ActionResult<ModelResponse<FileUploadFormModel>>> Create(
+            [FromBody] [Required] FileUploadFormModel fm)
         {
             var fileE = await Repo.GetOneOrThrow(fm.File.Id);
             fileE.Description = fm.Description;
@@ -112,18 +113,8 @@ namespace MCMS.Files.Controllers
             [FromQuery] [Required] string purpose)
         {
             var requiredRoles = (Env.Get("FILE_UPLOAD_REQUIRED_ROLES") ?? "Admin").Split(",").Select(r => r.Trim());
-            var matchRoles = 0;
 
-            foreach (var requiredRole in requiredRoles)
-            {
-                if (User.IsInRole(requiredRole))
-                {
-                    matchRoles++;
-                    break;
-                }
-            }
-
-            if (matchRoles == 0)
+            if (!requiredRoles.Any(requiredRole => User.IsInRole(requiredRole)))
             {
                 return Forbid();
             }
@@ -131,20 +122,21 @@ namespace MCMS.Files.Controllers
             Logger.LogInformation("in Upload, file: \nname=" + file.FileName + "\nsize=" + file.Length + "\nname=" +
                                   file.Name);
             var fileE = await FileUploadManager.SaveFile(file, purpose);
-            var fileViewModel = Mapper.Map<FileViewModel>(fileE);
-            return Ok(fileViewModel);
-        }
-
-        [ApiExplorerSettings(IgnoreApi = true)]
-        public override Task<ActionResult<string>> Delete(string id)
-        {
-            throw new NotImplementedException();
+            var respModel = new FileUploadModel
+            {
+                Id = fileE.Id,
+                OwnerToken = fileE.OwnerToken
+            };
+            return Ok(respModel);
         }
 
         [HttpDelete]
-        public async Task<IActionResult> Delete([FromQuery] string id, [FromQuery] string ownerToken)
+        [AllowAnonymous]
+        [ModelValidation]
+        public async Task<IActionResult> DeleteJustUploadedFile([FromQuery] [Required] string id,
+            [FromQuery] [Required] string ownerToken)
         {
-            if (string.IsNullOrEmpty(ownerToken))
+            if (ownerToken == "undefined")
             {
                 return BadRequest();
             }

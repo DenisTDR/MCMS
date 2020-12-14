@@ -17,7 +17,7 @@ namespace MCMS.Files.Attributes
         public string Purpose { get; }
         public string Path { get; }
         public bool Private { get; set; }
-        public string FileDeleteActionName { get; set; } = "Delete";
+        public string FileDeleteActionName { get; set; } = "DeleteJustUploadedFile";
         public bool Multiple { get; set; }
 
         public string[] Accept

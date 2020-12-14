@@ -35,14 +35,14 @@ namespace MCMS.Files
 
         public override async Task<int> Delete(Expression<Func<FileEntity, bool>> predicate)
         {
-            var files = await DbSet.Where(predicate).ToListAsync();
+            var query = DbSet.Where(predicate);
+            var files = await query.ToListAsync();
             foreach (var fileEntity in files)
             {
                 await DeleteFile(fileEntity);
             }
 
-            DbSet.RemoveRange(files);
-            await SaveChangesAsyncIfNeeded();
+            await query.DeleteFromQueryAsync();
             return files.Count;
         }
 

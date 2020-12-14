@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 using System.IO;
 using MCMS.Base.Data.ViewModels;
 using MCMS.Base.Display.ModelDisplay.Attributes;
@@ -8,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace MCMS.Files.Models
 {
+    [DisplayName("File")]
     public class FileViewModel : ViewModel
     {
         [TableColumn] public string OriginalName { get; set; }

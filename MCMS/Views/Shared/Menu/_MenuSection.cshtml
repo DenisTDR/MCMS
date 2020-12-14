@@ -7,14 +7,14 @@
             @(Model.Name)
         </div>
     }
-    @foreach (var item in Model.Items.OrderBy(s => s.Index))
+    @foreach (var item in Model.OrderedItems)
     {
         @await Html.PartialAsync("Menu/_MenuItem", item)
     }
 }
 else
 {
-    <a id="@Model.Id-header" class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#@Model.Id-section" aria-expanded="false" aria-controls="@Model.Id-section">
+    <a id="header-@Model.Id" class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#section-@Model.Id" aria-expanded="false" aria-controls="section-@Model.Id">
         @if (!string.IsNullOrEmpty(Model.IconClasses))
         {
             <div class="sb-nav-link-icon">
@@ -26,9 +26,9 @@ else
             <i class="fas fa-angle-down"></i>
         </div>
     </a>
-    <div class="collapse" id="@Model.Id-section" aria-labelledby="@Model.Id-header">
-        <nav class="sb-sidenav-menu-nested nav accordion" id="@Model.Id-pages">
-            @foreach (var item in Model.Items)
+    <div class="collapse" id="section-@Model.Id" aria-labelledby="header-@Model.Id">
+        <nav class="sb-sidenav-menu-nested nav accordion">
+            @foreach (var item in Model.OrderedItems)
             {
                 @await Html.PartialAsync("Menu/_MenuItem", item)
             }

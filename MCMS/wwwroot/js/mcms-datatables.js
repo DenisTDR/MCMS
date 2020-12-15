@@ -114,6 +114,10 @@ var mcmsDatatables = {
                 table.fixedHeader.adjust();
             }, 500);
         });
+        mcmsTables.push(table);
+        table.on('destroy', function () {
+            mcmsTables.splice(mcmsTables.indexOf(table), 1);
+        });
         return table;
     },
     getLang: function (lang) {
@@ -383,7 +387,7 @@ var mcmsDatatables = {
         };
     },
 }
-
+var mcmsTables = [];
 jQuery.fn.dataTable.Api.register('sumTotal', function () {
     return this.flatten().reduce(function (a, b) {
         if (typeof a === 'string') {

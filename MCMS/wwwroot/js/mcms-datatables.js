@@ -13,6 +13,7 @@ var mcmsDatatables = {
         }
 
         var config = {
+            stateSave: true,
             processing: true,
             ajax: {
                 dataSrc: function (json) {
@@ -66,11 +67,10 @@ var mcmsDatatables = {
             };
         }
 
-        mcmsDatatables.sumTotalRowIfNeeded(config);
-
         var tableJQuery = tableElem.dataTable(config);
         var table = tableJQuery.api();
 
+        mcmsDatatables.sumTotalRowIfNeeded(config, table, tableJQuery);
 
         table.mcms = {
             id: tableId, $: tableJQuery, callbacks: {},
@@ -81,9 +81,8 @@ var mcmsDatatables = {
             mcmsDatatables.bindDefaultModalEventHandlers(table);
         }
         if (config.enableColumnSearch) {
-            mcmsDatatables.enableColumnSearchRow(config, tableJQuery);
+            mcmsDatatables.enableColumnSearchRow(config, table);
         }
-
         if (config.hasStaticIndexColumn) {
             var staticIndexColumnIndex = config.checkboxSelection ? 1 : 0;
             table.on('order.dt search.dt', function () {
@@ -93,7 +92,7 @@ var mcmsDatatables = {
                 }).nodes().each(function (cell, i) {
                     cell.innerHTML = i + 1;
                 });
-            }).draw();
+            });
         }
 
         if (config.checkboxSelection) {
@@ -104,12 +103,7 @@ var mcmsDatatables = {
         }
 
         table.on('processing.dt', function (e, settings, processing) {
-            var overlay = $(e.currentTarget).closest('.dataTables_wrapper').find('.processing-overlay');
-            if (processing) {
-                overlay.show();
-            } else {
-                overlay.hide();
-            }
+            tableJQuery.closest('.dataTables_wrapper').find('.processing-overlay').toggle(processing);
         });
 
         mcmsDatatables.properlyDestroyInModal(tableElem, table);
@@ -120,7 +114,6 @@ var mcmsDatatables = {
                 table.fixedHeader.adjust();
             }, 500);
         });
-
         return table;
     },
     getLang: function (lang) {
@@ -131,94 +124,112 @@ var mcmsDatatables = {
         };
         return langConfig[lang];
     },
-    sumTotalRowIfNeeded: function (config) {
-        if (!config.columns.some(function (c) {
+    sumTotalRowIfNeeded: function (config, tableApi, tableJQuery) {
+        var sumTotalCols = config.columns.map(function (c, i) {
+            return {idx: i, sumTotal: c.sumTotal};
+        }).filter(function (c) {
             return c.sumTotal;
-        })) {
+        });
+        if (!sumTotalCols.length) {
             return;
         }
-        var oldDrawCallback = config.drawCallback;
-        config.drawCallback = function () {
-            if (oldDrawCallback) {
-                oldDrawCallback.call(this);
+        tableApi.on('init', function () {
+            var sumTotalRow = tableApi.footer().toJQuery().find('tr.sum-total-row');
+            if (!sumTotalRow.length) {
+                return;
             }
-            var row = this.find("tfoot tr.sum-total-row");
-            if (!row.data("build")) {
-                row.removeClass("d-none");
-                row.toggle().data("build", true);
-                var cols = row.find('th')
-                cols.each(function (index) {
-                    $(this).html('');
-                });
-                cols.eq(config.checkboxSelection ? 1 : 0).html("Total");
-            }
-            var api = this.api();
-            api.columns().every(function (index) {
-                var sumTotalOpt = config.columns[index].sumTotal;
-                if (!sumTotalOpt)
-                    return;
 
-                var col = api.column(index);
+            try {
+                var sumTotalFooterRowIndex = tableApi.footer().toJQuery().find('tr.sum-total-row').index();
+                var sumTotalFooterObjects = tableApi.settings()[0].aoFooter[sumTotalFooterRowIndex];
+                if (config.checkboxSelection || config.hasStaticIndexColumn) {
+                    sumTotalFooterObjects[Math.max(!!config.checkboxSelection + !!config.hasStaticIndexColumn - 1, 0)].cell.innerHTML = "Total";
+                }
+            } catch (e) {
+            }
+
+            sumTotalRow.toggle();
+            tableApi.on('draw', function () {
+                tableJQuery.trigger('calcSumTotal.mcms');
+            });
+            tableJQuery.trigger('calcSumTotal.mcms');
+
+        });
+        tableApi.on('calcSumTotal.mcms', function () {
+            var sumTotalFooterRowIndex = tableApi.footer().toJQuery().find('tr.sum-total-row').index();
+            var sumTotalFooterObjects = tableApi.settings()[0].aoFooter[sumTotalFooterRowIndex];
+            for (var i = 0; i < sumTotalCols.length; i++) {
+                var colConfig = sumTotalCols[i];
+                var col = tableApi.column(colConfig.idx);
                 if (!col.visible())
                     return;
-
-                var htmlElementIndex = $(col.footer()).index();
-                if (htmlElementIndex === -1)
-                    return;
-
-                var sum = "";
+                var sumTotalOpt = colConfig.sumTotal;
+                var sum = '';
+                var visibleColData = tableApi.column(colConfig.idx, {page: 'current'}).data();
                 if (sumTotalOpt === true) {
-                    sum = api.column(index, {page: 'current'}).data().sumTotal;
+                    sum = visibleColData.sumTotal;
                 } else {
-                    var data = api.column(index, {page: 'current'}).data();
-                    if (typeof sumTotalOpt === "string" && data.hasOwnProperty(sumTotalOpt)) {
-                        sum = data[sumTotalOpt];
+                    if (typeof sumTotalOpt === "string" && visibleColData.hasOwnProperty(sumTotalOpt)) {
+                        sum = visibleColData[sumTotalOpt];
                     }
                 }
                 if (typeof sum === 'function') {
                     sum = sum();
                 }
-
-                row.children().eq(htmlElementIndex).html(sum + "");
-            });
-        }
+                sumTotalFooterObjects[colConfig.idx].cell.innerHTML = sum + "";
+            }
+        });
     },
-    toggleColumnSearchRow: function (table, columnsConfig) {
-        var searchRow = table.find('tfoot tr.column-search-row');
+    toggleColumnSearchRow: function (tableApi, columnsConfig) {
+        var searchRow = tableApi.footer().toJQuery().find('tr.column-search-row');
         searchRow.toggle();
         if (!searchRow.data('build')) {
             searchRow.data('build', true)
-            searchRow.removeClass("d-none");
+            var searchFooterRowIndex = searchRow.index();
 
-            var searchCells = searchRow.find('td');
-            searchCells.each(function (index) {
-                if (!columnsConfig[index].searchable) {
-                    $(this).html('');
-                    return;
+            var searchFooterObjects = tableApi.settings()[0].aoFooter[searchFooterRowIndex];
+            for (var i = 0; i < searchFooterObjects.length; i++) {
+                var cell = $(searchFooterObjects[i].cell);
+
+                if (!columnsConfig[i].searchable) {
+                    cell.html('');
+                    continue;
                 }
-                var title = $(this).text();
-                $(this).html('&nbsp;<input type="text" placeholder="🔍 ' + title + '" />');
-            });
-
-            table.dataTable().api().columns().every(function (index) {
-                var column = this;
-                $(searchCells[index]).find("input").on('keyup change clear', function () {
-                    if (column.search() !== this.value) {
-                        column.search(this.value).draw();
+                var title = cell.text();
+                var input = $('<input type="text" placeholder="🔍 ' + title + '" />');
+                var col = tableApi.column(i);
+                var currentSearch = col.search();
+                if (currentSearch) {
+                    input.val(currentSearch);
+                }
+                input.data('colApi', col);
+                input.on('keyup change clear', function () {
+                    var col = $(this).data('colApi')
+                    if (col.search() !== this.value) {
+                        col.search(this.value).draw();
                     }
                 });
-            });
+                cell.html('&nbsp;').append(input);
+            }
         }
     },
-    enableColumnSearchRow: function (config, tableJq) {
+    enableColumnSearchRow: function (config, tableApi) {
         config.buttons.splice(0, 0,
             {
                 text: '<i class="fas fa-grip-lines-vertical fa-fw"></i>🔍',
                 className: 'btn-light btn-outline-info',
                 action: function (e, dt, node, conf) {
-                    mcmsDatatables.toggleColumnSearchRow(tableJq, config.columns);
+                    mcmsDatatables.toggleColumnSearchRow(tableApi, config.columns);
                 }
             });
+        var search = tableApi.columns().search();
+        //if there is any search in at least one column, then toggle (show) the row right now
+        for (var i = 0; i < search.length; i++) {
+            if (search[i]) {
+                mcmsDatatables.toggleColumnSearchRow(tableApi, config.columns);
+                break;
+            }
+        }
     },
     properlyDestroyInModal: function (tableElem, datatable) {
         var modal = tableElem.closest(".modal");
@@ -370,7 +381,7 @@ var mcmsDatatables = {
                 table.rows(index).remove();
             }
         };
-    }
+    },
 }
 
 jQuery.fn.dataTable.Api.register('sumTotal', function () {

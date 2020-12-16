@@ -89,7 +89,7 @@ namespace MCMS.Admin.Users
             return View("BasicModals/DeleteModal", e);
         }
 
-        [HttpPost("{id}"), ActionName("Delete")]
+        [HttpDelete("{id}"), ActionName("Delete")]
         [Produces("application/json")]
         public virtual async Task<IActionResult> DeleteConfirmed([FromRoute] string id)
         {

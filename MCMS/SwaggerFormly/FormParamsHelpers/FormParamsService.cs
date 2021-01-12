@@ -17,6 +17,8 @@ namespace MCMS.SwaggerFormly.FormParamsHelpers
         protected string GetActionName { get; set; }
         public string SubmitActionName { get; set; }
 
+        public string OpenApiConfigName { get; set; } = "admin-api";
+
 
         public FormParamsService(IUrlHelper urlHelper, string controllerName, string schemaName)
         {
@@ -51,19 +53,24 @@ namespace MCMS.SwaggerFormly.FormParamsHelpers
             {
                 SchemaName = SchemaName,
                 Action = action,
-                OpenApiConfigUrl = GetOpenApiConfigUrl(UrlHelper),
+                OpenApiConfigUrl = GetOpenApiConfigUrl(UrlHelper, new {name = OpenApiConfigName}),
                 FormInstanceId = Utils.GenerateRandomHexString(),
                 AdditionalFields = AdditionalData,
                 Options = Options
             };
             formParams.AddOption("basePath", UrlHelper.Content("~"));
+            if (OpenApiConfigName != "admin-api")
+            {
+                formParams.AddOption("openApiConfigUrl", formParams.OpenApiConfigUrl);
+            }
+
             return formParams;
         }
 
-        public static string GetOpenApiConfigUrl(IUrlHelper urlHelper)
+        public static string GetOpenApiConfigUrl(IUrlHelper urlHelper, object values = null)
         {
             return urlHelper.ActionLink(nameof(OpenApiConfigController.Get),
-                TypeHelpers.GetControllerName(typeof(OpenApiConfigController)));
+                TypeHelpers.GetControllerName(typeof(OpenApiConfigController)), values);
         }
 
         protected virtual string GetSubmitActionName(FormActionType actionType)

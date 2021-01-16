@@ -43,7 +43,7 @@ namespace MCMS.Display.ModelDisplay
                 ModelName = TypeHelpers.GetDisplayNameOrDefault<TVm>(),
                 TableColumns = await GetTableColumns(),
                 HasTableIndexColumn = true,
-                TableItemsApiUrl = url.ActionLink(nameof(IReadOnlyApiController<TVm>.Index),
+                TableItemsApiUrl = url.ActionLink(nameof(IReadOnlyApiController<TVm>.DtQuery),
                     TypeHelpers.GetControllerName(typeof(TApiController)), TableItemsApiUrlValues),
                 ItemActions = GetItemActions(),
                 BatchActions = GetBatchActions(),

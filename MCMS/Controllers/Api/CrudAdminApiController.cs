@@ -1,12 +1,19 @@
+using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using MCMS.Base.Attributes;
 using MCMS.Base.Data.Entities;
 using MCMS.Base.Data.FormModels;
 using MCMS.Base.Data.ViewModels;
+using MCMS.Data;
 using MCMS.Models;
+using MCMS.Models.Dt;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 
 namespace MCMS.Controllers.Api
 {
@@ -14,6 +21,8 @@ namespace MCMS.Controllers.Api
         ICrudAdminApiController<TFm, TVm>
         where TE : class, IEntity, new() where TFm : class, IFormModel where TVm : class, IViewModel
     {
+        protected virtual DtQueryService QueryService => ServiceProvider.GetService<DtQueryService>();
+
         [AdminApiRoute("~/[controller]")]
         [HttpGet]
         public virtual async Task<ActionResult<List<TVm>>> Index()
@@ -21,6 +30,20 @@ namespace MCMS.Controllers.Api
             var all = await Repo.GetAll();
             var allVm = Map(all);
             return Ok(allVm);
+        }
+
+        [AdminApiRoute("~/[controller]/dtquery")]
+        [HttpPost]
+        [ModelValidation]
+        public virtual async Task<ActionResult<DtResult<TVm>>> DtQuery([FromBody] [Required] DtParameters model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var result = await QueryService.Query<TVm, TE>(Repo, model);
+            return Ok(result);
         }
 
         [AdminApiRoute("~/[controller]/light")]

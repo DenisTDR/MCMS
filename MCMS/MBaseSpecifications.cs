@@ -50,6 +50,8 @@ namespace MCMS
 
             services.AddOptions<DisplayValueFormatters>().Configure(DefaultDisplayValueFormatters.RegisterFormatters);
 
+            services.AddSingleton<DtQueryService>();
+
             if (!string.IsNullOrEmpty(Env.Get("PERSISTED_KEYS_DIRECTORY")))
             {
                 services.AddDataProtection()

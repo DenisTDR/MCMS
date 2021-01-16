@@ -15,14 +15,22 @@ var mcmsDatatables = {
         var config = {
             stateSave: true,
             processing: true,
+            serverSide: true,
+            searchDelay: 500,
             ajax: {
+                type: "POST",
+                contentType: 'application/json',
+                data: function (d) {
+                    return JSON.stringify(d);
+                },
                 dataSrc: function (json) {
+                    var data = json.data;
                     if (shouldMakeActionsCellContent) {
-                        for (var i = 0; i < json.length; i++) {
-                            initialPatchRowData(json[i]);
+                        for (var i = 0; i < data.length; i++) {
+                            initialPatchRowData(data[i]);
                         }
                     }
-                    return json;
+                    return data;
                 },
                 error: function (jqXHR, textStatus, errorThrown, c) {
                     if (errorThrown === 'abort') {
@@ -184,12 +192,14 @@ var mcmsDatatables = {
             }
         });
     },
-    toggleColumnSearchRow: function (tableApi, columnsConfig) {
+    toggleColumnSearchRow: function (tableApi, columnsConfig, tableConfig) {
         var searchRow = tableApi.footer().toJQuery().find('tr.column-search-row');
         searchRow.toggle();
         if (!searchRow.data('build')) {
             searchRow.data('build', true)
             var searchFooterRowIndex = searchRow.index();
+
+            var debounceId = -1;
 
             var searchFooterObjects = tableApi.settings()[0].aoFooter[searchFooterRowIndex];
             for (var i = 0; i < searchFooterObjects.length; i++) {
@@ -208,9 +218,19 @@ var mcmsDatatables = {
                 }
                 input.data('colApi', col);
                 input.on('keyup change clear', function () {
-                    var col = $(this).data('colApi')
-                    if (col.search() !== this.value) {
-                        col.search(this.value).draw();
+                    var col = $(this).data('colApi');
+                    var val = this.value;
+                    if (col.search() !== val) {
+                        if (tableConfig.serverSide) {
+                            var localDebounceId = Math.floor(Math.random() * 10000);
+                            debounceId = localDebounceId;
+                            setTimeout(function () {
+                                if (debounceId !== localDebounceId) return;
+                                col.search(val).draw();
+                            }, tableConfig.searchDelay);
+                        } else {
+                            col.search(val).draw();
+                        }
                     }
                 });
                 cell.html('&nbsp;').append(input);
@@ -223,14 +243,14 @@ var mcmsDatatables = {
                 text: '<i class="fas fa-grip-lines-vertical fa-fw"></i>🔍',
                 className: 'btn-light btn-outline-info',
                 action: function (e, dt, node, conf) {
-                    mcmsDatatables.toggleColumnSearchRow(tableApi, config.columns);
+                    mcmsDatatables.toggleColumnSearchRow(tableApi, config.columns, config);
                 }
             });
         var search = tableApi.columns().search();
         //if there is any search in at least one column, then toggle (show) the row right now
         for (var i = 0; i < search.length; i++) {
             if (search[i]) {
-                mcmsDatatables.toggleColumnSearchRow(tableApi, config.columns);
+                mcmsDatatables.toggleColumnSearchRow(tableApi, config.columns, config);
                 break;
             }
         }

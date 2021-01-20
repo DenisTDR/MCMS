@@ -10,8 +10,8 @@
   "sUrl": "",
   "oPaginate": {
     "sFirst": "Prima",
-    "sPrevious": "Precedenta",
-    "sNext": "Următoarea",
+    "sPrevious": "<",
+    "sNext": ">",
     "sLast": "Ultima"
   },
   "select": {

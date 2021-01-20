@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using MCMS.Base.Data.Entities;
@@ -32,6 +33,9 @@ namespace MCMS.Base.Auth
         [DataType(DataType.EmailAddress)] public override string Email { get; set; }
 
         [Display(Name = "Email Confirmed")] public override bool EmailConfirmed { get; set; }
+        
+        // public List<IdentityUserRole> Roles2 { get; set; }
+        public List<UserRole> UserRoles { get; set; }
 
         public override string ToString()
         {

@@ -1,42 +1,42 @@
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using MCMS.Base.Helpers;
 using MCMS.Base.Repositories;
 using MCMS.Display.Link;
-using MCMS.Display.ModelDisplay;
+using MCMS.Display.TableConfig;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MCMS.Admin.Users
 {
-    public class UsersTableModelDisplayConfigService : ModelDisplayConfigService
+    public class UsersTableModelDisplayConfigService : TableConfigService<UserViewModel>
     {
-        public override Type ViewModelType => typeof(UserViewModel);
+        // public override async Task<TableConfig> GetTableConfig()
+        // {
+        //     return new()
+        //     {
+        //         ModelName = "User",
+        //         TableColumns = null,
+        //         HasTableIndexColumn = true,
+        //         TableItemsApiUrl = UrlHelper.ActionLink(nameof(AdminUsersAdminApiController.Index),
+        //             TypeHelpers.GetControllerName(typeof(AdminUsersAdminApiController))),
+        //         ItemActions = GetDefaultTableItemActions()
+        //     };
+        // }
 
-        public override async Task<IndexPageConfig> GetIndexPageConfig(IUrlHelper url)
+        public override Task<TableConfig> GetTableConfig()
         {
-            var config = new IndexPageConfig
+            if (TableItemsApiUrl == null)
             {
-                IndexPageTitle = "Users",
-                TableConfig = await GetTableConfig(url)
-            };
-            return config;
+                TableItemsApiUrl = UrlHelper.ActionLink(ServerSide
+                        ? nameof(AdminUsersAdminApiController.DtQuery)
+                        : nameof(AdminUsersAdminApiController.Index),
+                    TypeHelpers.GetControllerName(typeof(AdminUsersAdminApiController)), TableItemsApiUrlValues);
+            }
+
+            return base.GetTableConfig();
         }
 
-        public override async Task<TableDisplayConfig> GetTableConfig(IUrlHelper url)
-        {
-            return new()
-            {
-                ModelName = "User",
-                TableColumns = await GetTableColumns(),
-                HasTableIndexColumn = true,
-                TableItemsApiUrl = url.ActionLink(nameof(AdminUsersAdminApiController.Index),
-                    TypeHelpers.GetControllerName(typeof(AdminUsersAdminApiController))),
-                ItemActions = GetDefaultTableItemActions()
-            };
-        }
-
-        public virtual List<MRichLink> GetDefaultTableItemActions()
+        public override List<MRichLink> GetItemActions()
         {
             return new()
             {
@@ -52,8 +52,9 @@ namespace MCMS.Admin.Users
             };
         }
 
-        public UsersTableModelDisplayConfigService(ITranslationsRepository translationsRepository) : base(
-            translationsRepository)
+        public UsersTableModelDisplayConfigService(ITranslationsRepository translationsRepository,
+            IUrlHelper urlHelper)
+            : base(urlHelper)
         {
         }
     }

@@ -2,7 +2,7 @@
 @using MCMS.Display.Link
 @using MCMS.Admin.Users
 @inject ITranslationsRepository TransRepo
-@model MCMS.Admin.Users.UserViewModel
+@model MCMS.Display.DetailsViewModelT<MCMS.Admin.Users.UserViewModel>
 
 @{
     ViewBag.Title = ViewBag.ModelName + ": " + Model;
@@ -14,10 +14,10 @@
     </div>
 </div>
 <div class="modal-footer">
-    @if (!Model.EmailConfirmed)
+    @if (!Model.TModel.EmailConfirmed)
     {
         var confirmEmailLink = new MRichLink(await TransRepo.GetValueOrSlug("confirm_email"), typeof(AdminUsersController),
-            nameof(AdminUsersController.ConfirmEmail)).WithValues(new {Model.Id}).WithTag("confirm-email")
+            nameof(AdminUsersController.ConfirmEmail)).WithValues(new {Model.TModel.Id}).WithTag("confirm-email")
             .AsButton("outline-secondary").WithModal()
             .WithIconClasses("fas fa-check");
 
@@ -26,11 +26,11 @@
     }
     @{
         var resendResetLink = new MRichLink(await TransRepo.GetValueOrSlug("resend_activation_email"), typeof(AdminUsersController),
-            nameof(AdminUsersController.ResendActivationMail)).WithValues(new {Model.Id}).WithTag("confirm-email")
+            nameof(AdminUsersController.ResendActivationMail)).WithValues(new {Model.TModel.Id}).WithTag("confirm-email")
             .AsButton("outline-secondary").WithModal()
             .WithIconClasses("fas fa-envelope");
 
-        <partial name="Partials/_MRichLink" model="resendResetLink"/>
+    <partial name="Partials/_MRichLink" model="resendResetLink"/>
     }
     <button type="button" class="btn btn-secondary" data-dismiss="modal">@await TransRepo.GetValueOrSlug("close")</button>
 </div>

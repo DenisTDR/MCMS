@@ -8,7 +8,9 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using MCMS.Data;
 using MCMS.Data.Seeder;
+using MCMS.Display.DetailsConfig;
 using MCMS.Display.ModelDisplay;
+using MCMS.Display.TableConfig;
 using MCMS.Filters;
 using MCMS.Forms;
 using Microsoft.AspNetCore.DataProtection;
@@ -18,6 +20,7 @@ using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.Extensions.FileProviders;
+using Z.Expressions;
 
 namespace MCMS
 {
@@ -36,8 +39,17 @@ namespace MCMS
 
             services.AddCors();
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+
+
             services.AddScoped<DataSeeder>();
+
+
+            EvalManager.DefaultContext.RegisterType(typeof(MDbFunctions));
+            services.AddScoped(typeof(IDetailsConfigServiceT<>), typeof(DetailsConfigService<>));
+            services.AddScoped(typeof(ITableConfigServiceT<>), typeof(TableConfigService<>));
+            services.AddScoped(typeof(TableConfigForControllerService<,,,,>));
             services.AddScoped(typeof(ModelDisplayConfigForControllerService<,,,,>));
+
 
             services.AddSingleton<DisplayValueService>();
 
@@ -50,7 +62,7 @@ namespace MCMS
 
             services.AddOptions<DisplayValueFormatters>().Configure(DefaultDisplayValueFormatters.RegisterFormatters);
 
-            services.AddSingleton<DtQueryService>();
+            services.AddScoped(typeof(DtQueryService<>));
 
             if (!string.IsNullOrEmpty(Env.Get("PERSISTED_KEYS_DIRECTORY")))
             {

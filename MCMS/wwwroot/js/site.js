@@ -58,7 +58,6 @@ function bindSideMenuCollapseSectionsPersistence() {
     var statesStr = sessionStorage.getItem('side-menu-section-states');
     var saveStates = function () {
         sessionStorage.setItem('side-menu-section-states', JSON.stringify(states));
-        console.log(states);
     }
     if (statesStr) {
         var shouldSave = false;

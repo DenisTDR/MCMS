@@ -15,19 +15,17 @@ var mcmsDatatables = {
         var config = {
             stateSave: true,
             processing: true,
-            serverSide: true,
-            searchDelay: 500,
             ajax: {
-                type: "POST",
-                contentType: 'application/json',
-                data: function (d) {
-                    return JSON.stringify(d);
-                },
                 dataSrc: function (json) {
-                    var data = json.data;
+                    var data = json.data ? json.data : json;
                     if (shouldMakeActionsCellContent) {
                         for (var i = 0; i < data.length; i++) {
                             initialPatchRowData(data[i]);
+                        }
+                    }
+                    if (initialConfig.serverSide) {
+                        for (var i = 0; i < data.length; i++) {
+                            data[i]._index = i + 1;
                         }
                     }
                     return data;
@@ -43,7 +41,7 @@ var mcmsDatatables = {
             },
             bAutoWidth: false,
             iDisplayLength: 50,
-            lengthMenu: [[10, 25, 50, 100, 250, 500, -1], [10, 25, 50, 100, 250, 500, "All"]],
+            lengthMenu: [[10, 25, 50, 100, 250, 500, 1000, -1], [10, 25, 50, 100, 250, 500, 1000, "All"]],
             fixedHeader: {headerOffset: 50},
             language: mcmsDatatables.getLang(lang),
             dom: "<'processing-overlay'><'row'<'col-sm-12 col-md-6 table-actions-container'><'col-sm-12 col-md-6'f>>" +
@@ -62,6 +60,17 @@ var mcmsDatatables = {
         };
 
         config = deepmerge(initialConfig, config);
+
+        if (config.serverSide) {
+            config.ajax = deepmerge(config.ajax, {
+                type: "POST",
+                contentType: 'application/json',
+                data: function (d) {
+                    return JSON.stringify(d);
+                },
+            })
+        }
+        console.log(config.searchDelay);
 
         if (config.hasStaticIndexColumn || config.checkboxSelection) {
             config.aaSorting = [];
@@ -91,7 +100,7 @@ var mcmsDatatables = {
         if (config.enableColumnSearch) {
             mcmsDatatables.enableColumnSearchRow(config, table);
         }
-        if (config.hasStaticIndexColumn) {
+        if (config.hasStaticIndexColumn && !config.serverSide) {
             var staticIndexColumnIndex = config.checkboxSelection ? 1 : 0;
             table.on('order.dt search.dt', function () {
                 table.column(staticIndexColumnIndex, {
@@ -204,13 +213,13 @@ var mcmsDatatables = {
             var searchFooterObjects = tableApi.settings()[0].aoFooter[searchFooterRowIndex];
             for (var i = 0; i < searchFooterObjects.length; i++) {
                 var cell = $(searchFooterObjects[i].cell);
-
-                if (!columnsConfig[i].searchable) {
+                var colConfig = columnsConfig[i];
+                if (!colConfig.searchable) {
                     cell.html('');
                     continue;
                 }
                 var title = cell.text();
-                var input = $('<input type="text" placeholder="🔍 ' + title + '" />');
+                var input = mcmsDatatables.buildInputElementForColumnSearch(colConfig, title, tableConfig.serverSide);
                 var col = tableApi.column(i);
                 var currentSearch = col.search();
                 if (currentSearch) {
@@ -236,6 +245,22 @@ var mcmsDatatables = {
                 cell.html('&nbsp;').append(input);
             }
         }
+    },
+    buildInputElementForColumnSearch: function (colConfig, placeholder, serverSide) {
+        if (serverSide) {
+            switch (colConfig.mType) {
+                case 'bool':
+                case 'select':
+                    var elem = $('<select>');
+                    if (colConfig.mFilterValues) {
+                        for (var i = 0; i < colConfig.mFilterValues.length; i++) {
+                            elem.append('<option value="' + colConfig.mFilterValues[i].value + '">' + colConfig.mFilterValues[i].label + '</option>');
+                        }
+                    }
+                    return elem;
+            }
+        }
+        return $('<input type="' + (colConfig.mType === 'number' ? 'number' : 'text') + '" placeholder="🔍 ' + placeholder + '" />');
     },
     enableColumnSearchRow: function (config, tableApi) {
         config.buttons.splice(0, 0,

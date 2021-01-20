@@ -14,11 +14,10 @@ namespace MCMS.Display.ModelDisplay
 {
     public abstract class ModelDisplayConfigService : IModelDisplayConfigService
     {
-        protected ITranslationsRepository TranslationsRepository { get; }
+        // protected ITranslationsRepository TranslationsRepository { get; }
 
         public abstract Type ViewModelType { get; }
 
-        public bool ExcludeActionsColumn { get; set; }
         public object TableItemsApiUrlValues { get; set; }
         public bool UseCreateNewItemLink { get; set; } = true;
         public object CreateNewItemLinkValues { get; set; }
@@ -27,74 +26,10 @@ namespace MCMS.Display.ModelDisplay
 
         public abstract Task<IndexPageConfig> GetIndexPageConfig(IUrlHelper url);
 
-        public abstract Task<TableDisplayConfig> GetTableConfig(IUrlHelper url);
-
-
-        public ModelDisplayConfigService(ITranslationsRepository translationsRepository)
+        public abstract Task<TableConfig.TableConfig> GetTableConfig(IUrlHelper url);
+        public List<DetailsField> GetDetailsFields(Type viewModelType = null)
         {
-            TranslationsRepository = translationsRepository;
-        }
-
-        public virtual async Task<List<TableColumn>> GetTableColumns()
-        {
-            var props = ViewModelType.GetProperties().ToList();
-            var tableColumnProps = props.Where(prop =>
-            {
-                var attr = prop.GetCustomAttributes<TableColumnAttribute>().FirstOrDefault();
-                return attr != null && (!attr.Hidden || attr.RowGroup);
-            }).ToList();
-            if (tableColumnProps.Count == 0)
-            {
-                tableColumnProps = props;
-            }
-
-            tableColumnProps = tableColumnProps.Where(prop =>
-            {
-                var attr = prop.GetCustomAttributes<TableColumnAttribute>().FirstOrDefault();
-                return attr == null || !attr.Hidden || attr.RowGroup;
-            }).ToList();
-
-            var list = tableColumnProps.Select(prop => new TableColumn(TypeHelpers.GetDisplayNameOrDefault(prop),
-                prop.Name.ToCamelCase(), prop.GetCustomAttributes<TableColumnAttribute>().FirstOrDefault())).ToList();
-            if (!ExcludeActionsColumn)
-            {
-                list.Add(new TableColumn(await TranslationsRepository.GetValueOrSlug("actions"), "_actions", 100)
-                    {Orderable = false, Searchable = false});
-            }
-
-            return list;
-        }
-
-        public virtual List<DetailsField> GetDetailsFields(Type viewModelType = null)
-        {
-            var props = (viewModelType ?? ViewModelType).GetProperties().ToList();
-            var detailsFields = props.Where(prop =>
-            {
-                var attr = prop.GetCustomAttributes<DetailsFieldAttribute>().FirstOrDefault();
-                return attr != null && !attr.Hidden;
-            }).ToList();
-            if (detailsFields.Count == 0)
-            {
-                detailsFields = props;
-            }
-
-            detailsFields = detailsFields.Where(prop =>
-            {
-                var attr = prop.GetCustomAttributes<DetailsFieldAttribute>().FirstOrDefault();
-                return attr == null || !attr.Hidden;
-            }).ToList();
-
-            var list = detailsFields
-                .Select(prop =>
-                {
-                    var field = prop.GetCustomAttributes<DetailsFieldAttribute>().FirstOrDefault() is { } attr
-                        ? attr.ToDetailsField()
-                        : new DetailsField();
-                    field.PropertyInfo = prop;
-                    return field;
-                }).OrderBy(df => df.OrderIndex).ToList();
-
-            return list;
+            throw new NotImplementedException();
         }
     }
 }

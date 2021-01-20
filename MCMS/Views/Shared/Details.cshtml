@@ -1,8 +1,9 @@
 @using MCMS.Base.Repositories
 @inject ITranslationsRepository TransRepo
+@model MCMS.Display.DetailsViewModel
 
 @{
-    ViewBag.Title = ViewBag.ModelName + ": " + Model;
+    ViewBag.Title = ViewBag.ModelName + ": " + Model.Model;
     Layout = "_ModalLayout";
 }
 <div class="modal-body">

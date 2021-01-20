@@ -7,6 +7,7 @@ table.dataTable tr.column-search-row td {
     position: relative;
 }
 
+table.dataTable tr.column-search-row td select,
 table.dataTable tr.column-search-row td input {
     position: absolute;
     width: 100%;

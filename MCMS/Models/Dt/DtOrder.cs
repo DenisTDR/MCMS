@@ -1,8 +1,11 @@
+using System;
+using System.ComponentModel.DataAnnotations;
+
 namespace MCMS.Models.Dt
 {
     public class DtOrder
     {
-        public int Column { get; set; }
+        [Range(0, int.MaxValue)] public int Column { get; set; }
         public DtOrderDir Dir { get; set; }
     }
 

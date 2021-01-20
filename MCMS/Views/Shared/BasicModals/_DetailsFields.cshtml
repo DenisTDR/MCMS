@@ -1,17 +1,15 @@
-@using MCMS.Display.ModelDisplay
-@using MCMS.Base.Display.ModelDisplay
 @using MCMS.Base.Display.DisplayValue
 @inject DisplayValueService DisplayValueService
+@model MCMS.Display.DetailsViewModel
 
-@{
-    var fields = ViewBag.Fields as List<DetailsField>
-                 ?? (ViewBag.ModelDisplayConfigService as IModelDisplayConfigService)?.GetDetailsFields()
-                 ?? throw new Exception("Can't get fields for " + ViewBag.ModelName);
-}
-@foreach (var detailsField in fields)
-{
-    <div class="row @detailsField.ClassName">
-        <div class="col-12 col-sm-4 col-md-3">@Html.Raw(detailsField.Name)</div>
-        <div class="col-12 col-sm-8 col-md-9">@Html.Raw(DisplayValueService.GetDisplayValue(detailsField.PropertyInfo, Model) ?? "<span class='st-text'>null/empty</i>")</div>
-    </div>
-}
+<table class="table table-striped table-bordered">
+    <tbody>
+    @foreach (var detailsField in Model.Fields)
+    {
+        <tr class="@detailsField.ClassName">
+            <td class="">@Html.Raw(detailsField.Name)</td>
+            <td class="">@Html.Raw(DisplayValueService.GetDisplayValue(detailsField.PropertyInfo, Model.Model) ?? "<span class='st-text'>null/empty</i>")</td>
+        </tr>
+    }
+    </tbody>
+</table>

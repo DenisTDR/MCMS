@@ -33,6 +33,30 @@ namespace MCMS.Base.Extensions
             return false;
         }
 
+        public static Type[] GetGenericArgumentsOfGenericTypeImplementation(this Type type, Type genericType)
+        {
+            var tmpType = type;
+            if (!genericType.IsGenericTypeDefinition)
+            {
+                throw new ArgumentException(nameof(genericType));
+            }
+            
+
+            while (tmpType != null && tmpType != typeof(object))
+            {
+                var crt = tmpType.IsGenericType ? tmpType.GetGenericTypeDefinition() : tmpType;
+
+                if (crt == genericType)
+                {
+                    return tmpType.GenericTypeArguments;
+                }
+
+                tmpType = tmpType.BaseType;
+            }
+
+            return null;
+        }
+
         public static bool ImplementsGenericInterface(this Type type, Type genericInterfaceType)
         {
             return type.GetInterfaces().Any(x =>

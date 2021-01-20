@@ -7,7 +7,10 @@ using MCMS.Base.Data.ViewModels;
 using MCMS.Base.Extensions;
 using MCMS.Base.Helpers;
 using MCMS.Controllers.Api;
+using MCMS.Display;
+using MCMS.Display.DetailsConfig;
 using MCMS.Display.ModelDisplay;
+using MCMS.Display.TableConfig;
 using MCMS.SwaggerFormly.FormParamsHelpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -21,11 +24,22 @@ namespace MCMS.Controllers.Ui
         where TVm : class, IViewModel
         where TApiController : ICrudAdminApiController<TFm, TVm>
     {
-        public virtual IModelDisplayConfigForControllerService ModelDisplayConfigService =>
-            ServiceProvider.GetRequiredService(
-                ModelDisplayConfigForControllerService<TE, TFm, TVm,
-                        GenericAdminUiController<TE, TFm, TVm, TApiController>, TApiController>
-                    .MakeGenericTypeWithUiControllerType(GetType())) as IModelDisplayConfigForControllerService;
+        // public virtual IModelDisplayConfigForControllerService ModelDisplayConfigService =>
+        //     ServiceProvider.GetRequiredService(
+        //         ModelDisplayConfigForControllerService<TE, TFm, TVm,
+        //                 GenericAdminUiController<TE, TFm, TVm, TApiController>, TApiController>
+        //             .MakeGenericTypeWithUiControllerType(GetType())) as IModelDisplayConfigForControllerService;
+
+        private ITableConfigService _tableConfigService;
+
+        public virtual ITableConfigService TableConfigService => _tableConfigService ??=
+            ServiceProvider.GetRequiredService(TableConfigServiceHelper.GetTypeForUiController(GetType())) as
+                ITableConfigService;
+
+        private IDetailsConfigServiceT<TVm> _detailsConfigService;
+
+        public virtual IDetailsConfigServiceT<TVm> DetailsConfigService => _detailsConfigService ??=
+            ServiceProvider.GetRequiredService<IDetailsConfigServiceT<TVm>>();
 
         public virtual FormParamsService FormParamsService =>
             ServiceProvider.GetRequiredService<FormParamsForControllerService<TApiController, TFm>>();
@@ -37,9 +51,13 @@ namespace MCMS.Controllers.Ui
             base.OnActionExecuting(context);
             ViewBag.ModelName = TypeHelpers.GetDisplayNameOrDefault<TVm>();
             ViewBag.FormParamsService = FormParamsService;
-            ViewBag.ModelDisplayConfigService = ModelDisplayConfigService;
-            ModelDisplayConfigService.UseModals = UsesModals;
+
+            // ViewBag.ModelDisplayConfigService = ModelDisplayConfigService;
+            // ModelDisplayConfigService.UseModals = UsesModals;
             ViewBag.ApiControllerName = TypeHelpers.GetControllerName(typeof(TApiController));
+
+            TableConfigService.ServerSide = true;
+            TableConfigService.UseModals = UsesModals;
         }
 
         public override async Task<IActionResult> Index()
@@ -54,9 +72,13 @@ namespace MCMS.Controllers.Ui
         }
 
         [NonAction]
-        public virtual Task<IndexPageConfig> GetIndexPageConfig()
+        public virtual async Task<IndexPageConfig> GetIndexPageConfig()
         {
-            return ModelDisplayConfigService.GetIndexPageConfig(Url);
+            return new()
+            {
+                IndexPageTitle = TypeHelpers.GetDisplayName(GetType()),
+                TableConfig = await TableConfigService.GetTableConfig()
+            };
         }
 
         [HttpGet("{id}")]
@@ -64,7 +86,8 @@ namespace MCMS.Controllers.Ui
         {
             var e = await Repo.GetOneOrThrow(id);
             var vm = Mapper.Map<TVm>(e);
-            return View(vm);
+            var model = new DetailsViewModelT<TVm>(vm, DetailsConfigService.GetDetailsFields());
+            return View(model);
         }
 
         [HttpGet]

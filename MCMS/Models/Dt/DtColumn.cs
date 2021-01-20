@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+using MCMS.Base.Display.ModelDisplay;
 
 namespace MCMS.Models.Dt
 {
@@ -8,5 +10,15 @@ namespace MCMS.Models.Dt
         public string Name { get; set; }
         public bool Orderable { get; set; }
         public bool Searchable { get; set; }
+        [JsonIgnore] public TableColumn MatchedTableColumn { get; set; }
+
+        public DtColumn CloneForGlobalSearch(DtSearch search)
+        {
+            return new()
+            {
+                Search = search,
+                MatchedTableColumn = MatchedTableColumn
+            };
+        }
     }
 }

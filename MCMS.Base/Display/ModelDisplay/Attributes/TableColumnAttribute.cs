@@ -16,11 +16,14 @@ namespace MCMS.Base.Display.ModelDisplay.Attributes
 
         public int OrderIndex { get; set; }
         public bool Hidden { get; set; }
-        public bool Searchable { get; set; } = true;
-        public bool Orderable { get; set; } = true;
+        public ServerClient Searchable { get; set; } = ServerClient.Both;
+        public ServerClient Orderable { get; set; } = ServerClient.Both;
         public bool RowGroup { get; set; }
         public object SumTotal { get; set; }
         public string Tag { get; set; }
         public bool Invisible { get; set; }
+        public string DbColumn { get; set; }
+        public string DbFuncFormat { get; set; }
+        public TableColumnType Type { get; set; }
     }
 }

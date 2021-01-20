@@ -2,12 +2,13 @@ using System.Collections.Generic;
 using System.Linq;
 using MCMS.Base.Display.ModelDisplay;
 using MCMS.Display.Link;
+using MCMS.Display.ModelDisplay;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
-namespace MCMS.Display.ModelDisplay
+namespace MCMS.Display.TableConfig
 {
-    public class TableDisplayConfig : WithUniqueId
+    public class TableConfig : WithUniqueId
     {
         public int Index { get; set; }
 
@@ -26,6 +27,8 @@ namespace MCMS.Display.ModelDisplay
 
         public List<BatchAction> BatchActions { get; set; }
         public List<object> TableActions { get; set; }
+        public bool ServerSide { get; set; }
+        public int ServerSideSearchDelay { get; set; } = 2000;
 
         public object BuildRowGroupObject(List<TableColumn> columns)
         {
@@ -38,7 +41,7 @@ namespace MCMS.Display.ModelDisplay
             var columns = GetColumnsOrdered();
             return JsonConvert.SerializeObject(new
             {
-                columns = columns.Select(tc => tc.GetDataTablesObject()),
+                columns = columns.Select(tc => tc.GetDataTablesObject(ServerSide)),
                 rowGroup = BuildRowGroupObject(columns),
                 ajax = new {url = TableItemsApiUrl},
                 hasStaticIndexColumn = HasTableIndexColumn,
@@ -46,7 +49,9 @@ namespace MCMS.Display.ModelDisplay
                 enableColumnSearch = EnableColumnSearch,
                 checkboxSelection = CheckboxSelection,
                 batchActions = BatchActions?.Select(ba => ba.GetConfigObject(url)),
-                tableActions = TableActions
+                tableActions = TableActions,
+                serverSide = ServerSide,
+                searchDelay = ServerSideSearchDelay
             });
         }
 
@@ -55,7 +60,8 @@ namespace MCMS.Display.ModelDisplay
             var columns = TableColumns.OrderBy(tc => tc.OrderIndex).AsEnumerable();
             if (HasTableIndexColumn)
             {
-                columns = columns.Prepend(new TableColumn {Name = "#", ClassName = "non-toggleable"});
+                columns = columns.Prepend(new TableColumn
+                    {Name = "#", ClassName = "non-toggleable", Key = ServerSide ? "_index" : null});
             }
 
             if (CheckboxSelection)

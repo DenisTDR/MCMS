@@ -7,7 +7,9 @@ using MCMS.Base.Data;
 using MCMS.Base.Extensions;
 using MCMS.Base.Helpers;
 using MCMS.Controllers.Ui;
+using MCMS.Display.DetailsConfig;
 using MCMS.Display.ModelDisplay;
+using MCMS.Display.TableConfig;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -22,21 +24,23 @@ namespace MCMS.Admin.Users
     {
         protected IRepository<User> Repo => ServiceProvider.GetRepo<User>();
 
-        protected IModelDisplayConfigService ModelDisplayConfigService =>
+        protected ITableConfigService TableConfigService =>
             ServiceProvider.GetRequiredService<UsersTableModelDisplayConfigService>();
+
+        protected IDetailsConfigServiceT<UserViewModel> DetailsConfigService =>
+            ServiceProvider.GetRequiredService<IDetailsConfigServiceT<UserViewModel>>();
 
         public override void OnActionExecuting(ActionExecutingContext context)
         {
             base.OnActionExecuting(context);
             ViewBag.ModelName = EntityHelper.GetEntityName<User>();
-            ViewBag.ModelDisplayConfigService = ModelDisplayConfigService;
-            ViewBag.UsesModals = UsesModals;
         }
 
         public override async Task<IActionResult> Index()
         {
-            ModelDisplayConfigService.UseCreateNewItemLink = false;
-            return View("BasicPages/Index", await ModelDisplayConfigService.GetIndexPageConfig(Url));
+            TableConfigService.UseCreateNewItemLink = false;
+            TableConfigService.ServerSide = true;
+            return View("BasicPages/Index", await GetIndexPageConfig());
         }
 
         [HttpGet]
@@ -45,8 +49,7 @@ namespace MCMS.Admin.Users
         public async Task<IActionResult> Details([FromRoute] string id)
         {
             var userVm = await GetUserWithRoles(id);
-            ViewBag.Fields = ModelDisplayConfigService.GetDetailsFields();
-            return View(userVm);
+            return View(DetailsConfigService.Wrap(userVm));
         }
 
         [HttpGet]
@@ -117,6 +120,16 @@ namespace MCMS.Admin.Users
             userVm.RolesList = (await ServiceProvider.GetRequiredService<UserManager<User>>().GetRolesAsync(user))
                 .ToList();
             return userVm;
+        }
+
+        [NonAction]
+        public virtual async Task<IndexPageConfig> GetIndexPageConfig()
+        {
+            return new()
+            {
+                IndexPageTitle = "Users",
+                TableConfig = await TableConfigService.GetTableConfig()
+            };
         }
     }
 }

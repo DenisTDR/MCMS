@@ -4,6 +4,6 @@ namespace MCMS.Display.ModelDisplay
     {
         public string IndexPageTitle { get; set; }
 
-        public TableDisplayConfig TableConfig { get; set; }
+        public TableConfig.TableConfig TableConfig { get; set; }
     }
 }

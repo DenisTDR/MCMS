@@ -21,7 +21,7 @@ namespace MCMS.Controllers.Api
         ICrudAdminApiController<TFm, TVm>
         where TE : class, IEntity, new() where TFm : class, IFormModel where TVm : class, IViewModel
     {
-        protected virtual DtQueryService QueryService => ServiceProvider.GetService<DtQueryService>();
+        protected virtual DtQueryService<TVm> QueryService => ServiceProvider.GetService<DtQueryService<TVm>>();
 
         [AdminApiRoute("~/[controller]")]
         [HttpGet]
@@ -42,7 +42,7 @@ namespace MCMS.Controllers.Api
                 return BadRequest(ModelState);
             }
 
-            var result = await QueryService.Query<TVm, TE>(Repo, model);
+            var result = await QueryService.Query(Repo, model);
             return Ok(result);
         }
 

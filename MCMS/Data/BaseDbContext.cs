@@ -8,13 +8,17 @@ using MCMS.Base.Auth;
 using MCMS.Base.Data.Entities;
 using MCMS.Base.Data.TypeConfig;
 using MCMS.Base.Extensions;
+using MCMS.Base.Helpers;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 
 namespace MCMS.Data
 {
-    public class BaseDbContext : IdentityDbContext<User, Role, string>
+    public class BaseDbContext : IdentityDbContext<User, Role, string, IdentityUserClaim<string>, UserRole,
+            IdentityUserLogin<string>, IdentityRoleClaim<string>, IdentityUserToken<string>>
+        //IdentityDbContext<User, Role, string>
     {
-        private EntitiesConfig _entitiesConfig;
+        private readonly EntitiesConfig _entitiesConfig;
 
         public BaseDbContext(DbContextOptions options, IOptions<EntitiesConfig> entitiesConfig) : base(options)
         {
@@ -33,6 +37,8 @@ namespace MCMS.Data
                 genericMethodInfo.Invoke(builder,
                     new object[] {entitiesConfigEntityStack.GetEntityTypeConfigurationInstance()});
             }
+
+            MDbFunctions.Register(builder);
         }
 
         #region on save triggers

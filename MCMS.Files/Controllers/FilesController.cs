@@ -30,7 +30,7 @@ namespace MCMS.Files.Controllers
                 vm.Url = vm.GetPrivateLink(Url);
             }
 
-            return View(vm);
+            return View(DetailsConfigService.Wrap(vm));
         }
 
         public override Task<IActionResult> Edit(string id)

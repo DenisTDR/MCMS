@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using MCMS.Auth;
@@ -8,6 +9,7 @@ using MCMS.Base.Data;
 using MCMS.Base.Extensions;
 using MCMS.Controllers.Api;
 using MCMS.Data;
+using MCMS.Models.Dt;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
@@ -23,6 +25,9 @@ namespace MCMS.Admin.Users
         protected IRepository<User> Repo => ServiceProvider.GetRepo<User>();
         protected BaseDbContext DbContext => ServiceProvider.GetRequiredService<BaseDbContext>();
         private IEmailSender EmailSender => ServiceProvider.GetRequiredService<IEmailSender>();
+
+        protected virtual DtQueryService<UserViewModel> QueryService =>
+            ServiceProvider.GetService<DtQueryService<UserViewModel>>();
 
         [AdminApiRoute("~/[controller]")]
         [HttpGet]
@@ -47,6 +52,38 @@ namespace MCMS.Admin.Users
 
             return Ok(users);
         }
+
+        [AdminApiRoute("~/[controller]/dtquery")]
+        [HttpPost]
+        [ModelValidation]
+        public virtual async Task<ActionResult<DtResult<UserViewModel>>> DtQuery(
+            [FromBody] [Required] DtParameters model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var result = await QueryService.Query(Repo, model);
+            result.Data = (await DbContext.Users
+                    .SelectMany(
+                        user => DbContext.UserRoles.Where(userRoleMapEntry => user.Id == userRoleMapEntry.UserId)
+                            .DefaultIfEmpty(),
+                        (user, roleMapEntry) => new {User = user, RoleMapEntry = roleMapEntry})
+                    .SelectMany(
+                        x => DbContext.Roles.Where(role => role.Id == x.RoleMapEntry.RoleId).DefaultIfEmpty(),
+                        (x, role) => new {x.User, Role = role.Name})
+                    .ToListAsync())
+                .GroupBy(e => e.User)
+                .Select(g =>
+                {
+                    var userVm = MapV(g.Key);
+                    userVm.RolesList = g.Select(x => x.Role).ToList();
+                    return userVm;
+                }).ToList();
+            return Ok(result);
+        }
+
 
         [HttpPost]
         [Route("{id}")]

@@ -48,8 +48,8 @@ namespace MCMS.Data
             }
 
             query = ChainPagination(query, parameters);
-
-            result.Data = _mapper.Map<List<TVm>>(await query.ToListAsync());
+            var entities = await query.ToListAsync();
+            result.Data = _mapper.Map<List<TVm>>(entities);
             return result;
         }
 
@@ -184,14 +184,20 @@ namespace MCMS.Data
             {
                 foreach (var dtOrder in parameters.Order)
                 {
-                    var orderCol = parameters.Columns[dtOrder.Column].MatchedTableColumn.DbColumn;
+                    var tc = parameters.Columns[dtOrder.Column].MatchedTableColumn;
+                    var orderCol = tc.DbColumn;
+                    var qStr = "x." + orderCol;
+                    if (!string.IsNullOrEmpty(tc.DbFuncFormat))
+                    {
+                        qStr = string.Format(tc.DbFuncFormat, qStr);
+                    }
                     if (dtOrder.Dir == DtOrderDir.Asc)
                     {
-                        query = query.OrderByDynamic(x => "x." + orderCol);
+                        query = query.OrderByDynamic(x => qStr);
                     }
                     else
                     {
-                        query = query.OrderByDescendingDynamic(x => "x." + orderCol);
+                        query = query.OrderByDescendingDynamic(x => qStr);
                     }
                 }
             }

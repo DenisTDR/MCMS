@@ -33,24 +33,10 @@ namespace MCMS.Admin.Users
         [HttpGet]
         public virtual async Task<ActionResult<List<UserViewModel>>> Index()
         {
-            var users = (await DbContext.Users
-                    .SelectMany(
-                        user => DbContext.UserRoles.Where(userRoleMapEntry => user.Id == userRoleMapEntry.UserId)
-                            .DefaultIfEmpty(),
-                        (user, roleMapEntry) => new {User = user, RoleMapEntry = roleMapEntry})
-                    .SelectMany(
-                        x => DbContext.Roles.Where(role => role.Id == x.RoleMapEntry.RoleId).DefaultIfEmpty(),
-                        (x, role) => new {x.User, Role = role.Name})
-                    .ToListAsync())
-                .GroupBy(e => e.User)
-                .Select(g =>
-                {
-                    var userVm = MapV(g.Key);
-                    userVm.RolesList = g.Select(x => x.Role).ToList();
-                    return userVm;
-                }).ToList();
-
-            return Ok(users);
+            Repo.ChainQueryable(q => q.Include(u => u.UserRoles).ThenInclude(ur => ur.Role));
+            var users = await Repo.GetAll();
+            var usersVm = Mapper.Map<IList<UserViewModel>>(users);
+            return Ok(usersVm);
         }
 
         [AdminApiRoute("~/[controller]/dtquery")]
@@ -64,23 +50,9 @@ namespace MCMS.Admin.Users
                 return BadRequest(ModelState);
             }
 
+            Repo.ChainQueryable(q => q.Include(u => u.UserRoles).ThenInclude(ur => ur.Role));
             var result = await QueryService.Query(Repo, model);
-            result.Data = (await DbContext.Users
-                    .SelectMany(
-                        user => DbContext.UserRoles.Where(userRoleMapEntry => user.Id == userRoleMapEntry.UserId)
-                            .DefaultIfEmpty(),
-                        (user, roleMapEntry) => new {User = user, RoleMapEntry = roleMapEntry})
-                    .SelectMany(
-                        x => DbContext.Roles.Where(role => role.Id == x.RoleMapEntry.RoleId).DefaultIfEmpty(),
-                        (x, role) => new {x.User, Role = role.Name})
-                    .ToListAsync())
-                .GroupBy(e => e.User)
-                .Select(g =>
-                {
-                    var userVm = MapV(g.Key);
-                    userVm.RolesList = g.Select(x => x.Role).ToList();
-                    return userVm;
-                }).ToList();
+
             return Ok(result);
         }
 

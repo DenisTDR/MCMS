@@ -61,5 +61,10 @@ namespace MCMS.Base.Data.TypeConfig
         {
             return (IEntityTypeConfiguration) Activator.CreateInstance(EntityTypeConfigurationType);
         }
+
+        public override string ToString()
+        {
+            return EntityType?.Name.Replace("Entity", "");
+        }
     }
 }

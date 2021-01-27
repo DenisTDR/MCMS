@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
+using System.Reflection;
 using MCMS.Base.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -11,6 +12,11 @@ namespace MCMS.Base.Data.TypeConfig
     {
         public virtual void Configure(EntityTypeBuilder<T> builder)
         {
+            if (typeof(T).GetCustomAttribute<IgnoreDefaultTypeConfigurationAttribute>(true) != null)
+            {
+                return;
+            }
+
             builder.ToTable(GetTableName());
 
             builder.HasKey(e => e.Id);

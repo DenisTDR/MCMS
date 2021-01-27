@@ -2,11 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
 using MCMS.Base.Data.Entities;
 using Microsoft.AspNetCore.Identity;
 
 namespace MCMS.Base.Auth
 {
+    [IgnoreDefaultTypeConfiguration]
     public class User : IdentityUser, IEntity
     {
         [Display(Name = "First Name")] public string FirstName { get; set; }
@@ -33,9 +35,11 @@ namespace MCMS.Base.Auth
         [DataType(DataType.EmailAddress)] public override string Email { get; set; }
 
         [Display(Name = "Email Confirmed")] public override bool EmailConfirmed { get; set; }
-        
-        // public List<IdentityUserRole> Roles2 { get; set; }
+
         public List<UserRole> UserRoles { get; set; }
+
+        public List<string> RolesList =>
+            UserRoles?.Select(ur => ur.Role?.Name).Where(rn => !string.IsNullOrEmpty(rn)).ToList();
 
         public override string ToString()
         {

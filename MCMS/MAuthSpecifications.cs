@@ -15,8 +15,6 @@ namespace MCMS
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddIdentity<User, Role>();
-            
             services.AddDefaultIdentity<User>(options =>
                 {
                     options.SignIn.RequireConfirmedAccount = Env.GetBool("REQUIRE_CONFIRMED_ACCOUNT");

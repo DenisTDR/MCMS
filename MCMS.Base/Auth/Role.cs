@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace MCMS.Base.Auth
 {
+    [IgnoreDefaultTypeConfiguration]
     public class Role : IdentityRole, IEntity
     {
         public DateTime Created { get; set; }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using MCMS.Base;
 using MCMS.Base.Builder;
 using MCMS.Base.Helpers;
 using MCMS.Base.SwaggerFormly.Models;
@@ -72,6 +73,11 @@ namespace MCMS.Builder
 
         public MApp Build()
         {
+            if (!_specifications.Any(spec => spec is BaseAuthSpecifications))
+            {
+                AddSpecifications<BaseAuthSpecifications>(0);
+            }
+
             if (!_specifications.Any(spec => spec is MAuthSpecifications))
             {
                 AddSpecifications<MAuthSpecifications>(0);

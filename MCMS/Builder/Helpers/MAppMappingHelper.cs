@@ -33,16 +33,12 @@ namespace MCMS.Builder.Helpers
         {
             var listMappingConfigs = new List<IMappingConfig>();
 
-            var allTypes =
-                new MSpecificationsTypeFilter().FilterMapped(_app)
-                    .Where(type =>
-                        !typeof(IdentityRole).IsAssignableFrom(type) && !typeof(IdentityUser).IsAssignableFrom(type))
-                    .ToList();
+            var allTypes = new MSpecificationsTypeFilter().FilterMapped(_app).ToList();
             var entityTypes = allTypes.Where(type => typeof(IEntity).IsAssignableFrom(type)).ToList();
             var modelTypes = allTypes.Where(type =>
                 typeof(IViewModel).IsAssignableFrom(type) || typeof(IFormModel).IsAssignableFrom(type)).ToList();
 
-            var mappingConfigTypes = allTypes.Where(type => typeof(IMappingConfig).IsAssignableFrom(type)).ToList();
+            var mappingConfigTypes = allTypes.Where(type => typeof(IMappingConfig).IsAssignableFrom(type) && !type.IsGenericTypeDefinition).ToList();
 
             var mappingStacks = entityTypes.Select(et => new EntityMappingStack(et)).ToList();
 

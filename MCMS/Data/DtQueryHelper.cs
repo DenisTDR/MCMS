@@ -77,10 +77,10 @@ namespace MCMS.Data
 
             for (var index = 0; index < terms.Length; index++)
             {
+                var format = dtColumn.MatchedTableColumn.DbFuncFormat;
                 var (qStr, qParameter) =
-                    BuildCondition(col, terms[index],
-                        dtColumn.MatchedTableColumn.DbFuncFormat, paramName: "param" + index,
-                        objectName: "(string)(object)x");
+                    BuildCondition(col, terms[index], format, paramName: "param" + index,
+                        objectName: string.IsNullOrEmpty(format) ? "(string)(object)x" : "x");
                 queryStrL.Add(qStr);
             }
 

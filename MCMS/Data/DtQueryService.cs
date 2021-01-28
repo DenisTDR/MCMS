@@ -11,6 +11,7 @@ using MCMS.Base.Exceptions;
 using MCMS.Display.TableConfig;
 using MCMS.Models.Dt;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
 namespace MCMS.Data
@@ -19,14 +20,17 @@ namespace MCMS.Data
     {
         private readonly IMapper _mapper;
         private readonly ITableConfigServiceT<TVm> _tableConfigService;
+        private readonly ILogger<DtQueryService<TVm>> _logger;
 
         public DtQueryService(
             IMapper mapper,
-            ITableConfigServiceT<TVm> tableConfigService
+            ITableConfigServiceT<TVm> tableConfigService,
+            ILogger<DtQueryService<TVm>> logger
         )
         {
             _mapper = mapper;
             _tableConfigService = tableConfigService;
+            _logger = logger;
         }
 
         public async Task<DtResult<TVm>> Query<TE>(IRepository<TE> repo, DtParameters parameters)
@@ -93,6 +97,8 @@ namespace MCMS.Data
                     try
                     {
                         query = query.WhereDynamic(x => qStr, gFilters.First().Item2);
+                        _logger.LogInformation(
+                            $"queryStr= {qStr}\nparams={JsonConvert.SerializeObject(gFilters.First().Item2)}");
                     }
                     catch
                     {
@@ -112,6 +118,7 @@ namespace MCMS.Data
                 try
                 {
                     query = query.WhereDynamic(x => qStr, qParams);
+                    _logger.LogInformation($"queryStr= {qStr}\nparams={JsonConvert.SerializeObject(qParams)}");
                 }
                 catch
                 {

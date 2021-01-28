@@ -1,3 +1,6 @@
+using System;
+using System.Linq;
+
 namespace MCMS.Models.Dt
 {
     public class DtSearch
@@ -19,12 +22,12 @@ namespace MCMS.Models.Dt
 
         public decimal GetValueDecimal()
         {
-            return decimal.Parse(Value);
+            return decimal.Parse(Value.Trim());
         }
 
         public int GetValueInteger()
         {
-            return int.Parse(Value);
+            return int.Parse(Value.Trim());
         }
 
         public bool HasValidNumber()
@@ -34,7 +37,13 @@ namespace MCMS.Models.Dt
                 return false;
             }
 
-            return float.TryParse(Value, out var fl);
+            if (Value.Contains(" "))
+            {
+                return Value.Split(" ", StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
+                    .All(term => float.TryParse(term, out _));
+            }
+
+            return float.TryParse(Value, out _);
         }
     }
 }

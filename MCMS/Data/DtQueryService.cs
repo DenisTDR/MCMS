@@ -12,6 +12,7 @@ using MCMS.Base.Helpers;
 using MCMS.Display.TableConfig;
 using MCMS.Models.Dt;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 
 namespace MCMS.Data
 {
@@ -86,11 +87,21 @@ namespace MCMS.Data
             {
                 var globalSearchCols = cols.Where(c => c.MatchedTableColumn.Type < TableColumnType.Bool)
                     .Select(c => c.CloneForGlobalSearch(parameters.Search)).ToList();
-                var globalFilters = BuildFilters(globalSearchCols);
-                if (globalFilters.Any())
+                var gFilters = BuildFilters(globalSearchCols);
+                if (gFilters.Any())
                 {
-                    var qStr = string.Join(" || ", globalFilters.Select(gf => gf.Item1));
-                    query = query.WhereDynamic(x => qStr, globalFilters.First().Item2);
+                    var qStr = string.Join(" || ", gFilters.Select(gf => gf.Item1));
+                    try
+                    {
+                        query = query.WhereDynamic(x => qStr, gFilters.First().Item2);
+                    }
+                    catch
+                    {
+                        Console.WriteLine($"queryStr= {qStr}");
+                        Console.WriteLine($"params= {JsonConvert.SerializeObject(gFilters.First().Item2)}");
+                        throw;
+                    }
+
                     isFiltered = true;
                 }
             }
@@ -99,7 +110,16 @@ namespace MCMS.Data
 
             foreach (var (qStr, qParams) in filters)
             {
-                query = query.WhereDynamic(x => qStr, qParams);
+                try
+                {
+                    query = query.WhereDynamic(x => qStr, qParams);
+                }
+                catch
+                {
+                    Console.WriteLine($"queryStr= {qStr}");
+                    Console.WriteLine($"params= {JsonConvert.SerializeObject(qParams)}");
+                    throw;
+                }
             }
 
             isFiltered = isFiltered || filters.Any();
@@ -118,9 +138,16 @@ namespace MCMS.Data
                 {
                     case TableColumnType.Number:
                     {
-                        var (qStr, qParameter) = DtQueryHelper.BuildCondition(col, dtColumn.Search.GetValueDecimal(),
-                            objectName: "(string)(object)x", format: dtColumn.MatchedTableColumn.DbFuncFormat);
-                        filters.Add((qStr, qParameter));
+                        if (!dtColumn.Search.HasValidNumber())
+                        {
+                            break;
+                        }
+
+                        if (DtQueryHelper.BuildMultiTermQuery(dtColumn, out var res, true))
+                        {
+                            filters.Add((res.quertStr, res.parameters));
+                        }
+
                         break;
                     }
                     case TableColumnType.Bool:
@@ -144,31 +171,10 @@ namespace MCMS.Data
                     }
                     default:
                     {
-                        var terms = dtColumn.Search.Value.Split(" ",
-                            StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
-                        var queryStrL = new List<string>();
-
-                        if (terms.Length == 0)
+                        if (DtQueryHelper.BuildMultiTermQuery(dtColumn, out var res))
                         {
-                            break;
+                            filters.Add((res.quertStr, res.parameters));
                         }
-
-                        if (terms.Length > 7)
-                        {
-                            terms = new[] {dtColumn.Search.Value.Trim()};
-                        }
-
-                        for (var index = 0; index < terms.Length; index++)
-                        {
-                            var (qStr, qParameter) =
-                                DtQueryHelper.BuildCondition(col, terms[index],
-                                    dtColumn.MatchedTableColumn.DbFuncFormat, paramName: "param" + index);
-                            queryStrL.Add(qStr);
-                        }
-
-                        var qStrFinal = string.Join(" && ", queryStrL);
-                        var qParam = DummyDynamicQueryParams.Create(terms.Cast<object>().ToList());
-                        filters.Add((qStrFinal, qParam));
 
                         break;
                     }

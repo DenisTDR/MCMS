@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization;
@@ -99,8 +100,12 @@ namespace MCMS.Base.Display.ModelDisplay
 
         public static void BuildTypeAndPatchFilter(this TableColumn col, PropertyInfo prop)
         {
-            if (col.Type == TableColumnType.Default &&
-                (prop.PropertyType == typeof(bool) || prop.PropertyType == typeof(bool?)))
+            if (col.Type != TableColumnType.Default)
+            {
+                return;
+            }
+
+            if (prop.PropertyType == typeof(bool) || prop.PropertyType == typeof(bool?))
             {
                 col.Type = TableColumnType.Bool;
                 col.FilterValues = new List<ValueLabelPair>
@@ -115,13 +120,11 @@ namespace MCMS.Base.Display.ModelDisplay
                     col.FilterValues.Add(new("null", "Not set"));
                 }
             }
-
-            if (col.Type == TableColumnType.Default && prop.PropertyType.IsNumericType())
+            else if (prop.PropertyType.IsNumericType())
             {
                 col.Type = TableColumnType.Number;
             }
-
-            if (col.Type == TableColumnType.Default && prop.PropertyType.IsEnum)
+            else if (prop.PropertyType.IsEnum)
             {
                 col.Type = TableColumnType.Select;
                 col.FilterValues = Enum.GetValues(prop.PropertyType).Cast<Enum>()
@@ -129,6 +132,22 @@ namespace MCMS.Base.Display.ModelDisplay
                         new ValueLabelPair(Convert.ToInt32(enumValue).ToString(), enumValue.GetDisplayName()))
                     .Prepend(
                         new("", "-")).ToList();
+            }
+            else if (prop.PropertyType == typeof(DateTime) || prop.PropertyType == typeof(DateTime?))
+            {
+                if (prop.PropertyType.GetCustomAttribute<DataTypeAttribute>() is { } attr)
+                {
+                    if (attr.DataType == DataType.Date)
+                    {
+                        col.Type = TableColumnType.Date;
+                    }
+                    else if (attr.DataType == DataType.Time)
+                    {
+                        col.Type = TableColumnType.Time;
+                    }
+
+                    col.Type = TableColumnType.DateTime;
+                }
             }
         }
     }
@@ -139,6 +158,9 @@ namespace MCMS.Base.Display.ModelDisplay
         [EnumMember(Value = "number")] Number,
         [EnumMember(Value = "bool")] Bool,
         [EnumMember(Value = "nBool")] NullableBool,
+        [EnumMember(Value = "dateTime")] DateTime,
+        [EnumMember(Value = "date")] Date,
+        [EnumMember(Value = "time")] Time,
         [EnumMember(Value = "select")] Select,
     }
 }

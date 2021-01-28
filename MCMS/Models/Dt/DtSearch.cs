@@ -26,5 +26,15 @@ namespace MCMS.Models.Dt
         {
             return int.Parse(Value);
         }
+
+        public bool HasValidNumber()
+        {
+            if (string.IsNullOrEmpty(Value))
+            {
+                return false;
+            }
+
+            return float.TryParse(Value, out var fl);
+        }
     }
 }

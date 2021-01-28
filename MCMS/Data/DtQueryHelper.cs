@@ -1,5 +1,8 @@
 using System;
-using Newtonsoft.Json;
+using System.Collections.Generic;
+using System.Linq;
+using MCMS.Base.Helpers;
+using MCMS.Models.Dt;
 
 namespace MCMS.Data
 {
@@ -50,9 +53,41 @@ namespace MCMS.Data
                 queryStr = string.Format(format, leftHand, paramName);
             }
 
-            Console.WriteLine("queryStr= " + queryStr);
-            Console.WriteLine("params= " + JsonConvert.SerializeObject(parameters));
             return (queryStr, parameters);
+        }
+
+        public static bool BuildMultiTermQuery(DtColumn dtColumn, out (string quertStr, object parameters) result,
+            bool isNumber = false)
+        {
+            var col = dtColumn.MatchedTableColumn.DbColumn;
+            var terms = dtColumn.Search.Value.Split(" ",
+                StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+            var queryStrL = new List<string>();
+
+            if (terms.Length == 0)
+            {
+                result = (null, null);
+                return false;
+            }
+
+            if (terms.Length > 7)
+            {
+                terms = new[] {dtColumn.Search.Value.Trim()};
+            }
+
+            for (var index = 0; index < terms.Length; index++)
+            {
+                var (qStr, qParameter) =
+                    BuildCondition(col, terms[index],
+                        dtColumn.MatchedTableColumn.DbFuncFormat, paramName: "param" + index,
+                        objectName: "(string)(object)x");
+                queryStrL.Add(qStr);
+            }
+
+            var qStrFinal = string.Join(" && ", queryStrL);
+            var qParam = DummyDynamicQueryParams.Create(terms.Cast<object>().ToList());
+            result = (qStrFinal, qParam);
+            return true;
         }
     }
 }

@@ -79,6 +79,7 @@ namespace MCMS.Data
 
         private IQueryable<TE> ChainFilter<TE>(IQueryable<TE> query, DtParameters parameters, out bool isFiltered)
         {
+            isFiltered = false;
             var cols = parameters.Columns.Where(c => c.Searchable && c.MatchedTableColumn.Searchable.IsServer())
                 .ToList();
             if (parameters.Search.HasValue)
@@ -90,6 +91,7 @@ namespace MCMS.Data
                 {
                     var qStr = string.Join(" || ", globalFilters.Select(gf => gf.Item1));
                     query = query.WhereDynamic(x => qStr, globalFilters.First().Item2);
+                    isFiltered = true;
                 }
             }
 
@@ -100,7 +102,7 @@ namespace MCMS.Data
                 query = query.WhereDynamic(x => qStr, qParams);
             }
 
-            isFiltered = filters.Any();
+            isFiltered = isFiltered || filters.Any();
 
             return query;
         }
@@ -122,9 +124,12 @@ namespace MCMS.Data
                         break;
                     }
                     case TableColumnType.Bool:
+                    case TableColumnType.NullableBool:
                     {
                         var (qStr, qParameter) =
-                            DtQueryHelper.BuildCondition(col, dtColumn.Search.GetValueBool(),
+                            DtQueryHelper.BuildCondition(col,
+                                dtColumn.Search.GetValueBool(
+                                    dtColumn.MatchedTableColumn.Type == TableColumnType.NullableBool),
                                 dtColumn.MatchedTableColumn.DbFuncFormat, true);
                         filters.Add((qStr, qParameter));
                         break;
@@ -191,6 +196,7 @@ namespace MCMS.Data
                     {
                         qStr = string.Format(tc.DbFuncFormat, qStr);
                     }
+
                     if (dtOrder.Dir == DtOrderDir.Asc)
                     {
                         query = query.OrderByDynamic(x => qStr);

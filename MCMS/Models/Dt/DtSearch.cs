@@ -7,10 +7,16 @@ namespace MCMS.Models.Dt
 
         public bool HasValue => !string.IsNullOrEmpty(Value);
 
-        public bool GetValueBool()
+        public bool? GetValueBool(bool nullable = false)
         {
-            return Value.ToLower().Trim() == "true";
+            if (Value?.ToLower().Trim() == "true")
+            {
+                return true;
+            }
+
+            return nullable ? Value?.ToLower().Trim() == "false" ? false : null : false;
         }
+
         public decimal GetValueDecimal()
         {
             return decimal.Parse(Value);

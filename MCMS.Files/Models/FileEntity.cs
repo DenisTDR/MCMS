@@ -6,7 +6,6 @@ using MCMS.Base.Data.Entities;
 
 namespace MCMS.Files.Models
 {
-    [DisplayName("File")]
     [Table("Files")]
     public class FileEntity : Entity
     {

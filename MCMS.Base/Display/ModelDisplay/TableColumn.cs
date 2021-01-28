@@ -99,7 +99,8 @@ namespace MCMS.Base.Display.ModelDisplay
 
         public static void BuildTypeAndPatchFilter(this TableColumn col, PropertyInfo prop)
         {
-            if (col.Type == TableColumnType.Default && prop.PropertyType == typeof(bool))
+            if (col.Type == TableColumnType.Default &&
+                (prop.PropertyType == typeof(bool) || prop.PropertyType == typeof(bool?)))
             {
                 col.Type = TableColumnType.Bool;
                 col.FilterValues = new List<ValueLabelPair>
@@ -108,6 +109,11 @@ namespace MCMS.Base.Display.ModelDisplay
                     new("true", "True"),
                     new("false", "False"),
                 };
+                if (prop.PropertyType == typeof(bool?))
+                {
+                    col.Type = TableColumnType.NullableBool;
+                    col.FilterValues.Add(new("null", "Not set"));
+                }
             }
 
             if (col.Type == TableColumnType.Default && prop.PropertyType.IsNumericType())
@@ -132,6 +138,7 @@ namespace MCMS.Base.Display.ModelDisplay
         [EnumMember(Value = "default")] Default,
         [EnumMember(Value = "number")] Number,
         [EnumMember(Value = "bool")] Bool,
+        [EnumMember(Value = "nBool")] NullableBool,
         [EnumMember(Value = "select")] Select,
     }
 }

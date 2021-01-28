@@ -4,8 +4,8 @@ var mcmsDatatables = {
         var tableElem = $(selector);
 
         initialConfig.columns = initialConfig.columns.slice();
-        var shouldMakeActionsCellContent = actionsColumnContent && actionsColumnContent.trim().length > 0;
 
+        var shouldMakeActionsCellContent = actionsColumnContent && actionsColumnContent.trim().length > 0;
         var initialPatchRowData = function (rowData) {
             if (shouldMakeActionsCellContent) {
                 rowData._actions = actionsColumnContent.replace(/ENTITY_ID/g, rowData.id);
@@ -17,18 +17,7 @@ var mcmsDatatables = {
             processing: true,
             ajax: {
                 dataSrc: function (json) {
-                    var data = json.data ? json.data : json;
-                    if (shouldMakeActionsCellContent) {
-                        for (var i = 0; i < data.length; i++) {
-                            initialPatchRowData(data[i]);
-                        }
-                    }
-                    if (initialConfig.serverSide) {
-                        for (var i = 0; i < data.length; i++) {
-                            data[i]._index = i + 1;
-                        }
-                    }
-                    return data;
+                    return mcmsDatatables.formatDataFromApi(json, initialConfig, initialPatchRowData, shouldMakeActionsCellContent);
                 },
                 error: function (jqXHR, textStatus, errorThrown, c) {
                     if (errorThrown === 'abort') {
@@ -70,7 +59,6 @@ var mcmsDatatables = {
                 },
             })
         }
-        console.log(config.searchDelay);
 
         if (config.hasStaticIndexColumn || config.checkboxSelection) {
             config.aaSorting = [];
@@ -250,6 +238,7 @@ var mcmsDatatables = {
         if (serverSide) {
             switch (colConfig.mType) {
                 case 'bool':
+                case 'nBool':
                 case 'select':
                     var elem = $('<select>');
                     if (colConfig.mFilterValues) {
@@ -323,7 +312,6 @@ var mcmsDatatables = {
                     console.error(config);
                     return;
                 }
-                var cnt = dt.rows({selected: true}).count();
                 var sdt = dt.rows({selected: true}).data();
                 var ids = [];
                 for (var i = 0; i < sdt.length; i++) {
@@ -431,6 +419,38 @@ var mcmsDatatables = {
             }
         };
     },
+    formatDataFromApi: function (json, initialConfig, initialPatchRowData, shouldMakeActionsCellContent) {
+
+        var data = json.data ? json.data : json;
+        if (shouldMakeActionsCellContent) {
+            for (var i = 0; i < data.length; i++) {
+                initialPatchRowData(data[i]);
+            }
+        }
+        if (initialConfig.serverSide) {
+            for (var i = 0; i < data.length; i++) {
+                data[i]._index = i + 1;
+            }
+        }
+
+        for (var i = 0; i < initialConfig.columns.length; i++) {
+            var col = initialConfig.columns[i];
+            if (col.mType === "bool" || col.mType === "nBool") {
+                for (var j = 0; j < data.length; j++) {
+                    if (data[j][col.data] === true) {
+                        data[j][col.data] = '<div class="bool-wrapper"><i class="far fa-check-circle fa-lg text-success"></i></div>';
+                    } else if (data[j][col.data] === false) {
+                        data[j][col.data] = '<div class="bool-wrapper"><i class="far fa-times-circle fa-lg text-danger"></i></div>';
+                    } else if (col.mType === "nBool" && data[j][col.data] === undefined || data[j][col.data] === null) {
+                        data[j][col.data] = '<div class="bool-wrapper"><i class="far fa-question-circle fa-lg text-secondary"></i></div>';
+                    }
+                }
+            }
+        }
+
+        return data;
+
+    }
 }
 var mcmsTables = [];
 jQuery.fn.dataTable.Api.register('sumTotal', function () {

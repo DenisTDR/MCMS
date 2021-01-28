@@ -87,3 +87,8 @@ table.dataTable tfoot th.select-all-checkbox {
 .dataTables_wrapper .btn-group .dt-button-collection {
     left: 0 !important;
 }
+
+.dataTables_wrapper .bool-wrapper {
+    display: flex;
+    justify-content: center;
+}

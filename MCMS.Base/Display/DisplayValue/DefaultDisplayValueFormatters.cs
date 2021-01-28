@@ -1,6 +1,5 @@
 using System;
 using System.Reflection;
-using AutoMapper.Internal;
 using MCMS.Base.Extensions;
 
 namespace MCMS.Base.Display.DisplayValue

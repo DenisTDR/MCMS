@@ -12,6 +12,8 @@ using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -95,7 +97,6 @@ namespace MCMS.Builder
 
             app.UseForwardedHeaders();
 
-            var logger = serviceProvider.GetRequiredService<ILogger<MApp>>();
             if (HostEnvironment.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -122,7 +123,6 @@ namespace MCMS.Builder
                 await next();
             });
 
-
             app.UseStaticFiles();
 
             app.UseRouting();
@@ -142,13 +142,7 @@ namespace MCMS.Builder
 
             if (Env.GetBool("MIGRATE_ON_START"))
             {
-                logger.LogInformation("Checking pending migrations.");
-                var dbContext = serviceProvider.GetRequiredService<BaseDbContext>();
-                if (dbContext.Database.GetPendingMigrations().Any())
-                {
-                    logger.LogWarning("Migrating database...");
-                    dbContext.Database.Migrate();
-                }
+                EnsureDatabase(serviceProvider);
             }
 
             if (Env.GetBool("SEED_ON_START"))
@@ -163,6 +157,31 @@ namespace MCMS.Builder
             }
 
             RoutePrefixes.CheckRoutePrefixVars();
+        }
+
+        private static void EnsureDatabase(IServiceProvider serviceProvider)
+        {
+            var logger = serviceProvider.GetRequiredService<ILogger<MApp>>();
+            logger.LogInformation("Checking pending migrations.");
+            var dbContext = serviceProvider.GetRequiredService<BaseDbContext>();
+            var dbCreator = dbContext.Database.GetService<IDatabaseCreator>() as RelationalDatabaseCreator;
+            if (dbCreator == null)
+            {
+                Utils.DieWith("Migrations: Couldn't get an instance of IDatabaseCreator.");
+                return;
+            }
+
+            if (!dbCreator.Exists() && !dbContext.Database.GetMigrations().Any())
+            {
+                Utils.DieWith(
+                    "There are no migrations in this project. Use 'dotnet ef migrations add initial' to create one.");
+            }
+
+            if (!dbCreator.Exists() || dbContext.Database.GetPendingMigrations().Any())
+            {
+                logger.LogWarning("Migrating database...");
+                dbContext.Database.Migrate();
+            }
         }
     }
 }

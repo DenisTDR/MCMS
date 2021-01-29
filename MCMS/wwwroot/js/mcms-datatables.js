@@ -113,6 +113,8 @@ var mcmsDatatables = {
 
         mcmsDatatables.properlyDestroyInModal(tableElem, table);
 
+        mcmsDatatables.fixGlobalFilterDebounce(table, tableJQuery, config);
+
         document.addEventListener('side-menu-toggled', function () {
             table.fixedHeader.adjust();
             setTimeout(function () {
@@ -447,9 +449,23 @@ var mcmsDatatables = {
                 }
             }
         }
-
         return data;
-
+    },
+    fixGlobalFilterDebounce: function (table, tableJq, config) {
+        table.on('init', function () {
+            var timeoutId = null;
+            var filterInput = tableJq.closest(".dataTables_wrapper").find(".dataTables_filter input")
+                .unbind();
+            filterInput.bind('input', function () {
+                if (timeoutId) {
+                    clearTimeout(timeoutId);
+                }
+                timeoutId = setTimeout(function () {
+                    table.search(filterInput.val()).draw();
+                    timeoutId = null;
+                }, config.searchDelay);
+            });
+        });
     }
 }
 var mcmsTables = [];

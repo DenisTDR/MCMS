@@ -28,7 +28,7 @@ namespace MCMS.Display.TableConfig
         public List<BatchAction> BatchActions { get; set; }
         public List<object> TableActions { get; set; }
         public bool ServerSide { get; set; }
-        public int ServerSideSearchDelay { get; set; } = 250;
+        public int ServerSideSearchDelay { get; set; } = 500;
 
         public object BuildRowGroupObject(List<TableColumn> columns)
         {

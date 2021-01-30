@@ -42,7 +42,6 @@ git submodule update --init --recursive
         * `FIRST_USER_ADMIN` - boolean - if `true` the first registered user will receive `Admin` role.
         * `SHOW_NON_CONFIRMED_ACCOUNT_ALERT`
         * `DISABLE_REGISTRATION` - disable admin user registration
-
     * Route prefixes
         * `ROUTE_PREFIX` - defaults to `/`
         * `ADMIN_ROUTE_PREFIX` - defaults to `/`

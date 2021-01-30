@@ -100,7 +100,7 @@ namespace MCMS.Base.Attributes
                 if (splitPath.Length != 1)
                 {
                     // TODO: generalize this
-                    if (obj.GetType().GetProperty(splitPath[0].ToPascalCase()) is {} prop &&
+                    if (obj.GetType().GetProperty(splitPath[0].ToPascalCase()) is { } prop &&
                         splitPath[1].ToPascalCase() != "Id" &&
                         prop.GetCustomAttribute<DisablePatchSubPropertiesAttribute>() != null)
                     {
@@ -112,6 +112,12 @@ namespace MCMS.Base.Attributes
                     foreach (var pathPart in splitPath.Take(splitPath.Length - 1))
                     {
                         obj = EnsureSubPropertyExists(obj, pathPart);
+                    }
+
+                    if (obj.GetType().ImplementsGenericInterface(typeof(IList<>)) && int.TryParse(splitPath[^1], out _))
+                    {
+                        EnsureSubPropertyExists(obj, splitPath[^1]);
+                        continue;
                     }
                 }
 
@@ -196,7 +202,7 @@ namespace MCMS.Base.Attributes
 
             var propInfo = mainObj.GetType().GetProperty(propertyName.ToPascalCase()) ??
                            throw new Exception("Invalid property: " + propertyName);
-            if (propInfo.GetValue(mainObj) is {} existing)
+            if (propInfo.GetValue(mainObj) is { } existing)
             {
                 return existing;
             }

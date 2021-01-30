@@ -148,3 +148,11 @@ body.forced-modal-open {
         max-width: 700px;
     }
 }
+
+.d-block-nf {
+    display: block;
+}
+
+.d-flex-nf {
+    display: flex;
+}

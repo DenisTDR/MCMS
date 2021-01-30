@@ -1,5 +1,7 @@
 using System;
+using System.Collections;
 using System.Reflection;
+using MCMS.Base.Attributes.JsonConverters;
 using MCMS.Base.Extensions;
 
 namespace MCMS.Base.Display.DisplayValue
@@ -10,6 +12,7 @@ namespace MCMS.Base.Display.DisplayValue
         {
             formatters.Add(DisplayEnumValueName);
             formatters.Add(DisplayBooleanValue);
+            formatters.Add(DisplayListValue);
         }
 
         public static bool DisplayEnumValueName(PropertyInfo pInfo, object o, out object value)
@@ -44,6 +47,18 @@ namespace MCMS.Base.Display.DisplayValue
                     value = "<i class=\"far fa-question-circle fa-lg text-secondary\">";
                     return true;
                 }
+            }
+
+            value = null;
+            return false;
+        }
+
+        public static bool DisplayListValue(PropertyInfo pInfo, object o, out object value)
+        {
+            if (typeof(IList).IsAssignableFrom(pInfo.PropertyType) && pInfo.GetValue(o) is { } src)
+            {
+                value = ToStringJsonConverter.GetToStringValue(src);
+                return true;
             }
 
             value = null;

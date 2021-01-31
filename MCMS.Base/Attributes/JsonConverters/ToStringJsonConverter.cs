@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Newtonsoft.Json;
 
 namespace MCMS.Base.Attributes.JsonConverters
@@ -31,13 +32,7 @@ namespace MCMS.Base.Attributes.JsonConverters
                 return obj.ToString();
             }
 
-            var sList = new List<string>();
-            foreach (var o in list)
-            {
-                sList.Add(GetToStringValue(o));
-            }
-
-            return "[" + string.Join(", ", sList) + "]";
+            return "[" + string.Join(", ", from object o in list select GetToStringValue(o)) + "]";
         }
     }
 }

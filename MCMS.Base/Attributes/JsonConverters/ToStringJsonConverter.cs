@@ -31,7 +31,6 @@ namespace MCMS.Base.Attributes.JsonConverters
                 return obj.ToString();
             }
 
-            var str = "[";
             var sList = new List<string>();
             foreach (var o in list)
             {

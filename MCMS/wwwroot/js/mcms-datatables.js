@@ -40,7 +40,7 @@ var mcmsDatatables = {
             buttons: [
                 {
                     text: '<i class="fas fa-sync-alt"></i>',
-                    className: 'btn-light btn-outline-info',
+                    className: 'btn-secondary',
                     action: function (e, dt, node, config) {
                         dt.ajax.reload();
                     }
@@ -257,7 +257,7 @@ var mcmsDatatables = {
         config.buttons.splice(0, 0,
             {
                 text: '<i class="fas fa-grip-lines-vertical fa-fw"></i>🔍',
-                className: 'btn-light btn-outline-info',
+                className: 'btn-secondary',
                 action: function (e, dt, node, conf) {
                     mcmsDatatables.toggleColumnSearchRow(tableApi, config.columns, config);
                 }
@@ -344,7 +344,7 @@ var mcmsDatatables = {
             if (typeof ta === 'string') {
                 config.tableActions[i] = ta = {extend: ta};
             }
-            ta.className = "btn-light btn-outline-secondary";
+            ta.className = "btn-secondary";
         }
 
         table.one('init', function (e, settings, data) {

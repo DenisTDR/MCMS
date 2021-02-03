@@ -20,7 +20,7 @@ namespace MCMS.Base.SwaggerFormly.Formly.Fields
         public string ValueProp { get; set; } = "id";
 
         public string SelectorFieldType { get; set; }
-        public string KeepId { get; set; }
+        public bool KeepValueProp { get; set; } = true;
 
         public FormlyEntityFillAttribute(string optionsUrl)
         {
@@ -54,7 +54,7 @@ namespace MCMS.Base.SwaggerFormly.Formly.Fields
             var fieldGroupFill = customConfig.GetOrSetDefault<OpenApiObject, IOpenApiAny>("fieldGroupFill");
 
             fieldGroupFill["enabled"] = new OpenApiBoolean(true);
-            fieldGroupFill["keepId"] = new OpenApiBoolean(true);
+            fieldGroupFill["keepValueProp"] = new OpenApiBoolean(KeepValueProp);
             fieldGroupFill["selectorFieldType"] = new OpenApiString(SelectorFieldType ?? "autocomplete");
         }
     }

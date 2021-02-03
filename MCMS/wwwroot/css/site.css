@@ -162,10 +162,6 @@ body.forced-modal-open {
     }
 }
 
-.d-block-nf {
-    display: block;
-}
-
-.d-flex-nf {
-    display: flex;
+.full-width {
+    width: 100%
 }

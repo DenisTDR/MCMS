@@ -22,6 +22,8 @@ namespace MCMS.Data
         private readonly ITableConfigServiceT<TVm> _tableConfigService;
         private readonly ILogger<DtQueryService<TVm>> _logger;
 
+        public bool AlreadyOrdered { get; set; }
+
         public DtQueryService(
             IMapper mapper,
             ITableConfigServiceT<TVm> tableConfigService,
@@ -195,7 +197,10 @@ namespace MCMS.Data
         {
             if (parameters.Order.Count == 0)
             {
-                query = query.OrderBy(e => e.Updated);
+                if (!AlreadyOrdered)
+                {
+                    query = query.OrderBy(e => e.Updated);
+                }
             }
             else
             {

@@ -10,19 +10,6 @@ namespace MCMS.Admin.Users
 {
     public class UsersTableModelDisplayConfigService : TableConfigService<UserViewModel>
     {
-        // public override async Task<TableConfig> GetTableConfig()
-        // {
-        //     return new()
-        //     {
-        //         ModelName = "User",
-        //         TableColumns = null,
-        //         HasTableIndexColumn = true,
-        //         TableItemsApiUrl = UrlHelper.ActionLink(nameof(AdminUsersAdminApiController.Index),
-        //             TypeHelpers.GetControllerName(typeof(AdminUsersAdminApiController))),
-        //         ItemActions = GetDefaultTableItemActions()
-        //     };
-        // }
-
         public override Task<TableConfig> GetTableConfig()
         {
             if (TableItemsApiUrl == null)

@@ -32,7 +32,7 @@ namespace MCMS.Base.SwaggerFormly.Formly.Fields
             Type = "select";
         }
 
-        public override OpenApiObject GetOpenApiConfig(LinkGenerator linkGenerator)
+        public override OpenApiObject GetCustomOpenApiConfig(LinkGenerator linkGenerator)
         {
             var obj = new OpenApiObject
             {
@@ -43,8 +43,7 @@ namespace MCMS.Base.SwaggerFormly.Formly.Fields
                 ? linkGenerator.GetAbsolutePathByAction(OptionsActionName,
                     TypeHelpers.GetControllerName(OptionsControllerType))
                 : OptionsUrl;
-            // linkGenerator.Getur()
-            // Console.WriteLine(optionsUrl);
+            obj["loadOptionsFromUrl"] = new OpenApiBoolean(true);
             obj["optionsUrl"] = new OpenApiString(optionsUrl);
             return obj;
         }

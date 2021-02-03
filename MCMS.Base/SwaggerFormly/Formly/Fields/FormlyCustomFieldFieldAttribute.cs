@@ -22,9 +22,10 @@ namespace MCMS.Base.SwaggerFormly.Formly.Fields
         public bool AsOpenApi { get; set; }
         public string Type { get; set; }
         public string Format { get; set; }
+        protected bool KeepAllOfSchemes { get; set; }
 
 
-        public virtual OpenApiObject GetOpenApiConfig(LinkGenerator linkGenerator)
+        public virtual OpenApiObject GetCustomOpenApiConfig(LinkGenerator linkGenerator)
         {
             return null;
         }
@@ -33,7 +34,12 @@ namespace MCMS.Base.SwaggerFormly.Formly.Fields
             LinkGenerator linkGenerator, List<ValidatorModel> validators)
         {
             base.Patch(schema, xProps, templateOptions, linkGenerator, validators);
-            schema.AllOf = new List<OpenApiSchema>();
+
+            if (!KeepAllOfSchemes)
+            {
+                schema.AllOf = new List<OpenApiSchema>();
+            }
+
             if (!string.IsNullOrEmpty(Type))
             {
                 if (AsOpenApi)
@@ -46,7 +52,7 @@ namespace MCMS.Base.SwaggerFormly.Formly.Fields
                 }
             }
 
-            var customFieldConfig = GetOpenApiConfig(linkGenerator);
+            var customFieldConfig = GetCustomOpenApiConfig(linkGenerator);
             if (customFieldConfig != null)
             {
                 templateOptions["customFieldConfig"] = customFieldConfig;

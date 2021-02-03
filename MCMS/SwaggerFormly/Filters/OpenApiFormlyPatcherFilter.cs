@@ -8,7 +8,7 @@ using MCMS.Base.Extensions;
 using MCMS.Base.Helpers;
 using MCMS.Base.SwaggerFormly;
 using MCMS.Base.SwaggerFormly.Extensions;
-using MCMS.Base.SwaggerFormly.Formly;
+using MCMS.Base.SwaggerFormly.Formly.Base;
 using MCMS.Base.SwaggerFormly.Formly.Fields;
 using MCMS.Base.SwaggerFormly.Models;
 using Microsoft.AspNetCore.Routing;

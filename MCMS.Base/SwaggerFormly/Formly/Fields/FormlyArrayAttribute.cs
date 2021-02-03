@@ -27,7 +27,7 @@ namespace MCMS.Base.SwaggerFormly.Formly.Fields
             }
         }
 
-        public override OpenApiObject GetOpenApiConfig(LinkGenerator linkGenerator)
+        public override OpenApiObject GetCustomOpenApiConfig(LinkGenerator linkGenerator)
         {
             var obj = new OpenApiObject();
             if (RemoveDisabled)

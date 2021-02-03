@@ -5,8 +5,10 @@ using MCMS.Base.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using MCMS.Controllers.Api;
 using MCMS.SwaggerFormly.Translations;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Swashbuckle.AspNetCore.Swagger;
 
 namespace MCMS.SwaggerFormly.Controllers
 {
@@ -14,14 +16,17 @@ namespace MCMS.SwaggerFormly.Controllers
     {
         private readonly SwaggerConfigService _swaggerConfigService;
         private readonly ITranslationsRepository _translationsRepository;
+        private readonly ILogger<OpenApiConfigController> _logger;
 
         public OpenApiConfigController(
             SwaggerConfigService swaggerConfigService,
-            ITranslationsRepository translationsRepository
+            ITranslationsRepository translationsRepository,
+            ILogger<OpenApiConfigController> logger
         )
         {
             _swaggerConfigService = swaggerConfigService;
             _translationsRepository = translationsRepository;
+            _logger = logger;
         }
 
         [HttpGet]
@@ -38,6 +43,11 @@ namespace MCMS.SwaggerFormly.Controllers
             }
             catch (Exception e)
             {
+                if (e is not UnknownSwaggerDocument)
+                {
+                    _logger.LogCritical(e, "error generating openApi config");
+                }
+
                 return BadRequest(e.Message);
             }
         }

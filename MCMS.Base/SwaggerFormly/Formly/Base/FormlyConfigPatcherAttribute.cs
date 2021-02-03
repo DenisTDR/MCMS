@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.OpenApi.Any;
 using Microsoft.OpenApi.Models;
 
-namespace MCMS.Base.SwaggerFormly.Formly
+namespace MCMS.Base.SwaggerFormly.Formly.Base
 {
     public class FormlyConfigPatcherAttribute : Attribute
     {

@@ -1,6 +1,6 @@
 using System.IO;
 
-namespace MCMS.Base.SwaggerFormly.Formly
+namespace MCMS.Base.SwaggerFormly.Formly.Base
 {
     public class FormlyFieldPropAttribute : BasicAttribute
     {

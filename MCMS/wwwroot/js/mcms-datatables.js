@@ -490,6 +490,7 @@ jQuery.fn.dataTable.Api.register('updateSelectAllCheckbox', function (table, tab
     this.mcms.selectAllThi.toggleClass("fa-square", !allSelected);
     this.mcms.selectAllThi.toggleClass("fa-check-square", allSelected);
 });
+
 jQuery.fn.dataTable.ext.buttons.mcmsColVis = {
     extend: 'collection',
     text: '<i class="fas fa-grip-lines-vertical fa-fw"></i> <i class="fas fa-eye-slash fa-fw"></i> ',
@@ -515,6 +516,14 @@ jQuery.fn.dataTable.ext.buttons.mcmsColVis = {
         {
             extend: 'colvisRestore',
             text: 'Restore'
-        }
+        },
+        'resetSorting'
     ]
+};
+
+jQuery.fn.dataTable.ext.buttons.resetSorting = {
+    text: '<i class="fas fa-redo fa-fw"></i> <i class="fas fa-sort-alpha-down fa-fw"></i>',
+    action: function ( e, dt, node, config ) {
+        dt.order([]).draw();
+    }
 };

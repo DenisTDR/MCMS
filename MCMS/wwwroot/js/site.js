@@ -5,7 +5,7 @@
 
 function main() {
     document.addEventListener('side-menu-toggled', function (e) {
-        document.cookie = "side-menu-toggled=" + (e && typeof e.detail !== 'undefined' && e.detail ? 1 : 0) + ";path=/;max-age=86400";
+        document.cookie = "side-menu-toggled=" + (e && typeof e.detail !== 'undefined' && e.detail ? 1 : 0) + ";path=/;max-age=86400;samesite=strict";
     });
     bindSideMenuCollapseSectionsPersistence();
 }

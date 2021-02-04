@@ -28,7 +28,7 @@ function ajaxForm(form, asModal, callback) {
                     close(true);
                 }
                 if (typeof callback === 'function') {
-                    callback(true);
+                    callback(true, e);
                 }
             })
             .fail(function (e) {

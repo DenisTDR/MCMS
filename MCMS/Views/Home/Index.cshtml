@@ -6,6 +6,6 @@
 
 <div class="text-center">
     <h1 class="display-4 mt-4">
-        @await TransRepo.Format("home_page_welcome_message_format", new object[] {SiteConfig.Value.SiteName ?? "MCMS"})
+        @Html.Raw(await TransRepo.Format("home_page_welcome_message_format", new object[] {SiteConfig.Value.SiteName ?? "MCMS"}))
     </h1>
 </div>

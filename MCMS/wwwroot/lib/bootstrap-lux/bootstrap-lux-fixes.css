@@ -4,3 +4,7 @@
     line-height: 1.5;
     border-radius: 0;
 }
+
+body {
+    font-weight: 400;
+}

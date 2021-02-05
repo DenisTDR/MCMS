@@ -20,7 +20,6 @@ namespace MCMS.Data.Seeder
             logger.LogInformation("Seeding in " + GetType().Name);
         }
 
-        //
         public virtual async Task<JArray> BuildSeed(IRepository<T> repo, ILogger logger)
         {
             logger.LogInformation("BuildSeed in " + GetType().Name);

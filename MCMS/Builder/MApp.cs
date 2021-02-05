@@ -162,7 +162,7 @@ namespace MCMS.Builder
         private static void EnsureDatabase(IServiceProvider serviceProvider)
         {
             var logger = serviceProvider.GetRequiredService<ILogger<MApp>>();
-            logger.LogInformation("Checking pending migrations.");
+            logger.LogInformation("Checking pending migrations");
             var dbContext = serviceProvider.GetRequiredService<BaseDbContext>();
             var dbCreator = dbContext.Database.GetService<IDatabaseCreator>() as RelationalDatabaseCreator;
             if (dbCreator == null)
@@ -179,7 +179,8 @@ namespace MCMS.Builder
 
             if (!dbCreator.Exists() || dbContext.Database.GetPendingMigrations().Any())
             {
-                logger.LogWarning("Migrating database...");
+                var migrationsStr = string.Join(", ", dbContext.Database.GetPendingMigrations());
+                logger.LogWarning("Applying database migrations [{MigrationsStr}]", migrationsStr);
                 dbContext.Database.Migrate();
             }
         }

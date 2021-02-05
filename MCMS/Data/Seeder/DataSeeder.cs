@@ -14,7 +14,7 @@ namespace MCMS.Data.Seeder
     {
         private readonly IServiceProvider _serviceProvider;
         private readonly ILogger<DataSeeder> _logger;
-        protected EntitySeeders _seeders;
+        private readonly EntitySeeders _seeders;
 
         public DataSeeder(
             IServiceProvider serviceProvider,
@@ -35,10 +35,10 @@ namespace MCMS.Data.Seeder
 
             if (!File.Exists(fileName))
             {
-                Utils.DieWith("Seed file '" + fileName + "' does not exist.");
+                Utils.DieWith($"Seed file '{fileName}' does not exist.");
             }
 
-            using var fs = new FileStream(fileName, FileMode.Open, FileAccess.Read);
+            await using var fs = new FileStream(fileName, FileMode.Open, FileAccess.Read);
             using var sr = new StreamReader(fs);
             var jsonStr = await sr.ReadToEndAsync();
             await Seed(jsonStr);
@@ -46,11 +46,13 @@ namespace MCMS.Data.Seeder
 
         private async Task Seed(string jsonContent)
         {
-            _logger.LogInformation("Seeding " + _seeders.Count + " seeders.");
+            var seederCount = _seeders.Count;
+            _logger.LogInformation("Seeding from {SeederCount} seeders", seederCount);
             var seed = JsonConvert.DeserializeObject<Dictionary<string, JArray>>(jsonContent);
             foreach (var entitySeeder in _seeders)
             {
-                _logger.LogInformation("Seeding from: " + entitySeeder.SeedKey());
+                var seedingKey = entitySeeder.SeedKey();
+                _logger.LogInformation("Seeding from: {SeedingKey}", seedingKey);
                 if (!seed.ContainsKey(entitySeeder.SeedKey().ToLower()))
                 {
                     _logger.LogInformation("but not provided");

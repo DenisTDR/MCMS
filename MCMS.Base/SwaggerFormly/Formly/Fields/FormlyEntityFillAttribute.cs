@@ -22,6 +22,9 @@ namespace MCMS.Base.SwaggerFormly.Formly.Fields
         public string SelectorFieldType { get; set; }
         public bool KeepValueProp { get; set; } = true;
 
+        public bool ReloadOptionsOnInit { get; set; }
+        public bool ShowReloadButton { get; set; }
+
         public FormlyEntityFillAttribute(string optionsUrl)
         {
             OptionsUrl = optionsUrl;
@@ -50,6 +53,9 @@ namespace MCMS.Base.SwaggerFormly.Formly.Fields
                 : OptionsUrl;
             customConfig["loadOptionsFromUrl"] = new OpenApiBoolean(true);
             customConfig["optionsUrl"] = new OpenApiString(optionsUrl);
+
+            customConfig["reloadOptionsOnInit"] = new OpenApiBoolean(ReloadOptionsOnInit);
+            customConfig["showReloadButton"] = new OpenApiBoolean(ShowReloadButton);
 
             var fieldGroupFill = customConfig.GetOrSetDefault<OpenApiObject, IOpenApiAny>("fieldGroupFill");
 

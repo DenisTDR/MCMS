@@ -13,6 +13,10 @@ namespace MCMS.Base.SwaggerFormly.Formly.Fields
         public string OptionsActionName { get; }
         public string LabelProp { get; }
         public string ValueProp { get; }
+        
+        public bool ReloadOptionsOnInit { get; set; }
+        public bool ShowReloadButton { get; set; }
+
 
         public FormlySelectAttribute(string optionsUrl, string labelProp = "name", string valueProp = "id")
         {
@@ -45,6 +49,8 @@ namespace MCMS.Base.SwaggerFormly.Formly.Fields
                 : OptionsUrl;
             obj["loadOptionsFromUrl"] = new OpenApiBoolean(true);
             obj["optionsUrl"] = new OpenApiString(optionsUrl);
+            obj["reloadOptionsOnInit"] = new OpenApiBoolean(ReloadOptionsOnInit);
+            obj["showReloadButton"] = new OpenApiBoolean(ShowReloadButton);
             return obj;
         }
     }

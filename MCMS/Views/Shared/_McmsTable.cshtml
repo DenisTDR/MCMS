@@ -41,7 +41,10 @@
     <tbody>
     @* Table body will be replaced when datatables js will load *@
     <tr class="odd">
-        <td colspan="@(Model.TableColumns.Count + (Model.HasTableIndexColumn ? 1 : 0) + (Model.CheckboxSelection ? 1 : 0))" class="dataTables_empty text-center">Loading...</td>
+        <td colspan="@(Model.TableColumns.Count + (Model.HasTableIndexColumn ? 1 : 0) + (Model.CheckboxSelection ? 1 : 0))"
+            class="dataTables_empty text-center">
+            Loading...
+        </td>
     </tr>
     </tbody>
     <tfoot>
@@ -79,7 +82,8 @@
         @foreach (var action in Model.ItemActions)
         {
             action.CssClasses += " mr-1 mb-1";
-            <partial name="Partials/_MRichLink" model="action"/>        }
+            <partial name="Partials/_MRichLink" model="action"/>
+        }
     </div>
 </div>
 

@@ -330,7 +330,7 @@ var mcmsDatatables = {
                 mModals.ajaxModalItemAction.apply(vEl[0]);
             }
         }
-        table.one('init', function (e, settings, data) {
+        table.one('preInit', function (e, settings, data) {
             var bab = new $.fn.dataTable.Buttons(table, {
                 buttons: config.batchActions
             });
@@ -347,7 +347,7 @@ var mcmsDatatables = {
             ta.className = "btn-secondary";
         }
 
-        table.one('init', function (e, settings, data) {
+        table.one('preInit', function (e, settings, data) {
             var tab = new $.fn.dataTable.Buttons(table, {
                 buttons: config.tableActions
             });
@@ -452,7 +452,7 @@ var mcmsDatatables = {
         return data;
     },
     fixGlobalFilterDebounce: function (table, tableJq, config) {
-        table.on('init', function () {
+        table.on('preInit', function () {
             var timeoutId = null;
             var filterInput = tableJq.closest(".dataTables_wrapper").find(".dataTables_filter input")
                 .unbind();
@@ -465,6 +465,8 @@ var mcmsDatatables = {
                     timeoutId = null;
                 }, config.searchDelay);
             });
+            filterInput.attr('placeholder', table.i18n('sSearch'));
+            $(filterInput[0].previousSibling).remove();
         });
     }
 }

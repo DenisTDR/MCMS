@@ -165,3 +165,11 @@ body.forced-modal-open {
 .full-width {
     width: 100%
 }
+
+.d-block-nf {
+    display: block;
+}
+
+.d-flex-nf {
+    display: flex;
+}

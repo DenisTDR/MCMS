@@ -397,6 +397,8 @@ var mcmsDatatables = {
                     table.mcms.dataJustUpdated = true;
                     table.draw();
                     break;
+                case 'none':
+                    break;
                 default:
                     console.log(senderData.tag);
                     console.log(params);
@@ -525,7 +527,7 @@ jQuery.fn.dataTable.ext.buttons.mcmsColVis = {
 
 jQuery.fn.dataTable.ext.buttons.resetSorting = {
     text: '<i class="fas fa-redo fa-fw"></i> <i class="fas fa-sort-alpha-down fa-fw"></i>',
-    action: function ( e, dt, node, config ) {
+    action: function (e, dt, node, config) {
         dt.order([]).draw();
     }
 };

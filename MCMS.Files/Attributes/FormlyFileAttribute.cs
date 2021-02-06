@@ -40,7 +40,7 @@ namespace MCMS.Files.Attributes
             AsOpenApi = true;
         }
 
-        public override OpenApiObject GetOpenApiConfig(LinkGenerator linkGenerator)
+        public override OpenApiObject GetCustomOpenApiConfig(LinkGenerator linkGenerator)
         {
             var obj = new OpenApiObject
             {

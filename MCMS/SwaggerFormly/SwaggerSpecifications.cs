@@ -11,6 +11,9 @@ using MCMS.SwaggerFormly.FormParamsHelpers;
 using MCMS.SwaggerFormly.Middlewares;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.OpenApi.Any;
+using Newtonsoft.Json;
+using Swashbuckle.AspNetCore.ReDoc;
 
 namespace MCMS.SwaggerFormly
 {
@@ -107,14 +110,30 @@ namespace MCMS.SwaggerFormly
                 });
             }
 
-            foreach (var swaggerConfigOptions in allConfigs
-                .Where(swaggerConfigOptions => swaggerConfigOptions.UseReDoc()))
+            var redocSwaggerSpecs = allConfigs.Where(swaggerConfigOptions => swaggerConfigOptions.UseReDoc()).ToList();
+            foreach (var redocSP in redocSwaggerSpecs)
             {
-                app.UseReDoc(c =>
+                var redocOptions = new ReDocOptions
                 {
-                    c.RoutePrefix = "api/redoc/" + swaggerConfigOptions.Name;
-                    c.SpecUrl(swaggerConfigOptions.GetEndpointUrl());
-                });
+                    RoutePrefix = "api/redoc/" + redocSP.Name,
+                    SpecUrl = redocSP.GetEndpointUrl(),
+                    DocumentTitle = redocSP.Title + " | ReDoc"
+                };
+
+                if (redocSwaggerSpecs.Count > 1)
+                {
+                    var switchDocConfigObj = new
+                    {
+                        current = redocSP.Name,
+                        docs = redocSwaggerSpecs.Select(rss => new {rss.Name, rss.Title})
+                    };
+                    redocOptions.HeadContent =
+                        $"<script>\nvar switchDocConfig = {Utils.Serialize(switchDocConfigObj)};\n</script>\n"
+                        + "<script src='../redoc-doc-switcher.js'></script>";
+                }
+
+
+                app.UseReDoc(redocOptions);
             }
         }
     }

@@ -12,8 +12,6 @@ namespace MCMS.Auth
     {
         public void Apply(OpenApiOperation operation, OperationFilterContext context)
         {
-            var methodAuthAttributes = context.MethodInfo
-                .GetCustomAttributes(true).OfType<AuthorizeAttribute>().Distinct().ToList();
             var controllerAuthAttributes = context.MethodInfo
                 .DeclaringType?
                 .GetCustomAttributes(true).OfType<AuthorizeAttribute>().Distinct()

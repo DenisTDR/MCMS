@@ -82,17 +82,8 @@ namespace MCMS.Auth
                 });
             services.AddSwaggerGen(swagger =>
             {
-                swagger.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-                {
-                    Name = "Authorization",
-                    Type = SecuritySchemeType.Http,
-                    Scheme = "Bearer",
-                    BearerFormat = "JWT",
-                    In = ParameterLocation.Header,
-                    Description =
-                        "JWT Authorization header using the Bearer scheme. \r\n\r\n Enter your token in the text input below (without the 'Bearer ' part)'.",
-                });
                 swagger.OperationFilter<AddAuthorizationHeaderOperationFilter>();
+                swagger.DocumentFilter<AddBearerSecuritySchemeDocumentFilter>();
             });
         }
 

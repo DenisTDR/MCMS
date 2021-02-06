@@ -24,7 +24,8 @@ namespace MCMS.Base.SwaggerFormly.Models
         public void PatchMainConfigs()
         {
             var homeUrl =
-                $"<a href='{Utils.UrlCombine(RoutePrefixes.RoutePrefix, RoutePrefixes.AdminRoutePrefix.Substring(1))}'>Back to admin page</a>";
+                $"<a href='{Utils.UrlCombine(RoutePrefixes.RoutePrefix, RoutePrefixes.AdminRoutePrefix.Substring(1))}'>Back to admin page</a>" +
+                "\n<div id='doc-switch-container'></div>";
 
             ForAdmin.Name = "admin-api";
             ForAdmin.Description = $"{homeUrl}{ForAdmin.Description}";

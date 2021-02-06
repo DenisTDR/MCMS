@@ -12,7 +12,7 @@ namespace MCMS.SwaggerFormly.Filters
                 return;
             }
 
-            operation.Summary = context.ApiDescription.HttpMethod + " " + context.ApiDescription.RelativePath;
+            operation.Summary = context.ApiDescription.RelativePath;
         }
     }
 }

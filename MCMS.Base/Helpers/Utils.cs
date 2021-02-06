@@ -58,5 +58,10 @@ namespace MCMS.Base.Helpers
 
             return settings;
         }
+
+        public static string Serialize(object obj, bool indented = true)
+        {
+            return JsonConvert.SerializeObject(obj, DefaultJsonSerializerSettings());
+        }
     }
 }

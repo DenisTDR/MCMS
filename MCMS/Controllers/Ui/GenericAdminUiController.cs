@@ -52,8 +52,6 @@ namespace MCMS.Controllers.Ui
             ViewBag.ModelName = TypeHelpers.GetDisplayNameOrDefault<TVm>();
             ViewBag.FormParamsService = FormParamsService;
 
-            // ViewBag.ModelDisplayConfigService = ModelDisplayConfigService;
-            // ModelDisplayConfigService.UseModals = UsesModals;
             ViewBag.ApiControllerName = TypeHelpers.GetControllerName(typeof(TApiController));
 
             TableConfigService.ServerSide = true;

@@ -92,3 +92,7 @@ table.dataTable tfoot th.select-all-checkbox {
     display: flex;
     justify-content: center;
 }
+
+.dataTables_wrapper .table-horizontal-scroll {
+    overflow-x: auto;
+}

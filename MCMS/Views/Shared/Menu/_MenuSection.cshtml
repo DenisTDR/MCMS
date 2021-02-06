@@ -21,9 +21,11 @@ else
                 <i class="@Model.IconClasses fa-fw"></i>
             </div>
         }
-        @Model.Name
-        <div class="sb-sidenav-collapse-arrow">
-            <i class="fas fa-angle-down"></i>
+        <div class="d-flex justify-content-between flex-grow-1 full-width">
+            @Model.Name
+            <div class="sb-sidenav-collapse-arrow">
+                <i class="fas fa-angle-down"></i>
+            </div>
         </div>
     </a>
     <div class="collapse" id="section-@Model.Id" aria-labelledby="header-@Model.Id">

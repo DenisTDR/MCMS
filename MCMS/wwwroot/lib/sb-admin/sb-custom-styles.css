@@ -44,6 +44,11 @@
         text-overflow: ellipsis;
         overflow: hidden;
     }
+
+    .sb-sidenav .sb-sidenav-footer {
+        padding-left: 0.25rem;
+        padding-right: 0.25rem;
+    }
 }
 
 .sb-layout-sidenav .sb-layout-sidenav-nav {
@@ -76,9 +81,18 @@
 
 .sb-sidenav .sb-sidenav-menu .nav .sb-sidenav-menu-nested {
     transition: padding-left .15s ease-in-out;
-    margin-left: 0 !important;
-    padding-left: 1.5rem;
-    background-color: rgba(255, 255, 255, .05);
+    margin-left: 4px !important;
+    /*padding-left: 1.5rem;*/
+    border-left: 4px solid rgba(255, 255, 255, .15);
+    /*background-color: rgba(255, 255, 255, .05);*/
+}
+
+
+@media (max-width: 992px) {
+    .sb-sidenav .sb-sidenav-menu .nav .sb-sidenav-menu-nested {
+        margin-left: 0 !important;
+        border-left-width: 2px;
+    }
 }
 
 .sb-sidenav-toggled .sb-sidenav .sb-sidenav-menu .nav .sb-sidenav-menu-nested {
@@ -86,7 +100,7 @@
 }
 
 .sb-sidenav-toggled .sb-sidenav-menu .sb-sidenav-collapse-arrow {
-    display: none !important;
+    /*display: none !important;*/
 }
 
 .sb-sidenav-toggled .sb-layout-sidenav .sb-layout-sidenav-nav .sb-sidenav-menu div.sb-sidenav-menu-heading {
@@ -95,6 +109,7 @@
 }
 
 .sb-sidenav .sb-sidenav-footer {
+    transition: padding .15s ease-in-out;
     padding-bottom: 27px;
 }
 
@@ -114,4 +129,41 @@
 
 .sb-sidenav-menu::-webkit-scrollbar {
     display: none;
+}
+
+.sb-sidenav-toggled .sb-layout-sidenav .sb-layout-sidenav-content:before {
+    display: none;
+}
+
+.sb-layout-sidenav .sb-layout-sidenav-content-overlay {
+    z-index: 1037;
+    transition: opacity .35s ease-in-out, visibility .35s ease-in-out;
+    visibility: visible;
+    opacity: 0;
+}
+
+body:not(.sb-sidenav-toggled) .sb-layout-sidenav .sb-layout-sidenav-content-overlay {
+    visibility: hidden;
+}
+
+.sb-sidenav-toggled .sb-layout-sidenav .sb-layout-sidenav-content-overlay {
+    opacity: .5;
+}
+
+.sb-sidenav-toggled {
+    overflow-y: hidden;
+}
+
+.sb-sidenav-toggled .sb-sidenav .sb-sidenav-footer {
+    padding-left: 0.25rem;
+    padding-right: 0.25rem;
+}
+
+@media (min-width: 992px) {
+    .sb-sidenav-toggled {
+        overflow-y: auto;
+    }
+    .sb-layout-sidenav .sb-layout-sidenav-content-overlay {
+        display: none;
+    }
 }

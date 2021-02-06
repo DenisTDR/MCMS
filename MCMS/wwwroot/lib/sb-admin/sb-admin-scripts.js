@@ -7,9 +7,9 @@
     "use strict";
 
     // Add active state to sidbar nav links
-    var path = window.location.href; // because the 'href' property of the DOM element is the absolute path
+    const path = window.location.href; // because the 'href' property of the DOM element is the absolute path
     $(".sb-layout-sidenav-nav .sb-sidenav a.nav-link").each(function () {
-        if (this.href === path) {
+        if (path.indexOf(this.href) >= 0) {
             $(this).addClass("active");
         }
     });
@@ -22,4 +22,9 @@
             document.dispatchEvent(new CustomEvent('side-menu-toggled', {detail: $("body").hasClass("sb-sidenav-toggled")}));
         }, 200);
     });
+
+    $(".sb-layout-sidenav .sb-layout-sidenav-content-overlay")
+        .click(function () {
+            $("#sidebarToggle").click();
+        });
 })(jQuery);

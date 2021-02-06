@@ -10,8 +10,8 @@
   "sUrl": "",
   "oPaginate": {
     "sFirst": "Prima",
-    "sPrevious": "<",
-    "sNext": ">",
+    "sNext": "<i class='fas fa-chevron-right'></i>",
+    "sPrevious": "<i class='fas fa-chevron-left'></i>",
     "sLast": "Ultima"
   },
   "select": {

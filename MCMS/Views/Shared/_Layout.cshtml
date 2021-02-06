@@ -12,6 +12,8 @@
 <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="theme-color" content="#343a40" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="#343a40">
     <link rel="icon" type="image/x-icon" href="~/favicon.ico">
     <title> @(ViewData.ContainsKey("Title") ? ViewData["Title"] + " |" : "") @(SiteConfig.Value.SiteName ?? "MCMS") </title>
     @foreach (var valueLayoutInclude in LayoutIncludes.Value.GetAllForPage)
@@ -21,7 +23,7 @@
     <partial name="Partials/_Styles"/>
     @await RenderSectionAsync("Styles", required: false)
     <script>
-        var basePath = '@Url.Content("~")';
+        const basePath = '@Url.Content("~")';
     </script>
 </head>
 <body class="sb-nav-fixed @Html.Raw(sideMenuToggled ? "sb-sidenav-toggled" : "")">
@@ -34,6 +36,7 @@
         </main>
         <partial name="Partials/_Footer"/>
     </div>
+    <div class="sb-layout-sidenav-content-overlay modal-backdrop"></div>
 </div>
 <partial name="_BasicModals"/>
 <partial name="Partials/_Scripts"/>

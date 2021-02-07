@@ -18,7 +18,7 @@ namespace MCMS.Filters
         {
             if (IsApiController(context))
             {
-                var responseModel = new {Error = context.Exception?.Message};
+                var responseModel = new {Error = GetRelevantExceptionMessage(context.Exception)};
                 var dr = new ObjectResult(responseModel);
 
                 if (context.Exception is KnownException knownExc)
@@ -78,6 +78,23 @@ namespace MCMS.Filters
             }
 
             return pAttrs.Any(a => a.ContentTypes.Any(c => c.ToLower().StartsWith("application/json")));
+        }
+
+        private string GetRelevantExceptionMessage(Exception exc)
+        {
+            if (string.IsNullOrEmpty(exc?.Message))
+            {
+                return "Unknown error";
+            }
+
+            var msg = exc.Message;
+            while (msg.Contains("See the inner exception for details") && exc.InnerException != null)
+            {
+                exc = exc.InnerException;
+                msg = exc.Message;
+            }
+
+            return msg;
         }
     }
 }

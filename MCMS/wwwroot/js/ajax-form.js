@@ -26,7 +26,7 @@
                 .done(function (e) {
                     mModals.loadingUpModal.hide();
                     if (asModal) {
-                        close(true);
+                        close(e || true);
                     }
                     if (typeof callback === 'function') {
                         callback(true, e);

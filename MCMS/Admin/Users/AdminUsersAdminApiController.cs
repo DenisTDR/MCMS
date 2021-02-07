@@ -94,7 +94,10 @@ namespace MCMS.Admin.Users
             await userManager.AddToRolesAsync(user, toAddRoles);
             await userManager.RemoveFromRolesAsync(user, toDeleteRoles);
 
-            return Ok(roles);
+            return Ok(new
+            {
+                reloadTable = true
+            });
         }
 
 

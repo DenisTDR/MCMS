@@ -1,5 +1,16 @@
 namespace MCMS.Models
 {
+    public class FormSubmitResponse : FormSubmitResponse<object>
+    {
+        public FormSubmitResponse()
+        {
+        }
+
+        public FormSubmitResponse(object obj) : base(obj)
+        {
+        }
+    }
+
     public class FormSubmitResponse<T> : ModelResponse<T>
     {
         public string Status { get; set; }

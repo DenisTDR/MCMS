@@ -74,6 +74,10 @@ table.dataTable tfoot th.select-all-checkbox {
     text-align: center;
 }
 
+table.dataTable thead th.select-all-checkbox {
+    padding-right: .5rem !important;
+}
+
 .table td, .table th {
     padding: .5rem;
 }

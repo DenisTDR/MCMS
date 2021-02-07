@@ -75,7 +75,7 @@ else
                         formDone(e.data); 
                         break;
                     case 'snack':
-                        $.snack(e.data?.type, e.data?.text, e.data?.duration);
+                        $.snack(e.data?.type || 'info', e.data?.text, e.data?.duration || 5000);
                         break;
                     default:
                         const callbackName = 'customEvent@(Model.FormInstanceId)';

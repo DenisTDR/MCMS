@@ -42,9 +42,9 @@
                     mModals.displayModalLinkResponse(data, button);
                 })
                 .fail(function (e) {
-                    console.log('failed');
                     mModals.loadingUpModal.hide();
-                    mModals.alertModal(e.responseText);
+                    mModals.alertModalText(e.responseText || 'A fatal error occurred when tried to get modal content from backend. ' +
+                        'Please make sure you are connected to the internet. Try refreshing this page.', 'Failed');
                 });
         },
         loadingUpModal: {

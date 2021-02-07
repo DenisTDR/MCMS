@@ -81,12 +81,9 @@
 
 .sb-sidenav .sb-sidenav-menu .nav .sb-sidenav-menu-nested {
     transition: padding-left .15s ease-in-out;
-    margin-left: 4px !important;
-    /*padding-left: 1.5rem;*/
+    margin-left: 0 !important;
     border-left: 4px solid rgba(255, 255, 255, .15);
-    /*background-color: rgba(255, 255, 255, .05);*/
 }
-
 
 @media (max-width: 992px) {
     .sb-sidenav .sb-sidenav-menu .nav .sb-sidenav-menu-nested {

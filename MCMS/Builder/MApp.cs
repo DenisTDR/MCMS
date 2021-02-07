@@ -55,6 +55,7 @@ namespace MCMS.Builder
                     mvcJsonOptions.SerializerSettings.Converters.Add(
                         new Newtonsoft.Json.Converters.StringEnumConverter());
                     mvcJsonOptions.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
+                    mvcJsonOptions.SerializerSettings.PreserveReferencesHandling = PreserveReferencesHandling.Objects;
                 });
 
             mvcBuilder = _specifications.Aggregate(mvcBuilder,

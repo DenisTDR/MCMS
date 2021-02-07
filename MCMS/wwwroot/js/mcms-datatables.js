@@ -1,6 +1,11 @@
 const mcmsTables = [];
 
 (function ($) {
+    mcmsTables.reload = function () {
+        for (let i = 0; i < this.length; i++) {
+            this[i].ajax.reload();
+        }
+    }
     window.mcmsDatatables = {
         bindDefaultDataTables: function (selector, initialConfig, actionsColumnContent, lang) {
             const tableId = selector.replace("#", "");

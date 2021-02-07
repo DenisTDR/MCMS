@@ -14,5 +14,6 @@ namespace MCMS.Models
 
         public T Model { get; set; }
         public string Id { get; set; }
+        public object Data { get; set; }
     }
 }

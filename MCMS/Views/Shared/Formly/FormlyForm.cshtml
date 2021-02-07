@@ -27,45 +27,64 @@ else
 @using (Html.BeginMPageScripts())
 {
     <script>
-        function formDone@(Model.FormInstanceId)(e) {
-            // console.log('done, ', e)
-            var callbackName = 'callback@(Model.FormInstanceId)';
-            if(window.hasOwnProperty(callbackName)) {
-                window[callbackName](e.senderId, e.params);
+        (function ($) {
+            function formDone(e) {
+                const callbackName = 'callback@(Model.FormInstanceId)';
+                if(window.hasOwnProperty(callbackName)) {
+                    window[callbackName](e.senderId, e.params);
+                }
             }
-        }
-    </script>
-    @if (!Env.GetBool("FORMLY_DEBUG"))
-    {
-        <script>
-            var formElement@(Model.FormInstanceId) = document.getElementById('@Model.FormInstanceId');
-            formElement@(Model.FormInstanceId).addEventListener('done', function(e) { formDone@(Model.FormInstanceId)(e.detail); });
-            $("#@Model.FormInstanceId-submit-button").on('click', function() {
-                $("#@Model.FormInstanceId .submit-button").click();
-            });
-            mcmsFormsStaticFiles.load();
-        </script>
-    }
-    else
-    {
-        <script>
-              window.addEventListener('message', function(e){
-                  if(!e || !e.data || !e.data.id || e.data.senderId !== '@Model.FormInstanceId') {
+            @if (!Env.GetBool("FORMLY_DEBUG"))
+            {
+            <text>
+                const formElement = document.getElementById('@Model.FormInstanceId');
+                formElement.addEventListener('done', function(e) { processEvent({type: 'mcms-form-done', data: e.detail}); });
+                formElement.addEventListener('customEvent', function(e) { processEvent(e.detail); });
+                $("#@Model.FormInstanceId-submit-button").on('click', function() {
+                    $("#@Model.FormInstanceId .submit-button").click();
+                });
+                mcmsFormsStaticFiles.load();
+            </text>
+            }
+            else
+            {
+            <text>
+                window.addEventListener('message', function(e) {
+                    if(!e?.data?.type || e?.data?.senderId !== '@Model.FormInstanceId') {
                       return;
-                  }
-                  if(e.data.id === 'mcms-form-height-changed') {
-                      var iFrame = document.getElementById("@Model.FormInstanceId");
-                      if(iFrame) {
-                          iFrame.style.height = e.data.height + 50 + "px";
-                      }
-                  }  else if(e.data.id === 'mcms-form-done') {
-                      formDone@(Model.FormInstanceId)(e.data.data); 
-                  }
-              });
-              
-              $("#@Model.FormInstanceId-submit-button").on('click', function() {
-                document.getElementById("@Model.FormInstanceId").contentWindow.postMessage({submitForm: true}, '*');
-              });
-        </script>
-    }
+                    }
+                    if (e.data.type === 'mcms-form-height-changed') {
+                        const iFrame = document.getElementById("@Model.FormInstanceId");
+                        if (iFrame) {
+                            iFrame.style.height = e.data.height + 50 + "px";
+                        }
+                    } else {
+                        processEvent(e.data);    
+                    }
+                });
+                
+                $("#@Model.FormInstanceId-submit-button").on('click', function() {
+                    document.getElementById("@Model.FormInstanceId").contentWindow.postMessage({submitForm: true}, '*');
+                });
+            
+            </text>
+            }
+            function processEvent(e) {
+                switch (e.type) {
+                    case 'mcms-form-done':
+                        formDone(e.data); 
+                        break;
+                    case 'snack':
+                        $.snack(e.data?.type, e.data?.text, e.data?.duration);
+                        break;
+                    default:
+                        const callbackName = 'customEvent@(Model.FormInstanceId)';
+                        if(window.hasOwnProperty(callbackName)) {
+                            window[callbackName](e);
+                        }
+                        break;
+                }
+            }
+        })(jQuery);
+    </script>
 }

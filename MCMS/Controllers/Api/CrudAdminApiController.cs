@@ -6,6 +6,7 @@ using MCMS.Base.Attributes;
 using MCMS.Base.Data.Entities;
 using MCMS.Base.Data.FormModels;
 using MCMS.Base.Data.ViewModels;
+using MCMS.Base.Repositories;
 using MCMS.Data;
 using MCMS.Models;
 using MCMS.Models.Dt;
@@ -86,18 +87,30 @@ namespace MCMS.Controllers.Api
             return Mapper.Map<TVm>(e);
         }
 
-        protected override Task<ModelResponse<TFm>> GetPatchResponseModel(TE e)
+        protected override async Task<ModelResponse<TFm>> GetPatchResponseModel(TE e)
         {
             var fm = MapF(e);
             var vm = MapV(e);
-            return Task.FromResult(new DoubleModelResponse<TFm, TVm>(fm, vm, e.Id) as ModelResponse<TFm>);
+            var response = new FormSubmitResponse<TFm, TVm>(fm, vm, e.Id)
+            {
+                Snack = await ServiceProvider.GetRequiredService<ITranslationsRepository>().GetValueOrSlug("updated"),
+                SnackType = "success",
+                SnackDuration = 3000
+            };
+            return response;
         }
 
-        protected override Task<ModelResponse<TFm>> GetCreateResponseModel(TE e)
+        protected override async Task<ModelResponse<TFm>> GetCreateResponseModel(TE e)
         {
             var fm = MapF(e);
             var vm = MapV(e);
-            return Task.FromResult(new DoubleModelResponse<TFm, TVm>(fm, vm, e.Id) as ModelResponse<TFm>);
+            var response = new FormSubmitResponse<TFm, TVm>(fm, vm, e.Id)
+            {
+                Snack = await ServiceProvider.GetRequiredService<ITranslationsRepository>().GetValueOrSlug("saved"),
+                SnackType = "success",
+                SnackDuration = 3000
+            };
+            return response;
         }
     }
 }

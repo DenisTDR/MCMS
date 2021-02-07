@@ -11,8 +11,6 @@ using MCMS.SwaggerFormly.FormParamsHelpers;
 using MCMS.SwaggerFormly.Middlewares;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.OpenApi.Any;
-using Newtonsoft.Json;
 using Swashbuckle.AspNetCore.ReDoc;
 
 namespace MCMS.SwaggerFormly

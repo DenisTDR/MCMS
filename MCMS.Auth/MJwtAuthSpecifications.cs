@@ -9,7 +9,6 @@ using MCMS.Base.SwaggerFormly.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
 
 namespace MCMS.Auth
 {

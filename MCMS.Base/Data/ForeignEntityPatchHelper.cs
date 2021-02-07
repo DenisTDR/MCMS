@@ -38,10 +38,24 @@ namespace MCMS.Base.Data
                     continue;
                 }
 
-                var subE = Activator.CreateInstance(eProp.PropertyType) ?? throw new Exception(
-                    $"Couldn't instantiate a '{eProp.PropertyType.Name}'.");
-                eKeys[0].SetValue(subE, opBag.op.value);
-                dbContext.Attach(subE);
+                object subE;
+
+                var trackedEntityEntry = dbContext.ChangeTracker.Entries()
+                    .Where(te => te.IsKeySet && eProp.PropertyType.IsInstanceOfType(te.Entity))
+                    .FirstOrDefault(te => eKeys[0].GetValue(te.Entity)?.Equals(opBag.op.value) == true);
+
+                if (trackedEntityEntry != null)
+                {
+                    subE = trackedEntityEntry.Entity;
+                }
+                else
+                {
+                    subE = Activator.CreateInstance(eProp.PropertyType) ?? throw new Exception(
+                        $"Couldn't instantiate a '{eProp.PropertyType.Name}'.");
+                    eKeys[0].SetValue(subE, opBag.op.value);
+                    dbContext.Attach(subE);
+                }
+
                 eProp.SetValue(e, subE);
             }
         }

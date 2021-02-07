@@ -16,7 +16,6 @@ namespace MCMS.Data
 {
     public class BaseDbContext : IdentityDbContext<User, Role, string, IdentityUserClaim<string>, UserRole,
             IdentityUserLogin<string>, IdentityRoleClaim<string>, IdentityUserToken<string>>
-        //IdentityDbContext<User, Role, string>
     {
         private readonly EntitiesConfig _entitiesConfig;
 

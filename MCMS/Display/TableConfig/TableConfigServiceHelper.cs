@@ -19,9 +19,8 @@ namespace MCMS.Display.TableConfig
                 throw new ArgumentNullException(nameof(uiControllerType));
             }
 
-            var args =
-                uiControllerType.GetGenericArgumentsOfGenericTypeImplementation(
-                    typeof(GenericAdminUiController<,,,>)).ToList();
+            var args = uiControllerType
+                .GetGenericArgumentsOfGenericTypeImplementation(typeof(GenericAdminUiController<,,,>)).ToList();
             args.Insert(3, uiControllerType);
             return typeof(TableConfigForControllerService<,,,,>).MakeGenericType(args.ToArray());
         }

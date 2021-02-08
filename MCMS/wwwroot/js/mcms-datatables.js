@@ -272,6 +272,7 @@ const mcmsTables = [];
             }
             modal.on('hide.bs.modal', function () {
                 datatable.destroy();
+                datatable.mcms.$.attr("id", datatable.mcms.$.attr("id") + "-old");
             });
         },
         enableCheckboxSelection: function (table, tableJQuery) {
@@ -329,7 +330,9 @@ const mcmsTables = [];
                     buttons: config.batchActions
                 });
                 const babContainer = bab.dom.container;
-                babContainer.appendTo(tableJQuery.closest(".dataTables_wrapper").find(".batch-actions-container"));
+                table.mcms.batchActionsContainer = table.mcms.$.closest(".dataTables_wrapper").find(".batch-actions-container");
+                table.mcms.batchActionsContainer.hide();
+                babContainer.appendTo(table.mcms.batchActionsContainer);
             });
         },
         enableTableActions: function (table, tableJQuery, config) {
@@ -497,8 +500,7 @@ jQuery.fn.dataTable.Api.register('sumTotal', function () {
         return a + b;
     }, 0);
 });
-jQuery.fn.dataTable.Api.register('updateSelectAllCheckbox', function (table, tableJq) {
-    window.tableJq = tableJq;
+jQuery.fn.dataTable.Api.register('updateSelectAllCheckbox', function (table) {
     const selectionLength = this.rows({selected: true}).count();
     const allSelected = selectionLength > 0 && selectionLength === this.rows().count();
     if (!this.mcms.selectAllThi) {
@@ -506,6 +508,9 @@ jQuery.fn.dataTable.Api.register('updateSelectAllCheckbox', function (table, tab
     }
     this.mcms.selectAllThi.toggleClass("fa-square", !allSelected);
     this.mcms.selectAllThi.toggleClass("fa-check-square", allSelected);
+    if (!!selectionLength !== this.mcms.batchActionsContainer.is(":visible")) {
+        this.mcms.batchActionsContainer.slideToggle();
+    }
 });
 
 jQuery.fn.dataTable.ext.buttons.mcmsColVis = {

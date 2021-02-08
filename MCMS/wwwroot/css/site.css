@@ -212,6 +212,10 @@ body.forced-modal-open {
     min-height: 50px;
 }
 
+.spinner-container {
+    min-height: 50px;
+}
+
 ngb-modal-backdrop {
     opacity: 0;
 }

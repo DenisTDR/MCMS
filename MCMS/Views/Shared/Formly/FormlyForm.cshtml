@@ -3,7 +3,7 @@
 @using MCMS.Base.Helpers
 @using MCMS.SwaggerFormly
 @model MCMS.SwaggerFormly.Models.FormlyFormParams
-<div class="position-relative full-height">
+<div class="position-relative spinner-container">
     @if (!Env.GetBool("FORMLY_DEBUG"))
     {
         <mcms-form-params-wrapper

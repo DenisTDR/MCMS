@@ -5,7 +5,7 @@
 @inject ITranslationsRepository TransRepo
 @{
     ViewBag.Title = $"Resend activation email for {Model.FullName} <{Model.Email}>?";
-    ViewBag.ModalDialogClasses = "modal-md";
+    ViewBag.ModalDialogClasses = "";
     var id = Utils.GenerateRandomHexString();
 }
 <div class="modal-body" id="@id">

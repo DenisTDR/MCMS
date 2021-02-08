@@ -1,6 +1,6 @@
 (function ($) {
 
-    window.mModals = {
+    window.mcmsModals = window.mModals = {
         waitModal: $("#processing-modal").find('.modal'),
         _alertModal: $("#alert-modal").find('.modal'),
         closeWaitModal: false,
@@ -104,6 +104,10 @@
             return this.customShowModal(modal);
         },
         displayModalLinkResponse: function (data, button) {
+            if (!data) {
+                mModals.alertModalText('No content received from the server to display in a modal.', 'Something weird occurred');
+                return;
+            }
             mModals.closeWaitModal = true;
             const newElement = $("<div></div>");
             newElement.append($(data));

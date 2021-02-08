@@ -64,6 +64,8 @@ namespace MCMS.SwaggerFormly.FormParamsHelpers
                 formParams.AddOption("openApiConfigUrl", formParams.OpenApiConfigUrl);
             }
 
+            formParams.UseFormSpinnerInside();
+
             return formParams;
         }
 

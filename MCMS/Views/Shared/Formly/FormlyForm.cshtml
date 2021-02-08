@@ -1,29 +1,42 @@
 @using Newtonsoft.Json
 @using MCMS.Base.Extensions
 @using MCMS.Base.Helpers
+@using MCMS.SwaggerFormly
 @model MCMS.SwaggerFormly.Models.FormlyFormParams
-@if (!Env.GetBool("FORMLY_DEBUG"))
-{
-    <mcms-form-params-wrapper
-        schema-name="@Model.SchemaName"
-        model-id="@Model.ModelId"
-        action="@Model.Action.GetCustomValue()"
-        get-url="@Model.GetUrl"
-        submit-url="@Model.SubmitUrl"
-        additional-fields="@JsonConvert.SerializeObject(Model.AdditionalFields, Utils.DefaultJsonSerializerSettings())"
-        id="@Model.FormInstanceId"
-        form-instance-id="@Model.FormInstanceId"
-        options="@JsonConvert.SerializeObject(Model.Options, Utils.DefaultJsonSerializerSettings())">
-        <div class="d-flex flex-column justify-content-center align-items-center">
-            <div class="spinner-border text-primary mb-3" role="status"></div>
-            Loading up form ...
+<div class="position-relative full-height">
+    @if (!Env.GetBool("FORMLY_DEBUG"))
+    {
+        <mcms-form-params-wrapper
+            schema-name="@Model.SchemaName"
+            model-id="@Model.ModelId"
+            action="@Model.Action.GetCustomValue()"
+            get-url="@Model.GetUrl"
+            submit-url="@Model.SubmitUrl"
+            additional-fields="@JsonConvert.SerializeObject(Model.AdditionalFields, Utils.DefaultJsonSerializerSettings())"
+            id="@Model.FormInstanceId"
+            form-instance-id="@Model.FormInstanceId"
+            options="@JsonConvert.SerializeObject(Model.Options, Utils.DefaultJsonSerializerSettings())">
+            <div class="d-flex flex-column justify-content-center align-items-center">
+                <div class="spinner-border text-primary mb-3" role="status"></div>
+                Loading up form ...
+            </div>
+        </mcms-form-params-wrapper>
+    }
+    else
+    {
+        <iframe src="/mcms-forms?@Model.ToUrlQuery()" class="col-12" id="@Model.FormInstanceId"></iframe>
+    }
+
+    @if (Model.UsesSpinnerOuterOverlay())
+    {
+        <div id="@Model.FormInstanceId-processing-overlay" class="form-processing">
+            <div class="form-processing-backdrop"></div>
+            <div class="form-processing-overlay">
+                <div class="spinner-border text-primary" role="status"></div>
+            </div>
         </div>
-    </mcms-form-params-wrapper>
-}
-else
-{
-    <iframe src="/mcms-forms?@Model.ToUrlQuery()" class="col-12" id="@Model.FormInstanceId"></iframe>
-}
+    }
+</div>
 @using (Html.BeginMPageScripts())
 {
     <script>
@@ -36,7 +49,7 @@ else
             }
             @if (!Env.GetBool("FORMLY_DEBUG"))
             {
-            <text>
+                <text>
                 const formElement = document.getElementById('@Model.FormInstanceId');
                 formElement.addEventListener('done', function(e) { processEvent({type: 'mcms-form-done', data: e.detail}); });
                 formElement.addEventListener('customEvent', function(e) { processEvent(e.detail); });
@@ -48,10 +61,10 @@ else
             }
             else
             {
-            <text>
+                <text>
                 window.addEventListener('message', function(e) {
                     if(!e?.data?.type || e?.data?.senderId !== '@Model.FormInstanceId') {
-                      return;
+                        return;
                     }
                     if (e.data.type === 'mcms-form-height-changed') {
                         const iFrame = document.getElementById("@Model.FormInstanceId");
@@ -70,6 +83,17 @@ else
             </text>
             }
             function processEvent(e) {
+                
+                if (e.type === 'state-changed') {
+                    @if (Model.UsesSpinnerOuterOverlay())
+                    {
+                    <text>
+                    $("#@Model.FormInstanceId-processing-overlay").toggleClass('show', e?.data?.state !== 'ready');
+                    </text>
+                    }
+                    $("#@Model.FormInstanceId-submit-button").prop('disabled', e?.data?.state !== 'ready');
+                }
+                
                 switch (e.type) {
                     case 'mcms-form-done':
                         formDone(e.data); 

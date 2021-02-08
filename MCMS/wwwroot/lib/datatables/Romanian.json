@@ -1,5 +1,5 @@
 {
-  "sProcessing": "<i class=\"fa fa-cog fa-spin fa-2x fa-fw\"></i><span class=\"sr-only\">Se procesează...</span>",
+  "sProcessing": "<div role=\"status\" class=\"spinner-border text-primary\"></div><span class=\"sr-only\">Se procesează</span>",
   "sLengthMenu": "Afișează _MENU_ înregistrări pe pagină",
   "sZeroRecords": "Nu sunt înregistrări de afișat.",
   "sInfo": "Afișate de la _START_ la _END_ din _TOTAL_ înregistrări",

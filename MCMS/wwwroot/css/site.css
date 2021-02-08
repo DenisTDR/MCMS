@@ -166,10 +166,52 @@ body.forced-modal-open {
     width: 100%
 }
 
+.full-height {
+    height: 100%
+}
+
 .d-block-nf {
     display: block;
 }
 
 .d-flex-nf {
     display: flex;
+}
+
+
+.form-processing {
+    display: none;
+}
+
+.form-processing.show {
+    display: block;
+}
+
+.form-processing .form-processing-backdrop,
+.form-processing .form-processing-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+}
+
+.form-processing .form-processing-overlay {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.form-processing .form-processing-backdrop {
+    background-color: rgba(0, 0, 0, 0.05);
+    box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.1);
+}
+
+.modal-dialog-scrollable .modal-body {
+    min-height: 50px;
+}
+
+ngb-modal-backdrop {
+    opacity: 0;
 }

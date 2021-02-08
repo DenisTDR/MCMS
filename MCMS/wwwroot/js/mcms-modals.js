@@ -17,7 +17,6 @@
             mModals.body.on('click', '[data-toggle="ajax-modal"]', function (event) {
                 mModals.ajaxModalItemAction.apply(this, [event]);
             });
-            this.initAlertModal();
         },
         ajaxModalItemAction: function (event) {
             if (event) {
@@ -80,18 +79,16 @@
                     }
                 });
             }
-            modal.modal('show');
+            return modal.modal('show');
         },
-        initAlertModal: function () {
-            mModals._alertModal.on('hidden.bs.modal', function () {
-                mModals._alertModal.find(".title").html("");
-                mModals._alertModal.find(".modal-body").html("");
-            });
-        },
-        alertModalText: function (text, title) {
-            mModals._alertModal.find(".title").html(title);
-            mModals._alertModal.find(".modal-body").html(text);
-            this.customShowModal(mModals._alertModal);
+        alertModalText: function (text, title, options) {
+            const crtAlertModal = mModals._alertModal.clone();
+            crtAlertModal.find(".title").html(title);
+            crtAlertModal.find(".modal-body").html(text);
+            if (options?.size) {
+                crtAlertModal.find(".modal-dialog").addClass(options.size);
+            }
+            return this.alertModal(crtAlertModal);
         },
         alertModal: function (modalHtml) {
             const newElement = $("<div></div>");
@@ -104,7 +101,7 @@
                 }, 1000);
             });
             modal.modal({backdrop: 'static'});
-            this.customShowModal(modal);
+            return this.customShowModal(modal);
         },
         displayModalLinkResponse: function (data, button) {
             mModals.closeWaitModal = true;

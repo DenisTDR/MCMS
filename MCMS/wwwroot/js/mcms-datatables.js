@@ -42,7 +42,7 @@ const mcmsTables = [];
                 lengthMenu: [[10, 25, 50, 100, 250, 500, 1000, -1], [10, 25, 50, 100, 250, 500, 1000, "All"]],
                 fixedHeader: {headerOffset: 50},
                 language: mcmsDatatables.getLang(lang),
-                dom: "<'processing-overlay'><'row'<'col-sm-12 col-md-6 table-actions-container'><'col-sm-12 col-md-6'f>>" +
+                dom: "<'processing-backdrop'><'row'<'col-sm-12 col-md-6 table-actions-container'><'col-sm-12 col-md-6'f>>" +
                     "<'row'<'col-sm-12 table-horizontal-scroll 'tr>>" +
                     "<'row'<'col-12 batch-actions-container'>>" +
                     "<'row footer-table-row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7 d-flex justify-content-between 'pB>>",
@@ -117,7 +117,7 @@ const mcmsTables = [];
             }
 
             table.on('processing.dt', function (e, settings, processing) {
-                tableJQuery.closest('.dataTables_wrapper').find('.processing-overlay').toggle(processing);
+                tableJQuery.closest('.dataTables_wrapper').find('.processing-backdrop').toggle(processing);
             });
 
             mcmsDatatables.properlyDestroyInModal(tableElem, table);

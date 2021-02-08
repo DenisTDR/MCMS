@@ -24,7 +24,7 @@ table.dataTable tr.column-search-row td input {
     z-index: 2;
 }
 
-.dataTables_wrapper .processing-overlay {
+.dataTables_wrapper .processing-backdrop {
     position: absolute;
     top: 0;
     left: 0;
@@ -35,7 +35,7 @@ table.dataTable tr.column-search-row td input {
     box-shadow: 0 0 48px 0 rgba(0, 0, 0, 0.1);
 }
 
-.dataTables_wrapper .processing-overlay.shown {
+.dataTables_wrapper .processing-backdrop.shown {
     display: block;
 }
 

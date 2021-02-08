@@ -8,11 +8,12 @@
 @{
     ViewBag.Title = $"{await TransRepo.GetValueOrSlug("edit")} {StringExtensions.ToLowerFirstChar(ViewBag.ModelName)} {(!string.IsNullOrEmpty(Model.ToString()) ? $"'{Model}'" : "")}";
     var formParams = ViewBag.FormParams as FormlyFormParams ?? (ViewBag.FormParamsService as FormParamsService)?.ForPatch(Model.Id) ?? throw new Exception("Don't have form params :(");
-    formParams.AddOption("hideSubmitButton", true);
+    formParams.HideSubmitButton();
+    formParams.UseSpinnerOuterOverlay();
     ViewBag.ModalDialogClasses = "modal-xl";
 }
 <div class="modal-body" id="@formParams.FormInstanceId-modal-body">
-    @await Html.BlindPartialAsync("Formly/FormlyForm", formParams)
+    <partial name="Formly/FormlyForm" model="formParams"/>
 </div>
 <div class="modal-footer">
     <button type="button" class="btn btn-secondary" data-dismiss="modal">@await TransRepo.GetValueOrSlug("cancel")</button>
@@ -23,7 +24,7 @@
     <script>
     function callback@(formParams.FormInstanceId)(sender, params) {
         // console.log(sender, params);
-        var modal = $("#@formParams.FormInstanceId-modal-body").closest(".modal");
+        const modal = $("#@formParams.FormInstanceId-modal-body").closest(".modal");
         modal.data('result', {params: params});
         modal.modal('hide');
     }

@@ -130,6 +130,7 @@ namespace MCMS.SwaggerFormly.Middlewares
             return _proxyRules.Keys.Any(key => request.Path.StartsWithSegments(key));
         }
 
-        private readonly Dictionary<string, string> _proxyRules = new() {{"/mcms-forms", Utils.UrlCombine(Env.GetOrThrow("FORMLY_SERVE_URL"), "mcms-forms/")}};
+        private readonly Dictionary<string, string> _proxyRules = new()
+            {{"/mcms-forms", Utils.UrlCombine(Env.GetOrThrow("FORMLY_SERVE_URL"), "mcms-forms/")}};
     }
 }

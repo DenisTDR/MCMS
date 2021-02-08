@@ -137,15 +137,33 @@ body.forced-modal-open {
     height: 100% !important;
 }
 
-@media (min-width: 650px) and (max-width: 992px) {
-    .modal-xl {
+@media (min-width: 650px) and (max-width: 750px) {
+    .modal-xl,
+    .modal-xxl,
+    .modal-3xl {
         max-width: 600px;
     }
 }
 
 @media (min-width: 750px) and (max-width: 992px) {
-    .modal-xl {
+    .modal-xl,
+    .modal-xxl,
+    .modal-3xl {
         max-width: 700px;
+    }
+}
+
+@media (min-width: 992px) {
+    .modal-xxl,
+    .modal-3xl {
+        max-width: 800px;
+    }
+}
+
+@media (min-width: 1200px) {
+    .modal-xxl,
+    .modal-3xl {
+        max-width: 1140px;
     }
 }
 

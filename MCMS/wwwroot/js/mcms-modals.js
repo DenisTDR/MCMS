@@ -69,8 +69,7 @@
                     }
                     mModals.visibleModals++;
                 });
-
-                modal.on("hidden.bs.modal", function () {
+                modal.on("hide.bs.modal", function () {
                     mModals.visibleModals--;
                     if (mModals.visibleModals === 0) {
                         mModals.body.removeClass('forced-modal-open');
@@ -92,7 +91,10 @@
         },
         alertModal: function (modalHtml) {
             const newElement = $("<div></div>");
-            newElement.append($(modalHtml));
+            if (!(modalHtml instanceof $)) {
+                modalHtml = $(modalHtml);
+            }
+            newElement.append(modalHtml);
             mModals.body.append(newElement);
             const modal = newElement.find('.modal');
             modal.on("hidden.bs.modal", function () {
@@ -100,7 +102,9 @@
                     newElement.remove();
                 }, 1000);
             });
-            modal.modal({backdrop: 'static'});
+            if (typeof modal.data('backdrop') === "undefined") {
+                modal.data('backdrop', 'static');
+            }
             return this.customShowModal(modal);
         },
         displayModalLinkResponse: function (data, button) {

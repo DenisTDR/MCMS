@@ -100,3 +100,13 @@ table.dataTable thead th.select-all-checkbox {
 .dataTables_wrapper .table-horizontal-scroll {
     overflow-x: auto;
 }
+
+
+table.dataTable {
+    margin-bottom: 0;
+}
+
+.dataTables_wrapper .table-actions-container {
+    display: flex;
+    align-items: flex-end;
+}

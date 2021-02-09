@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
@@ -18,6 +19,18 @@ namespace MCMS.Base.Helpers
             }
 
             return str.Substring(0, length);
+        }
+
+        private static readonly Random Random = new();
+        private const string LowerCaseAlphaNumeric = "abcdefghijklmnopqrstuvwxyz0123456789";
+        private const string UpperCaseLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+        public static string GenerateRandomString(int length = 20, bool useUpperCase = false)
+        {
+            var src = useUpperCase ? LowerCaseAlphaNumeric + UpperCaseLetters : LowerCaseAlphaNumeric;
+            return new(Enumerable
+                .Repeat(src, length)
+                .Select(s => s[Random.Next(s.Length)]).ToArray());
         }
 
         public static void DieWith(string message, bool killProcess = true, ConsoleColor color = ConsoleColor.Red)

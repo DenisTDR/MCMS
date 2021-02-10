@@ -73,9 +73,9 @@ namespace MCMS.Builder
 
         public MApp Build()
         {
-            if (!_specifications.Any(spec => spec is BaseAuthSpecifications))
+            if (!_specifications.Any(spec => spec is BaseSpecifications))
             {
-                AddSpecifications<BaseAuthSpecifications>(0);
+                AddSpecifications<BaseSpecifications>(0);
             }
 
             if (!_specifications.Any(spec => spec is MAuthSpecifications))

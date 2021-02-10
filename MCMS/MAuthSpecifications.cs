@@ -3,11 +3,11 @@ using MCMS.Admin.Users;
 using MCMS.Auth;
 using MCMS.Base.Auth;
 using MCMS.Base.Builder;
+using MCMS.Base.Data.Seeder;
 using MCMS.Base.Helpers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using MCMS.Data;
-using MCMS.Data.Seeder;
 
 namespace MCMS
 {

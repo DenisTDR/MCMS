@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace MCMS.Data.Seeder
+namespace MCMS.Base.Data.Seeder
 {
     public sealed class EntitySeeders : List<ISeeder>
     {

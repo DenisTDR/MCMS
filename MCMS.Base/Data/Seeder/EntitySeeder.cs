@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using MCMS.Base.Data;
 using MCMS.Base.Data.Entities;
 using MCMS.Base.Extensions;
 using MCMS.Base.Helpers;
@@ -10,7 +9,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace MCMS.Data.Seeder
+namespace MCMS.Base.Data.Seeder
 {
     public class EntitySeeder<T> : ISeeder where T : class, IEntity
     {

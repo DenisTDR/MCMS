@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Reflection;
 using System.Threading.Tasks;
 using MCMS.Base.Helpers;
 using Microsoft.Extensions.Logging;
@@ -8,21 +10,24 @@ using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace MCMS.Data.Seeder
+namespace MCMS.Base.Data.Seeder
 {
     public class DataSeeder
     {
         private readonly IServiceProvider _serviceProvider;
         private readonly ILogger<DataSeeder> _logger;
         private readonly EntitySeeders _seeders;
+        private readonly SeedSources _sources;
 
         public DataSeeder(
             IServiceProvider serviceProvider,
             IOptions<EntitySeeders> seedersOptions,
+            IOptions<SeedSources> seedSourcesOptions,
             ILogger<DataSeeder> logger)
         {
             _serviceProvider = serviceProvider;
             _logger = logger;
+            _sources = seedSourcesOptions.Value;
             _seeders = seedersOptions.Value;
         }
 
@@ -38,26 +43,59 @@ namespace MCMS.Data.Seeder
                 Utils.DieWith($"Seed file '{fileName}' does not exist.");
             }
 
+            _logger.LogInformation("Seeding from file: {FileName}", fileName);
             await using var fs = new FileStream(fileName, FileMode.Open, FileAccess.Read);
-            using var sr = new StreamReader(fs);
+            await SeedFromStream(fs);
+        }
+
+        public async Task SeedFromEmbeddedResource((Assembly, string) embeddedSource)
+        {
+            _logger.LogInformation("Seeding from embedded resource: {FileName} in Assembly: {Assembly}",
+                embeddedSource.Item2, embeddedSource.Item1.FullName);
+            await using var resource = embeddedSource.Item1.GetManifestResourceStream(
+                $"{embeddedSource.Item1.GetName().Name}.{embeddedSource.Item2}");
+            if (resource == null)
+            {
+                Utils.DieWith(
+                    "Couldn't get/find a stream for a embedded resource for seed." +
+                    $" Path: '{embeddedSource.Item2}', Assembly: '{embeddedSource.Item1.FullName}'");
+            }
+
+            await SeedFromStream(resource);
+        }
+
+        public async Task SeedFromStream([NotNull] Stream stream)
+        {
+            using var sr = new StreamReader(stream);
             var jsonStr = await sr.ReadToEndAsync();
             await Seed(jsonStr);
         }
 
+        public async Task SeedFromProvidedSources()
+        {
+            foreach (var filePath in _sources.PhysicalSources)
+            {
+                await SeedFromFile(filePath);
+            }
+
+            foreach (var embeddedSource in _sources.EmbeddedSources)
+            {
+                await SeedFromEmbeddedResource(embeddedSource);
+            }
+        }
+
         private async Task Seed(string jsonContent)
         {
-            var seederCount = _seeders.Count;
-            _logger.LogInformation("Seeding from {SeederCount} seeders", seederCount);
             var seed = JsonConvert.DeserializeObject<Dictionary<string, JArray>>(jsonContent);
             foreach (var entitySeeder in _seeders)
             {
                 var seedingKey = entitySeeder.SeedKey();
-                _logger.LogInformation("Seeding from: {SeedingKey}", seedingKey);
                 if (!seed.ContainsKey(entitySeeder.SeedKey().ToLower()))
                 {
-                    _logger.LogInformation("but not provided");
                     continue;
                 }
+
+                _logger.LogInformation("Seeding: {SeedingKey}", seedingKey);
 
                 await entitySeeder.Seed(_serviceProvider, seed[entitySeeder.SeedKey()]);
             }

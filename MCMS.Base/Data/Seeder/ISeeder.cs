@@ -2,7 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 
-namespace MCMS.Data.Seeder
+namespace MCMS.Base.Data.Seeder
 {
     public interface ISeeder
     {

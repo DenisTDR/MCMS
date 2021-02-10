@@ -11,7 +11,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace MCMS.Data.Seeder
+namespace MCMS.Base.Data.Seeder
 {
     public class RolesSeeder : ISeeder
     {

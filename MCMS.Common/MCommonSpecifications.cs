@@ -1,10 +1,10 @@
 using MCMS.Base.Builder;
 using MCMS.Base.Data;
+using MCMS.Base.Data.Seeder;
 using MCMS.Base.Repositories;
 using MCMS.Common.Translations.Languages;
 using MCMS.Common.Translations.Seed;
 using MCMS.Common.Translations.Translations;
-using MCMS.Data.Seeder;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace MCMS.Common
@@ -23,6 +23,9 @@ namespace MCMS.Common
             {
                 seeders.Add<LanguagesSeeder>().Add<TranslationsSeeder>();
             });
+
+            services.AddOptions<SeedSources>().Configure(ss =>
+                ss.Add((typeof(MCommonSpecifications).Assembly, "seed-common-translations.json")));
         }
     }
 }

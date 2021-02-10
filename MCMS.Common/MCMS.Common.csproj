@@ -11,4 +11,11 @@
       <ProjectReference Include="..\MCMS\MCMS.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Content Remove="seed-common-translations.json" />
+      <EmbeddedResource Include="seed-common-translations.json">
+        <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      </EmbeddedResource>
+    </ItemGroup>
+
 </Project>

@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using MCMS.Base.Auth;
+using MCMS.Base.Data.Seeder;
 using MCMS.Controllers.Ui;
-using MCMS.Data.Seeder;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;

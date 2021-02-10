@@ -1,0 +1,150 @@
+{
+  "languages": [
+    {
+      "code": "en",
+      "name": "Engleză"
+    },
+    {
+      "code": "ro",
+      "name": "Română"
+    }
+  ],
+  "translations": [
+    {
+      "slug": "actions",
+      "items": {
+        "en": "Actions",
+        "ro": "Acțiuni"
+      }
+    },
+    {
+      "slug": "cancel",
+      "items": {
+        "en": "Cancel",
+        "ro": "Anulează"
+      }
+    },
+    {
+      "slug": "close",
+      "items": {
+        "en": "Close",
+        "ro": "Închide"
+      }
+    },
+    {
+      "slug": "confirm_email",
+      "items": {
+        "en": "Confirm Email",
+        "ro": "Confirmă email"
+      }
+    },
+    {
+      "slug": "create",
+      "items": {
+        "en": "Create",
+        "ro": "Creează"
+      }
+    },
+    {
+      "slug": "delete",
+      "items": {
+        "en": "Delete",
+        "ro": "Șterge"
+      }
+    },
+    {
+      "slug": "delete_batch_confirm_format",
+      "items": {
+        "en": "Are you sure you want to delete the {0} selected <i>{1}</i>?",
+        "ro": "Ești sigur că vrei să ștergi cele {0} <i>{1}</i> selectate?"
+      }
+    },
+    {
+      "slug": "delete_confirm_format",
+      "items": {
+        "en": "Are you sure you want to delete {0} <i>{1}</i>?",
+        "ro": "Ești sigur că vrei să ștergi {0} <i>{1}</i>?"
+      }
+    },
+    {
+      "slug": "edit",
+      "items": {
+        "en": "Edit",
+        "ro": "Editează"
+      }
+    },
+    {
+      "slug": "field-required",
+      "tag": "formly",
+      "items": {
+        "en": "This field is required.",
+        "ro": "Acest câmp este obligatoriu."
+      }
+    },
+    {
+      "slug": "home_page_welcome_message_format",
+      "items": {
+        "en": "Welcome to {0}!",
+        "ro": "{0} Home page"
+      }
+    },
+    {
+      "slug": "invalid_email",
+      "tag": "formly",
+      "items": {
+        "en": "The value have to math the email address format.",
+        "ro": "Valoarea trebuie să respecte formatul unei adrese de email."
+      }
+    },
+    {
+      "slug": "logged_in_as",
+      "items": {
+        "en": "Logged in as",
+        "ro": "Autentificat ca"
+      }
+    },
+    {
+      "slug": "required-from-list",
+      "tag": "formly",
+      "items": {
+        "en": "You should select an option from the list.",
+        "ro": "Trebuie să selectezi o opțiune din listă."
+      }
+    },
+    {
+      "slug": "resend_activation_email",
+      "items": {
+        "en": "Resend activation email",
+        "ro": "Retrimite email de activare"
+      }
+    },
+    {
+      "slug": "save",
+      "items": {
+        "en": "Save",
+        "ro": "Salvează"
+      }
+    },
+    {
+      "slug": "saved",
+      "items": {
+        "en": "Saved",
+        "ro": "Salvat"
+      }
+    },
+    {
+      "slug": "updated",
+      "items": {
+        "en": "Updated",
+        "ro": "Actualizat"
+      }
+    },
+    {
+      "slug": "yes",
+      "items": {
+        "en": "Yes",
+        "ro": "Da"
+      }
+    }
+  ]
+}

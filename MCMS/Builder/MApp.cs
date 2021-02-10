@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using MCMS.Base.Builder;
+using MCMS.Base.Data.Seeder;
 using MCMS.Base.Helpers;
 using MCMS.Builder.Helpers;
 using MCMS.Data;
-using MCMS.Data.Seeder;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
@@ -147,7 +147,7 @@ namespace MCMS.Builder
 
             if (Env.GetBool("SEED_ON_START"))
             {
-                serviceProvider.GetRequiredService<DataSeeder>().SeedFromFile().Wait();
+                serviceProvider.GetRequiredService<DataSeeder>().SeedFromProvidedSources().Wait();
             }
 
             // assert that variables are set correctly

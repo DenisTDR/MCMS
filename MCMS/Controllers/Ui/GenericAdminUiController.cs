@@ -24,12 +24,6 @@ namespace MCMS.Controllers.Ui
         where TVm : class, IViewModel
         where TApiController : ICrudAdminApiController<TFm, TVm>
     {
-        // public virtual IModelDisplayConfigForControllerService ModelDisplayConfigService =>
-        //     ServiceProvider.GetRequiredService(
-        //         ModelDisplayConfigForControllerService<TE, TFm, TVm,
-        //                 GenericAdminUiController<TE, TFm, TVm, TApiController>, TApiController>
-        //             .MakeGenericTypeWithUiControllerType(GetType())) as IModelDisplayConfigForControllerService;
-
         private ITableConfigService _tableConfigService;
 
         public virtual ITableConfigService TableConfigService => _tableConfigService ??=

@@ -39,17 +39,13 @@ namespace MCMS
 
             services.AddCors();
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
-
-
+            
             services.AddScoped<DataSeeder>();
-
-
+            
             EvalManager.DefaultContext.RegisterType(typeof(MDbFunctions));
             services.AddScoped(typeof(IDetailsConfigServiceT<>), typeof(DetailsConfigService<>));
             services.AddScoped(typeof(ITableConfigServiceT<>), typeof(TableConfigService<>));
             services.AddScoped(typeof(TableConfigForControllerService<,,,,>));
-            services.AddScoped(typeof(ModelDisplayConfigForControllerService<,,,,>));
-
 
             services.AddSingleton<DisplayValueService>();
 

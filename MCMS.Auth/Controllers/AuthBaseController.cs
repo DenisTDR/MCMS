@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
@@ -20,6 +21,9 @@ namespace MCMS.Auth.Controllers
         protected SignInManager<User> SignInManager => ServiceProvider.GetRequiredService<SignInManager<User>>();
         protected IJwtFactory JwtFactory => ServiceProvider.GetRequiredService<IJwtFactory>();
 
+        protected IEnumerable<IMAuthInterceptor> AuthInterceptors =>
+            ServiceProvider.GetRequiredService<IEnumerable<IMAuthInterceptor>>();
+
         [HttpPost]
         [ModelValidation]
         [AllowAnonymous]
@@ -36,6 +40,16 @@ namespace MCMS.Auth.Controllers
             if (!result.Succeeded)
             {
                 throw new KnownException("Invalid credentials");
+            }
+
+            foreach (var mAuthInterceptor in AuthInterceptors)
+            {
+                result = await mAuthInterceptor.OnSignIn(user, result, SignInType.Api);
+            }
+
+            if (result.IsNotAllowed)
+            {
+                throw new KnownException("You are not allowed to sign in here");
             }
 
             var roles = await UserManager.GetRolesAsync(user);

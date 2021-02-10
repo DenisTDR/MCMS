@@ -17,14 +17,18 @@ namespace MCMS.Areas.Identity.Pages.Account
     public class LoginModel : PageModel
     {
         private readonly UserManager<User> _userManager;
+        private readonly IEnumerable<IMAuthInterceptor> _authInterceptors;
         private readonly SignInManager<User> _signInManager;
         private readonly ILogger<LoginModel> _logger;
 
-        public LoginModel(SignInManager<User> signInManager,
+        public LoginModel(
+            SignInManager<User> signInManager,
             ILogger<LoginModel> logger,
-            UserManager<User> userManager)
+            UserManager<User> userManager,
+            IEnumerable<IMAuthInterceptor> authInterceptors)
         {
             _userManager = userManager;
+            _authInterceptors = authInterceptors;
             _signInManager = signInManager;
             _logger = logger;
         }
@@ -71,13 +75,38 @@ namespace MCMS.Areas.Identity.Pages.Account
 
             if (ModelState.IsValid)
             {
+                var user = await _userManager.FindByEmailAsync(Input.Email);
+
+                if (user == null)
+                {
+                    ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                    return Page();
+                }
+
+                var result = await _signInManager.CheckPasswordSignInAsync(user, Input.Password, false);
+                if (result.Succeeded && _authInterceptors.Any())
+                {
+                    foreach (var mAuthInterceptor in _authInterceptors)
+                    {
+                        result = await mAuthInterceptor.OnSignIn(user, result, SignInType.Dashboard);
+                    }
+                }
+
+                if (result.IsNotAllowed)
+                {
+                    ModelState.AddModelError(string.Empty, "You are not allowed to sign in here.");
+                    return Page();
+                }
+
                 // This doesn't count login failures towards account lockout
                 // To enable password failures to trigger account lockout, set lockoutOnFailure: true
-                var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe,
+                result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe,
                     lockoutOnFailure: false);
+
+
                 if (result.Succeeded)
                 {
-                    _logger.LogInformation("User logged in.");
+                    _logger.LogInformation("User logged in");
                     return LocalRedirect(returnUrl);
                 }
 
@@ -88,21 +117,18 @@ namespace MCMS.Areas.Identity.Pages.Account
 
                 if (result.IsLockedOut)
                 {
-                    _logger.LogWarning("User account locked out.");
+                    _logger.LogWarning("User account locked out");
                     return RedirectToPage("./Lockout");
                 }
                 else
                 {
                     if (Env.GetBool("SHOW_NON_CONFIRMED_ACCOUNT_ALERT"))
                     {
-                        var user = await _userManager.FindByEmailAsync(Input.Email);
-                        if (user != null)
+                        // var user = await _userManager.FindByEmailAsync(Input.Email);
+                        if (!await _userManager.IsEmailConfirmedAsync(user))
                         {
-                            if (!await _userManager.IsEmailConfirmedAsync(user))
-                            {
-                                ModelState.AddModelError(string.Empty,
-                                    "The email address is not confirmed. Please check your inbox for the activation email. If you checked the spam folder and still not found one please contact us.");
-                            }
+                            ModelState.AddModelError(string.Empty,
+                                "The email address is not confirmed. Please check your inbox for the activation email. If you checked the spam folder and still not found one please contact us.");
                         }
                     }
 

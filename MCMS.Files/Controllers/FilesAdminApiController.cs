@@ -86,7 +86,7 @@ namespace MCMS.Files.Controllers
         {
             var fm = Mapper.Map<FileFormModel>(e);
             var vm = MapV(e);
-            return new DoubleModelResponse<FileFormModel, FileViewModel>(fm, vm, e.Id);
+            return new FormSubmitResponse<FileFormModel, FileViewModel>(fm, vm, e.Id);
         }
 
         [ModelValidation]
@@ -101,7 +101,7 @@ namespace MCMS.Files.Controllers
             await Repo.SaveChanges();
 
             var vm = MapV(fileE);
-            return Ok(new DoubleModelResponse<FileUploadFormModel, FileViewModel>(fm, vm, fileE.Id));
+            return Ok(new FormSubmitResponse<FileUploadFormModel, FileViewModel>(fm, vm, fileE.Id));
         }
 
         [HttpPost]
@@ -119,8 +119,8 @@ namespace MCMS.Files.Controllers
                 return Forbid();
             }
 
-            Logger.LogInformation("in Upload, file: \nname=" + file.FileName + "\nsize=" + file.Length + "\nname=" +
-                                  file.Name);
+            Logger.LogInformation("in Upload, file: \nname={FileName}\nsize={Length}\nname={Name}", file.FileName,
+                file.Length, file.Name);
             var fileE = await FileUploadManager.SaveFile(file, purpose);
             var respModel = new FileUploadModel
             {
@@ -148,10 +148,11 @@ namespace MCMS.Files.Controllers
         [HttpPost]
         public async Task<ActionResult<FileFormModel>> UploadMultiple(List<IFormFile> files)
         {
-            Logger.LogInformation("in Upload, files: " + files.Count);
+            Logger.LogInformation("in Upload, files: {Count}", files.Count);
             foreach (var file in files)
             {
-                Logger.LogInformation("name=" + file?.FileName + "\nsize=" + file?.Length + "\nname=" + file?.Name);
+                Logger.LogInformation("\nname={FileName}\nsize={Length}\nname={Name}", file.FileName,
+                    file.Length, file.Name);
             }
 
             Logger.LogInformation("now delaying ...");

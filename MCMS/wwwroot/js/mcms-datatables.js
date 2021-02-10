@@ -33,7 +33,7 @@ const mcmsTables = [];
                         }
                         const msg = (jqXHR.responseJSON ? jqXHR.responseJSON.error : jqXHR.responseText)
                             || "An error occurred while trying to access data. Please try again.";
-                        alert(msg);
+                        mcmsModals.alertModalText(msg, "Error");
                         tableJQuery._fnProcessingDisplay(false);
                     }
                 },

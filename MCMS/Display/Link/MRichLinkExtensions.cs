@@ -28,11 +28,11 @@ namespace MCMS.Display.Link
             return value;
         }
 
-        public static T WithModal<T>(this T value, string backdrop = "static",
-            ModalSuccessAction modalSuccessAction = ModalSuccessAction.RunCallback) where T : MRichLink
+        public static T WithModal<T>(this T value, string backdrop = "static", bool keyboard = false) where T : MRichLink
         {
             value.SetData("toggle", "ajax-modal");
             value.SetData("modal-backdrop", backdrop);
+            value.SetData("modal-keyboard", keyboard);
             return value;
         }
 

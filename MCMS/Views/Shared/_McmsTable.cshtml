@@ -90,26 +90,32 @@
 @using (Html.BeginMPageScripts())
 {
     <script>
-    
-    @if (Model.ItemActions.Any())
-    {
-        @Html.Raw("var actionsColumnContent = $('#actions-cell-template-" + Model.Id + "').html();")
-    }
-    else
-    {
-        @Html.Raw("var actionsColumnContent = null;")
-    }
-    
-    var initTable@(Model.Id) = function () {
-        var table = window['table@(Model.Id)'] = mcmsDatatables.bindDefaultDataTables(
+    (function ($) {
+        let actionsColumnContent;
+        @if (Model.ItemActions.Any())
+        {
+            <text>
+                actionsColumnContent = $('#actions-cell-template-@Model.Id').html();
+            </text>
+        }
+        else
+        {
+            <text>
+                actionsColumnContent = null;
+            </text>
+        }
+        
+        const initTable@(Model.Id) = function () {
+            const table = window['table@(Model.Id)'] = mcmsDatatables.bindDefaultDataTables(
                 "#table-@Model.Id", @Html.Raw(Model.GetConfigObjectSerialized(Url)), actionsColumnContent, '@TransRepo.Language'
-        );
-               
-        table.mcms.callbacks.modalClosed = function (sender, params) {
-            table.mcms.$.trigger("modalClosed.mcms", [sender,  params]);
+            );
+                   
+            table.mcms.callbacks.modalClosed = function (sender, params) {
+                table.mcms.$.trigger("modalClosed.mcms", [sender,  params]);
+            };
         };
-    }
-    
-    initTable@(Model.Id)();
+        
+        initTable@(Model.Id)();
+    })(jQuery);
     </script>
 }

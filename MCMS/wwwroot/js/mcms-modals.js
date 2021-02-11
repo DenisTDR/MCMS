@@ -39,13 +39,18 @@
 
             modal.data('initialOpt', opt);
 
+            modal.on("shown.bs.modal", function () {
+                if (modal.data('shouldHide')) {
+                    modal.modal('hide');
+                }
+            })
+
             // show initial modal (with the spinner)
             modal.modal(opt);
 
-            const headers = {'X-Request-Modal': 'true'};
             const requestOptions = {
                 url: url,
-                headers: headers,
+                headers: {'X-Request-Modal': 'true'},
                 type: 'GET'
             };
             // make backend request to get the content
@@ -55,6 +60,7 @@
                     mModals.displayModalLinkResponse(modal, data, button);
                 })
                 .fail(function (e) {
+                    modal.data('shouldHide', true);
                     modal.modal('hide');
                     mModals.alertModalText(e.responseText || 'A fatal error occurred when tried to get modal content from backend. ' +
                         'Please make sure you are connected to the internet. Try refreshing this page.', 'Failed');

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using MCMS.Base.SwaggerFormly.Formly.Base;
 using MCMS.Base.SwaggerFormly.Models;
@@ -7,6 +8,7 @@ using Microsoft.OpenApi.Models;
 
 namespace MCMS.Base.SwaggerFormly.Formly
 {
+    [AttributeUsage(AttributeTargets.Property, AllowMultiple = true)]
     public class FormlyExpressionValidatorAttribute : FormlyConfigPatcherAttribute
     {
         public string Expression { get; set; }

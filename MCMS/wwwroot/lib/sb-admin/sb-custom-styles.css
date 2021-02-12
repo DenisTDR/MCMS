@@ -160,7 +160,12 @@ body:not(.sb-sidenav-toggled) .sb-layout-sidenav .sb-layout-sidenav-content-over
     .sb-sidenav-toggled {
         overflow-y: auto;
     }
+
     .sb-layout-sidenav .sb-layout-sidenav-content-overlay {
         display: none;
     }
+}
+
+.sb-layout-sidenav .sb-layout-sidenav-nav .sb-sidenav .sb-sidenav-menu .nav-link img {
+    max-height: 1em;
 }

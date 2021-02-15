@@ -169,3 +169,7 @@ body:not(.sb-sidenav-toggled) .sb-layout-sidenav .sb-layout-sidenav-content-over
 .sb-layout-sidenav .sb-layout-sidenav-nav .sb-sidenav .sb-sidenav-menu .nav-link img {
     max-height: 1em;
 }
+
+.sb-sidenav-dark .sb-sidenav-menu .nav-link .sb-nav-link-icon {
+    --color: rgba(255, 255, 255, 0.25);
+}

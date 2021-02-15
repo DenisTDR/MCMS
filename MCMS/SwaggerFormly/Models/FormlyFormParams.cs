@@ -27,7 +27,7 @@ namespace MCMS.SwaggerFormly.Models
                 Utils.DefaultJsonSerializerSettings()));
             return string.Join("&",
                 jObj.Properties().Where(jProp => jProp.Value != null && !string.IsNullOrEmpty(jProp.Value.ToString()))
-                    .Select(jProp => jProp.Name + "=" + HttpUtility.UrlEncode(jProp.Value.ToString(Formatting.None))));
+                    .Select(jProp => jProp.Name + "=" + HttpUtility.UrlEncode(JsonConvert.SerializeObject(jProp.Value, Utils.DefaultJsonSerializerSettings()))));
         }
     }
 

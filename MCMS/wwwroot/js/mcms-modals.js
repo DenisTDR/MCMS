@@ -66,6 +66,46 @@
                         'Please make sure you are connected to the internet. Try refreshing this page.', 'Failed');
                 });
         },
+        postRequestAjaxModal: function (url, data, callback) {
+
+            const modal = mcmsModals._backendModalTemplate.clone();
+
+            mcmsModals.bindStackedModalsBehaviour(modal, true);
+
+            modal.on("shown.bs.modal", function () {
+                if (modal.data('shouldHide')) {
+                    modal.modal('hide');
+                }
+            })
+
+            // show initial modal (with the spinner)
+            modal.modal({});
+
+            const requestOptions = {
+                url: url,
+                headers: {'X-Request-Modal': 'true'},
+                type: 'POST',
+                data: JSON.stringify(data),
+                contentType: 'application/json'
+            };
+            // make backend request to get the content
+            $.ajax(requestOptions)
+                .done(function (data) {
+                    const fakeTarget = $("<div></div>");
+                    if (callback) {
+                        fakeTarget.data('modal-callback', callback)
+                    }
+
+                    // display received content in the previous shown modal
+                    mModals.displayModalLinkResponse(modal, data, fakeTarget);
+                })
+                .fail(function (e) {
+                    modal.data('shouldHide', true);
+                    modal.modal('hide');
+                    mModals.alertModalText(e.responseText || 'A fatal error occurred when tried to get modal content from backend. ' +
+                        'Please make sure you are connected to the internet. Try refreshing this page.', 'Failed');
+                });
+        },
         loadingUpModal: {
             show: function () {
                 mModals.closeWaitModal = false;
@@ -91,6 +131,7 @@
 
                         mModals.initialScrollPosition = {x: window.scrollX, y: window.scrollY};
                         window.scrollTo(0, 0);
+                        window.mcms.adjustSafeScrollbarWidth();
                     }
                     mModals.visibleModals++;
                 });
@@ -100,6 +141,7 @@
                         mModals.body.removeClass('forced-modal-open');
 
                         window.scrollTo(mModals.initialScrollPosition.x, mModals.initialScrollPosition.y);
+                        window.mcms.adjustSafeScrollbarWidth();
                     }
                 });
 
@@ -142,14 +184,13 @@
             mModals.bindStackedModalsBehaviour(modal);
             return modal.modal('show');
         },
-        displayModalLinkResponse: function (activeModal, backendData, button) {
+        displayModalLinkResponse: function (activeModal, backendData, target) {
             if (!backendData) {
                 mModals.alertModalText('No content received from the server to display in a modal.', 'Something weird occurred');
                 return;
             }
             const vElem = $("<div></div>");
             vElem.append(backendData);
-
 
             setTimeout(() => {
                 activeModal.find('>.modal-dialog').html('');
@@ -159,10 +200,10 @@
                 const opt = mcmsModals.parseOptions(modal.data('backdrop'), modal.data('keyboard'));
                 const initialOpt = activeModal.data('initialOpt');
 
-                if (opt.backdrop !== undefined && initialOpt.backdrop === undefined) {
+                if (opt.backdrop !== undefined && initialOpt?.backdrop === undefined) {
                     activeModal.data('bs.modal')._config.backdrop = opt.backdrop;
                 }
-                if (opt.keyboard !== undefined && initialOpt.keyboard === undefined) {
+                if (opt.keyboard !== undefined && initialOpt?.keyboard === undefined) {
                     activeModal.data('bs.modal')._config.keyboard = opt.keyboard;
                 }
 
@@ -178,18 +219,18 @@
             // do specific actions when modal was hidden
             activeModal.on("hidden.bs.modal", function () {
                 const result = activeModal.data('result');
-                if (result && result.reloadModal) {
-                    button.click();
+                if (target && result?.reloadModal) {
+                    target.click();
                     return;
                 }
-                const callback = button.data('modal-callback');
+                const callback = target.data('modal-callback');
                 if (typeof callback === 'string') {
                     const callbackFn = getFnRefByDottedName(callback);
                     if (typeof callbackFn === 'function') {
-                        callbackFn(button, result);
+                        callbackFn(target, result);
                     }
                 } else if (typeof callback === 'function') {
-                    callback(button, result);
+                    callback(target, result);
                 }
             });
 

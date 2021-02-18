@@ -1,4 +1,6 @@
 ﻿(function ($) {
+    const mcms = window.mcms = window.mcms || {};
+
     function main() {
         document.addEventListener('side-menu-toggled', function (e) {
             document.cookie = "side-menu-toggled=" + (e && typeof e.detail !== 'undefined' && e.detail ? 1 : 0) + ";path=/;max-age=86400;samesite=strict";
@@ -94,6 +96,30 @@
         });
     }
 
+    window.mcms.adjustSafeScrollbarWidth = function () {
+        const hasScroll = document.body.scrollHeight > document.body.clientHeight && !document.body.classList.contains('forced-modal-open');
+        if (mcms.hasScroll !== hasScroll) {
+            mcms.hasScroll = hasScroll;
+            document.getElementById("page-main").style['padding-right'] = 'calc(1.5rem + ' + (mcms.hasScroll ? 0 : mcms.scrollbarWidth) + 'px)';
+            document.getElementById("header-navbar").style['padding-right'] = 'calc(1rem + ' + (mcms.hasScroll ? 0 : mcms.scrollbarWidth) + 'px)';
+        }
+    }
+
+    function detectScrollbarWidth() {
+        const scrollDiv = document.createElement("div");
+        scrollDiv.className = "scrollbar-measure";
+        document.body.appendChild(scrollDiv);
+        window.mcms.scrollbarWidth = scrollDiv.offsetWidth - scrollDiv.clientWidth;
+        document.body.removeChild(scrollDiv);
+    }
+
+    if (window.hasOwnProperty('ResizeObserver')) {
+        new window.ResizeObserver(_ => {
+            window.mcms.adjustSafeScrollbarWidth();
+        }).observe(document.getElementById("page-main"));
+    }
+
+    detectScrollbarWidth();
     main();
 })(jQuery);
 

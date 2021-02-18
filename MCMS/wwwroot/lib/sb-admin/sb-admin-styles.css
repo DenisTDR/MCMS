@@ -77,7 +77,8 @@ body {
     }
     .sb-layout-sidenav .sb-layout-sidenav-content {
         margin-left: 0;
-        transition: margin 0.15s ease-in-out;
+        /*transition: margin 0.15s ease-in-out;*/
+        transition: none !important;
     }
 
     .sb-sidenav-toggled .sb-layout-sidenav .sb-layout-sidenav-nav {

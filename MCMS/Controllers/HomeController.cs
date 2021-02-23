@@ -5,10 +5,12 @@ using MCMS.Controllers.Ui;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using MCMS.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Diagnostics;
 
 namespace MCMS.Controllers
 {
+    [AllowAnonymous]
     public class HomeController : AdminUiController
     {
         private readonly ILogger<HomeController> _logger;

@@ -170,6 +170,15 @@ body:not(.sb-sidenav-toggled) .sb-layout-sidenav .sb-layout-sidenav-content-over
     max-height: 1em;
 }
 
-.sb-sidenav-dark .sb-sidenav-menu .nav-link .sb-nav-link-icon {
+.sb-sidenav-dark .sb-sidenav-menu .nav-link {
     --color: rgba(255, 255, 255, 0.25);
+}
+
+.sb-sidenav-dark .sb-sidenav-menu .nav-link:hover,
+.sb-sidenav-dark .sb-sidenav-menu .nav-link.active {
+    --color: #fff;
+}
+
+.sb-sidenav-dark .sb-sidenav-menu .nav-link:hover .sb-nav-link-icon {
+    color: #fff;
 }

@@ -32,7 +32,7 @@ namespace MCMS.Display.Link
         {
             value.SetData("toggle", "ajax-modal");
             value.SetData("modal-backdrop", backdrop);
-            value.SetData("modal-keyboard", keyboard);
+            value.SetData("modal-keyboard", keyboard.ToString().ToLower());
             return value;
         }
 

@@ -26,6 +26,8 @@ namespace MCMS.Common
 
             services.AddOptions<SeedSources>().Configure(ss =>
                 ss.Add((typeof(MCommonSpecifications).Assembly, "seed-common-translations.json")));
+
+            services.AddOptions<LayoutIncludesOptions>().Configure(c => { c.AddForPages("CommonLibIncludes"); });
         }
     }
 }

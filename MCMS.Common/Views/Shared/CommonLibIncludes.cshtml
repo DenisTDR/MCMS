@@ -1,0 +1,15 @@
+@using MCMS.Base.Extensions
+@using (Html.BeginMScripts())
+{
+    <script src="/lib/highlight.js/highlight.pack.js" asp-append-version="true"></script>
+    <script src="/lib/clipboard.js/clipboard.min.js" asp-append-version="true"></script>
+    <script src="/lib/highlight.js-custom/highlightjs-line-numbers.min.js" asp-append-version="true"></script>
+}
+
+@using (Html.BeginMStyles())
+{
+    <link rel="stylesheet" href="/lib/highlight.js/styles/default.css" asp-append-version="true">
+    <link rel="stylesheet" href="/lib/highlight.js/atom-one-dark.css" asp-append-version="true">
+    <link rel="stylesheet" href="/lib/highlight.js/atom-one-dark-reasonable.css" asp-append-version="true">
+    <link rel="stylesheet" href="/lib/highlight.js-custom/hljs-ln-styles.css" asp-append-version="true">
+}

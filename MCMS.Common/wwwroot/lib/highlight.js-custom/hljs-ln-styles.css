@@ -1,0 +1,14 @@
+.hljs-ln-numbers {
+    user-select: none;
+
+    text-align: center;
+    color: #ccc;
+    border-right: 1px solid #777;
+    vertical-align: top;
+    padding-right: 5px !important;
+
+}
+
+.hljs-ln-code {
+    padding-left: 10px !important;
+}

@@ -13,6 +13,8 @@ namespace MCMS.Base.Display.ModelDisplay
         public PropertyInfo PropertyInfo { get; set; }
         public string ClassName { get; set; }
 
+        public string ViewTemplate { get; set; }
+
         public object GetDisplayValue(DisplayValueService displayValueService, object obj)
         {
             return displayValueService.GetDisplayValue(PropertyInfo, obj);

@@ -7,8 +7,17 @@
     @foreach (var detailsField in Model.Fields)
     {
         <tr class="@detailsField.ClassName">
-            <td class="">@Html.Raw(detailsField.Name)</td>
-            <td class="">@Html.Raw(DisplayValueService.GetDisplayValue(detailsField.PropertyInfo, Model.Model) ?? "<span class='st-text'>null/empty</i>")</td>
+            <td>@Html.Raw(detailsField.Name)</td>
+            @if (!string.IsNullOrEmpty(detailsField.ViewTemplate))
+            {
+                <td>
+                    <partial name="@detailsField.ViewTemplate" model="(detailsField, Model.Model)"/>
+                </td>
+            }
+            else
+            {
+                <td>@Html.Raw(DisplayValueService.GetDisplayValue(detailsField.PropertyInfo, Model.Model) ?? "<span class='st-text'>null/empty</span>")</td>
+            }
         </tr>
     }
     </tbody>

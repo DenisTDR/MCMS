@@ -1,0 +1,36 @@
+@using MCMS.Base.Helpers
+@using Newtonsoft.Json
+@using Newtonsoft.Json.Linq
+@using MCMS.Base.Extensions
+@model (MCMS.Base.Display.ModelDisplay.DetailsField field, object model)
+
+@{
+    var value = Model.field.PropertyInfo.GetValue(Model.model)?.ToString();
+    if (string.IsNullOrEmpty(value))
+    {
+        <span class='st-text'>null/empty</span>
+    }
+    else
+    {
+        var id = "collapse-" + Utils.GenerateRandomHexString();
+        <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#@id" aria-expanded="false" aria-controls="@id">
+            View/Hide
+        </button>
+        <div class="collapse" id="@id">
+            <pre class="snippet-wrapper"><code class="cs">@Html.Raw(JsonConvert.DeserializeObject<JToken>(value).ToString())</code></pre>
+        </div>
+
+        @using (Html.BeginMPageScripts())
+        {
+            <script>
+                (function ($) {
+                    const code = $("#@id pre code")[0];
+                    if (code) {
+                        window.hljs.highlightBlock(code);
+                        window.hljs.lineNumbersBlock(code);
+                    }
+                })(jQuery);
+            </script>
+        }
+    }
+}

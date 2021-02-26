@@ -23,6 +23,7 @@ namespace MCMS.Base.Display.ModelDisplay.Attributes
         public bool Hidden { get; set; }
         public string Tag { get; set; }
         public string ClassName { get; set; }
+        public string ViewTemplate { get; set; }
 
         public DetailsField ToDetailsField()
         {
@@ -30,7 +31,8 @@ namespace MCMS.Base.Display.ModelDisplay.Attributes
             {
                 OrderIndex = OrderIndex,
                 Tag = Tag,
-                ClassName = ClassName
+                ClassName = ClassName,
+                ViewTemplate = ViewTemplate,
             };
         }
     }

@@ -1,5 +1,8 @@
 (function ($) {
     window.ajaxForm = function (form, asModal, callback) {
+        if (!form.length) {
+            return;
+        }
         form.submit(function (event) {
             event.preventDefault();
             mModals.loadingUpModal.show();

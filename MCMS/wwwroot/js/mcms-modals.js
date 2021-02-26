@@ -9,14 +9,14 @@
         body: $('body'),
         init: function () {
             this._waitModal.on("shown.bs.modal", function () {
-                if (mModals.closeWaitModal) {
-                    mModals._waitModal.modal('hide');
-                    mModals.closeWaitModal = false;
+                if (mcmsModals.closeWaitModal) {
+                    mcmsModals._waitModal.modal('hide');
+                    mcmsModals.closeWaitModal = false;
                 }
             });
 
-            mModals.body.on('click', '[data-toggle="ajax-modal"]', function (event) {
-                mModals.ajaxModalItemAction.apply(this, [event]);
+            mcmsModals.body.on('click', '[data-toggle="ajax-modal"]', function (event) {
+                mcmsModals.ajaxModalItemAction.apply(this, [event]);
             });
         },
         ajaxModalItemAction: function (event) {
@@ -57,12 +57,12 @@
             $.ajax(requestOptions)
                 .done(function (data) {
                     // display received content in the previous shown modal
-                    mModals.displayModalLinkResponse(modal, data, button);
+                    mcmsModals.displayModalLinkResponse(modal, data, button);
                 })
                 .fail(function (e) {
                     modal.data('shouldHide', true);
                     modal.modal('hide');
-                    mModals.alertModalText(e.responseText || 'A fatal error occurred when tried to get modal content from backend. ' +
+                    mcmsModals.alertModalText(e.responseText || 'A fatal error occurred when tried to get modal content from backend. ' +
                         'Please make sure you are connected to the internet. Try refreshing this page.', 'Failed');
                 });
         },
@@ -97,50 +97,51 @@
                     }
 
                     // display received content in the previous shown modal
-                    mModals.displayModalLinkResponse(modal, data, fakeTarget);
+                    mcmsModals.displayModalLinkResponse(modal, data, fakeTarget);
                 })
                 .fail(function (e) {
                     modal.data('shouldHide', true);
                     modal.modal('hide');
-                    mModals.alertModalText(e.responseText || 'A fatal error occurred when tried to get modal content from backend. ' +
+                    mcmsModals.alertModalText(e.responseText || 'A fatal error occurred when tried to get modal content from backend. ' +
                         'Please make sure you are connected to the internet. Try refreshing this page.', 'Failed');
                 });
         },
         loadingUpModal: {
             show: function () {
-                mModals.closeWaitModal = false;
-                mModals.bindStackedModalsBehaviour(mModals._waitModal);
-                mModals._waitModal.modal('show');
+                mcmsModals.closeWaitModal = false;
+                mcmsModals.bindStackedModalsBehaviour(mcmsModals._waitModal);
+                mcmsModals._waitModal.modal('show');
+                mcmsModals.body.append(mcmsModals._waitModal.parent());
             },
             hide: function () {
-                mModals.closeWaitModal = true;
-                mModals._waitModal.modal('hide');
+                mcmsModals.closeWaitModal = true;
+                mcmsModals._waitModal.modal('hide');
             }
         },
         initialScrollPosition: {x: 0, y: 0},
         customShowModal: function (modal) {
-            mModals.bindStackedModalsBehaviour(modal);
+            mcmsModals.bindStackedModalsBehaviour(modal);
             return modal.modal('show');
         },
         bindStackedModalsBehaviour: function (modal, removeOnHidden) {
             if (!modal.data('custom-modal-patched')) {
                 modal.data('custom-modal-patched', true);
                 modal.on("show.bs.modal", function () {
-                    if (mModals.visibleModals === 0) {
-                        mModals.body.addClass('forced-modal-open');
+                    if (mcmsModals.visibleModals === 0) {
+                        mcmsModals.body.addClass('forced-modal-open');
 
-                        mModals.initialScrollPosition = {x: window.scrollX, y: window.scrollY};
+                        mcmsModals.initialScrollPosition = {x: window.scrollX, y: window.scrollY};
                         window.scrollTo(0, 0);
                         window.mcms.adjustSafeScrollbarWidth();
                     }
-                    mModals.visibleModals++;
+                    mcmsModals.visibleModals++;
                 });
                 modal.on("hidden.bs.modal", function () {
-                    mModals.visibleModals--;
-                    if (mModals.visibleModals === 0) {
-                        mModals.body.removeClass('forced-modal-open');
+                    mcmsModals.visibleModals--;
+                    if (mcmsModals.visibleModals === 0) {
+                        mcmsModals.body.removeClass('forced-modal-open');
 
-                        window.scrollTo(mModals.initialScrollPosition.x, mModals.initialScrollPosition.y);
+                        window.scrollTo(mcmsModals.initialScrollPosition.x, mcmsModals.initialScrollPosition.y);
                         window.mcms.adjustSafeScrollbarWidth();
                     }
                 });
@@ -153,15 +154,16 @@
                     });
                 }
             }
+            mcmsModals.fixStackedModalBackDropBehaviour(modal);
         },
         alertModalText: function (text, title, options) {
-            const crtAlertModal = mModals._alertModal.clone();
+            const crtAlertModal = mcmsModals._alertModal.clone();
             crtAlertModal.find(".title").html(title);
             crtAlertModal.find(".modal-body").html(text);
             if (options?.size) {
                 crtAlertModal.find(".modal-dialog").addClass(options.size);
             }
-            mModals.bindStackedModalsBehaviour(crtAlertModal);
+            mcmsModals.bindStackedModalsBehaviour(crtAlertModal);
             return crtAlertModal.modal('show');
         },
         alertModal: function (modalHtml) {
@@ -170,7 +172,7 @@
                 modalHtml = $(modalHtml);
             }
             newElement.append(modalHtml);
-            mModals.body.append(newElement);
+            mcmsModals.body.append(newElement);
             const modal = newElement.find('.modal');
             modal.on("hidden.bs.modal", function () {
                 setTimeout(function () {
@@ -181,12 +183,12 @@
                 modal.data('backdrop', 'static');
             }
 
-            mModals.bindStackedModalsBehaviour(modal);
+            mcmsModals.bindStackedModalsBehaviour(modal);
             return modal.modal('show');
         },
         displayModalLinkResponse: function (activeModal, backendData, target) {
             if (!backendData) {
-                mModals.alertModalText('No content received from the server to display in a modal.', 'Something weird occurred');
+                mcmsModals.alertModalText('No content received from the server to display in a modal.', 'Something weird occurred');
                 return;
             }
             const vElem = $("<div></div>");
@@ -234,14 +236,23 @@
                 }
             });
 
+            mcmsModals.fixStackedModalBackDropBehaviour(activeModal);
+        },
+        fixStackedModalBackDropBehaviour: function (modal) {
             // adjust backdrop if this is a stacked modal
             // the backdrop of this modal should be right before it
-            if (activeModal.hasClass('stacked-modal')) {
-                activeModal.on("shown.bs.modal", function () {
-                    const backDrop = activeModal.nextAll(".modal-backdrop");
-                    backDrop.remove();
-                    activeModal.before(backDrop);
-                    activeModal.addClass('shown-modal');
+            if (modal.hasClass('stacked-modal') && !modal.data('stacked-modal-fixed')) {
+                modal.data('stacked-modal-fixed', true);
+
+                modal.on("shown.bs.modal", function () {
+                    const backdropEl = $(modal.data('bs.modal')._backdrop);
+                    if (!backdropEl.length) {
+                        console.error('couldn\'t find modal backdrop for', modal);
+                        return;
+                    }
+                    backdropEl.remove();
+                    modal.before(backdropEl);
+                    modal.addClass('shown-modal');
                 });
             }
         },
@@ -270,5 +281,5 @@
         }
     };
 
-    mModals.init();
+    mcmsModals.init();
 })(jQuery);

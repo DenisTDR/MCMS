@@ -196,6 +196,9 @@ body.forced-modal-open {
     display: flex;
 }
 
+.d-contents {
+    display: contents;
+}
 
 .form-processing {
     display: none;

@@ -11,7 +11,8 @@
             @if (!string.IsNullOrEmpty(detailsField.ViewTemplate))
             {
                 <td>
-                    <partial name="@detailsField.ViewTemplate" model="(detailsField, Model.Model)"/>
+                    <partial name="@("ViewTemplates/" + detailsField.ViewTemplate)"
+                             model="(detailsField, Model.Model)"/>
                 </td>
             }
             else

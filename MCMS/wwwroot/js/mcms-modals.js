@@ -213,7 +213,7 @@
                     .attr('class', dialog.attr('class'))
                     .append(dialog.find('>*'));
 
-                const scriptTags = vElem.find('script, style');
+                const scriptTags = vElem.find('script, style, link');
                 activeModal.append(scriptTags);
             }, 500)
 

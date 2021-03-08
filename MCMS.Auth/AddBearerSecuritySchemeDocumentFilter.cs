@@ -1,4 +1,5 @@
 using System.Linq;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
@@ -12,15 +13,15 @@ namespace MCMS.Auth
             var hasBearerSecurityRequirement = swaggerDoc.Paths.Values.Any(path =>
                 path.Operations.Values.Any(op =>
                     op.Security.Any(secReq => secReq.Keys.Any(
-                        secScheme => secScheme.Reference.Id == "Bearer"))));
+                        secScheme => secScheme.Reference.Id == JwtBearerDefaults.AuthenticationScheme))));
             if (hasBearerSecurityRequirement)
             {
                 swaggerDoc.Components.SecuritySchemes.Add(
-                    "Bearer", new OpenApiSecurityScheme
+                    JwtBearerDefaults.AuthenticationScheme, new OpenApiSecurityScheme
                     {
                         Name = "Authorization",
                         Type = SecuritySchemeType.Http,
-                        Scheme = "Bearer",
+                        Scheme = JwtBearerDefaults.AuthenticationScheme,
                         BearerFormat = "JWT",
                         In = ParameterLocation.Header,
                         Description =

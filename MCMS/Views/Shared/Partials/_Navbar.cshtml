@@ -3,12 +3,21 @@
 
 @inject IOptions<SiteConfig> SiteConfig
 <header>
-    <nav id="header-navbar" class="navbar sb-topnav navbar-expand-sm navbar-toggleable-sm navbar-dark bg-dark box-shadow mb-3">
+    <nav id="header-navbar" class="navbar sb-topnav navbar-expand-sm navbar-toggleable-sm navbar-dark bg-dark box-shadow">
         <div class="container-fluid">
             <button class="btn btn-link btn-sm order-1 order-lg-0" id="sidebarToggle" href="#">
                 <i class="fas fa-bars"></i>
             </button>
-            <a class="navbar-brand navbar-title" asp-area="" asp-controller="Home" asp-action="Index">@(Context.Items["NavbarTitle"] ?? SiteConfig.Value.SiteName ?? "MCMS")</a>
+            <a class="navbar-brand navbar-title" asp-area="" asp-controller="Home" asp-action="Index">
+                @if (!string.IsNullOrEmpty(SiteConfig.Value.SiteLogo))
+                {
+                    <img src="@SiteConfig.Value.SiteLogo" alt="logo" class="navbar-logo"/>
+                }
+                @if (!SiteConfig.Value.HideSiteNameFromNavbar)
+                {
+                    @(Context.Items["NavbarTitle"] ?? SiteConfig.Value.SiteName ?? "MCMS")
+                }
+            </a>
             <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
                 <partial name="_LoginPartial"/>
             </div>

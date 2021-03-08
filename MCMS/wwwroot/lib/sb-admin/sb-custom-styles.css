@@ -182,3 +182,15 @@ body:not(.sb-sidenav-toggled) .sb-layout-sidenav .sb-layout-sidenav-content-over
 .sb-sidenav-dark .sb-sidenav-menu .nav-link:hover .sb-nav-link-icon {
     color: #fff;
 }
+
+.sb-topnav {
+    flex-flow: row;
+}
+
+.sb-topnav .navbar-brand {
+    width: auto;
+}
+
+.sb-topnav .navbar-brand .navbar-logo {
+    height: 40px;
+}

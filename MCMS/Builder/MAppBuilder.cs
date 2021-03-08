@@ -40,9 +40,12 @@ namespace MCMS.Builder
             return this;
         }
 
-        public MAppBuilder AddSpecifications<T>(int? index = null) where T : MSpecifications, new()
+        public MAppBuilder AddSpecifications<T>(int? index = null, Action<T> configure = null)
+            where T : MSpecifications, new()
         {
-            AddSpecifications(new T(), index);
+            var spec = new T();
+            configure?.Invoke(spec);
+            AddSpecifications(spec, index);
             return this;
         }
 

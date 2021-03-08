@@ -3,7 +3,7 @@ using MCMS.Base.Data.FormModels;
 
 namespace MCMS.Auth.Models
 {
-    public class LoginRequestModel : IFormModel
+    public class LoginRequestFormModel : IFormModel
     {
         [Required]
         [DataType(DataType.EmailAddress)]

@@ -16,22 +16,26 @@ namespace MCMS.Auth
     {
         private string _keyDir;
 
-        private bool _excludeJwtTokenPersistenceInSwaggerUi;
+        private bool ExcludeJwtTokenPersistenceInSwaggerUi { get; set; }
 
-        public MJwtAuthSpecifications(bool excludeJwtTokenPersistenceInSwaggerUi = false)
-        {
-            _excludeJwtTokenPersistenceInSwaggerUi = excludeJwtTokenPersistenceInSwaggerUi;
-        }
+        public bool RemoveDefaultAuthController { get; set; }
 
-        public MJwtAuthSpecifications()
+        public override IMvcBuilder MvcChain(IMvcBuilder mvcBuilder)
         {
+            if (RemoveDefaultAuthController)
+            {
+                mvcBuilder = mvcBuilder.ConfigureApplicationPartManager(apm =>
+                    apm.FeatureProviders.Add(new RemoveDefaultAuthControllerFeatureProvider()));
+            }
+
+            return mvcBuilder;
         }
 
 
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<IJwtFactory, JwtFactory>();
-            if (!_excludeJwtTokenPersistenceInSwaggerUi)
+            if (!ExcludeJwtTokenPersistenceInSwaggerUi)
             {
                 services.Configure<SwaggerConfigsOptions>(c =>
                 {

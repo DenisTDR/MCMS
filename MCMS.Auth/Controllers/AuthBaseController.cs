@@ -15,7 +15,7 @@ using Microsoft.Extensions.DependencyInjection;
 namespace MCMS.Auth.Controllers
 {
     [Authorize]
-    public abstract class AuthBaseController<TLogin> : ApiController where TLogin : LoginRequestModel
+    public abstract class AuthBaseController<TLogin> : ApiController where TLogin : LoginRequestFormModel
     {
         protected UserManager<User> UserManager => ServiceProvider.GetRequiredService<UserManager<User>>();
         protected SignInManager<User> SignInManager => ServiceProvider.GetRequiredService<SignInManager<User>>();

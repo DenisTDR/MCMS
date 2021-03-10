@@ -38,7 +38,7 @@ namespace MCMS.Base.Display.DisplayValue
                 {
                     value = b
                         ? "<i class=\"far fa-check-circle fa-lg text-success\">"
-                        : "<i class=\"far fa-times-circle fa-lg text-danger\"></i>";
+                        : "<i class=\"far fa-times-circle fa-lg text-danger st-text\"></i>";
                     return true;
                 }
 

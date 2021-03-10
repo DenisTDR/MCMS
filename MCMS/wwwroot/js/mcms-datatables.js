@@ -446,7 +446,7 @@ const mcmsTables = [];
                         if (data[j][col.data] === true) {
                             data[j][col.data] = '<div class="bool-wrapper"><i class="far fa-check-circle fa-lg text-success"></i></div>';
                         } else if (data[j][col.data] === false) {
-                            data[j][col.data] = '<div class="bool-wrapper"><i class="far fa-times-circle fa-lg text-danger"></i></div>';
+                            data[j][col.data] = '<div class="bool-wrapper"><i class="far fa-times-circle fa-lg text-danger st-text"></i></div>';
                         } else if (col.mType === "nBool" && data[j][col.data] === undefined || data[j][col.data] === null) {
                             data[j][col.data] = '<div class="bool-wrapper"><i class="far fa-question-circle fa-lg text-secondary"></i></div>';
                         }

@@ -6,7 +6,7 @@
 {
     return;
 }
-<footer class="py-4 bg-light mt-auto">
+<footer class="py-4 mt-auto footer-bordered">
     <div class="container-fluid">
         <div class="d-flex align-items-center justify-content-between small">
             <div class="text-muted">@Html.Raw(SiteConfig.Value.SiteCopyright ?? "Copyright &copy; MCMS Team 2020") </div>
@@ -15,8 +15,6 @@
                 {
                     <a asp-controller="Home" asp-action="Privacy">Privacy Policy</a>
                 }
-                @* &middot; *@
-                @* <a href="#">Terms &amp; Conditions</a> *@
             </div>
         </div>
     </div>

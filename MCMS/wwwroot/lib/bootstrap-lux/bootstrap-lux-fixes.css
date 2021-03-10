@@ -8,3 +8,7 @@
 body {
     font-weight: 400;
 }
+
+.footer-bordered {
+    border: 1px solid rgba(0, 0, 0, 0.1)
+}

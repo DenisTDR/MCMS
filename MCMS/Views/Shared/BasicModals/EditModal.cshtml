@@ -10,7 +10,7 @@
     var formParams = ViewBag.FormParams as FormlyFormParams ?? (ViewBag.FormParamsService as FormParamsService)?.ForPatch(Model.Id) ?? throw new Exception("Don't have form params :(");
     formParams.HideSubmitButton();
     formParams.UseSpinnerOuterOverlay();
-    ViewBag.ModalDialogClasses = "modal-xl";
+    ViewBag.ModalDialogClasses = ViewBag.ModalDialogClasses ?? "modal-xl";
 }
 <div class="modal-body" id="@formParams.FormInstanceId-modal-body">
     <partial name="Formly/FormlyForm" model="formParams"/>

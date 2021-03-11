@@ -250,3 +250,21 @@ ngb-modal-backdrop {
     position: absolute;
     top: -9999px;
 }
+
+/* mcms custom icons */
+.mi::before {
+    display: inline-block;
+    width: 1.25em;
+    height: 1.1em;
+}
+
+.mi::before {
+    content: " ";
+    mask: var(--icon-url);
+    -webkit-mask-image: var(--icon-url);
+    mask-size: contain;
+    mask-repeat: no-repeat;
+    -webkit-mask-size: contain;
+    -webkit-mask-repeat: no-repeat;
+    background-color: var(--color);
+}

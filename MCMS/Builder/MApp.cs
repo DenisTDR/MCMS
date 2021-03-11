@@ -201,7 +201,7 @@ namespace MCMS.Builder
             {
                 var path = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(),
                     isPrePublish
-                        ? Path.Combine(spec.PrePublishRootPath, spec.GetAssemblyName(), "wwwroot")
+                        ? Path.Combine(spec.PrePublishRootPath ?? "", spec.GetAssemblyName(), "wwwroot")
                         : Path.Combine("wwwroot/_content", spec.GetAssemblyName())
                 ));
                 app.UseStaticFiles(new StaticFileOptions
@@ -214,7 +214,8 @@ namespace MCMS.Builder
             var specs = _specifications.Where(spec => spec.HasRazorViews);
             foreach (var spec in specs)
             {
-                var path = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), spec.PrePublishRootPath, spec.GetAssemblyName()));
+                var path = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), spec.PrePublishRootPath,
+                    spec.GetAssemblyName()));
                 services.Configure<MvcRazorRuntimeCompilationOptions>(options =>
                 {
                     options.FileProviders.Add(new PhysicalFileProvider(path));

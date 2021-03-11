@@ -11,6 +11,12 @@ namespace MCMS.Common
 {
     public class MCommonSpecifications : MSpecifications
     {
+        public MCommonSpecifications()
+        {
+            HasRazorViews = true;
+            HasStaticFiles = true;
+            PrePublishRootPath = "../MCMS";
+        }
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<IRepository<TranslationEntity>, TranslationsRepository>();

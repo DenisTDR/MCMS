@@ -23,10 +23,10 @@ git submodule update --init --recursive
 * Optional
     * `ASPNETCORE_ENVIRONMENT` - Production/Development
     * `ASPNETCORE_URLS` - Web server binds to those Urls
-    * `VIEWS_AND_WWW_PATHS` - Only with ``dotnet [watch] run`` - ';' separated list of relative directory paths of
-      projects which includes Views or wwwroot folders.
     * `ALLOWED_CORS_HOSTS` - ';' separated list of hosts (http[s]://domain[:port]), or `*`(star) to allow any host.
-    * `RAZOR_RUNTIME_COMPILATION` - only if env=dev, calls `AddRazorRuntimeCompilation()` on MvcBuilder
+    * `LIB_STATIC_FILES_LOAD_TYPE` - set to `pre-publish` if you run the project with `dotnet [watch] run`
+    * `RAZOR_RUNTIME_COMPILATION` - set to `True` only if project is running with `dotnet [watch] run`, calls 
+      `AddRazorRuntimeCompilation()` on MvcBuilder and registers Razor View paths with PhysicalFileProvider
     * Formly forms
         * `FORMLY_DEBUG` - `True` if you want to use formly form with an iframe with reverse proxy from /formly-proxy
           to `FORMLY_SERVE_URL` with query params.

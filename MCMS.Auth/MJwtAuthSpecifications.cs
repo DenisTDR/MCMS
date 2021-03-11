@@ -14,6 +14,12 @@ namespace MCMS.Auth
 {
     public class MJwtAuthSpecifications : MSpecifications
     {
+        public MJwtAuthSpecifications()
+        {
+            HasStaticFiles = true;
+            PrePublishRootPath = "../MCMS";
+        }
+
         private string _keyDir;
 
         private bool ExcludeJwtTokenPersistenceInSwaggerUi { get; set; }

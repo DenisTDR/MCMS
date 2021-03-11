@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using MCMS.Data;
 using MCMS.Display.DetailsConfig;
-using MCMS.Display.ModelDisplay;
 using MCMS.Display.TableConfig;
 using MCMS.Filters;
 using MCMS.Forms;
@@ -17,31 +16,33 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.JsonPatch.Adapters;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
-using Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation;
 using Microsoft.AspNetCore.Mvc.Routing;
-using Microsoft.Extensions.FileProviders;
 using Z.Expressions;
 
 namespace MCMS
 {
     public class MBaseSpecifications : MSpecifications
     {
+        public MBaseSpecifications()
+        {
+            HasRazorViews = true;
+            HasStaticFiles = true;
+            PrePublishRootPath = "../MCMS";
+        }
+
         public override void Configure(IApplicationBuilder app, IServiceProvider serviceProvider)
         {
             AddCorsFromEnv(app);
-            RegisterWwwrootPaths(app);
             app.UseMCMSFormsStaticFiles();
         }
 
         public override void ConfigureServices(IServiceCollection services)
         {
-            RegisterViewsPathsFromEnvVar(services);
-
             services.AddCors();
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
-            
+
             services.AddScoped<DataSeeder>();
-            
+
             EvalManager.DefaultContext.RegisterType(typeof(MDbFunctions));
             services.AddScoped(typeof(IDetailsConfigServiceT<>), typeof(DetailsConfigService<>));
             services.AddScoped(typeof(ITableConfigServiceT<>), typeof(TableConfigService<>));
@@ -100,38 +101,5 @@ namespace MCMS
                 }
             });
         }
-
-        #region VIEWS_AND_WWW_PATHS
-
-        public void RegisterViewsPathsFromEnvVar(IServiceCollection services)
-        {
-            foreach (var s in Env.GetArray("VIEWS_AND_WWW_PATHS"))
-            {
-                var path = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), s));
-                var fileProvider = new PhysicalFileProvider(path);
-                services.Configure<MvcRazorRuntimeCompilationOptions>(options =>
-                {
-                    options.FileProviders.Add(fileProvider);
-                });
-            }
-        }
-
-        public void RegisterWwwrootPaths(IApplicationBuilder app)
-        {
-            foreach (var s in Env.GetArray("VIEWS_AND_WWW_PATHS"))
-            {
-                var path = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), s, "wwwroot"));
-                if (Directory.Exists(path))
-                {
-                    app.UseStaticFiles(new StaticFileOptions
-                    {
-                        FileProvider = new PhysicalFileProvider(path),
-                        RequestPath = ""
-                    });
-                }
-            }
-        }
-
-        #endregion
     }
 }

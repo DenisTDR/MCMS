@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using MCMS.Base.Builder;
 using MCMS.Base.Data.Seeder;
@@ -10,10 +11,12 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -61,9 +64,10 @@ namespace MCMS.Builder
             mvcBuilder = _specifications.Aggregate(mvcBuilder,
                 (current, mSpecifications) => mSpecifications.MvcChain(current));
 
-            if (HostEnvironment.IsDevelopment() && Env.GetBool("RAZOR_RUNTIME_COMPILATION"))
+            if (Env.GetBool("RAZOR_RUNTIME_COMPILATION"))
             {
                 mvcBuilder.AddRazorRuntimeCompilation();
+                RegisterPathsForRazorRuntimeCompilation(services);
             }
 
             new MAppEntitiesHelper(this).ProcessSpecifications(services);
@@ -123,7 +127,7 @@ namespace MCMS.Builder
                 await next();
             });
 
-            app.UseStaticFiles();
+            MUseStaticFiles(app);
 
             app.UseRouting();
 
@@ -182,6 +186,39 @@ namespace MCMS.Builder
                 var migrationsStr = string.Join(", ", dbContext.Database.GetPendingMigrations());
                 logger.LogWarning("Applying database migrations [{MigrationsStr}]", migrationsStr);
                 dbContext.Database.Migrate();
+            }
+        }
+
+        private void MUseStaticFiles(IApplicationBuilder app)
+        {
+            app.UseStaticFiles();
+
+            var isPrePublish = Env.Get("LIB_STATIC_FILES_LOAD_TYPE") == "pre-publish";
+
+            var specs = _specifications.Where(spec => spec.HasStaticFiles);
+
+            foreach (var spec in specs)
+            {
+                var path = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(),
+                    isPrePublish
+                        ? Path.Combine(spec.PrePublishRootPath, spec.GetAssemblyName(), "wwwroot")
+                        : Path.Combine("wwwroot/_content", spec.GetAssemblyName())
+                ));
+                app.UseStaticFiles(new StaticFileOptions
+                    {FileProvider = new PhysicalFileProvider(path), RequestPath = ""});
+            }
+        }
+
+        public void RegisterPathsForRazorRuntimeCompilation(IServiceCollection services)
+        {
+            var specs = _specifications.Where(spec => spec.HasRazorViews);
+            foreach (var spec in specs)
+            {
+                var path = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), spec.PrePublishRootPath, spec.GetAssemblyName()));
+                services.Configure<MvcRazorRuntimeCompilationOptions>(options =>
+                {
+                    options.FileProviders.Add(new PhysicalFileProvider(path));
+                });
             }
         }
     }

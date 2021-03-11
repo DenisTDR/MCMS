@@ -14,6 +14,11 @@ namespace MCMS.Files
 {
     public class MFilesSpecifications : MSpecifications
     {
+        public MFilesSpecifications()
+        {
+            HasRazorViews = true;
+            PrePublishRootPath = "../MCMS";
+        }
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddOptions<UploadPurposeOptions>();

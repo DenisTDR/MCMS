@@ -71,6 +71,10 @@ body.dark, body.dark .swagger-ui .modal-ux {
     background-color: #303030;
 }
 
+.dark .swagger-ui {
+    color: #cdd7f2;
+}
+
 .dark .swagger-ui section.models h4,
 .dark .swagger-ui .info .title,
 .dark .swagger-ui .info a,
@@ -191,4 +195,12 @@ body.dark, body.dark .swagger-ui .modal-ux {
 .dark .swagger-ui .responses-inner h4,
 .dark .swagger-ui .responses-inner h5 {
     color: white;
+}
+
+.dark .swagger-ui .response-control-media-type__accept-message {
+    color: #a4ffa4;
+}
+
+.dark .swagger-ui .parameters-col_description input {
+    color: #3b4151;
 }

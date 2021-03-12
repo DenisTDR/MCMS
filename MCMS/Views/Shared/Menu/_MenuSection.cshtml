@@ -1,5 +1,6 @@
+@using Microsoft.AspNetCore.Mvc.Rendering
 @model MCMS.Display.Menu.MenuSection
-@if (!Model.IsCollapsed)
+@if (!Model.IsCollapsable)
 {
     @if (!string.IsNullOrEmpty(Model.Name))
     {
@@ -7,7 +8,7 @@
             @(Model.Name)
         </div>
     }
-    @foreach (var item in Model.OrderedItems)
+    @foreach (var item in Model.GetItems())
     {
         @await Html.PartialAsync("Menu/_MenuItem", item)
     }
@@ -30,7 +31,7 @@ else
     </a>
     <div class="collapse" id="section-@Model.Id" aria-labelledby="header-@Model.Id">
         <nav class="sb-sidenav-menu-nested nav accordion">
-            @foreach (var item in Model.OrderedItems)
+            @foreach (var item in Model.GetItems())
             {
                 @await Html.PartialAsync("Menu/_MenuItem", item)
             }

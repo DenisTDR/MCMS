@@ -6,8 +6,6 @@ namespace MCMS.Display.Menu
 
     public static class MenuItemExtensions
     {
-
-
         public static T RequiresRoles<T>(this T item, params string[] requiredRoles) where T : IMenuItem
         {
             item.RequiredRoles = requiredRoles;

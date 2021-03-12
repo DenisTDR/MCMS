@@ -12,5 +12,10 @@ namespace MCMS.Display
         {
             return FastHash.Hash(GetHashSource() ?? Utils.GenerateRandomHexString());
         }
+
+        public void SetCustomId(string idToSet)
+        {
+            _uniqueId = idToSet;
+        }
     }
 }

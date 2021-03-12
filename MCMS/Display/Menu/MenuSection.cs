@@ -1,24 +1,33 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using MCMS.Display.Link;
 
 namespace MCMS.Display.Menu
 {
-    public class MenuSection : WithUniqueId, IMenuItem
+    public class MenuSection : WithUniqueId, IMenuItem, IItemWithIcon, IMenuSection
     {
         public string Name { get; set; }
-        public bool IsCollapsed { get; set; }
-        public List<IMenuItem> Items { get; init; }
 
-        public IEnumerable<IMenuItem> OrderedItems =>
-            Items?.OrderBy(i => i.Index) ?? Array.Empty<IMenuItem>() as IEnumerable<IMenuItem>;
+        public bool IsCollapsable { get; set; }
+        public List<IMenuItemBase> Items { get; set; } = new();
 
-        public string Id => UniqueId;
+        public List<IMenuItem> GetItems()
+        {
+            return Items.Cast<IMenuItem>().ToList();
+        }
+
+        public string Id
+        {
+            get => UniqueId;
+            init => SetCustomId(value);
+        }
+
         public int Index { get; set; }
         public string IconClasses { get; set; }
         public string[] RequiredRoles { get; set; }
 
-        public static List<IMenuItem> ItemsList(params IMenuItem[] args)
+        public static List<IMenuItemBase> ItemsList(params IMenuItemBase[] args)
         {
             return args?.ToList();
         }

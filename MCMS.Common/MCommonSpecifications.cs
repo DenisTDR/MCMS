@@ -11,12 +11,15 @@ namespace MCMS.Common
 {
     public class MCommonSpecifications : MSpecifications
     {
+        public MCommonConfig Config { get; } = new();
+
         public MCommonSpecifications()
         {
             HasRazorViews = true;
             HasStaticFiles = true;
             PrePublishRootPath = "../MCMS";
         }
+
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<IRepository<TranslationEntity>, TranslationsRepository>();
@@ -34,6 +37,8 @@ namespace MCMS.Common
                 ss.Add((typeof(MCommonSpecifications).Assembly, "seed-common-translations.json")));
 
             services.AddOptions<LayoutIncludesOptions>().Configure(c => { c.AddForPages("CommonLibIncludes"); });
+
+            services.AddSingleton(Config);
         }
     }
 }

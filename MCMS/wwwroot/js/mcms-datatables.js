@@ -402,8 +402,8 @@ const mcmsTables = [];
                             table.draw();
                             break;
                         }
-                        console.log(senderData.tag);
-                        console.log(params);
+                        // console.log(senderData.tag);
+                        // console.log(params);
                         break;
                 }
             });

@@ -3,12 +3,12 @@ using System.Linq;
 using MCMS.Base.Builder;
 using MCMS.Base.Files.UploadPurpose;
 using MCMS.Base.Helpers;
+using MCMS.Base.Middlewares;
 using MCMS.Base.SwaggerFormly.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using MCMS.SwaggerFormly.Filters;
 using MCMS.SwaggerFormly.FormParamsHelpers;
-using MCMS.SwaggerFormly.Middlewares;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Swashbuckle.AspNetCore.ReDoc;
@@ -40,7 +40,14 @@ namespace MCMS.SwaggerFormly
             {
                 var logger = serviceProvider.GetRequiredService<ILogger<SwaggerSpecifications>>();
                 logger.LogWarning("FORMLY_DEBUG=True => enabling reverse proxy middleware");
-                app.UseMiddleware<ReverseProxyMiddleware>();
+                var obj = new ReverseProxyMiddlewareOptions
+                {
+                    ProxyRules = new()
+                    {
+                        {"/mcms-forms", Utils.UrlCombine(Env.GetOrThrow("FORMLY_SERVE_URL"), "mcms-forms/")}
+                    }
+                };
+                app.UseMiddleware<ReverseProxyMiddleware>(obj);
             }
 
             app.UseSwagger(options => options.RouteTemplate = _configsOptions.ForAdmin.RouteTemplate);

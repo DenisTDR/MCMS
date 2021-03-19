@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using MCMS.Base.Helpers;
 using Microsoft.AspNetCore.Http;
 
-namespace MCMS.SwaggerFormly.Middlewares
+namespace MCMS.Base.Middlewares
 {
     // got from: 
     // https://auth0.com/blog/building-a-reverse-proxy-in-dot-net-core/
@@ -18,10 +18,12 @@ namespace MCMS.SwaggerFormly.Middlewares
     {
         private static readonly HttpClient HttpClient = new();
         private readonly RequestDelegate _nextMiddleware;
+        private readonly ReverseProxyMiddlewareOptions _options;
 
-        public ReverseProxyMiddleware(RequestDelegate nextMiddleware)
+        public ReverseProxyMiddleware(RequestDelegate nextMiddleware, ReverseProxyMiddlewareOptions options)
         {
             _nextMiddleware = nextMiddleware;
+            _options = options;
         }
 
         public async Task Invoke(HttpContext context)
@@ -114,7 +116,7 @@ namespace MCMS.SwaggerFormly.Middlewares
         {
             Uri targetUri = null;
 
-            foreach (var (key, value) in _proxyRules)
+            foreach (var (key, value) in _options.ProxyRules)
             {
                 if (request.Path.StartsWithSegments(key, out var remainingPath))
                 {
@@ -127,10 +129,7 @@ namespace MCMS.SwaggerFormly.Middlewares
 
         private bool ShouldProxy(HttpRequest request)
         {
-            return _proxyRules.Keys.Any(key => request.Path.StartsWithSegments(key));
+            return _options.ProxyRules.Keys.Any(key => request.Path.StartsWithSegments(key));
         }
-
-        private readonly Dictionary<string, string> _proxyRules = new()
-            {{"/mcms-forms", Utils.UrlCombine(Env.GetOrThrow("FORMLY_SERVE_URL"), "mcms-forms/")}};
     }
 }

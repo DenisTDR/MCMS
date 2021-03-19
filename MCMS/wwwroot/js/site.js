@@ -96,11 +96,12 @@
         });
     }
 
-    window.mcms.adjustSafeScrollbarWidth = function () {
+    mcms.adjustSafeScrollbarWidth = function () {
+        if (window.mcms.skipSafeScrollBar) return;
         const hasScroll = document.body.scrollHeight > document.body.clientHeight && !document.body.classList.contains('forced-modal-open');
         if (mcms.hasScroll !== hasScroll) {
             mcms.hasScroll = hasScroll;
-            document.getElementById("page-main").style['padding-right'] = 'calc(1.5rem + ' + (mcms.hasScroll ? 0 : mcms.scrollbarWidth) + 'px)';
+            document.getElementById("page-main").style['padding-right'] = 'calc(15px + ' + (mcms.hasScroll ? 0 : mcms.scrollbarWidth) + 'px)';
             document.getElementById("header-navbar").style['padding-right'] = 'calc(1rem + ' + (mcms.hasScroll ? 0 : mcms.scrollbarWidth) + 'px)';
         }
     }

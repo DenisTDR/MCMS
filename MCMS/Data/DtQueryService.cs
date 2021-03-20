@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -20,19 +19,19 @@ namespace MCMS.Data
     {
         private readonly IMapper _mapper;
         private readonly ITableConfigServiceT<TVm> _tableConfigService;
-        private readonly ILogger<DtQueryService<TVm>> _logger;
+        private readonly ILogger _logger;
 
         public bool AlreadyOrdered { get; set; }
 
         public DtQueryService(
             IMapper mapper,
             ITableConfigServiceT<TVm> tableConfigService,
-            ILogger<DtQueryService<TVm>> logger
+            ILoggerFactory loggerFactory
         )
         {
             _mapper = mapper;
             _tableConfigService = tableConfigService;
-            _logger = logger;
+            _logger = loggerFactory.CreateLogger("DtQuery");
         }
 
         public async Task<DtResult<TVm>> Query<TE>(IRepository<TE> repo, DtParameters parameters)
@@ -99,13 +98,13 @@ namespace MCMS.Data
                     try
                     {
                         query = query.WhereDynamic(x => qStr, gFilters.First().Item2);
-                        _logger.LogInformation(
-                            $"queryStr= {qStr}\nparams={JsonConvert.SerializeObject(gFilters.First().Item2)}");
+                        _logger.LogInformation("queryStr= {Query}\nparams={Params}", qStr,
+                            JsonConvert.SerializeObject(gFilters.First().Item2));
                     }
                     catch
                     {
-                        Console.WriteLine($"queryStr= {qStr}");
-                        Console.WriteLine($"params= {JsonConvert.SerializeObject(gFilters.First().Item2)}");
+                        _logger.LogError("queryStr: {Query}", qStr);
+                        _logger.LogError("params: {Params}", JsonConvert.SerializeObject(gFilters.First().Item2));
                         throw;
                     }
 
@@ -120,12 +119,13 @@ namespace MCMS.Data
                 try
                 {
                     query = query.WhereDynamic(x => qStr, qParams);
-                    _logger.LogInformation($"queryStr= {qStr}\nparams={JsonConvert.SerializeObject(qParams)}");
+                    _logger.LogInformation("queryStr= {Query}\nparams={Params}", qStr,
+                        JsonConvert.SerializeObject(qParams));
                 }
                 catch
                 {
-                    Console.WriteLine($"queryStr= {qStr}");
-                    Console.WriteLine($"params= {JsonConvert.SerializeObject(qParams)}");
+                    _logger.LogError("queryStr: {Query}", qStr);
+                    _logger.LogError("params: {Params}", JsonConvert.SerializeObject(qParams));
                     throw;
                 }
             }
@@ -208,20 +208,15 @@ namespace MCMS.Data
                 {
                     var tc = parameters.Columns[dtOrder.Column].MatchedTableColumn;
                     var orderCol = tc.DbColumn;
-                    var qStr = "x." + orderCol;
+                    var qStr = $"x.{orderCol}";
                     if (!string.IsNullOrEmpty(tc.DbFuncFormat))
                     {
                         qStr = string.Format(tc.DbFuncFormat, qStr);
                     }
 
-                    if (dtOrder.Dir == DtOrderDir.Asc)
-                    {
-                        query = query.OrderByDynamic(x => qStr);
-                    }
-                    else
-                    {
-                        query = query.OrderByDescendingDynamic(x => qStr);
-                    }
+                    query = dtOrder.Dir == DtOrderDir.Asc
+                        ? query.OrderByDynamic(x => qStr)
+                        : query.OrderByDescendingDynamic(x => qStr);
                 }
             }
 

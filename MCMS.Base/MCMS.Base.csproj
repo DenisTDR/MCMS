@@ -4,6 +4,25 @@
         <TargetFramework>net5.0</TargetFramework>
         <OutputType>Library</OutputType>
         <RootNamespace>MCMS.Base</RootNamespace>
+        <AssemblyName>MCMS.Base</AssemblyName>
+        <LangVersion>9</LangVersion>
+        <Version>0.0.1</Version>
+
+        <Title>MCMS Base</Title>
+        <Description>MCMS Base package</Description>
+        <Authors>TDR</Authors>
+        <Company>TDR</Company>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <RepositoryUrl>https://github.com/DenisTDR/MCMS.git</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <PackageProjectUrl>https://github.com/DenisTDR/MCMS</PackageProjectUrl>
+
+        <IsPackable>true</IsPackable>
+        <PackageId>MCMS.Base</PackageId>
+        <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+        <GenerateEmbeddedFilesManifest>true</GenerateEmbeddedFilesManifest>
+        <IncludeSymbols>true</IncludeSymbols>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="AutoMapper" Version="10.1.1" />
@@ -14,9 +33,9 @@
         <PackageReference Include="dotenv.net" Version="2.1.3" />
     </ItemGroup>
     <ItemGroup>
-      <Content Remove="seed-base.json" />
-      <EmbeddedResource Include="seed-base.json">
-        <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      </EmbeddedResource>
+        <Content Remove="seed-base.json" />
+        <EmbeddedResource Include="seed-base.json">
+            <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+        </EmbeddedResource>
     </ItemGroup>
 </Project>

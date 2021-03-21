@@ -4,6 +4,25 @@
         <TargetFramework>net5.0</TargetFramework>
         <OutputType>Library</OutputType>
         <RootNamespace>MCMS</RootNamespace>
+        <AssemblyName>MCMS</AssemblyName>
+        <LangVersion>9</LangVersion>
+        <Version>0.0.1</Version>
+
+        <Title>MCMS</Title>
+        <Description>MCMS Main package</Description>
+        <Authors>TDR</Authors>
+        <Company>TDR</Company>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <RepositoryUrl>https://github.com/DenisTDR/MCMS.git</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <PackageProjectUrl>https://github.com/DenisTDR/MCMS</PackageProjectUrl>
+
+        <IsPackable>true</IsPackable>
+        <PackageId>MCMS</PackageId>
+        <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+        <GenerateEmbeddedFilesManifest>true</GenerateEmbeddedFilesManifest>
+        <IncludeSymbols>true</IncludeSymbols>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     </PropertyGroup>
 
 

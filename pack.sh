@@ -2,7 +2,7 @@
 
 projects=("./MCMS.Base/MCMS.Base" "./MCMS/MCMS" "./MCMS.Auth/MCMS.Auth" "./MCMS.Emailing/MCMS.Emailing" "./MCMS.Common/MCMS.Common" "./MCMS.Files/MCMS.Files")
 
-buildDir=../../nuget-build
+buildDir=./nuget-build
 
 rm -rf "$buildDir"/*.nupkg "$buildDir"/*.snupkg
 

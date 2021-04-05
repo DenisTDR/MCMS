@@ -6,7 +6,6 @@
         <RootNamespace>MCMS.Base</RootNamespace>
         <AssemblyName>MCMS.Base</AssemblyName>
         <LangVersion>9</LangVersion>
-        <Version>0.0.1</Version>
 
         <Title>MCMS Base</Title>
         <Description>MCMS Base package</Description>

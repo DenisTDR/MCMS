@@ -6,7 +6,6 @@
         <RootNamespace>MCMS.Auth</RootNamespace>
         <AssemblyName>MCMS.Auth</AssemblyName>
         <LangVersion>9</LangVersion>
-        <Version>0.0.1</Version>
 
         <Title>MCMS Auth</Title>
         <Description>MCMS Auth package</Description>

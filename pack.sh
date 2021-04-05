@@ -4,9 +4,11 @@ projects=("./MCMS.Base/MCMS.Base" "./MCMS/MCMS" "./MCMS.Auth/MCMS.Auth" "./MCMS.
 
 buildDir=./nuget-build
 
-rm -rf "$buildDir"/*.nupkg "$buildDir"/*.snupkg
+version=0.0.2
+
+#rm -rf "$buildDir"/*.nupkg "$buildDir"/*.snupkg
 
 for i in "${projects[@]}"; do
-  dotnet pack -c Release -o "$buildDir" "$i".csproj
+  dotnet pack -c Release -o "$buildDir" -p:PackageVersion=$version "$i".csproj
 done
 

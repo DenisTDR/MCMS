@@ -134,7 +134,7 @@ namespace MCMS.SwaggerFormly
                     };
                     redocOptions.HeadContent =
                         $"<script>\nvar switchDocConfig = {Utils.Serialize(switchDocConfigObj)};\n</script>\n"
-                        + "<script src='../redoc-doc-switcher.js'></script>";
+                        + "<script src='/_content/MCMS/api/redoc/redoc-doc-switcher.js'></script>";
                 }
 
 

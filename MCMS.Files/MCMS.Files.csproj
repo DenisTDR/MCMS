@@ -6,7 +6,6 @@
         <RootNamespace>MCMS.Files</RootNamespace>
         <AssemblyName>MCMS.Files</AssemblyName>
         <LangVersion>9</LangVersion>
-        <Version>0.0.1</Version>
 
         <Title>MCMS Files</Title>
         <Description>MCMS Files package</Description>

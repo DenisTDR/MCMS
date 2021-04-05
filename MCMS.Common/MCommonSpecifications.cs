@@ -16,7 +16,6 @@ namespace MCMS.Common
         public MCommonSpecifications()
         {
             HasRazorViews = true;
-            HasStaticFiles = true;
             PrePublishRootPath = "../MCMS";
         }
 

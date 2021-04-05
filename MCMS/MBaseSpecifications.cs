@@ -11,7 +11,6 @@ using MCMS.Data;
 using MCMS.Display.DetailsConfig;
 using MCMS.Display.TableConfig;
 using MCMS.Filters;
-using MCMS.Forms;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.JsonPatch.Adapters;
 using Microsoft.AspNetCore.Mvc;
@@ -26,14 +25,12 @@ namespace MCMS
         public MBaseSpecifications()
         {
             HasRazorViews = true;
-            HasStaticFiles = true;
             PrePublishRootPath = "../MCMS";
         }
 
         public override void Configure(IApplicationBuilder app, IServiceProvider serviceProvider)
         {
             AddCorsFromEnv(app);
-            app.UseMCMSFormsStaticFiles();
         }
 
         public override void ConfigureServices(IServiceCollection services)

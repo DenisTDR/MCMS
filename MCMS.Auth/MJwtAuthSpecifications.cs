@@ -14,12 +14,6 @@ namespace MCMS.Auth
 {
     public class MJwtAuthSpecifications : MSpecifications
     {
-        public MJwtAuthSpecifications()
-        {
-            HasStaticFiles = true;
-            PrePublishRootPath = "../MCMS";
-        }
-
         private string _keyDir;
 
         private bool ExcludeJwtTokenPersistenceInSwaggerUi { get; set; }
@@ -45,8 +39,8 @@ namespace MCMS.Auth
             {
                 services.Configure<SwaggerConfigsOptions>(c =>
                 {
-                    c.JavascriptFiles.Add("lib/jquery/dist/jquery.min.js");
-                    c.JavascriptFiles.Add("api/docs/swagger-jwt-persist.js");
+                    c.JavascriptFiles.Add("/_content/MCMS.Auth/lib/jquery/dist/jquery.min.js");
+                    c.JavascriptFiles.Add("/_content/MCMS.Auth/api/docs/swagger-jwt-persist.js");
                 });
             }
 

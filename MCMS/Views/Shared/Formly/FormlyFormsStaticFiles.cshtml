@@ -7,7 +7,7 @@
     @using (Html.BeginMScripts())
     {
         <script>
-            var openApiConfigUrl = '@FormParamsService.GetOpenApiConfigUrl(Url)';
+            window.openApiConfigUrl = '@FormParamsService.GetOpenApiConfigUrl(Url)';
         </script>
         @(await Html.BlindPartialAsync("/Views/Shared/MCMSFormStaticFiles.cshtml"))
     }

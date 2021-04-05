@@ -135,8 +135,8 @@ const mcmsTables = [];
         getLang: function (lang) {
             const langConfigBasePath = typeof basePath !== 'undefined' ? basePath : '';
             const langConfig = {
-                'en': {"url": langConfigBasePath + "/lib/datatables/English.json"},
-                'ro': {"url": langConfigBasePath + "/lib/datatables/Romanian.json"}
+                'en': {"url": langConfigBasePath + "/_content/MCMS/lib/datatables/English.json"},
+                'ro': {"url": langConfigBasePath + "/_content/MCMS/lib/datatables/Romanian.json"}
             };
             return langConfig[lang];
         },

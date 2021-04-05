@@ -6,7 +6,6 @@
         <RootNamespace>MCMS</RootNamespace>
         <AssemblyName>MCMS</AssemblyName>
         <LangVersion>9</LangVersion>
-        <Version>0.0.1</Version>
 
         <Title>MCMS</Title>
         <Description>MCMS Main package</Description>
@@ -23,12 +22,17 @@
         <GenerateEmbeddedFilesManifest>true</GenerateEmbeddedFilesManifest>
         <IncludeSymbols>true</IncludeSymbols>
         <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+
+        <RestoreSources>
+            https://api.nuget.org/v3/index.json;
+            http://mcms-forms.nuget.tdrs.ro/index.json
+        </RestoreSources>
     </PropertyGroup>
 
 
     <ItemGroup>
         <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.1.1" />
-        <PackageReference Include="MCMS.Forms" Version="1.4.4" />
+        <PackageReference Include="MCMS.Forms" Version="1.5.1012" />
         <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="5.0.3" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="5.0.0" />
         <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="5.0.3" />

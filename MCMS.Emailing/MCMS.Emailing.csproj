@@ -6,7 +6,6 @@
         <RootNamespace>MCMS.Emailing</RootNamespace>
         <AssemblyName>MCMS.Emailing</AssemblyName>
         <LangVersion>9</LangVersion>
-        <Version>0.0.1</Version>
 
         <Title>MCMS Emailing</Title>
         <Description>MCMS Emailing package</Description>

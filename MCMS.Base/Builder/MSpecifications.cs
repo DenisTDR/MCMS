@@ -8,7 +8,6 @@ namespace MCMS.Base.Builder
 {
     public abstract class MSpecifications
     {
-        public bool HasStaticFiles { get; set; }
         public string PrePublishRootPath { get; set; }
         public bool HasRazorViews { get; set; }
         public IWebHostEnvironment Environment { get; set; }

@@ -193,20 +193,22 @@ namespace MCMS.Builder
         {
             app.UseStaticFiles();
 
-            var isPrePublish = Env.Get("LIB_STATIC_FILES_LOAD_TYPE") == "pre-publish";
+            // TODO: This is not used anymore. Should be deleted soon
 
-            var specs = _specifications.Where(spec => spec.HasStaticFiles);
-
-            foreach (var spec in specs)
-            {
-                var path = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(),
-                    isPrePublish
-                        ? Path.Combine(spec.PrePublishRootPath ?? "", spec.GetAssemblyName(), "wwwroot")
-                        : Path.Combine("wwwroot/_content", spec.GetAssemblyName())
-                ));
-                app.UseStaticFiles(new StaticFileOptions
-                    {FileProvider = new PhysicalFileProvider(path), RequestPath = ""});
-            }
+            // var isPrePublish = Env.Get("LIB_STATIC_FILES_LOAD_TYPE") == "pre-publish";
+            //
+            // var specs = _specifications.Where(spec => spec.HasStaticFiles);
+            //
+            // foreach (var spec in specs)
+            // {
+            //     var path = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(),
+            //         isPrePublish
+            //             ? Path.Combine(spec.PrePublishRootPath ?? "", spec.GetAssemblyName(), "wwwroot")
+            //             : Path.Combine("wwwroot/_content", spec.GetAssemblyName())
+            //     ));
+            //     app.UseStaticFiles(new StaticFileOptions
+            //         {FileProvider = new PhysicalFileProvider(path), RequestPath = ""});
+            // }
         }
 
         public void RegisterPathsForRazorRuntimeCompilation(IServiceCollection services)

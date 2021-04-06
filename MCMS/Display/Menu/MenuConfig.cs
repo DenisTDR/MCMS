@@ -10,14 +10,19 @@ namespace MCMS.Display.Menu
 
         private List<IMenuItem> _preparedItems;
 
-        public void AddItems(IEnumerable<IMenuItemBase> items)
+        public void Add(IEnumerable<IMenuItemBase> items)
         {
             _items.AddRange(items);
         }
 
-        public void AddItem(IMenuItemBase item)
+        public void Add(IMenuItemBase item)
         {
             _items.Add(item);
+        }
+
+        public void Add(params IMenuItemBase[] items)
+        {
+            _items.AddRange(items);
         }
 
 

@@ -57,7 +57,7 @@ namespace MCMS.Files
                 OriginalName = file.FileName,
                 OwnerToken = Utils.GenerateRandomHexString(),
                 Name = Utils.GenerateRandomHexString(32),
-                Extension = Path.GetExtension(file.FileName),
+                Extension = Path.GetExtension(file.FileName).ToLower(),
                 Purpose = purpose,
                 VirtualPath = !attr.Private ? Path.Combine(MFiles.PublicVirtualPath, path) : "",
             };

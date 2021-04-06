@@ -23,15 +23,18 @@
         <IncludeSymbols>true</IncludeSymbols>
         <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     </PropertyGroup>
-
-    <ItemGroup>
-        <ProjectReference Include="..\MCMS.Base\MCMS.Base.csproj" />
-    </ItemGroup>
-
+    
     <ItemGroup>
         <PackageReference Include="Google.Apis.Gmail.v1" Version="1.50.0.2202" />
         <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="5.0.3" />
         <PackageReference Include="MimeKitLite" Version="2.10.1" />
         <PackageReference Include="SendGrid" Version="9.22.0" />
+    </ItemGroup>
+
+    <ItemGroup Condition="$(ENV_TYPE) != 'CI_BUILD'">
+        <ProjectReference Include="..\MCMS.Base\MCMS.Base.csproj" />
+    </ItemGroup>
+    <ItemGroup Condition="$(ENV_TYPE) == 'CI_BUILD'">
+        <PackageReference Include="MCMS.Base" Version="$(VERSION)" />
     </ItemGroup>
 </Project>

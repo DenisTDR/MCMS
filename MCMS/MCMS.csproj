@@ -22,11 +22,6 @@
         <GenerateEmbeddedFilesManifest>true</GenerateEmbeddedFilesManifest>
         <IncludeSymbols>true</IncludeSymbols>
         <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-
-        <RestoreSources>
-            https://api.nuget.org/v3/index.json;
-            http://mcms-forms.nuget.tdrs.ro/index.json
-        </RestoreSources>
     </PropertyGroup>
 
 
@@ -50,8 +45,11 @@
         <PackageReference Include="Z.EntityFramework.Plus.EFCore" Version="5.1.17" />
     </ItemGroup>
 
-    <ItemGroup>
+    <ItemGroup Condition="$(ENV_TYPE) != 'CI_BUILD'">
         <ProjectReference Include="..\MCMS.Base\MCMS.Base.csproj" />
+    </ItemGroup>
+    <ItemGroup Condition="$(ENV_TYPE) == 'CI_BUILD'">
+        <PackageReference Include="MCMS.Base" Version="$(VERSION)" />
     </ItemGroup>
     
 </Project>

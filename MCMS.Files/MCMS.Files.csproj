@@ -24,9 +24,13 @@
         <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     </PropertyGroup>
 
-    <ItemGroup>
-      <ProjectReference Include="..\MCMS.Base\MCMS.Base.csproj" />
-      <ProjectReference Include="..\MCMS\MCMS.csproj" />
+    <ItemGroup Condition="$(ENV_TYPE) != 'CI_BUILD'">
+        <ProjectReference Include="..\MCMS.Base\MCMS.Base.csproj" />
+        <ProjectReference Include="..\MCMS\MCMS.csproj" />
+    </ItemGroup>
+    <ItemGroup Condition="$(ENV_TYPE) == 'CI_BUILD'">
+        <PackageReference Include="MCMS.Base" Version="$(VERSION)" />
+        <PackageReference Include="MCMS" Version="$(VERSION)" />
     </ItemGroup>
     
 </Project>

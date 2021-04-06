@@ -6,12 +6,12 @@ build-nupkg:
   stage: build-nupkg
   image: mcr.microsoft.com/dotnet/sdk:5.0
   script:
-    - ./pack.sh
+    - ./pack.sh $CI_COMMIT_TAG
   artifacts:
     paths:
       - nuget-build
   only:
-    - main
+    - /^publish-.*$/
 
 nuget-push:
   stage: nuget-push
@@ -20,4 +20,4 @@ nuget-push:
     - dotnet nuget add source "$CI_SERVER_URL/api/v4/projects/$CI_PROJECT_ID/packages/nuget/index.json" --name gitlab --username gitlab-ci-token --password $CI_JOB_TOKEN --store-password-in-clear-text
     - dotnet nuget push "./nuget-build/*.nupkg" "./nuget-build/*.snupkg" --source gitlab
   only:
-    - main
+    - /^publish-.*$/

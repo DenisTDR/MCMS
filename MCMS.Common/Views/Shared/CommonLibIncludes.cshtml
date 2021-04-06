@@ -7,20 +7,20 @@
 {
     if (Config.IncludeClipboardJs)
     {
-        <script src="/_content/MCMS.Common/lib/clipboard.js/clipboard.min.js" asp-append-version="true"></script>
+        <script src="~/_content/MCMS.Common/lib/clipboard.js/clipboard.min.js" asp-append-version="true"></script>
     }
 
     if (Config.IncludeHighlightJs)
     {
-        <script src="/_content/MCMS.Common/lib/highlight.js/highlight.pack.js" asp-append-version="true"></script>
-        <script src="/_content/MCMS.Common/lib/highlight.js-custom/highlightjs-line-numbers.min.js" asp-append-version="true"></script>
+        <script src="~/_content/MCMS.Common/lib/highlight.js/highlight.pack.js" asp-append-version="true"></script>
+        <script src="~/_content/MCMS.Common/lib/highlight.js-custom/highlightjs-line-numbers.min.js" asp-append-version="true"></script>
     }
 }
 @using (Html.BeginMPageScripts())
 {
     if (Config.IncludeClipboardJs)
     {
-        <script src="/_content/MCMS.Common/js/mcms-clipboard.js" asp-append-version="true"></script>
+        <script src="~/_content/MCMS.Common/js/mcms-clipboard.js" asp-append-version="true"></script>
     }
 }
 
@@ -28,9 +28,9 @@
 {
     @using (Html.BeginMStyles())
     {
-        <link rel="stylesheet" href="/_content/MCMS.Common/lib/highlight.js/styles/default.css" asp-append-version="true">
-        <link rel="stylesheet" href="/_content/MCMS.Common/lib/highlight.js/atom-one-dark.css" asp-append-version="true">
-        <link rel="stylesheet" href="/_content/MCMS.Common/lib/highlight.js/atom-one-dark-reasonable.css" asp-append-version="true">
-        <link rel="stylesheet" href="/_content/MCMS.Common/lib/highlight.js-custom/hljs-ln-styles.css" asp-append-version="true">
+        <link rel="stylesheet" href="~/_content/MCMS.Common/lib/highlight.js/styles/default.css" asp-append-version="true">
+        <link rel="stylesheet" href="~/_content/MCMS.Common/lib/highlight.js/atom-one-dark.css" asp-append-version="true">
+        <link rel="stylesheet" href="~/_content/MCMS.Common/lib/highlight.js/atom-one-dark-reasonable.css" asp-append-version="true">
+        <link rel="stylesheet" href="~/_content/MCMS.Common/lib/highlight.js-custom/hljs-ln-styles.css" asp-append-version="true">
     }
 }

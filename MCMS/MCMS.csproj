@@ -41,7 +41,7 @@
         <PackageReference Include="Swashbuckle.AspNetCore.Newtonsoft" Version="6.0.2" />
         <PackageReference Include="Swashbuckle.AspNetCore.ReDoc" Version="6.0.2" />
         <PackageReference Include="Z.EntityFramework.Plus.EFCore" Version="5.1.17" />
-        <PackageReference Include="MCMS.Forms" Version="1.5.1018" />
+        <PackageReference Include="MCMS.Forms" Version="1.5.203" />
     </ItemGroup>
 
     <ItemGroup Condition="$(ENV_TYPE) != 'CI_BUILD'">

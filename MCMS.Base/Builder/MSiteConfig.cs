@@ -7,7 +7,7 @@ namespace MCMS.Base.Builder
         public string SiteLogo { get; set; }
         public bool HideSiteNameFromNavbar { get; set; }
         public bool HideMcmsInfoFromFooter { get; set; }
-        public bool HidePrivacyPolicyFromFooter { get; set; }
+        public bool ShowPrivacyPolicyInFooter { get; set; }
         public string FaviconPath { get; set; } = "~/_content/MCMS/favicon.ico";
     }
 }

@@ -19,7 +19,7 @@
                     <span>| <a asp-controller="McmsFramework" asp-action="FrameworkInfo">MCMS</a></span>
                 }
             </div>
-            @if (!config.HidePrivacyPolicyFromFooter)
+            @if (config.ShowPrivacyPolicyInFooter)
             {
                 <div>
                     <a asp-controller="Home" asp-action="Privacy">Privacy Policy</a>

@@ -5,7 +5,7 @@ namespace MCMS.Base.SwaggerFormly.Models
 {
     public class SwaggerConfigsOptions
     {
-        public List<SwaggerConfigOptions> CustomConfigs = new();
+        public readonly List<SwaggerConfigOptions> CustomConfigs = new();
         public SwaggerConfigOptions ForAdmin { get; set; }
         public SwaggerConfigOptions ForApi { get; set; }
         public List<string> JavascriptFiles { get; set; } = new();
@@ -36,8 +36,8 @@ namespace MCMS.Base.SwaggerFormly.Models
                 ForApi.Description = $"{homeUrl}{ForApi.Description}";
             }
 
-            JavascriptFiles.Add("api/docs/swagger-ui-theme.js");
-            StylesheetFiles.Add("api/docs/swagger-ui-theme.css");
+            JavascriptFiles.Add("_content/MCMS/api/docs/swagger-ui-theme.js");
+            StylesheetFiles.Add("_content/MCMS/api/docs/swagger-ui-theme.css");
         }
 
         public void SetupSwallowClone(SwaggerConfigsOptions clone)

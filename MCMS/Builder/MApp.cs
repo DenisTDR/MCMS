@@ -102,6 +102,8 @@ namespace MCMS.Builder
                 {
                     fld.Add(new FrameworkLibDetails(mSpec.GetType().Assembly));
                 }
+
+                fld.Add(new FrameworkLibDetails(typeof(Forms.MCMSFormsHelper).Assembly));
             });
         }
 

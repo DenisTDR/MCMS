@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using MCMS.Admin;
 using MCMS.Base.Builder;
 using MCMS.Base.Data.Seeder;
 using MCMS.Base.Helpers;
@@ -72,7 +73,7 @@ namespace MCMS.Builder
 
             new MAppEntitiesHelper(this).ProcessSpecifications(services);
 
-            _addDbContextAction(services);
+            _addDbContextAction?.Invoke(services);
 
             services.AddAutoMapper(expression =>
             {
@@ -92,6 +93,15 @@ namespace MCMS.Builder
                 options.ForwardedHeaders = ForwardedHeaders.All;
                 options.KnownNetworks.Clear();
                 options.KnownProxies.Clear();
+            });
+
+
+            services.AddOptions<FrameworkLibsDetails>().Configure(fld =>
+            {
+                foreach (var mSpec in _specifications)
+                {
+                    fld.Add(new FrameworkLibDetails(mSpec.GetType().Assembly));
+                }
             });
         }
 

@@ -7,9 +7,9 @@ using dotenv.net;
 
 namespace MCMS.Base.Helpers
 {
-    public class Env
+    public static class Env
     {
-        private static ConcurrentDictionary<string, string> cache = new();
+        private static readonly ConcurrentDictionary<string, string> Cache = new();
 
         public static string GetOrThrow(string name)
         {
@@ -24,13 +24,13 @@ namespace MCMS.Base.Helpers
 
         public static string Get(string name)
         {
-            if (!cache.ContainsKey(name))
+            if (!Cache.ContainsKey(name))
             {
                 var value = Environment.GetEnvironmentVariable(name);
-                cache[name] = value;
+                Cache[name] = value;
             }
 
-            return cache[name];
+            return Cache[name];
         }
 
         public static bool GetBool(string name)
@@ -41,7 +41,8 @@ namespace MCMS.Base.Helpers
 
         public static List<string> GetArray(string name)
         {
-            return Get(name)?.Split(ArraySeparator, StringSplitOptions.RemoveEmptyEntries).Select(s => s.Trim()).ToList() ?? new List<string>();
+            return Get(name)?.Split(ArraySeparator, StringSplitOptions.RemoveEmptyEntries).Select(s => s.Trim())
+                .ToList() ?? new List<string>();
         }
 
         public static void LoadEnvFiles()
@@ -54,12 +55,12 @@ namespace MCMS.Base.Helpers
                 if (!File.Exists(envFile)) continue;
 
                 Console.WriteLine("Loading .env file: " + envFile);
-                DotEnv.Config(true, envFile);
+                DotEnv.Load(new DotEnvOptions(true, new[] {envFile}));
             }
 
             Console.ForegroundColor = oldColor;
         }
 
-        public static readonly string[] ArraySeparator = {";"};
+        private static readonly string[] ArraySeparator = {";"};
     }
 }

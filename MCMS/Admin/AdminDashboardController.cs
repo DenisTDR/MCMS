@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace MCMS.Controllers
+namespace MCMS.Admin
 {
     [Authorize(Roles = "Admin")]
     public class AdminDashboardController : AdminUiController

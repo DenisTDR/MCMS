@@ -25,9 +25,9 @@
     </PropertyGroup>
     
     <ItemGroup>
-        <PackageReference Include="Google.Apis.Gmail.v1" Version="1.50.0.2202" />
-        <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="5.0.3" />
-        <PackageReference Include="MimeKitLite" Version="2.10.1" />
+        <PackageReference Include="Google.Apis.Gmail.v1" Version="1.51.0.2251" />
+        <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="5.0.5" />
+        <PackageReference Include="MimeKitLite" Version="2.11.0" />
         <PackageReference Include="SendGrid" Version="9.22.0" />
     </ItemGroup>
 

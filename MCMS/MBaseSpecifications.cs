@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using MCMS.Admin;
 using MCMS.Base.Builder;
 using MCMS.Base.Data;
 using MCMS.Base.Data.Seeder;
@@ -63,6 +64,8 @@ namespace MCMS
                 services.AddDataProtection()
                     .PersistKeysToFileSystem(new DirectoryInfo(Env.Get("PERSISTED_KEYS_DIRECTORY")));
             }
+
+            services.AddSingleton<FrameworkInfoService>();
         }
 
         public override void ConfigMvc(MvcOptions options)

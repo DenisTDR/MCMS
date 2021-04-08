@@ -11,7 +11,7 @@
             <a class="navbar-brand navbar-title" asp-area="" asp-controller="Home" asp-action="Index">
                 @if (!string.IsNullOrEmpty(SiteConfig.Value.SiteLogo))
                 {
-                    <img src="@SiteConfig.Value.SiteLogo" alt="logo" class="navbar-logo"/>
+                    <img src="@Url.Content(SiteConfig.Value.SiteLogo)" alt="logo" class="navbar-logo"/>
                 }
                 @if (!SiteConfig.Value.HideSiteNameFromNavbar)
                 {

@@ -103,7 +103,8 @@ namespace MCMS.Builder
                     fld.Add(new FrameworkLibDetails(mSpec.GetType().Assembly));
                 }
 
-                fld.Add(new FrameworkLibDetails(typeof(Forms.MCMSFormsHelper).Assembly));
+                var ioMcms = fld.Libs.FindIndex(l => l.Name == "MCMS");
+                fld.Libs.Insert(ioMcms + 1, new FrameworkLibDetails(typeof(Forms.MCMSFormsHelper).Assembly));
             });
         }
 

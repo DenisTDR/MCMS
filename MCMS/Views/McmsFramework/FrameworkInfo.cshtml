@@ -7,10 +7,10 @@
 <h3 class="my-5">@ViewBag.Title</h3>
 
 <div class="row">
-    <div class="col-12 col-sm-6 col-md-5 col-xl-4">
-        <div class="card">
+    <div class="col-12">
+        <div class="card d-inline-flex">
             <div class="card-header">Loaded Assemblies with MCMS Specs</div>
-            <div class="">
+            <div>
                 <table class="table table-bordered table-striped">
                     <thead>
                     <tr>
@@ -25,7 +25,9 @@
                         <tr>
                             <td>@lib.Name</td>
                             <td>@lib.Version</td>
-                            <td><img src="~/api/McmsFramework/FrameworkVersion?libName=@lib.Name" /></td>
+                            <td>
+                                <img src="~/api/McmsFramework/FrameworkVersion?libName=@lib.Name" alt="@(lib.Name + " " + lib.Version)"/>
+                            </td>
                         </tr>
                     }
                     </tbody>

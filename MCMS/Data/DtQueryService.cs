@@ -34,13 +34,19 @@ namespace MCMS.Data
             _logger = loggerFactory.CreateLogger("DtQuery");
         }
 
-        public async Task<DtResult<TVm>> Query<TE>(IRepository<TE> repo, DtParameters parameters)
+        public Task<DtResult<TVm>> Query<TE>(IRepository<TE> repo, DtParameters parameters)
+            where TE : class, IEntity
+        {
+            return Query(repo.Queryable, parameters);
+        }
+
+        public async Task<DtResult<TVm>> Query<TE>(IQueryable<TE> queryable, DtParameters parameters)
             where TE : class, IEntity
         {
             EnsureValidColumns(parameters);
             var result = new DtResult<TVm> {Draw = parameters.Draw};
 
-            var query = repo.Queryable;
+            var query = queryable;
             result.RecordsTotal = await query.CountAsync();
             result.RecordsFiltered = result.RecordsTotal;
 

@@ -1,0 +1,23 @@
+@using MCMS.Base.Extensions
+@if (Context.Request.Query.TryGetValue("id", out var targetId) && Context.Request.Query.TryGetValue("itemAction", out var action)
+     && !string.IsNullOrEmpty(targetId) & !string.IsNullOrEmpty(action))
+{
+    @using (Html.BeginMPageScripts())
+    {
+        <script>
+        (function ($) {
+            const actions = $("#actions-cell-template-@Model.TableConfig.Id");
+            let link = actions.find("a[data-tag=@action]");
+            if (!link.length) {
+                console.error('Couldn\'t find link to trigger from query params.');
+                return;
+            }
+            link = link.clone(false);
+            link.attr("href", link.attr("href").replace("ENTITY_ID", "@targetId"));
+            link.hide();
+            actions.after(link);
+            link.click();
+        })(jQuery);
+        </script>
+    }
+}

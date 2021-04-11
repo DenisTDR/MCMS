@@ -35,6 +35,9 @@ const mcmsTables = [];
                             || "An error occurred while trying to access data. Please try again.";
                         mcmsModals.alertModalText(msg, "Error");
                         tableJQuery._fnProcessingDisplay(false);
+                    },
+                    beforeSend: function (request) {
+                        request.setRequestHeader("X-Request-Modal", true);
                     }
                 },
                 bAutoWidth: false,

@@ -28,8 +28,13 @@ namespace MCMS.Display.Menu
 
         public List<IMenuItem> GetPreparedItems()
         {
-            return _preparedItems ??= PrepareItems(_items);
+            lock (_lockObj)
+            {
+                return _preparedItems ??= PrepareItems(_items);
+            }
         }
+
+        private readonly object _lockObj = new object();
 
         private List<IMenuItem> PrepareItems(List<IMenuItemBase> items)
         {
@@ -40,7 +45,8 @@ namespace MCMS.Display.Menu
                 foreach (var partialMenuSection in partials)
                 {
                     if (!(items.FirstOrDefault(item =>
-                        item is MenuSection ms && ms.Id == partialMenuSection.IsExtensionOf) is MenuSection targetItem))
+                            item is MenuSection ms && ms.Id == partialMenuSection.IsExtensionOf) is MenuSection
+                        targetItem))
                     {
                         throw new KnownException("MenuSection with id `" + partialMenuSection.IsExtensionOf +
                                                  "` not found. It is needed for a PartialMenuSection targeting to it.");

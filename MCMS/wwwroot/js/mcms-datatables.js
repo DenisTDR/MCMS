@@ -31,8 +31,11 @@ const mcmsTables = [];
                         if (errorThrown === 'abort') {
                             return;
                         }
-                        const msg = (jqXHR.responseJSON ? jqXHR.responseJSON.error : jqXHR.responseText)
+                        let msg = (jqXHR.responseJSON ? jqXHR.responseJSON.error : jqXHR.responseText)
                             || "An error occurred while trying to access data. Please try again.";
+                        if (msg.indexOf('modal-body')) {
+                            msg = $(msg).find('.modal-body');
+                        }
                         mcmsModals.alertModalText(msg, "Error");
                         tableJQuery._fnProcessingDisplay(false);
                     },

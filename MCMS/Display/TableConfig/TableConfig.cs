@@ -29,6 +29,7 @@ namespace MCMS.Display.TableConfig
         public List<object> TableActions { get; set; }
         public bool ServerSide { get; set; }
         public int ServerSideSearchDelay { get; set; } = 500;
+        public int DefaultDisplayLength { get; set; } = 50;
 
         public object BuildRowGroupObject(List<TableColumn> columns)
         {
@@ -51,7 +52,8 @@ namespace MCMS.Display.TableConfig
                 batchActions = BatchActions?.Select(ba => ba.GetConfigObject(url)),
                 tableActions = TableActions,
                 serverSide = ServerSide,
-                searchDelay = ServerSideSearchDelay
+                searchDelay = ServerSideSearchDelay,
+                iDisplayLength = DefaultDisplayLength
             });
         }
 

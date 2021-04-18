@@ -44,7 +44,7 @@ const mcmsTables = [];
                     }
                 },
                 bAutoWidth: false,
-                iDisplayLength: 50,
+                // iDisplayLength: 50, // this is set through TableConfig (initialConfig) object
                 lengthMenu: [[10, 25, 50, 100, 250, 500, 1000, -1], [10, 25, 50, 100, 250, 500, 1000, "All"]],
                 fixedHeader: {headerOffset: 50},
                 language: mcmsDatatables.getLang(lang),

@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using MCMS.Base.Attributes;
+using MCMS.Base.Exceptions;
 using MCMS.Base.Helpers;
 using MCMS.Base.JsonPatch;
 using MCMS.Controllers.Api;
@@ -118,7 +119,10 @@ namespace MCMS.Files.Controllers
             {
                 return Forbid();
             }
-
+            if (file.Length == 0)
+            {
+                throw new KnownException("invalid-file-size-empty");
+            }
             Logger.LogInformation("in Upload, file: \nname={FileName}\nsize={Length}\nname={Name}", file.FileName,
                 file.Length, file.Name);
             var fileE = await FileUploadManager.SaveFile(file, purpose);

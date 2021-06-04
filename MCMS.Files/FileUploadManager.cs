@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Threading.Tasks;
 using MCMS.Base.Data;
 using MCMS.Base.Exceptions;
@@ -55,6 +56,7 @@ namespace MCMS.Files
             var fileE = new FileEntity
             {
                 OriginalName = file.FileName,
+                Size = file.Length,
                 OwnerToken = Utils.GenerateRandomHexString(),
                 Name = Utils.GenerateRandomHexString(32),
                 Extension = Path.GetExtension(file.FileName).ToLower(),
@@ -62,26 +64,49 @@ namespace MCMS.Files
                 VirtualPath = !attr.Private ? Path.Combine(MFiles.PublicVirtualPath, path) : "",
             };
 
-
             var physicalDir = attr.Private ? MFiles.PrivatePath : MFiles.PublicPath;
             physicalDir = Path.Combine(physicalDir, path);
 
             if (!Directory.Exists(physicalDir))
             {
-                _logger.LogInformation("Creating directory '" + physicalDir + "'.");
+                _logger.LogInformation("Creating directory '{Dir}'", physicalDir);
                 Directory.CreateDirectory(physicalDir);
             }
 
             var physicalPath = Path.Combine(physicalDir, fileE.PhysicalName);
-            _logger.LogInformation($"Saving file '{fileE.OriginalName}' to '{physicalPath}' ...");
+            _logger.LogInformation("Saving file '{OriginalName}' to '{PhysicalPath}' ...", fileE.OriginalName,
+                physicalPath);
             await using var fileStream = new FileStream(physicalPath, FileMode.Create);
             await file.CopyToAsync(fileStream);
+            fileStream.Close();
 
             fileE.PhysicalPath = physicalDir;
             fileE = await _filesRepo.Add(fileE);
-            _logger.LogInformation($"saved file '{fileE.OriginalName}' to '{physicalPath}'");
+            _logger.LogInformation("Saved file '{OriginalName}' to '{PhysicalPath}'", fileE.OriginalName, physicalPath);
 
-            return fileE;
+            try
+            {
+                await EnsureFileOnDisk(physicalPath, fileE.Size);
+                return fileE;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+        }
+
+        private async Task EnsureFileOnDisk(string path, long length)
+        {
+            if (!File.Exists(path))
+            {
+                throw new KnownException("file-save-error");
+            }
+
+            if (new FileInfo(path).Length != length)
+            {
+                throw new KnownException("file-save-error");
+            }
         }
 
         private bool HasValidExtension(string fileName, string[] allowedExtensions)

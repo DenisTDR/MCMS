@@ -34,6 +34,7 @@ namespace MCMS.Files.Models
         public string Extension { get; set; }
         public string PhysicalPath { get; set; }
         public string VirtualPath { get; set; }
+        public long Size { get; set; }
         [TableColumn] public bool Claimed { get; set; }
         [TableColumn] public string Purpose { get; set; }
         public bool Protected { get; set; }

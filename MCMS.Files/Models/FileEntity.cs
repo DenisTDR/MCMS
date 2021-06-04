@@ -13,6 +13,7 @@ namespace MCMS.Files.Models
         public string Extension { get; set; }
         public string PhysicalPath { get; set; }
         public string VirtualPath { get; set; }
+        public long Size { get; set; }
         public string Purpose { get; set; }
         public bool Claimed { get; set; }
         public bool Protected { get; set; }

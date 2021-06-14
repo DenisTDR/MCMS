@@ -144,6 +144,16 @@ namespace MCMS.Builder
 
             app.UseRouting();
 
+            if (Env.GetBool("MIGRATE_ON_START"))
+            {
+                EnsureDatabase(serviceProvider);
+            }
+
+            if (Env.GetBool("SEED_ON_START"))
+            {
+                serviceProvider.GetRequiredService<DataSeeder>().SeedFromProvidedSources().Wait();
+            }
+
             foreach (var mSpec in _specifications)
             {
                 mSpec.Configure(app, serviceProvider);
@@ -156,16 +166,6 @@ namespace MCMS.Builder
                     pattern: "{controller=Home}/{action=Index}/{id?}");
                 endpoints.MapRazorPages();
             });
-
-            if (Env.GetBool("MIGRATE_ON_START"))
-            {
-                EnsureDatabase(serviceProvider);
-            }
-
-            if (Env.GetBool("SEED_ON_START"))
-            {
-                serviceProvider.GetRequiredService<DataSeeder>().SeedFromProvidedSources().Wait();
-            }
 
             // assert that variables are set correctly
             if (!(Env.GetOrThrow("EXTERNAL_URL") is { } url) || url.EndsWith('/') || !url.Contains("http"))

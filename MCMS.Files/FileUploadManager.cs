@@ -36,7 +36,7 @@ namespace MCMS.Files
             _options = options.Value;
         }
 
-        public async Task<FileEntity> SaveFile(IFormFile file, string purpose)
+        public async Task<FileEntity> SaveFile(IFormFile file, string purpose, string newName = null)
         {
             _swaggerConfigService.Load();
 
@@ -52,13 +52,13 @@ namespace MCMS.Files
             }
 
             var path = attr.Path ?? "uploads";
-
+            newName ??= Utils.GenerateRandomHexString(32);
             var fileE = new FileEntity
             {
                 OriginalName = file.FileName,
                 Size = file.Length,
                 OwnerToken = Utils.GenerateRandomHexString(),
-                Name = Utils.GenerateRandomHexString(32),
+                Name = newName,
                 Extension = Path.GetExtension(file.FileName).ToLower(),
                 Purpose = purpose,
                 VirtualPath = !attr.Private ? Path.Combine(MFiles.PublicVirtualPath, path) : "",
@@ -86,7 +86,7 @@ namespace MCMS.Files
 
             try
             {
-                await EnsureFileOnDisk(physicalPath, fileE.Size);
+                EnsureFileOnDisk(physicalPath, fileE.Size);
                 return fileE;
             }
             catch (Exception e)
@@ -96,7 +96,7 @@ namespace MCMS.Files
             }
         }
 
-        private async Task EnsureFileOnDisk(string path, long length)
+        private void EnsureFileOnDisk(string path, long length)
         {
             if (!File.Exists(path))
             {

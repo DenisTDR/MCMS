@@ -17,7 +17,8 @@ nuget-push:
   stage: nuget-push
   image: mcr.microsoft.com/dotnet/sdk:5.0
   script:
-    - dotnet nuget add source "https://nuget.tdrs.ro/index.json" --name gitlab --username gitlab-ci-token --password $CI_JOB_TOKEN --store-password-in-clear-text
-    - dotnet nuget push "./nuget-build/*.nupkg" "./nuget-build/*.snupkg" --source gitlab
+    - dotnet nuget list source | grep "TDRs GitLab" && dotnet nuget remove source "TDRs GitLab"
+    - dotnet nuget add source "https://nuget.tdrs.ro/index.json" --name "TDRs GitLab" --username gitlab-ci-token --password $CI_JOB_TOKEN --store-password-in-clear-text
+    - dotnet nuget push "./nuget-build/*.nupkg" "./nuget-build/*.snupkg" --source "TDRs GitLab"
   only:
     - /^publish-.*$/

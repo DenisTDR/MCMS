@@ -39,7 +39,7 @@ namespace MCMS.Auth
             {
                 services.Configure<SwaggerConfigsOptions>(c =>
                 {
-                    c.JavascriptFiles.Add("/_content/MCMS.Auth/lib/jquery/dist/jquery.min.js");
+                    c.JavascriptFiles.Add("/_content/MCMS/lib/jquery/dist/jquery.min.js");
                     c.JavascriptFiles.Add("/_content/MCMS.Auth/api/docs/swagger-jwt-persist.js");
                 });
             }

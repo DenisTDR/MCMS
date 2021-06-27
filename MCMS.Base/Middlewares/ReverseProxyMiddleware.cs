@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using MCMS.Base.Helpers;
 using Microsoft.AspNetCore.Http;
 
 namespace MCMS.Base.Middlewares
@@ -118,7 +119,14 @@ namespace MCMS.Base.Middlewares
             {
                 if (request.Path.StartsWithSegments(key, out var remainingPath))
                 {
-                    targetUri = new Uri(value + remainingPath);
+                    // targetUri = new Uri(value + remainingPath);
+                    var rPathStr = remainingPath.ToString();
+                    if (rPathStr.StartsWith("/"))
+                    {
+                        rPathStr = rPathStr.Substring(1);
+                    }
+
+                    targetUri = new Uri(Utils.UrlCombine(value, rPathStr));
                 }
             }
 

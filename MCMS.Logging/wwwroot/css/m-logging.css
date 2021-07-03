@@ -1,0 +1,3 @@
+.mi-log::before {
+    --icon-url: url('../../MCMS.Logging/icons/log.svg');
+}

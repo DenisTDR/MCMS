@@ -26,7 +26,7 @@
         <partial name="Partials/_MRichLink" model="Model.CreateNewItemLink"/>
     </div>
 }
-<table id="table-@Model.Id" class="table table-striped table-bordered dataTable">
+<table id="table-@Model.Id" class="table table-striped table-bordered dataTable @(!string.IsNullOrEmpty(Model.AdditionalClasses) ? Model.AdditionalClasses : "")">
     <thead>
     <tr>
         @* Table header column names *@

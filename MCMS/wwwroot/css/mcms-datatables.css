@@ -110,3 +110,8 @@ table.dataTable {
     display: flex;
     align-items: flex-end;
 }
+
+table.dataTable.break-words {
+    word-wrap: break-word;
+    word-break: break-word;
+}

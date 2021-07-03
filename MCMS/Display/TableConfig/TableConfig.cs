@@ -30,6 +30,8 @@ namespace MCMS.Display.TableConfig
         public bool ServerSide { get; set; }
         public int ServerSideSearchDelay { get; set; } = 500;
         public int DefaultDisplayLength { get; set; } = 50;
+        
+        public string AdditionalClasses { get; set; }
 
         public object BuildRowGroupObject(List<TableColumn> columns)
         {

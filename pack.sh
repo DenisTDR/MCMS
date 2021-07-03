@@ -7,7 +7,7 @@ fi
 
 version=${1#publish-}
 
-projects=("./MCMS.Base/MCMS.Base" "./MCMS/MCMS" "./MCMS.Auth/MCMS.Auth" "./MCMS.Emailing/MCMS.Emailing" "./MCMS.Common/MCMS.Common" "./MCMS.Files/MCMS.Files")
+projects=("./MCMS.Base/MCMS.Base" "./MCMS/MCMS" "./MCMS.Auth/MCMS.Auth" "./MCMS.Emailing/MCMS.Emailing" "./MCMS.Common/MCMS.Common" "./MCMS.Files/MCMS.Files" "./MCMS.Logging/MCMS.Logging")
 
 buildDir=nuget-build
 

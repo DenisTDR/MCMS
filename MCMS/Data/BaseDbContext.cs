@@ -15,7 +15,7 @@ using Microsoft.Extensions.Options;
 namespace MCMS.Data
 {
     public class BaseDbContext : IdentityDbContext<User, Role, string, IdentityUserClaim<string>, UserRole,
-            IdentityUserLogin<string>, IdentityRoleClaim<string>, IdentityUserToken<string>>
+        IdentityUserLogin<string>, IdentityRoleClaim<string>, IdentityUserToken<string>>
     {
         private readonly EntitiesConfig _entitiesConfig;
 
@@ -69,17 +69,17 @@ namespace MCMS.Data
         private void AdjustTimeStamps()
         {
             var entries = ChangeTracker.Entries().Where(ee =>
-                ee.Entity is IEntity && (ee.State == EntityState.Added || ee.State == EntityState.Modified));
+                ee.Entity is IEntity && ee.State is EntityState.Added or EntityState.Modified);
             foreach (var entityEntry in entries)
             {
-                if (entityEntry.Entity is IEntity entity)
+                if (entityEntry.Entity is not IEntity entity) continue;
+
+                if (entityEntry.State == EntityState.Added)
                 {
-                    entity.Updated = DateTime.Now;
-                    if (entityEntry.State == EntityState.Added)
-                    {
-                        entity.Created = DateTime.Now;
-                    }
+                    entity.Created = DateTime.Now;
                 }
+
+                entity.Updated = DateTime.Now;
             }
         }
 

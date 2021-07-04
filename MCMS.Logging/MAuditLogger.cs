@@ -45,8 +45,9 @@ namespace MCMS.Logging
                 Action = actionName,
                 Controller = controllerName,
                 Category = typeof(TCategoryName).Name,
-                Path = httpContext?.Request.Path,
+                Path = httpContext.Request.Path,
                 Data = data,
+                Begin = DateTime.Now,
             };
             var worker = _serviceProvider.GetRequiredService<MAuditLogWorker>();
             worker.Enqueue(new LogActionWrapper<AuditLogEntryEntity>(log));
@@ -59,7 +60,8 @@ namespace MCMS.Logging
             var log = new AuditLogEntryEntity
             {
                 TraceIdentifier = httpContext.TraceIdentifier,
-                Data = data
+                Data = data,
+                End = DateTime.Now,
             };
             var worker = _serviceProvider.GetRequiredService<MAuditLogWorker>();
             worker.Enqueue(new LogActionWrapper<AuditLogEntryEntity>(log, ActionType.Update));

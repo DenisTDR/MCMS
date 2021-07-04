@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -19,8 +20,7 @@ namespace MCMS.Logging.AuditLogEntries
         public string Action { get; set; }
         public string Path { get; set; }
 
-        [Required]
-        public string TraceIdentifier { get; set; }
+        [Required] public string TraceIdentifier { get; set; }
 
         public string SerializedData
         {
@@ -29,6 +29,9 @@ namespace MCMS.Logging.AuditLogEntries
         }
 
         [NotMapped] public Dictionary<string, object> Data { get; set; }
+
+        public DateTime Begin { get; set; }
+        public DateTime End { get; set; }
 
         public override string ToString()
         {

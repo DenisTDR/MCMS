@@ -33,8 +33,8 @@ namespace MCMS.Logging
             var auditLogWorker = serviceProvider.GetRequiredService<MAuditLogWorker>();
             auditLogWorker.Start();
 
-            var appLifetime = serviceProvider.GetRequiredService<IHostApplicationLifetime>();
-            appLifetime.ApplicationStopping.Register(() => { auditLogWorker.Stop(); });
+            serviceProvider.GetRequiredService<IHostApplicationLifetime>()
+                .ApplicationStopping.Register(() => { auditLogWorker.Stop(); });
         }
     }
 }

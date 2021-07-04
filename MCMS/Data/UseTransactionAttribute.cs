@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.DependencyInjection;
@@ -8,6 +9,11 @@ namespace MCMS.Data
     {
         public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
+            if (context == null)
+                throw new ArgumentNullException(nameof(context));
+            if (next == null)
+                throw new ArgumentNullException(nameof(next));
+
             var transaction = await context.HttpContext.RequestServices
                 .GetRequiredService<BaseDbContext>().Database
                 .BeginTransactionAsync();

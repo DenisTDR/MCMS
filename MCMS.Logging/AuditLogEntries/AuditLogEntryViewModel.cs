@@ -23,7 +23,11 @@ namespace MCMS.Logging.AuditLogEntries
         [TableColumn] public string Action { get; set; }
         [TableColumn] public string Path { get; set; }
         [TableColumn] public string TraceIdentifier { get; set; }
-        [TableColumn] public DateTime Created { get; set; }
+        [TableColumn] public DateTime Begin { get; set; }
+
+        public DateTime End { get; set; }
+        [TableColumn] public int Duration => (int) (End - Begin).TotalMilliseconds;
+
         [TableColumn] public string SerializedData { get; set; }
 
         public override string ToString()

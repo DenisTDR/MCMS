@@ -1,5 +1,6 @@
+using System;
 using System.Collections.Generic;
-using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -9,14 +10,29 @@ namespace MCMS.Logging
     {
         private IMAuditLogger<MAuditLogAttribute> _auditLogger;
 
+        public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
+        {
+            if (context == null)
+                throw new ArgumentNullException(nameof(context));
+            if (next == null)
+                throw new ArgumentNullException(nameof(next));
 
-        public override void OnActionExecuting(ActionExecutingContext context)
+            await OnActionExecutingAsync(context);
+            if (context.Result == null)
+            {
+                OnActionExecuted(await next());
+            }
+        }
+
+        public async Task OnActionExecutingAsync(ActionExecutingContext context)
         {
             _auditLogger = context.HttpContext.RequestServices.GetRequiredService<IMAuditLogger<MAuditLogAttribute>>();
+            var request = context.HttpContext.Request;
             var data = new Dictionary<string, object>
             {
-                {"method", context.HttpContext.Request.Method}, {"actionArgument", context.ActionArguments}
+                {"actionArguments", context.ActionArguments}, {"method", request.Method}
             };
+
             _auditLogger.Log(data);
         }
 

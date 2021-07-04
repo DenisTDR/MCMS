@@ -124,6 +124,8 @@ namespace MCMS.Logging.Worker
                 {
                     existingEntry.Data[key] = value;
                 }
+
+                existingEntry.End = entry.End;
             }
 
             if (toUpdateFromDb.Any())
@@ -142,6 +144,7 @@ namespace MCMS.Logging.Worker
                     {
                         existingEntry.Data[key] = value;
                     }
+                    existingEntry.End = entry.End;
                 }
             }
         }

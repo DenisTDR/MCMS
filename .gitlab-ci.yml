@@ -1,6 +1,6 @@
 stages:
   - build-nupkg
-  - nuget-push
+  - push
 
 build-nupkg:
   stage: build-nupkg
@@ -13,12 +13,29 @@ build-nupkg:
   only:
     - /^publish-.*$/
 
-nuget-push:
-  stage: nuget-push
+gitlab-registry-push:
+  stage: push
   image: mcr.microsoft.com/dotnet/sdk:5.0
+  variables:
+    GIT_STRATEGY: none
+  needs:
+    - build-nupkg
   script:
     - dotnet nuget list source | grep "TDRs GitLab" && dotnet nuget remove source "TDRs GitLab"
     - dotnet nuget add source "https://nuget.tdrs.ro/index.json" --name "TDRs GitLab" --username gitlab-ci-token --password $CI_JOB_TOKEN --store-password-in-clear-text
     - dotnet nuget push "./nuget-build/*.nupkg" "./nuget-build/*.snupkg" --source "TDRs GitLab"
   only:
     - /^publish-.*$/
+
+nuget-push:
+  stage: push
+  image: mcr.microsoft.com/dotnet/sdk:5.0
+  variables:
+    GIT_STRATEGY: none
+  needs:
+    - build-nupkg
+  script:
+    - dotnet nuget push "./nuget-build/*.nupkg" "./nuget-build/*.snupkg" --api-key "$NUGET_API_KEY" --source https://api.nuget.org/v3/index.json --skip-duplicate
+  only:
+    - /^publish-.*$/
+  when: manual

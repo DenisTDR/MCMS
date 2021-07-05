@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+using MCMS.Base.Attributes;
+using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -35,7 +37,7 @@ namespace MCMS.Logging
 
         public override void OnActionExecuting(ActionExecutingContext context)
         {
-            if (ShouldSkipLog(context.HttpContext.Request))
+            if (ShouldSkipLog(context))
                 return;
 
             _auditLogger = context.HttpContext.RequestServices.GetRequiredService<IMAuditLogger<MAuditLogAttribute>>();
@@ -54,7 +56,7 @@ namespace MCMS.Logging
 
         public override void OnActionExecuted(ActionExecutedContext context)
         {
-            if (ShouldSkipLog(context.HttpContext.Request))
+            if (ShouldSkipLog(context))
                 return;
 
             var data = new Dictionary<string, object> {["statusCode"] = context.HttpContext.Response.StatusCode};
@@ -63,9 +65,16 @@ namespace MCMS.Logging
 
         private static readonly string[] NonReadonlyHttpMethods = {"POST", "PUT", "DELETE", "PATCH"};
 
-        private bool ShouldSkipLog(HttpRequest request)
+        private bool ShouldSkipLog(FilterContext context)
         {
-            return !IgnoreReadOnlyRequests || NonReadonlyHttpMethods.Contains(request.Method);
+            if (context.ActionDescriptor is ControllerActionDescriptor controllerActionDescriptor
+                && controllerActionDescriptor.MethodInfo.GetCustomAttributes<ReadOnlyApiAttribute>().FirstOrDefault()
+                    ?.IsReadOnly == true)
+            {
+                return true;
+            }
+
+            return !IgnoreReadOnlyRequests || !NonReadonlyHttpMethods.Contains(context.HttpContext.Request.Method);
         }
     }
 }

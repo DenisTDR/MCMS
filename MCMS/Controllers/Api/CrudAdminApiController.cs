@@ -33,6 +33,7 @@ namespace MCMS.Controllers.Api
         [AdminApiRoute("~/[controller]/dtquery")]
         [HttpPost]
         [ModelValidation]
+        [ReadOnlyApi]
         public virtual async Task<ActionResult<DtResult<TVm>>> DtQuery([FromBody] [Required] DtParameters model)
         {
             if (!ModelState.IsValid)

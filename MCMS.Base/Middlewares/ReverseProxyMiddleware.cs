@@ -33,17 +33,23 @@ namespace MCMS.Base.Middlewares
             }
 
             var targetUri = BuildTargetUri(context.Request);
-            if (targetUri != null)
+            try
             {
-                var targetRequestMessage = CreateTargetMessage(context, targetUri);
+                if (targetUri != null)
+                {
+                    var targetRequestMessage = CreateTargetMessage(context, targetUri);
 
-                using var responseMessage = await HttpClient.SendAsync(targetRequestMessage,
-                    HttpCompletionOption.ResponseHeadersRead, context.RequestAborted);
-                context.Response.StatusCode = (int) responseMessage.StatusCode;
+                    using var responseMessage = await HttpClient.SendAsync(targetRequestMessage,
+                        HttpCompletionOption.ResponseHeadersRead, context.RequestAborted);
+                    context.Response.StatusCode = (int) responseMessage.StatusCode;
 
-                CopyFromTargetResponseHeaders(context, responseMessage);
+                    CopyFromTargetResponseHeaders(context, responseMessage);
 
-                await ProcessResponseContent(context, responseMessage);
+                    await ProcessResponseContent(context, responseMessage);
+                }
+            }
+            catch (TaskCanceledException)
+            {
             }
         }
 

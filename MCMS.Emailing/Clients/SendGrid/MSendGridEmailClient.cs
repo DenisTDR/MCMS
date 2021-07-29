@@ -13,19 +13,20 @@ namespace MCMS.Emailing.Clients.SendGrid
 {
     public class MSendGridEmailClient : IMEmailClient
     {
-        private readonly ILogger<MSendGridEmailClient> _logger;
+        private readonly ILogger _logger;
         private readonly MSendgridClientOptions _clientOptions;
 
         private SendGridClient _client;
         private SendGridClient Client => _client ??= new SendGridClient(_clientOptions.Key);
 
-        public MSendGridEmailClient(ILogger<MSendGridEmailClient> logger,
+        public MSendGridEmailClient(
+            ILoggerFactory loggerFactory,
             IOptions<MSendgridClientOptions> clientOptions)
         {
-            _logger = logger;
             _clientOptions = clientOptions.Value;
+            _logger = loggerFactory.CreateLogger("MailClient");
         }
-        
+
         // TODO: convert attachments too (from MimeMessage to SendGridMessage)
         public async Task<bool> SendEmail(MimeMessage message)
         {
@@ -58,7 +59,7 @@ namespace MCMS.Emailing.Clients.SendGrid
                 msg.ReplyTo = new EmailAddress(replyTo.Address, replyTo.Name);
             }
 
-            _logger.LogInformation("Sending mail with SendGrid:\nTo: " + to + "\nSubject: " + msg.Subject);
+            _logger.LogInformation("Sending mail with SendGrid:\nTo: {To}\nSubject: {Subject}", to, msg.Subject);
 
             msg.SetClickTracking(false, false);
             var response = await Client.SendEmailAsync(msg);
@@ -69,8 +70,8 @@ namespace MCMS.Emailing.Clients.SendGrid
             }
 
             var respStr = await response.DeserializeResponseBodyAsync(response.Body);
-            _logger.LogError("Mail send with SendGrid failed.");
-            _logger.LogError(JsonConvert.SerializeObject(respStr));
+            _logger.LogError("Mail send with SendGrid failed");
+            _logger.LogError("{Json}", JsonConvert.SerializeObject(respStr));
             return false;
         }
     }

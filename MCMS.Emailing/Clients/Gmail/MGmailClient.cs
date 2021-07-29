@@ -17,19 +17,19 @@ namespace MCMS.Emailing.Clients.Gmail
 {
     public class MGmailClient : IMEmailClient
     {
-        private readonly ILogger<MGmailClient> _logger;
+        private readonly ILogger _logger;
 
         private readonly MGmailClientOptions _clientOptions;
         private readonly SiteConfig _siteConfig;
 
         public MGmailClient(
-            ILogger<MGmailClient> logger,
+            ILoggerFactory loggerFactory,
             IOptions<MGmailClientOptions> options,
             IOptions<SiteConfig> siteConfig)
         {
-            _logger = logger;
             _clientOptions = options.Value;
             _siteConfig = siteConfig.Value;
+            _logger = loggerFactory.CreateLogger("MailClient");
         }
 
         public async Task<bool> SendEmail(MimeMessage mimeMessage)
@@ -56,7 +56,7 @@ namespace MCMS.Emailing.Clients.Gmail
 
             var to = $"<{toAddr.Address}> {toAddr.Name}";
 
-            _logger.LogInformation("Sending mail with Gmail:\nTo: " + to + "\nSubject: " + mimeMessage.Subject);
+            _logger.LogInformation("Sending mail with Gmail:\nTo: {To}\nSubject: {Subject}", to, mimeMessage.Subject);
 
             var ms = new MemoryStream();
             await mimeMessage.WriteToAsync(ms);

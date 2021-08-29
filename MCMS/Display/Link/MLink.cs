@@ -3,6 +3,7 @@ using System.Linq;
 using System.Reflection;
 using MCMS.Base.Helpers;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace MCMS.Display.Link
 {
@@ -11,7 +12,7 @@ namespace MCMS.Display.Link
         public string Text { get; set; }
         public string Url { get; }
         public Type Controller { get; }
-        public MethodInfo Action { get; set; }
+        [JsonIgnore] public MethodInfo Action { get; set; }
         public string Target { get; internal set; }
         public string ControllerName => Controller != null ? TypeHelpers.GetControllerName(Controller) : null;
         public string ActionName => Action != null ? Action.Name : "Index";

@@ -11,6 +11,7 @@ namespace MCMS.Base.Builder
         public string PrePublishRootPath { get; set; }
         public bool HasRazorViews { get; set; }
         public IWebHostEnvironment Environment { get; set; }
+        public IMApp App { get; set; }
 
         public virtual void ConfigureServices(IServiceCollection services)
         {

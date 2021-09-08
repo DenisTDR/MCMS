@@ -24,7 +24,7 @@ using Newtonsoft.Json;
 
 namespace MCMS.Builder
 {
-    public class MApp
+    public class MApp : IMApp
     {
         public IEnumerable<MSpecifications> Specifications => _specifications.ToList();
         private readonly IList<MSpecifications> _specifications;
@@ -37,6 +37,8 @@ namespace MCMS.Builder
             HostEnvironment = hostEnvironment;
             _specifications = specifications;
             _addDbContextAction = addDbContextAction;
+
+            _specifications.ToList().ForEach(s => s.App = this);
         }
 
         public void ConfigureServices(IServiceCollection services)

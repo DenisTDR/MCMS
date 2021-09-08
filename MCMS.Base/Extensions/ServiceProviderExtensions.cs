@@ -3,6 +3,7 @@ using System.Linq;
 using MCMS.Base.Data;
 using MCMS.Base.Data.Entities;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace MCMS.Base.Extensions
 {
@@ -33,7 +34,17 @@ namespace MCMS.Base.Extensions
             var genericMethodInfo = typeof(ServiceProviderExtensions).GetMethods()
                 .FirstOrDefault(mi => mi.Name == nameof(GetRepo) && mi.IsGenericMethod);
             var methodInfo = genericMethodInfo?.MakeGenericMethod(entityType);
-            return methodInfo?.Invoke(null, new object[] {serviceProvider});
+            return methodInfo?.Invoke(null, new object[] { serviceProvider });
+        }
+
+        public static T GetOptions<T>(this IServiceProvider serviceProvider) where T : class
+        {
+            return serviceProvider.GetService<IOptions<T>>()?.Value;
+        }
+
+        public static T GetRequiredOptions<T>(this IServiceProvider serviceProvider) where T : class
+        {
+            return serviceProvider.GetRequiredService<IOptions<T>>().Value;
         }
     }
 }

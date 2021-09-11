@@ -10,14 +10,13 @@ namespace MCMS.Models.Dt
         public string Name { get; set; }
         public bool Orderable { get; set; }
         public bool Searchable { get; set; }
-        [JsonIgnore] public TableColumn MatchedTableColumn { get; set; }
 
         public DtColumn CloneForGlobalSearch(DtSearch search)
         {
             return new()
             {
+                Data = Data,
                 Search = search,
-                MatchedTableColumn = MatchedTableColumn
             };
         }
     }

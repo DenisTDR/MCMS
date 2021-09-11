@@ -8,13 +8,13 @@ namespace MCMS.Data
 {
     public static class DtQueryHelper
     {
-        public static (string queryStr, object parameters) BuildCondition(
-            string propName, object compareValue,
-            string format = null, bool exactMatch = false, string objectName = "x", string paramName = "param")
+        public static QueryCondition BuildCondition(
+            string propName, object compareValue, string format = null, bool exactMatch = false,
+            string objectName = "x", string paramName = "param")
         {
             string queryStr;
             var leftHand = (!string.IsNullOrEmpty(objectName) ? objectName + "." : "") + propName;
-            object parameters = null;
+            object parameters;
             if (string.IsNullOrEmpty(format))
             {
                 if (!exactMatch)
@@ -27,7 +27,7 @@ namespace MCMS.Data
                     queryStr = $"{leftHand} == {paramName}";
                 }
 
-                parameters = new {param = compareValue};
+                parameters = new { param = compareValue };
             }
             else
             {
@@ -45,49 +45,62 @@ namespace MCMS.Data
 
                 var selector = format.Split("<sel>")[1];
 
-                var (condition, parametersL) =
+                var qCond =
                     BuildCondition(selector, compareValue, null, exactMatch, null, paramName);
-                parameters = parametersL;
-                format = format.Split("<sel>")[0].Replace("<condition>", condition);
+                parameters = qCond.Params;
+                format = format.Split("<sel>")[0].Replace("<condition>", qCond.Query);
 
                 queryStr = string.Format(format, leftHand, paramName);
             }
 
-            return (queryStr, parameters);
+            return new QueryCondition(queryStr, parameters);
         }
 
-        public static bool BuildMultiTermQuery(DtColumn dtColumn, out (string quertStr, object parameters) result,
-            bool isNumber = false)
+        public static bool BuildMultiTermQuery(DtColumn dtColumn, out QueryCondition result,
+            DbColumnMetadata dbColumn)
         {
-            var col = dtColumn.MatchedTableColumn.DbColumn;
             var terms = dtColumn.Search.Value.Split(" ",
                 StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
             var queryStrL = new List<string>();
 
             if (terms.Length == 0)
             {
-                result = (null, null);
+                // result = null;
+                result = new QueryCondition();
                 return false;
             }
 
             if (terms.Length > 7)
             {
-                terms = new[] {dtColumn.Search.Value.Trim()};
+                terms = new[] { dtColumn.Search.Value.Trim() };
             }
 
             for (var index = 0; index < terms.Length; index++)
             {
-                var format = dtColumn.MatchedTableColumn.DbFuncFormat;
-                var (qStr, qParameter) =
-                    BuildCondition(col, terms[index], format, paramName: "param" + index,
+                var format = dbColumn.DbFuncFormat;
+                var qCond =
+                    BuildCondition(dbColumn.DbColumn, terms[index], format, paramName: "param" + index,
                         objectName: string.IsNullOrEmpty(format) ? "(string)(object)x" : "x");
-                queryStrL.Add(qStr);
+                queryStrL.Add(qCond.Query);
             }
 
             var qStrFinal = string.Join(" && ", queryStrL);
             var qParam = DummyDynamicQueryParams.Create(terms.Cast<object>().ToList());
-            result = (qStrFinal, qParam);
+            result = new QueryCondition(qStrFinal, qParam);
             return true;
+        }
+    }
+
+    public struct QueryCondition
+    {
+        public string Query { get; set; }
+        public object Params { get; set; }
+        public bool Valid => !string.IsNullOrEmpty(Query);
+
+        public QueryCondition(string query, object @params)
+        {
+            Query = query;
+            Params = @params;
         }
     }
 }

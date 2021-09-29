@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
-namespace MCMS.Auth
+namespace MCMS.Auth.SwaggerFilters
 {
     public class AddBearerSecuritySchemeDocumentFilter : IDocumentFilter
     {

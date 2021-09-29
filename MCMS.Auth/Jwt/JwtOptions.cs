@@ -8,9 +8,8 @@ namespace MCMS.Auth.Jwt
         public string Issuer { get; set; }
         public string Audience { get; set; }
         public SigningCredentials SignInCredentials { get; set; }
-        public DateTime Expiration => IssuedAt.Add(ValidFor);
-        public DateTime IssuedAt { get; set; } = DateTime.UtcNow;
-        public DateTime NotBefore { get; set; } = DateTime.UtcNow;
-        public TimeSpan ValidFor { get; set; } = TimeSpan.FromMinutes(360);
+        public TimeSpan ValidFor { get; set; } = TimeSpan.FromHours(1);
+        public TimeSpan RefreshTokenValidFor { get; set; } = TimeSpan.FromDays(1);
+        public DateTime CalcExpiration() => DateTime.Now.Add(ValidFor);
     }
 }

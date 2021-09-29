@@ -100,7 +100,7 @@ namespace MCMS.Areas.Identity.Pages.Account
                         return ProcessErrors(result);
                     }
 
-                    _logger.LogInformation("User created a new account with password.");
+                    _logger.LogInformation("User created a new account with password");
 
                     if (isFirstUser && Env.GetBool("FIRST_USER_ADMIN"))
                     {
@@ -110,7 +110,7 @@ namespace MCMS.Areas.Identity.Pages.Account
                             return ProcessErrors(result);
                         }
 
-                        _logger.LogInformation("Created first user as admin.");
+                        _logger.LogInformation("Created first user as admin");
 
                         await transaction.CommitAsync();
                         user.EmailConfirmed = true;

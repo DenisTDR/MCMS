@@ -40,7 +40,7 @@ namespace MCMS.Emailing.Clients.Gmail
                 FileAccess.Read);
 
             var credPath = _clientOptions.GmailTokenJsonPath;
-            var credential = await GoogleWebAuthorizationBroker.AuthorizeAsync(GoogleClientSecrets.Load(stream).Secrets,
+            var credential = await GoogleWebAuthorizationBroker.AuthorizeAsync((await GoogleClientSecrets.FromStreamAsync(stream)).Secrets,
                 scopes, "user", CancellationToken.None, new FileDataStore(credPath, true));
 
 
@@ -51,10 +51,10 @@ namespace MCMS.Emailing.Clients.Gmail
             });
 
 
-            var toAddr = mimeMessage.To.FirstOrDefault(a => a is MailboxAddress) as MailboxAddress ??
+            var toAddress = mimeMessage.To.FirstOrDefault(a => a is MailboxAddress) as MailboxAddress ??
                          throw new Exception("Invalid to address");
 
-            var to = $"<{toAddr.Address}> {toAddr.Name}";
+            var to = $"<{toAddress.Address}> {toAddress.Name}";
 
             _logger.LogInformation("Sending mail with Gmail:\nTo: {To}\nSubject: {Subject}", to, mimeMessage.Subject);
 

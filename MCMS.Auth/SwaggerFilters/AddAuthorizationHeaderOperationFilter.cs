@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
-namespace MCMS.Auth
+namespace MCMS.Auth.SwaggerFilters
 {
     public class AddAuthorizationHeaderOperationFilter : IOperationFilter
     {

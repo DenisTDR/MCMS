@@ -3,6 +3,9 @@ using System.IO;
 using System.Threading.Tasks;
 using MCMS.Auth.Jwt;
 using MCMS.Auth.Models;
+using MCMS.Auth.Session;
+using MCMS.Auth.SwaggerFilters;
+using MCMS.Auth.Tokens;
 using MCMS.Base.Builder;
 using MCMS.Base.Helpers;
 using MCMS.Base.SwaggerFormly.Models;
@@ -35,6 +38,10 @@ namespace MCMS.Auth
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<IJwtFactory, JwtFactory>();
+            
+            services.AddScoped<ISessionService, SessionService>();
+            services.AddScoped<IRefreshTokensService, RefreshTokensService>();
+            
             if (!ExcludeJwtTokenPersistenceInSwaggerUi)
             {
                 services.Configure<SwaggerConfigsOptions>(c =>
@@ -61,6 +68,9 @@ namespace MCMS.Auth
                 options.Audience = audience;
                 options.Issuer = issuer;
                 options.SignInCredentials = credentials;
+                
+                options.ValidFor = TimeSpan.FromMinutes(60);
+                options.RefreshTokenValidFor = TimeSpan.FromHours(24);
             });
 
             services.AddAuthentication()

@@ -1,12 +1,12 @@
-﻿using System.Collections.Generic;
-using MCMS.Auth.Models;
-using MCMS.Base.Auth;
+﻿using System;
+using System.Collections.Generic;
+using MCMS.Auth.Tokens.Models;
 
 namespace MCMS.Auth.Jwt
 {
     public interface IJwtFactory
     {
-        string GenerateToken(string username, IEnumerable<string> roles, string id);
-        Session GenerateSession(User user, IEnumerable<string> roles, string id);
+    
+        TokenDto GenerateToken(string id, string username, IEnumerable<string> roles, DateTime expiration);
     }
 }

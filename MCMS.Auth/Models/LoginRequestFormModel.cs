@@ -7,7 +7,7 @@ namespace MCMS.Auth.Models
     {
         [Required]
         [DataType(DataType.EmailAddress)]
-        [StringLength(64)]
+        [StringLength(128)]
         public virtual string Email { get; set; }
 
         [Required]

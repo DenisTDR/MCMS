@@ -10,13 +10,6 @@ namespace MCMS.Files
 {
     public class FilesService
     {
-        protected FilesRepository Repo;
-
-        public FilesService(FilesRepository repo)
-        {
-            Repo = repo;
-        }
-
         public FileResult GetFileResult(FileEntity file, string fileName = null)
         {
             if (file == null)

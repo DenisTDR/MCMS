@@ -16,7 +16,7 @@ namespace MCMS.Base.Controllers
 
         private UserWithRoles _user;
 
-        protected UserWithRoles UserFromClaims =>
+        protected virtual UserWithRoles UserFromClaims =>
             _user ??= new UserWithRoles
             {
                 Id = User.FindFirstValue(ClaimTypes.NameIdentifier),

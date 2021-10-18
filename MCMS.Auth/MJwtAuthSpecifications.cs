@@ -19,8 +19,6 @@ namespace MCMS.Auth
     {
         private string _keyDir;
 
-        private bool ExcludeJwtTokenPersistenceInSwaggerUi { get; set; }
-
         public bool RemoveDefaultAuthController { get; set; }
 
         public override IMvcBuilder MvcChain(IMvcBuilder mvcBuilder)
@@ -38,18 +36,9 @@ namespace MCMS.Auth
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<IJwtFactory, JwtFactory>();
-            
+
             services.AddScoped<ISessionService, SessionService>();
             services.AddScoped<IRefreshTokensService, RefreshTokensService>();
-            
-            if (!ExcludeJwtTokenPersistenceInSwaggerUi)
-            {
-                services.Configure<SwaggerConfigsOptions>(c =>
-                {
-                    c.JavascriptFiles.Add("/_content/MCMS/lib/jquery/dist/jquery.min.js");
-                    c.JavascriptFiles.Add("/_content/MCMS.Auth/api/docs/swagger-jwt-persist.js");
-                });
-            }
 
             ConfigureJwtOptions(services);
         }
@@ -68,7 +57,6 @@ namespace MCMS.Auth
                 options.Audience = audience;
                 options.Issuer = issuer;
                 options.SignInCredentials = credentials;
-                
                 options.ValidFor = TimeSpan.FromMinutes(60);
                 options.RefreshTokenValidFor = TimeSpan.FromHours(24);
             });
@@ -120,7 +108,7 @@ namespace MCMS.Auth
 
             if (model == null)
             {
-                model = new JwtKeyModel {Key = Utils.GenerateRandomHexString(60), Created = DateTime.Now};
+                model = new JwtKeyModel { Key = Utils.GenerateRandomHexString(60), Created = DateTime.Now };
                 await using var fs = new FileStream(keyPath, FileMode.CreateNew, FileAccess.Write);
                 await using var sw = new StreamWriter(fs);
                 await sw.WriteLineAsync(model.ToJson());

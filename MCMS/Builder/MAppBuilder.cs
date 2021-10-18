@@ -49,6 +49,12 @@ namespace MCMS.Builder
             return this;
         }
 
+        public MAppBuilder AddSpecifications<T>(Action<T> configure)
+            where T : MSpecifications, new()
+        {
+            return AddSpecifications(null, configure);
+        }
+
         private Action<IServiceCollection> _addDbContextAction;
 
         public MAppBuilder WithPostgres<T>(Action<NpgsqlDbContextOptionsBuilder> pgOptionsBuilder = null)

@@ -44,7 +44,7 @@ namespace MCMS.SwaggerFormly
                 {
                     ProxyRules = new()
                     {
-                        {"/mcms-forms", Utils.UrlCombine(Env.GetOrThrow("FORMLY_SERVE_URL"), "mcms-forms/")}
+                        { "/mcms-forms", Utils.UrlCombine(Env.GetOrThrow("FORMLY_SERVE_URL"), "mcms-forms/") }
                     }
                 };
                 app.UseMiddleware<ReverseProxyMiddleware>(obj);
@@ -79,7 +79,7 @@ namespace MCMS.SwaggerFormly
             {
                 var ckeditorPurpose = new FileUploadPurpose("ckeditor")
                 {
-                    Accept = new[] {"jpg", "jpeg", "png", "gif", "bmp", "webp", "tiff", "svg"}
+                    Accept = new[] { "jpg", "jpeg", "png", "gif", "bmp", "webp", "tiff", "svg" }
                 };
                 o.Register("ckeditor", ckeditorPurpose);
             });
@@ -112,6 +112,10 @@ namespace MCMS.SwaggerFormly
                     }
 
                     uiOptions.RoutePrefix = "api/docs";
+                    uiOptions.EnablePersistAuthorization();
+                    uiOptions.EnableTryItOutByDefault();
+                    uiOptions.EnableDeepLinking();
+                    uiOptions.ConfigObject.DisplayRequestDuration = true;
                 });
             }
 
@@ -130,7 +134,7 @@ namespace MCMS.SwaggerFormly
                     var switchDocConfigObj = new
                     {
                         current = redocSP.Name,
-                        docs = redocSwaggerSpecs.Select(rss => new {rss.Name, rss.Title})
+                        docs = redocSwaggerSpecs.Select(rss => new { rss.Name, rss.Title })
                     };
                     redocOptions.HeadContent =
                         $"<script>\nvar switchDocConfig = {Utils.Serialize(switchDocConfigObj)};\n</script>\n"

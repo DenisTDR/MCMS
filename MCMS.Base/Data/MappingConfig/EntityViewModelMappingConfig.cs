@@ -3,9 +3,9 @@ using MCMS.Base.Data.ViewModels;
 
 namespace MCMS.Base.Data.MappingConfig
 {
-    public class EntityViewModelMappingConfig<TE, TFm> : EntityModelMappingConfig<TE, TFm>
+    public class EntityViewModelMappingConfig<TE, TVm> : EntityModelMappingConfig<TE, TVm>
         where TE : IEntity
-        where TFm : IViewModel
+        where TVm : IViewModel
     {
     }
 }

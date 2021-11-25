@@ -44,7 +44,11 @@ namespace MCMS.SwaggerFormly
                 {
                     ProxyRules = new()
                     {
-                        { "/mcms-forms", Utils.UrlCombine(Env.GetOrThrow("FORMLY_SERVE_URL"), "mcms-forms/") }
+                        {
+                            "/mcms-forms",
+                            Utils.UrlCombine(Env.GetOrThrow("FORMLY_SERVE_URL"), RoutePrefixes.RoutePrefix[1..],
+                                "mcms-forms/")
+                        }
                     }
                 };
                 app.UseMiddleware<ReverseProxyMiddleware>(obj);

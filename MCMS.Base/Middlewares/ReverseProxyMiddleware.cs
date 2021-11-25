@@ -30,6 +30,7 @@ namespace MCMS.Base.Middlewares
             if (!ShouldProxy(context.Request))
             {
                 await _nextMiddleware(context);
+                return;
             }
 
             var targetUri = BuildTargetUri(context.Request);
@@ -41,7 +42,7 @@ namespace MCMS.Base.Middlewares
 
                     using var responseMessage = await HttpClient.SendAsync(targetRequestMessage,
                         HttpCompletionOption.ResponseHeadersRead, context.RequestAborted);
-                    context.Response.StatusCode = (int) responseMessage.StatusCode;
+                    context.Response.StatusCode = (int)responseMessage.StatusCode;
 
                     CopyFromTargetResponseHeaders(context, responseMessage);
 

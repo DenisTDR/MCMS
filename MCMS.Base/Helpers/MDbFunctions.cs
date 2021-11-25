@@ -11,28 +11,28 @@ namespace MCMS.Base.Helpers
             => throw new InvalidOperationException($"{nameof(Concat)} cannot be called client side");
 
         public static string Concat(string arg1, string arg2, string arg3)
-            => throw new InvalidOperationException($"{nameof(Concat)} cannot be called client side");
+            => Concat(arg1, arg2);
 
         public static string Concat(string arg1, string arg2, string arg3, string arg4)
-            => throw new InvalidOperationException($"{nameof(Concat)} cannot be called client side");
+            => Concat(arg1, arg2);
 
         public static string Concat(string arg1, string arg2, string arg3, string arg4, string arg5)
-            => throw new InvalidOperationException($"{nameof(Concat)} cannot be called client side");
+            => Concat(arg1, arg2);
 
         public static string Concat(string arg1, string arg2, string arg3, string arg4, string arg5, string arg6)
-            => throw new InvalidOperationException($"{nameof(Concat)} cannot be called client side");
+            => Concat(arg1, arg2);
 
         public static string Concat(string arg1, string arg2, string arg3, string arg4, string arg5, string arg6,
             string arg7)
-            => throw new InvalidOperationException($"{nameof(Concat)} cannot be called client side");
+            => Concat(arg1, arg2);
 
         public static string Concat(string arg1, string arg2, string arg3, string arg4, string arg5, string arg6,
             string arg7, string arg8)
-            => throw new InvalidOperationException($"{nameof(Concat)} cannot be called client side");
+            => Concat(arg1, arg2);
 
         public static string Concat(string arg1, string arg2, string arg3, string arg4, string arg5, string arg6,
             string arg7, string arg8, string arg9)
-            => throw new InvalidOperationException($"{nameof(Concat)} cannot be called client side");
+            => Concat(arg1, arg2);
 
         public static void Register(ModelBuilder builder)
         {

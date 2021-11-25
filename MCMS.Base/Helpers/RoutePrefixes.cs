@@ -35,7 +35,7 @@ namespace MCMS.Base.Helpers
         private static string _adminRouteBasePath;
 
         public static string AdminRouteBasePath => _adminRouteBasePath ??=
-            "~/" + (IsAdminRoutePrefixSet ? AdminRoutePrefix.Substring(1) : "");
+            "~/" + (IsAdminRoutePrefixSet ? AdminRoutePrefix[1..] : "");
 
         public static string AdminApiRouteBasePath => AdminRouteBasePath + "api/";
 

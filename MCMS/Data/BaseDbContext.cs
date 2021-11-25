@@ -37,6 +37,14 @@ namespace MCMS.Data
                     new object[] {entitiesConfigEntityStack.GetEntityTypeConfigurationInstance()});
             }
 
+            // workaround for a "bug" introduced when upgraded to Net 6
+            foreach (var property in builder.Model.GetEntityTypes()
+                .SelectMany(t => t.GetProperties())
+                .Where(p => p.ClrType == typeof(DateTime) || p.ClrType == typeof(DateTime?)))
+            {
+                property.SetColumnType("timestamp without time zone");
+            }
+
             MDbFunctions.Register(builder);
         }
 

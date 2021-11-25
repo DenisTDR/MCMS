@@ -24,7 +24,8 @@
     }
     else
     {
-        <iframe src="/mcms-forms?@Model.ToUrlQuery()" class="col-12" id="@Model.FormInstanceId"></iframe>
+        var baseUrl = Url.Content("~/mcms-forms/");
+        <iframe src="@baseUrl?@Model.ToUrlQuery()" class="col-12" id="@Model.FormInstanceId"></iframe>
     }
 
     @if (Model.UsesSpinnerOuterOverlay())

@@ -24,8 +24,8 @@ namespace MCMS.Base.Data.Seeder
             var rolesToAdd = seedRoles.Except(existingRoles);
             foreach (var roleToAdd in rolesToAdd)
             {
-                logger.LogInformation($"Creating role '{roleToAdd}'...");
-                await roleManager.CreateAsync(new Role {Name = roleToAdd});
+                logger.LogInformation("Creating role '{Role}'...", roleToAdd);
+                await roleManager.CreateAsync(new Role { Name = roleToAdd });
             }
         }
 

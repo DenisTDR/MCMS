@@ -23,11 +23,13 @@ namespace MCMS.SwaggerFormly.Models
 
         public string ToUrlQuery()
         {
-            var jObj = (JObject) JsonConvert.DeserializeObject(JsonConvert.SerializeObject(this,
+            var jObj = (JObject)JsonConvert.DeserializeObject(JsonConvert.SerializeObject(this,
                 Utils.DefaultJsonSerializerSettings()));
+            if (jObj == null) return "";
             return string.Join("&",
                 jObj.Properties().Where(jProp => jProp.Value != null && !string.IsNullOrEmpty(jProp.Value.ToString()))
-                    .Select(jProp => jProp.Name + "=" + HttpUtility.UrlEncode(JsonConvert.SerializeObject(jProp.Value, Utils.DefaultJsonSerializerSettings()))));
+                    .Select(jProp => jProp.Name + "=" + HttpUtility.UrlEncode(JsonConvert.SerializeObject(jProp.Value,
+                        Utils.DefaultJsonSerializerSettings()))));
         }
     }
 

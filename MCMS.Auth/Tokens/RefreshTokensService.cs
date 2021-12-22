@@ -52,8 +52,11 @@ namespace MCMS.Auth.Tokens
                 .Where(t => t.Token == token)
                 .FirstOrDefaultAsync();
 
+            if (refreshToken == null)
+                throw new KnownException("invalid_token_not_found", 404);
+            
             if (!refreshToken.IsActive)
-                throw new KnownException("Invalid token (not active)");
+                throw new KnownException("invalid_token_not_active");
 
             _logger.LogInformation("Revoking refresh token {Id}", refreshToken.Id);
 
@@ -66,9 +69,7 @@ namespace MCMS.Auth.Tokens
             var oldToken = await _refreshTokensRepo.GetOne(t => t.Token == token);
 
             if (oldToken == null)
-            {
-                throw new KnownException("Invalid token (not found)");
-            }
+                throw new KnownException("invalid_token_not_found", 404);
 
             if (oldToken.IsRevoked)
             {
@@ -81,7 +82,7 @@ namespace MCMS.Auth.Tokens
             }
 
             if (!oldToken.IsActive)
-                throw new KnownException("Invalid token (not active)");
+                throw new KnownException("invalid_token_not_active");
 
             var newToken = RotateRefreshToken(oldToken, ipAddress);
             newToken.User = user;
@@ -100,7 +101,7 @@ namespace MCMS.Auth.Tokens
                 .Select(t => t.User)
                 .FirstOrDefaultAsync();
             if (user == null)
-                throw new KnownException("Invalid token (not found)", 404);
+                throw new KnownException("invalid_token_not_found", 404);
             return user;
         }
 
@@ -144,7 +145,7 @@ namespace MCMS.Auth.Tokens
         private static void _revokeRefreshToken(RefreshTokenEntity token, string ipAddress, string reason = null,
             string replacedByToken = null)
         {
-            token.Revoked = DateTime.UtcNow;
+            token.Revoked = DateTime.Now;
             token.RevokedByIp = ipAddress;
             token.ReasonRevoked = reason;
             token.ReplacedByToken = replacedByToken;

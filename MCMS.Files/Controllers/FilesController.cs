@@ -7,12 +7,14 @@ using MCMS.Controllers.Ui;
 using MCMS.Display.Link;
 using MCMS.Display.ModelDisplay;
 using MCMS.Files.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace MCMS.Files.Controllers
 {
     [DisplayName("Files")]
+    [Authorize(Roles = "Admin")]
     public class FilesController : GenericModalAdminUiController<FileEntity, FileUploadFormModel, FileViewModel,
         FilesAdminApiController>
     {
@@ -80,7 +82,7 @@ namespace MCMS.Files.Controllers
             var e = await Repo.GetOneOrThrow(id);
             if (string.IsNullOrEmpty(fileName))
             {
-                return RedirectToAction(nameof(DownloadFile), new {id, fileName = e.OriginalName});
+                return RedirectToAction(nameof(DownloadFile), new { id, fileName = e.OriginalName });
             }
 
             return ServiceProvider.GetRequiredService<FilesService>().GetFileResult(e, fileName);

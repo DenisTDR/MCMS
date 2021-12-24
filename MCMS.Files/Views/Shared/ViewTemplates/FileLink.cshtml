@@ -1,0 +1,12 @@
+@using MCMS.Files.Models
+@model (MCMS.Base.Display.ModelDisplay.DetailsField field, object model)
+
+@{
+    var fileVm = Model.field.PropertyInfo.GetValue(Model.model) as FileViewModel;
+    if (fileVm == null)
+    {
+        <text>--</text>
+        return;
+    }
+}
+@Html.Raw(fileVm.Link)

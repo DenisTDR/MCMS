@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using MCMS.Base.Data.Entities;
 using MCMS.Base.Extensions;
 
@@ -60,6 +61,12 @@ namespace MCMS.Base.Data.TypeConfig
         public IEntityTypeConfiguration GetEntityTypeConfigurationInstance()
         {
             return (IEntityTypeConfiguration) Activator.CreateInstance(EntityTypeConfigurationType);
+        }
+
+        public bool ShouldIgnoreSpecificTypeConfiguration()
+        {
+            return EntityTypeConfigurationType.GetCustomAttributes(false)
+                .Any(attr => attr is IgnoreSpecificConfigurationAttribute);
         }
 
         public override string ToString()

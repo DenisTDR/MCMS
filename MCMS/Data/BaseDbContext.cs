@@ -32,15 +32,17 @@ namespace MCMS.Data
                     pi.ParameterType.IsSubclassOfGenericType(typeof(IEntityTypeConfiguration<>))));
             foreach (var entitiesConfigEntityStack in _entitiesConfig.EntityStacks)
             {
+                if (entitiesConfigEntityStack.ShouldIgnoreSpecificTypeConfiguration()) continue;
+
                 var genericMethodInfo = methodInfo.MakeGenericMethod(entitiesConfigEntityStack.EntityType);
                 genericMethodInfo.Invoke(builder,
-                    new object[] {entitiesConfigEntityStack.GetEntityTypeConfigurationInstance()});
+                    new object[] { entitiesConfigEntityStack.GetEntityTypeConfigurationInstance() });
             }
 
             // workaround for a "bug" introduced when upgraded to Net 6
             foreach (var property in builder.Model.GetEntityTypes()
-                .SelectMany(t => t.GetProperties())
-                .Where(p => p.ClrType == typeof(DateTime) || p.ClrType == typeof(DateTime?)))
+                         .SelectMany(t => t.GetProperties())
+                         .Where(p => p.ClrType == typeof(DateTime) || p.ClrType == typeof(DateTime?)))
             {
                 property.SetColumnType("timestamp without time zone");
             }

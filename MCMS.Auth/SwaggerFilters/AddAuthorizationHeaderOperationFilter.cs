@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using MCMS.Auth.Attributes;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.OpenApi.Models;
@@ -29,24 +30,37 @@ namespace MCMS.Auth.SwaggerFilters
                 || context.MethodInfo.DeclaringType?.GetCustomAttributes(true).OfType<AllowAnonymousAttribute>()
                     .Any() == true;
 
-            if (hasAllowAnonymousAttrs) return;
 
-            operation.Responses.Add("401", new OpenApiResponse {Description = "Unauthorized"});
-            operation.Responses.Add("403", new OpenApiResponse {Description = "Forbidden"});
-            operation.Security.Add(new OpenApiSecurityRequirement
+            var hasOptionalAuthorizationAttrs =
+                context.MethodInfo.GetCustomAttributes(true).OfType<OptionalAuthorizationAttribute>().Any()
+                || context.MethodInfo.DeclaringType?.GetCustomAttributes(true).OfType<OptionalAuthorizationAttribute>()
+                    .Any() == true;
+
+            if (hasOptionalAuthorizationAttrs)
             {
+                operation.Security.Add(new OpenApiSecurityRequirement());
+            }
+
+            if (!hasAllowAnonymousAttrs || hasOptionalAuthorizationAttrs)
+            {
+                operation.Responses.Add("401", new OpenApiResponse { Description = "Unauthorized" });
+                operation.Responses.Add("403", new OpenApiResponse { Description = "Forbidden" });
+
+                operation.Security.Add(new OpenApiSecurityRequirement
                 {
-                    new OpenApiSecurityScheme
                     {
-                        Reference = new OpenApiReference
+                        new OpenApiSecurityScheme
                         {
-                            Type = ReferenceType.SecurityScheme,
-                            Id = JwtBearerDefaults.AuthenticationScheme
-                        }
-                    },
-                    Array.Empty<string>()
-                }
-            });
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = JwtBearerDefaults.AuthenticationScheme
+                            }
+                        },
+                        Array.Empty<string>()
+                    }
+                });
+            }
         }
     }
 }

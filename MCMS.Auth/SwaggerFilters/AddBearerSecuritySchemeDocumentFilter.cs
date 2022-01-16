@@ -26,7 +26,7 @@ namespace MCMS.Auth.SwaggerFilters
                         In = ParameterLocation.Header,
                         Description =
                             "JWT Authorization header using the Bearer scheme. \n\n " +
-                            "Enter the token in the text input below (without the 'Bearer ' part)'.",
+                            "Enter the token in the text input below (without the 'Bearer ' prefix)'.",
                     }
                 );
             }

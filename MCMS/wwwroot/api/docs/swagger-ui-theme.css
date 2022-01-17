@@ -1,6 +1,6 @@
 
 #swagger-ui .swagger-ui .wrapper {
-    max-width: 960px;
+    max-width: 1140px;
 }
 
 #swagger-ui .swagger-ui,
@@ -81,7 +81,6 @@ body.dark, body.dark .swagger-ui .modal-ux {
 .dark .swagger-ui .opblock-tag,
 .dark .swagger-ui .opblock .opblock-summary-path,
 .dark .swagger-ui .opblock .opblock-summary-path__deprecated,
-.dark .swagger-ui .opblock .opblock-summary-description,
 .dark .swagger-ui .opblock .opblock-summary-operation-id,
 .dark .swagger-ui .opblock .opblock-control__btn,
 .dark .swagger-ui .opblock-description-wrapper,
@@ -211,4 +210,11 @@ body.dark, body.dark .swagger-ui .modal-ux {
 
 .dark .swagger-ui .opblock-summary-control .arrow {
     fill: white;
+}
+
+.dark .swagger-ui .opblock .opblock-summary-description {
+    color: #C0C0C0;
+}
+.dark .swagger-ui .opblock-tag small {
+    color: #A0A0A0;
 }

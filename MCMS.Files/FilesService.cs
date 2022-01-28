@@ -3,9 +3,9 @@ using System.IO;
 using System.Web;
 using MCMS.Base.Exceptions;
 using MCMS.Files.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.StaticFiles;
+using Microsoft.Net.Http.Headers;
 
 namespace MCMS.Files
 {
@@ -50,7 +50,11 @@ namespace MCMS.Files
             }
 
             return new FileStreamResult(stream, contentType)
-                { FileDownloadName = fileName, LastModified = fileInfo.LastWriteTime };
+            {
+                FileDownloadName = fileName,
+                LastModified = fileInfo.LastWriteTime,
+                EntityTag = new EntityTagHeaderValue($"\"{file.Id}\"")
+            };
         }
     }
 }

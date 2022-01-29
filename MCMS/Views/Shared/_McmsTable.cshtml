@@ -12,7 +12,7 @@
     {
         link.WithData("modal-callback-target", "ENTITY_ID");
     }
-    foreach (var link in Model.ItemActions.Concat(Model.CreateNewItemLink != null ? new[] {Model.CreateNewItemLink} : Array.Empty<MRichLink>()))
+    foreach (var link in Model.ItemActions.Concat(Model.CreateNewItemLink != null ? new[] { Model.CreateNewItemLink } : Array.Empty<MRichLink>()))
     {
         link.SetData("modal-callback", "table" + Model.Id + ".mcms.callbacks.modalClosed");
     }

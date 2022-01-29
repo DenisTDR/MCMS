@@ -115,3 +115,7 @@ table.dataTable.break-words {
     word-wrap: break-word;
     word-break: break-word;
 }
+
+table.dataTable th>.col-name-hidden {
+    display: none;
+}

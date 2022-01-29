@@ -14,6 +14,7 @@ namespace MCMS.Display.TableConfig
         public bool UseCreateNewItemLink { get; set; }
         public object CreateNewItemLinkValues { get; set; }
         public bool ExcludeDefaultItemActions { get; set; }
+        public bool ExcludeActionsColumn { get; set; }
         public bool ServerSide { get; set; }
         Task<TableConfig> GetTableConfig();
         Func<TableConfig, TableConfig> AfterBuildHook { get; set; }

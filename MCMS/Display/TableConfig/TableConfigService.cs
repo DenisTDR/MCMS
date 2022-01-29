@@ -60,7 +60,7 @@ namespace MCMS.Display.TableConfig
                 new TableColumn(prop, prop.GetCustomAttributes<TableColumnAttribute>().ToList())).ToList();
             if (!ExcludeActionsColumn)
             {
-                list.Add(new TableColumn("", "_actions", 100)
+                list.Add(new TableColumn("<span class='col-name-hidden'>Actions</span>", "_actions", 100)
                     {Orderable = ServerClient.None, Searchable = ServerClient.None});
             }
 

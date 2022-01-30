@@ -24,8 +24,11 @@ namespace MCMS.Display.Link
 
         public object Values { get; set; }
 
-        // public ModalSuccessAction ModalSuccessAction { get; set; }
-        public string ModalSuccessCallback { get; set; }
+        public string ModalSuccessCallback
+        {
+            get => this.GetData("modal-callback") as string;
+            set => this.SetData("modal-callback", value);
+        }
 
         public Dictionary<string, object> AnchorData { get; set; }
 

@@ -14,10 +14,9 @@
     }
     foreach (var link in Model.ItemActions.Concat(Model.CreateNewItemLink != null ? new[] { Model.CreateNewItemLink } : Array.Empty<MRichLink>()))
     {
-        link.SetData("modal-callback", "table" + Model.Id + ".mcms.callbacks.modalClosed");
+        link.ModalSuccessCallback = "table" + Model.Id + ".mcms.callbacks.modalClosed";
     }
     var columns = Model.GetColumnsOrdered();
-
 }
 
 @if (Model.CreateNewItemLink != null)

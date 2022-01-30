@@ -215,7 +215,7 @@
 
                 const scriptTags = vElem.find('script, style, link');
                 activeModal.append(scriptTags);
-            }, 500)
+            }, 500);
 
 
             // do specific actions when modal was hidden
@@ -223,7 +223,9 @@
                 const result = activeModal.data('result');
                 if (target && result?.reloadModal) {
                     target.click();
-                    return;
+                    if (!result.alsoTriggerCallback) {
+                        return;
+                    }
                 }
                 const callback = target.data('modal-callback');
                 if (typeof callback === 'string') {

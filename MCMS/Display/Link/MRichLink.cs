@@ -42,6 +42,10 @@ namespace MCMS.Display.Link
         {
         }
 
+        public MRichLink(Type controller, string actionName) : base("", controller, actionName)
+        {
+        }
+
         public MRichLink(string text, string url) : base(text, url)
         {
         }

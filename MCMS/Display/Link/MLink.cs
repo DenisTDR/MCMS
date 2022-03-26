@@ -19,6 +19,7 @@ namespace MCMS.Display.Link
         public string IconClasses { get; set; }
         public virtual string Tag { get; set; }
         public string[] RequiredRoles { get; set; }
+        public string Title { get; set; }
 
         public virtual string BuildUrl(IUrlHelper urlHelper = null)
         {

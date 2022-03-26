@@ -43,15 +43,18 @@ namespace MCMS.Display.TableConfig
                 new MRichLink("", typeof(TUiController),
                         nameof(GenericAdminUiController<TE, TFm, TVm, TApiController>.Details)).WithTag("details")
                     .AsButton("outline-info").WithModal().ToggleModal(UseModals)
-                    .WithIconClasses("far fa-eye").WithValues(new {id = "ENTITY_ID"}),
+                    .WithTitle("Details")
+                    .WithIconClasses("far fa-eye").WithValues(new { id = "ENTITY_ID" }),
                 new MRichLink("", typeof(TUiController),
                         nameof(GenericAdminUiController<TE, TFm, TVm, TApiController>.Edit)).WithTag("edit")
                     .AsButton("outline-primary").WithModal().ToggleModal(UseModals)
+                    .WithTitle("Edit")
                     .WithIconClasses("fas fa-pencil-alt"),
                 new MRichLink("", typeof(TUiController),
                         nameof(GenericAdminUiController<TE, TFm, TVm, TApiController>.Delete)).WithTag("delete")
                     .AsButton("outline-danger").WithModal().WithIconClasses("fas fa-trash-alt")
-            }.Select(l => l.WithValues(new {id = "ENTITY_ID"})).ToList();
+                    .WithTitle("Delete")
+            }.Select(l => l.WithValues(new { id = "ENTITY_ID" })).ToList();
         }
 
         public override List<BatchAction> GetBatchActions(bool excludeDefault = false)
@@ -65,7 +68,7 @@ namespace MCMS.Display.TableConfig
             {
                 new BatchAction("", typeof(TUiController),
                             nameof(GenericAdminUiController<TE, TFm, TVm, TApiController>.BatchDelete))
-                        {TitleAttr = "Delete selected items"}
+                        { TitleAttr = "Delete selected items" }
                     .WithTag("batch-delete").WithIconClasses("fas fa-trash").AsButton("outline-danger btn-light")
                     .WithModal()
             };

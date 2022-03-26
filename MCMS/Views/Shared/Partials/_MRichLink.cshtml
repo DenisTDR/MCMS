@@ -3,10 +3,16 @@
 <a href="@Model.BuildUrl(Url)"
    class="@Model.CssClasses"
    target="@Model.Target"
+   @if (!string.IsNullOrEmpty(Model.Title))
+   {
+       @Html.Raw("title=\"" + Model.Title + "\"")
+   }
    @if (Model.HasData())
    {
        foreach (var kvp in Model.GetData())
        {
            @Html.Raw("data-" + kvp.Key + "=\"" + kvp.Value + "\"")
        }
-   }>@Html.Raw(Model.BuildText())</a>
+   }>
+    @Html.Raw(Model.BuildText())
+</a>

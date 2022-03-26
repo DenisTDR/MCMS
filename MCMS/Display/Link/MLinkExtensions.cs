@@ -27,6 +27,12 @@ namespace MCMS.Display.Link
             return item;
         }
 
+        public static T WithTitle<T>(this T item, string title) where T : MLink
+        {
+            item.Title = title;
+            return item;
+        }
+
         public static string FontAwesomeIconHtml<T>(this T link) where T : MLink
         {
             return link.IconClasses == null ? null : "<i class=\"" + link.IconClasses + " fa-fw\"></i>";

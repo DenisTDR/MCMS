@@ -32,14 +32,19 @@ namespace MCMS.Data
             Queryable = DbSet;
             if (typeof(IOrderable).IsAssignableFrom(typeof(T)))
             {
-                Queryable = Queryable.OrderBy(e => ((IOrderable) e).Order);
+                Queryable = Queryable.OrderBy(e => ((IOrderable)e).Order);
+            }
+
+            if (typeof(ICanBeDeleted).IsAssignableFrom(typeof(T)))
+            {
+                Queryable = Queryable.Where(e => !((ICanBeDeleted)e).Deleted);
             }
         }
 
         public virtual Task<T> GetOne(string id)
         {
             var query = typeof(ISluggable).IsAssignableFrom(typeof(T))
-                ? Queryable.Where(e => e.Id == id || ((ISluggable) e).Slug == id)
+                ? Queryable.Where(e => e.Id == id || ((ISluggable)e).Slug == id)
                 : Queryable.Where(e => e.Id == id);
             return query.FirstOrDefaultAsync();
         }
@@ -75,7 +80,7 @@ namespace MCMS.Data
         {
             e.Id = null;
             var addingResult = await DbSet.AddAsync(e);
-            await SaveChangesAsyncIfNeeded();
+            await SaveChangesIfNeeded();
             return addingResult.Entity;
         }
 
@@ -102,7 +107,7 @@ namespace MCMS.Data
                 patchDoc.ApplyTo(e, adapterFactory);
             }
 
-            await SaveChangesAsyncIfNeeded();
+            await SaveChangesIfNeeded();
             return e;
         }
 
@@ -115,13 +120,13 @@ namespace MCMS.Data
                 throw new KnownException(code: 404);
             }
 
-            return await Delete(new T {Id = id});
+            return await Delete(new T { Id = id });
         }
 
         public virtual async Task<bool> Delete(T e)
         {
             DbSet.Remove(e);
-            await SaveChangesAsyncIfNeeded();
+            await SaveChangesIfNeeded();
             return true;
         }
 
@@ -134,6 +139,7 @@ namespace MCMS.Data
         {
             return DbSet.Where(predicate).DeleteFromQueryAsync();
         }
+
         #endregion
 
         public virtual Task<bool> Any(string id)
@@ -174,7 +180,7 @@ namespace MCMS.Data
 
         public T Attach(string id)
         {
-            return Attach(new T {Id = id});
+            return Attach(new T { Id = id });
         }
 
         public async Task Reload(T e)
@@ -183,6 +189,6 @@ namespace MCMS.Data
         }
 
         public Task SaveChanges() => DbContext.SaveChangesAsync();
-        protected Task SaveChangesAsyncIfNeeded() => !SkipSaving ? SaveChanges() : Task.CompletedTask;
+        public Task SaveChangesIfNeeded() => !SkipSaving ? SaveChanges() : Task.CompletedTask;
     }
 }

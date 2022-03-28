@@ -39,6 +39,7 @@ namespace MCMS.Base.Data
         T Attach(string id);
         Task Reload(T e);
         Task SaveChanges();
+        Task SaveChangesIfNeeded();
         bool SkipSaving { get; set; }
         DbSet<T> DbSet { get; }
         IQueryable<T> Queryable { get; }

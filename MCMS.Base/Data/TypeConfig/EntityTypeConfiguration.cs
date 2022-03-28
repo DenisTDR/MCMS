@@ -1,8 +1,11 @@
+using System;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using MCMS.Base.Data.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace MCMS.Base.Data.TypeConfig
@@ -23,12 +26,22 @@ namespace MCMS.Base.Data.TypeConfig
 
             if (typeof(ISluggable).IsAssignableFrom(typeof(T)))
             {
-                builder.HasIndex(e => ((ISluggable) e).Slug).IsUnique();
+                builder.HasIndex(e => ((ISluggable)e).Slug).IsUnique();
             }
 
             if (typeof(IPublishable).IsAssignableFrom(typeof(T)))
             {
-                builder.HasIndex(e => ((IPublishable) e).Published);
+                builder.HasIndex(e => ((IPublishable)e).Published);
+            }
+
+            if (typeof(IOrderable).IsAssignableFrom(typeof(T)))
+            {
+                builder.HasIndex(e => ((IOrderable)e).Order);
+            }
+
+            if (typeof(ICanBeDeleted).IsAssignableFrom(typeof(T)))
+            {
+                builder.HasIndex(e => ((ICanBeDeleted)e).Deleted);
             }
         }
 
@@ -52,6 +65,14 @@ namespace MCMS.Base.Data.TypeConfig
             }
 
             return entityName;
+        }
+
+        public virtual bool HasOnSaveHook { get; }
+
+#pragma warning disable CS1998
+        public virtual async Task OnSave()
+#pragma warning restore CS1998
+        {
         }
     }
 }

@@ -10,17 +10,8 @@ body {
     height: 100%;
 }
 
-#layoutAuthentication {
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-}
-#layoutAuthentication #layoutAuthentication_content {
-    min-width: 0;
-    flex-grow: 1;
-}
-#layoutAuthentication #layoutAuthentication_footer {
-    min-width: 0;
+:root{
+    --topnav-height: 56px;
 }
 
 .sb-layout-sidenav {
@@ -40,7 +31,7 @@ body {
     justify-content: space-between;
     min-width: 0;
     flex-grow: 1;
-    min-height: calc(100vh - 56px);
+    min-height: calc(100vh - var(--topnav-height));
     margin-left: -225px;
 }
 
@@ -97,14 +88,14 @@ body {
     z-index: 1038;
 }
 .sb-nav-fixed .sb-layout-sidenav .sb-layout-sidenav-nav .sb-sidenav {
-    padding-top: 56px;
+    padding-top: var(--topnav-height);
 }
 .sb-nav-fixed .sb-layout-sidenav .sb-layout-sidenav-nav .sb-sidenav .sb-sidenav-menu {
     overflow-y: auto;
 }
 .sb-nav-fixed .sb-layout-sidenav .sb-layout-sidenav-content {
     padding-left: 225px;
-    top: 56px;
+    top: var(--topnav-height);
 }
 
 #layoutError {
@@ -131,7 +122,7 @@ body {
 
 .sb-topnav {
     padding-left: 0;
-    height: 56px;
+    height: var(--topnav-height);
     z-index: 1039;
 }
 .sb-topnav .navbar-brand {

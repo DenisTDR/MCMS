@@ -48,6 +48,7 @@
     .sb-sidenav .sb-sidenav-footer {
         padding-left: 0.25rem;
         padding-right: 0.25rem;
+        padding-bottom: calc(var(--topnav-height) * 1.5) !important;
     }
 }
 

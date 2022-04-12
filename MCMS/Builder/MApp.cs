@@ -146,15 +146,7 @@ namespace MCMS.Builder
 
             app.UseRouting();
 
-            if (Env.GetBool("MIGRATE_ON_START"))
-            {
-                EnsureDatabase(serviceProvider);
-            }
-
-            if (Env.GetBool("SEED_ON_START"))
-            {
-                serviceProvider.GetRequiredService<DataSeeder>().SeedFromProvidedSources().Wait();
-            }
+            InitializeDatabase(serviceProvider);
 
             foreach (var mSpec in _specifications)
             {
@@ -176,6 +168,29 @@ namespace MCMS.Builder
             }
 
             RoutePrefixes.CheckRoutePrefixVars();
+        }
+
+
+        private static void InitializeDatabase(IServiceProvider serviceProvider)
+        {
+            var migrateOnStart = Env.GetBool("MIGRATE_ON_START");
+            var seedOnStart = Env.GetBool("SEED_ON_START");
+
+            if (migrateOnStart || seedOnStart)
+            {
+                // create a new Scoped ServiceProvider in order to provide a DbContext (which is a scoped)
+                serviceProvider = serviceProvider.CreateScope().ServiceProvider;
+            }
+
+            if (migrateOnStart)
+            {
+                EnsureDatabase(serviceProvider);
+            }
+
+            if (seedOnStart)
+            {
+                serviceProvider.GetRequiredService<DataSeeder>().SeedFromProvidedSources().Wait();
+            }
         }
 
         private static void EnsureDatabase(IServiceProvider serviceProvider)

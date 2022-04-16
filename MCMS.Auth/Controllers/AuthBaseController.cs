@@ -102,7 +102,7 @@ namespace MCMS.Auth.Controllers
             return IsAuthorized();
         }
 
-        private string IpAddress()
+        protected string IpAddress()
         {
             if (Request.Headers.ContainsKey("X-Forwarded-For"))
                 return Request.Headers["X-Forwarded-For"];

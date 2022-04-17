@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
 
@@ -26,12 +27,24 @@ namespace MCMS.Base.Attributes.JsonConverters
                 return null;
             }
 
-            if (!(obj is IList list))
+            if (obj is string str)
             {
-                return obj.ToString();
+                return str;
             }
 
-            return "[" + string.Join(", ", from object o in list select GetToStringValue(o)) + "]";
+            if (obj is IDictionary dict)
+            {
+                return "{ " + string.Join(", ",
+                    from object key in dict.Keys select key + ": " + GetToStringValue(dict[key])) + " }";
+            }
+
+            if (obj is IEnumerable list)
+            {
+                return "[" + string.Join(", ", from object o in list select GetToStringValue(o)) + "]";
+            }
+
+
+            return obj.ToString();
         }
     }
 }

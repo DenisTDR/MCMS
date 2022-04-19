@@ -1,12 +1,11 @@
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using MCMS.Base.Attributes.JsonConverters;
 using MCMS.Base.Data.ViewModels;
 using MCMS.Base.Display.ModelDisplay.Attributes;
 using Newtonsoft.Json;
 
-namespace MCMS.Logging.AuditLogEntries
+namespace MCMS.Logging.AuditLogs.AuditLogEntries
 {
     [Display(Name = "LogEntry")]
     public class AuditLogEntryViewModel : ViewModel

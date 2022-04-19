@@ -1,6 +1,8 @@
 using System;
 using MCMS.Base.Builder;
-using MCMS.Logging.Worker;
+using MCMS.Logging.AuditLogs;
+using MCMS.Logging.AuditLogs.Worker;
+using MCMS.Logging.Logs.LogEntries;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -26,6 +28,8 @@ namespace MCMS.Logging
             services.AddHttpContextAccessor();
 
             services.AddSingleton<MAuditLogWorker>();
+            
+            services.AddScoped<LoggerService>();
         }
 
         public override void Configure(IApplicationBuilder app, IServiceProvider serviceProvider)

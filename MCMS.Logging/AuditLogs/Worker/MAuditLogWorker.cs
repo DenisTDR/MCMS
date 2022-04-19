@@ -5,14 +5,14 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MCMS.Base.Auth;
-using MCMS.Base.Exceptions;
 using MCMS.Base.Extensions;
-using MCMS.Logging.AuditLogEntries;
+using MCMS.Logging.AuditLogs.AuditLogEntries;
+using MCMS.Logging.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace MCMS.Logging.Worker
+namespace MCMS.Logging.AuditLogs.Worker
 {
     internal class MAuditLogWorker
     {

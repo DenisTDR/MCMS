@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace MCMS.Logging
+namespace MCMS.Logging.AuditLogs
 {
     public interface IMAuditLogger<out TCategoryName>
     {

@@ -6,7 +6,7 @@ using MCMS.Controllers.Ui;
 using MCMS.Display.ModelDisplay;
 using Microsoft.AspNetCore.Authorization;
 
-namespace MCMS.Logging.AuditLogEntries
+namespace MCMS.Logging.AuditLogs.AuditLogEntries
 {
     [Authorize(Roles = "Admin")]
     [Display(Name = "Audit Log Entries")]

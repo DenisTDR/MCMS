@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using MCMS.Base.Data.Entities;
 using MCMS.Base.Helpers;
 
-namespace MCMS.Logging.AuditLogEntries
+namespace MCMS.Logging.AuditLogs.AuditLogEntries
 {
     [Table("AuditLogEntries")]
     public class AuditLogEntryEntity : Entity

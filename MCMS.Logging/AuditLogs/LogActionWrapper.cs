@@ -1,6 +1,6 @@
 using System;
 
-namespace MCMS.Logging
+namespace MCMS.Logging.AuditLogs
 {
     public class LogActionWrapper<T>
     {

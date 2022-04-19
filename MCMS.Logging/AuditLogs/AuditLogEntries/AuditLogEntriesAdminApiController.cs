@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
 
-namespace MCMS.Logging.AuditLogEntries
+namespace MCMS.Logging.AuditLogs.AuditLogEntries
 {
     [Authorize(Roles = "Admin")]
     public class

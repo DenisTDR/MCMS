@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace MCMS.Logging
+namespace MCMS.Logging.AuditLogs
 {
     public class MAuditLogAttribute : ActionFilterAttribute
     {

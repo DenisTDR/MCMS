@@ -1,7 +1,7 @@
 using MCMS.Base.Data.TypeConfig;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace MCMS.Logging.AuditLogEntries
+namespace MCMS.Logging.AuditLogs.AuditLogEntries
 {
     public class AuditLogEntryEntityTypeConfig : EntityTypeConfiguration<AuditLogEntryEntity>
     {

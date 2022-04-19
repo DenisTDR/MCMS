@@ -1,15 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
-using System.Threading.Tasks;
 using MCMS.Base.Auth;
 using MCMS.Base.Data;
-using MCMS.Logging.AuditLogEntries;
-using MCMS.Logging.Worker;
+using MCMS.Logging.AuditLogs.AuditLogEntries;
+using MCMS.Logging.AuditLogs.Worker;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace MCMS.Logging
+namespace MCMS.Logging.AuditLogs
 {
     public class MAuditLogger<TCategoryName> : IMAuditLogger<TCategoryName>
     {

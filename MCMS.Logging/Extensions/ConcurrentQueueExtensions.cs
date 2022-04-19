@@ -1,7 +1,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 
-namespace MCMS.Logging
+namespace MCMS.Logging.Extensions
 {
     public static class ConcurrentQueueExtensions
     {

@@ -87,17 +87,19 @@ namespace MCMS.Base.Data.Seeder
         private async Task Seed(string jsonContent)
         {
             var seed = JsonConvert.DeserializeObject<Dictionary<string, JArray>>(jsonContent);
+            if (seed == null) return;
+
             foreach (var entitySeeder in _seeders)
             {
                 var seedingKey = entitySeeder.SeedKey();
-                if (!seed.ContainsKey(entitySeeder.SeedKey().ToLower()))
+                if (!seed.ContainsKey(seedingKey))
                 {
                     continue;
                 }
 
                 _logger.LogInformation("Seeding: {SeedingKey}", seedingKey);
 
-                await entitySeeder.Seed(_serviceProvider, seed[entitySeeder.SeedKey()]);
+                await entitySeeder.Seed(_serviceProvider, seed[seedingKey]);
             }
         }
 

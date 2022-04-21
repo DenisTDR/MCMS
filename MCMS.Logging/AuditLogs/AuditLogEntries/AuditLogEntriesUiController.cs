@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 namespace MCMS.Logging.AuditLogs.AuditLogEntries
 {
     [Authorize(Roles = "Admin")]
-    [Display(Name = "Audit Log Entries")]
+    [Display(Name = "Audit Logs")]
     public class AuditLogEntriesUiController : GenericModalAdminUiController<AuditLogEntryEntity, AuditLogEntryFormModel
         , AuditLogEntryViewModel, AuditLogEntriesAdminApiController>
     {

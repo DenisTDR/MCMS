@@ -1,8 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace MCMS.Base.Attributes.JsonConverters
 {
@@ -31,11 +33,20 @@ namespace MCMS.Base.Attributes.JsonConverters
             {
                 return str;
             }
+            if (obj is JValue jValue)
+            {
+                return jValue.ToString(CultureInfo.InvariantCulture);
+            }
 
             if (obj is IDictionary dict)
             {
                 return "{ " + string.Join(", ",
                     from object key in dict.Keys select key + ": " + GetToStringValue(dict[key])) + " }";
+            }
+
+            if (obj is IEnumerable<string> listStr)
+            {
+                return "[" + string.Join(", ", listStr) + "]";
             }
 
             if (obj is IEnumerable list)

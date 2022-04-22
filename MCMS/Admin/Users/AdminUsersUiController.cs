@@ -1,6 +1,7 @@
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using MCMS.Admin.Users.Models;
 using MCMS.Base.Attributes;
 using MCMS.Base.Auth;
 using MCMS.Base.Data;
@@ -10,6 +11,7 @@ using MCMS.Controllers.Ui;
 using MCMS.Display.DetailsConfig;
 using MCMS.Display.ModelDisplay;
 using MCMS.Display.TableConfig;
+using MCMS.SwaggerFormly.FormParamsHelpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -20,12 +22,12 @@ using Microsoft.Extensions.DependencyInjection;
 namespace MCMS.Admin.Users
 {
     [Authorize(Roles = "Admin, Moderator")]
-    public class AdminUsersController : AdminUiController
+    public class AdminUsersUiController : AdminUiController
     {
         protected IRepository<User> Repo => ServiceProvider.GetRepo<User>();
 
         protected ITableConfigService TableConfigService =>
-            ServiceProvider.GetRequiredService<UsersTableModelDisplayConfigService>();
+            ServiceProvider.GetRequiredService<UsersTableConfigService>();
 
         protected IDetailsConfigServiceT<UserViewModel> DetailsConfigService =>
             ServiceProvider.GetRequiredService<IDetailsConfigServiceT<UserViewModel>>();
@@ -38,7 +40,6 @@ namespace MCMS.Admin.Users
 
         public override async Task<IActionResult> Index()
         {
-            TableConfigService.UseCreateNewItemLink = false;
             TableConfigService.ServerSide = true;
             return View("BasicPages/Index", await GetIndexPageConfig());
         }
@@ -130,6 +131,15 @@ namespace MCMS.Admin.Users
                 IndexPageTitle = "Users",
                 TableConfig = await TableConfigService.GetTableConfig()
             };
+        }
+
+        public IActionResult Create()
+        {
+            ViewBag.FormParamsService =
+                new FormParamsService(Url, TypeHelpers.GetControllerName(typeof(AdminUsersAdminApiController)),
+                    nameof(CreateUserFormModel));
+            ViewBag.ModalDialogClasses = "modal-md";
+            return View("BasicModals/CreateModal");
         }
     }
 }

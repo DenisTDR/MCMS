@@ -8,6 +8,7 @@ using MCMS.Base.Display.ModelDisplay.Attributes;
 
 namespace MCMS.Admin.Users
 {
+    [DisplayName("User")]
     public class UserViewModel : ViewModel
     {
         public string UserName { get; set; }

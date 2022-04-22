@@ -16,16 +16,16 @@
 <div class="modal-footer">
     @if (!Model.TModel.EmailConfirmed)
     {
-        var confirmEmailLink = new MRichLink(await TransRepo.GetValueOrSlug("confirm_email"), typeof(AdminUsersController),
-            nameof(AdminUsersController.ConfirmEmail)).WithValues(new {Model.TModel.Id}).WithTag("confirm-email")
+        var confirmEmailLink = new MRichLink(await TransRepo.GetValueOrSlug("confirm_email"), typeof(AdminUsersUiController),
+            nameof(AdminUsersUiController.ConfirmEmail)).WithValues(new {Model.TModel.Id}).WithTag("confirm-email")
             .AsButton("outline-secondary").WithModal()
             .WithIconClasses("fas fa-check");
         <partial name="Partials/_MRichLink" model="confirmEmailLink"/>
 @*         <button type="button" class="btn btn-warning">@await TransRepo.GetValueOrSlug("confirm_email")</button> *@
     }
     @{
-        var resendResetLink = new MRichLink(await TransRepo.GetValueOrSlug("resend_activation_email"), typeof(AdminUsersController),
-            nameof(AdminUsersController.ResendActivationMail)).WithValues(new {Model.TModel.Id}).WithTag("confirm-email")
+        var resendResetLink = new MRichLink(await TransRepo.GetValueOrSlug("resend_activation_email"), typeof(AdminUsersUiController),
+            nameof(AdminUsersUiController.ResendActivationMail)).WithValues(new {Model.TModel.Id}).WithTag("confirm-email")
             .AsButton("outline-secondary").WithModal()
             .WithIconClasses("fas fa-envelope");
     }

@@ -1,14 +1,19 @@
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using MCMS.Admin.Users.Models;
 using MCMS.Auth;
 using MCMS.Base.Attributes;
 using MCMS.Base.Auth;
 using MCMS.Base.Data;
+using MCMS.Base.Exceptions;
 using MCMS.Base.Extensions;
+using MCMS.Base.Repositories;
 using MCMS.Controllers.Api;
 using MCMS.Data;
+using MCMS.Models;
 using MCMS.Models.Dt;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -123,14 +128,76 @@ namespace MCMS.Admin.Users
             return Ok();
         }
 
+        [HttpPost]
+        [UseTransaction]
+        [ModelValidation]
+        public virtual async Task<ActionResult<UserViewModel>> Create([Required] [FromBody] CreateUserFormModel model)
+        {
+            var roles = model.Roles?.Split(",", StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
+                .ToList() ?? new List<string>();
+
+            var userManager = ServiceProvider.GetRequiredService<UserManager<User>>();
+
+            var user = new User { Email = model.Email, UserName = model.Email };
+
+            var result = await userManager.CreateAsync(user);
+
+            if (!result.Succeeded)
+            {
+                throw new KnownException(result.Errors.First().Description);
+            }
+
+            roles.Remove("God");
+            if (roles is { Count: > 0 })
+            {
+                try
+                {
+                    result = await userManager.AddToRolesAsync(user, roles);
+                    if (!result.Succeeded)
+                    {
+                        throw new KnownException(result.Errors.First().Description);
+                    }
+                }
+                catch (InvalidOperationException exc)
+                {
+                    throw new KnownException(exc.Message);
+                }
+            }
+
+            if (model.SendActivationEmail)
+            {
+                await ServiceProvider.GetRequiredService<AuthService>().SendActivationEmail(user, Url, Request.Scheme);
+            }
+
+            return Ok(await GetCreateResponseModel(user, roles, model.SendActivationEmail));
+        }
+
+        protected virtual async Task<ModelResponse<CreateUserFormModel>> GetCreateResponseModel(User e,
+            List<string> roles, bool sendActivationEmail)
+        {
+            var fm = new CreateUserFormModel
+            {
+                Email = e.Email, Roles = string.Join(", ", roles),
+                SendActivationEmail = sendActivationEmail
+            };
+            var vm = MapV(e);
+            var response = new FormSubmitResponse<CreateUserFormModel, UserViewModel>(fm, vm, e.Id)
+            {
+                Snack = await ServiceProvider.GetRequiredService<ITranslationsRepository>().GetValueOrSlug("saved"),
+                SnackType = "success",
+                SnackDuration = 3000
+            };
+            return response;
+        }
+
         protected virtual List<UserViewModel> MapV(List<User> entities)
         {
             return Mapper.Map<List<UserViewModel>>(entities);
         }
 
-        protected virtual UserViewModel MapV(User entities)
+        protected virtual UserViewModel MapV(User entity)
         {
-            return Mapper.Map<UserViewModel>(entities);
+            return Mapper.Map<UserViewModel>(entity);
         }
     }
 }

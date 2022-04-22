@@ -24,7 +24,7 @@ namespace MCMS
                 .AddRoles<Role>()
                 .AddClaimsPrincipalFactory<MUserClaimsPrincipalFactory>()
                 .AddEntityFrameworkStores<BaseDbContext>();
-            services.AddScoped<UsersTableModelDisplayConfigService>();
+            services.AddScoped<UsersTableConfigService>();
             services.AddScoped<AuthService>();
             services.AddOptions<EntitySeeders>().Configure(seeders => { seeders.Add<RolesSeeder>(); });
         }

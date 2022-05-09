@@ -1,5 +1,5 @@
 .sb-layout-sidenav .sb-layout-sidenav-content {
-    transition: padding .15s ease-in-out, margin .15s ease-in-out;
+    transition: padding .15s ease-in-out, margin .15s ease-in-out !important;
     padding: 0 !important;
     margin-left: 225px;
 }

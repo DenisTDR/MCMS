@@ -8,7 +8,6 @@ using MCMS.Auth.SwaggerFilters;
 using MCMS.Auth.Tokens;
 using MCMS.Base.Builder;
 using MCMS.Base.Helpers;
-using MCMS.Base.SwaggerFormly.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;

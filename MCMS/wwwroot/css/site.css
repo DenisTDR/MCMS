@@ -252,6 +252,10 @@ ngb-modal-backdrop {
 }
 
 /* mcms custom icons */
+.mi {
+    display: inline-block;
+}
+
 .mi::before {
     display: inline-block;
     width: 1.25em;

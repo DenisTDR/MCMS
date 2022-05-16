@@ -4,11 +4,13 @@
 @model MCMS.Admin.Users.UserViewModel
 @inject ITranslationsRepository TransRepo
 @{
-    ViewBag.Title = $"Resend activation email for {Model.FullName} <{Model.Email}>?";
+    ViewBag.Title = $"Resend activation email for {Model.FullName}?";
     ViewBag.ModalDialogClasses = "";
     var id = Utils.GenerateRandomHexString();
 }
 <div class="modal-body" id="@id">
+    <div>Name: @Model.FullName</div>
+    <div>Email: @Model.Email</div>
     <form asp-action="ResendActivationMail" asp-controller="AdminUsersAdminApi" asp-route-id="@Model.Id">
     </form>
 </div>

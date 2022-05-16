@@ -24,6 +24,8 @@
      $("#save-@id").click(function() {
           $("#@id form").submit();
      });
-     ajaxForm($("#@id form"), true, function (){alert('Sent!');});
+     ajaxForm($("#@id form"), true, function (){
+         mcmsToast.snack('success', 'Email sent!', 5_000);
+     });
     </script>
 }

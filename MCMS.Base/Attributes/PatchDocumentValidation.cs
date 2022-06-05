@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection;
 using MCMS.Base.Data.FormModels;
 using MCMS.Base.Data.ViewModels;
+using MCMS.Base.Exceptions;
 using MCMS.Base.Extensions;
 using MCMS.Base.JsonPatch;
 using MCMS.Base.SwaggerFormly.Formly;
@@ -57,7 +58,7 @@ namespace MCMS.Base.Attributes
             var mi = GetType().GetMethod(nameof(ValidateJsonPatchDocumentOfT),
                 BindingFlags.NonPublic | BindingFlags.Instance);
             var gmi = mi?.MakeGenericMethod(argType);
-            var resp = gmi?.Invoke(this, new object[] {doc, context}) as bool? == true;
+            var resp = gmi?.Invoke(this, new object[] { doc, context }) as bool? == true;
 
             return resp;
         }
@@ -69,62 +70,73 @@ namespace MCMS.Base.Attributes
             for (var i = 0; i < doc.Operations.Count; i++)
             {
                 var op = doc.Operations[i];
-                var splitPath = op?.path?.Split('/', StringSplitOptions.RemoveEmptyEntries);
-                if (splitPath?.Length == null)
+                try
                 {
-                    continue;
-                }
-
-                if (op.op != "remove" && IsSubEntityProperty(typeof(TFm), splitPath[0], out var propInfo))
-                {
-                    var noPatchOnThisProp = propInfo.GetCustomAttribute<DisablePatchSubPropertiesAttribute>() != null;
-                    if (op.value is JObject jObj)
+                    var splitPath = op?.path?.Split('/', StringSplitOptions.RemoveEmptyEntries);
+                    if (splitPath?.Length == null)
                     {
-                        doc.Operations.Remove(op);
-                        i--;
-                        foreach (var kvp in jObj)
-                        {
-                            if (noPatchOnThisProp && kvp.Key != "id")
-                            {
-                                continue;
-                            }
+                        continue;
+                    }
 
-                            doc.Operations.Add(new Operation<TFm>(op.op, op.path + "/" + kvp.Key, op.from,
-                                kvp.Value.ToObject(propInfo.PropertyType.GetProperty(kvp.Key.ToPascalCase())
-                                    ?.PropertyType)));
+                    if (op.op != "remove" && IsSubEntityProperty(typeof(TFm), splitPath[0], out var propInfo))
+                    {
+                        var noPatchOnThisProp =
+                            propInfo.GetCustomAttribute<DisablePatchSubPropertiesAttribute>() != null;
+                        if (op.value is JObject jObj)
+                        {
+                            doc.Operations.Remove(op);
+                            i--;
+                            foreach (var kvp in jObj)
+                            {
+                                if (noPatchOnThisProp && kvp.Key != "id")
+                                {
+                                    continue;
+                                }
+
+                                doc.Operations.Add(new Operation<TFm>(op.op, op.path + "/" + kvp.Key, op.from,
+                                    kvp.Value.ToObject(propInfo.PropertyType.GetProperty(kvp.Key.ToPascalCase())
+                                        ?.PropertyType)));
+                            }
                         }
                     }
-                }
 
-                object obj = nfm;
-                if (splitPath.Length != 1)
-                {
-                    // TODO: generalize this
-                    if (obj.GetType().GetProperty(splitPath[0].ToPascalCase()) is { } prop &&
-                        splitPath[1].ToPascalCase() != "Id" &&
-                        prop.GetCustomAttribute<DisablePatchSubPropertiesAttribute>() != null)
+                    object obj = nfm;
+                    if (splitPath.Length != 1)
+                    {
+                        // TODO: generalize this
+                        if (obj.GetType().GetProperty(splitPath[0].ToPascalCase()) is { } prop &&
+                            splitPath[1].ToPascalCase() != "Id" &&
+                            prop.GetCustomAttribute<DisablePatchSubPropertiesAttribute>() != null)
+                        {
+                            doc.Operations.Remove(op);
+                            i--;
+                            continue;
+                        }
+
+                        foreach (var pathPart in splitPath.Take(splitPath.Length - 1))
+                        {
+                            obj = EnsureSubPropertyExists(obj, pathPart);
+                        }
+
+                        if (obj.GetType().ImplementsGenericInterface(typeof(IList<>)) &&
+                            int.TryParse(splitPath[^1], out _))
+                        {
+                            EnsureSubPropertyExists(obj, splitPath[^1]);
+                            continue;
+                        }
+                    }
+
+                    var finalProp = obj.GetType().GetProperty(splitPath[^1].ToPascalCase());
+                    if (finalProp?.CanWrite == false ||
+                        finalProp?.GetCustomAttributes<FormlyFieldAttribute>().LastOrDefault()?.Disabled == true)
                     {
                         doc.Operations.Remove(op);
                         i--;
-                        continue;
-                    }
-
-                    foreach (var pathPart in splitPath.Take(splitPath.Length - 1))
-                    {
-                        obj = EnsureSubPropertyExists(obj, pathPart);
-                    }
-
-                    if (obj.GetType().ImplementsGenericInterface(typeof(IList<>)) && int.TryParse(splitPath[^1], out _))
-                    {
-                        EnsureSubPropertyExists(obj, splitPath[^1]);
-                        continue;
                     }
                 }
-
-                var finalProp = obj.GetType().GetProperty(splitPath[^1].ToPascalCase());
-                if (finalProp?.CanWrite == false ||
-                    finalProp?.GetCustomAttributes<FormlyFieldAttribute>().LastOrDefault()?.Disabled == true)
+                catch (KnownException exc)
                 {
+                    context.ModelState.AddModelError(op.path, exc.Message);
                     doc.Operations.Remove(op);
                     i--;
                 }
@@ -201,7 +213,7 @@ namespace MCMS.Base.Attributes
             }
 
             var propInfo = mainObj.GetType().GetProperty(propertyName.ToPascalCase()) ??
-                           throw new Exception("Invalid property: " + propertyName);
+                           throw new KnownException("Invalid property: " + propertyName);
             if (propInfo.GetValue(mainObj) is { } existing)
             {
                 return existing;
@@ -215,7 +227,7 @@ namespace MCMS.Base.Attributes
         private bool IsSubEntityProperty(Type objType, string propertyName, out PropertyInfo propertyInfo)
         {
             propertyInfo = objType.GetProperty(propertyName.ToPascalCase()) ??
-                           throw new Exception("Invalid property: " + propertyName);
+                           throw new KnownException("Invalid property: " + propertyName);
             return typeof(IFormModel).IsAssignableFrom(propertyInfo.PropertyType) ||
                    typeof(IViewModel).IsAssignableFrom(propertyInfo.PropertyType);
         }

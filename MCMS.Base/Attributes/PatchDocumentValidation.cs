@@ -204,7 +204,7 @@ namespace MCMS.Base.Attributes
                             .GetGenericArgumentTypeOfImplementedGenericInterface(typeof(IList<>));
                         while (list.Count <= index)
                         {
-                            list.Add(Activator.CreateInstance(itemType));
+                            list.Add(SafeCreateInstance(itemType));
                         }
                     }
 
@@ -230,6 +230,16 @@ namespace MCMS.Base.Attributes
                            throw new KnownException("Invalid property: " + propertyName);
             return typeof(IFormModel).IsAssignableFrom(propertyInfo.PropertyType) ||
                    typeof(IViewModel).IsAssignableFrom(propertyInfo.PropertyType);
+        }
+
+        private object SafeCreateInstance(Type type)
+        {
+            if (type == typeof(string))
+            {
+                return "";
+            }
+
+            return Activator.CreateInstance(type);
         }
     }
 }

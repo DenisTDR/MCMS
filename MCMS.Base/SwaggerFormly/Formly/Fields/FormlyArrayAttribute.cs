@@ -12,6 +12,7 @@ namespace MCMS.Base.SwaggerFormly.Formly.Fields
         public bool RemoveDisabled { get; set; }
         public bool AddDisabled { get; set; }
         public string FieldGroupClassName { get; set; }
+        public string FieldArrayClassName { get; set; }
         public string AddButtonContent { get; set; }
         public string RemoveButtonContent { get; set; }
         public bool Sortable { get; set; }
@@ -48,6 +49,11 @@ namespace MCMS.Base.SwaggerFormly.Formly.Fields
             if (!string.IsNullOrEmpty(RemoveButtonContent))
             {
                 obj["removeButtonContent"] = new OpenApiString(RemoveButtonContent);
+            }
+
+            if (!string.IsNullOrEmpty(FieldArrayClassName))
+            {
+                obj["fieldArrayClassName"] = new OpenApiString(FieldArrayClassName);
             }
 
             return obj;

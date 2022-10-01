@@ -117,7 +117,7 @@ namespace MCMS.Data
                 return _matchedColumns[data];
             }
 
-            _matchedColumns[data] = _tableColumns.FirstOrDefault(col => col.Key == data);
+            _matchedColumns[data] = _tableColumns.FirstOrDefault(col => col.Data == data);
 
             if (_matchedColumns[data] == null)
             {

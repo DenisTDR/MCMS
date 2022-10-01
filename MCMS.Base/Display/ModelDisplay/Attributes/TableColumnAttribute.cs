@@ -25,5 +25,6 @@ namespace MCMS.Base.Display.ModelDisplay.Attributes
         public string DbColumn { get; set; }
         public string DbFuncFormat { get; set; }
         public TableColumnType Type { get; set; }
+        public string DataSelector { get; set; }
     }
 }

@@ -434,6 +434,9 @@ const mcmsTables = [];
         formatDataFromApi: function (json, initialConfig, initialPatchRowData, shouldMakeActionsCellContent) {
             let i;
             const data = json.data ? json.data : json;
+
+            new ReferencesHelperService().populateReferences(data, true);
+
             if (shouldMakeActionsCellContent) {
                 for (i = 0; i < data.length; i++) {
                     initialPatchRowData(data[i]);
@@ -555,3 +558,72 @@ jQuery.fn.dataTable.ext.buttons.resetSorting = {
         dt.order([]).draw();
     }
 };
+
+class ReferencesHelperService {
+    populateReferences(obj, removeArtifacts) {
+        const cache = {};
+        if (!obj || typeof obj !== 'object' || obj.$populated) {
+            return;
+        }
+        try {
+            this.recFunc(obj, cache);
+            obj.$populated = true;
+            if (removeArtifacts) {
+                this.removeRefArtifacts(obj);
+            }
+        } catch (exc) {
+            console.log("can't populate?");
+            console.error();
+        }
+    }
+
+    removeRefArtifacts(obj) {
+        if (!obj || typeof obj !== 'object') {
+            return;
+        }
+        if (obj.$id || obj.$ref) {
+            delete obj.$id;
+            delete obj.$ref;
+        }
+        const keys = Object.getOwnPropertyNames(obj);
+        for (const key of keys) {
+            if (obj[key] && typeof obj[key] === 'object') {
+                this.removeRefArtifacts(obj[key]);
+            }
+        }
+    }
+
+    recFunc(obj, cache) {
+        if (!obj || typeof obj !== 'object') {
+            return;
+        }
+        if (obj.hasOwnProperty('$id') && !cache.hasOwnProperty(obj.$id)) {
+            const id = obj.$id;
+            delete obj.$id;
+            cache[id] = obj;
+            this.iteratePropsOrElements(obj, cache);
+        } else if (obj instanceof Array) {
+            this.iteratePropsOrElements(obj, cache);
+        }
+    }
+
+    iteratePropsOrElements(obj, cache) {
+        const keys = Object.keys(obj);
+        for (const key of keys) {
+            const child = obj[key];
+            if (typeof child !== 'object' || !child) {
+                continue;
+            }
+            if (child.hasOwnProperty('$ref')) {
+                const id = child.$ref;
+                if (!cache.hasOwnProperty(id)) {
+                    console.log('id not in cache: ' + id);
+                    continue;
+                }
+                obj[key] = cache[id];
+            } else {
+                this.recFunc(child, cache);
+            }
+        }
+    }
+}

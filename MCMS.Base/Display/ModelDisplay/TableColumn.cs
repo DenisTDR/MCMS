@@ -33,6 +33,7 @@ namespace MCMS.Base.Display.ModelDisplay
             Invisible = attr?.Invisible ?? false;
             DbColumn = attr?.DbColumn ?? Key;
             DbFuncFormat = attr?.DbFuncFormat;
+            Data = attr?.DataSelector ?? Key;
 
             Type = attr?.Type ?? TableColumnType.Default;
             this.BuildTypeAndPatchFilter(prop);
@@ -42,6 +43,7 @@ namespace MCMS.Base.Display.ModelDisplay
         {
             Name = name;
             Key = key;
+            Data = key;
         }
 
         public TableColumn()
@@ -66,6 +68,7 @@ namespace MCMS.Base.Display.ModelDisplay
         public string DbFuncFormat { get; set; }
         public TableColumnType Type { get; set; }
         public List<ValueLabelPair> FilterValues { get; set; }
+        public string Data { get; set; }
 
         public override string ToString()
         {
@@ -76,7 +79,7 @@ namespace MCMS.Base.Display.ModelDisplay
         {
             return new
             {
-                data = Key,
+                data = Data,
                 defaultContent = DefaultContent ?? "<span class='st-text'>null/empty</i>",
                 orderable = Orderable.IsClient(serverSide),
                 searchable = Searchable.IsClient(serverSide),

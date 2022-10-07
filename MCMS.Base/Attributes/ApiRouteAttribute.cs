@@ -23,7 +23,7 @@ namespace MCMS.Base.Attributes
 
             if (template.StartsWith("~/"))
             {
-                Template = "~/api" + template.Substring(2);
+                Template = "~/api/" + template.Substring(2);
             }
             else if (template.StartsWith("/"))
             {

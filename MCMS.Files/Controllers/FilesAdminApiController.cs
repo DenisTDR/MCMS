@@ -126,10 +126,12 @@ namespace MCMS.Files.Controllers
             Logger.LogInformation("in Upload, file: \nname={FileName}\nsize={Length}\nname={Name}", file.FileName,
                 file.Length, file.Name);
             var fileE = await FileUploadManager.SaveFile(file, purpose);
+            var fileVm = MapV(fileE);
             var respModel = new FileUploadModel
             {
                 Id = fileE.Id,
-                OwnerToken = fileE.OwnerToken
+                OwnerToken = fileE.OwnerToken,
+                Link = fileVm.Link
             };
             return Ok(respModel);
         }

@@ -5,5 +5,6 @@ namespace MCMS.Files.Models
     public class FileUploadModel : ViewModel
     {
         public string OwnerToken { get; set; }
+        public string Link { get; set; }
     }
 }

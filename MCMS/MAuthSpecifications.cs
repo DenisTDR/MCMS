@@ -1,6 +1,7 @@
 using System;
 using MCMS.Admin.Users;
 using MCMS.Auth;
+using MCMS.Auth.Identity;
 using MCMS.Base.Auth;
 using MCMS.Base.Builder;
 using MCMS.Base.Data.Seeder;
@@ -15,7 +16,7 @@ namespace MCMS
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddDefaultIdentity<User>(options =>
+            services.AddDefaultIdentityWithBs4<User>(options =>
                 {
                     options.SignIn.RequireConfirmedAccount = Env.GetBool("REQUIRE_CONFIRMED_ACCOUNT");
                     options.Password.RequireUppercase = false;

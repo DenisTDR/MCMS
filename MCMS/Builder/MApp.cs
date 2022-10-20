@@ -123,19 +123,19 @@ namespace MCMS.Builder
             }
             else
             {
-                app.UseExceptionHandler("/Home/Error");
+                app.UseExceptionHandler("/Error");
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
 
-            app.UseStatusCodePagesWithReExecute("/Home/Error", "?code={0}");
+            app.UseStatusCodePagesWithReExecute("/Error", "?code={0}");
             app.Use(async (ctx, next) =>
             {
                 if (ctx.Request.Path.Value?.StartsWith("/api", StringComparison.OrdinalIgnoreCase) == true)
                 {
                     var statusCodeFeature = ctx.Features.Get<IStatusCodePagesFeature>();
 
-                    if (statusCodeFeature != null && statusCodeFeature.Enabled)
+                    if (statusCodeFeature is { Enabled: true })
                         statusCodeFeature.Enabled = false;
                 }
 

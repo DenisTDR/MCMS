@@ -32,6 +32,7 @@ namespace MCMS.Controllers
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        [AdminRoute("~/Error")]
         public IActionResult Error()
         {
             var exceptionHandlerPathFeature =

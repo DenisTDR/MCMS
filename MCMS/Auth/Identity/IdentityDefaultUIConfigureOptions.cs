@@ -8,13 +8,13 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace MCMS.Auth.Identity
 {
-    internal class IdentityDefaultUIConfigureOptions<TUser> :
+    internal class IdentityDefaultUiConfigureOptions<TUser> :
         IPostConfigureOptions<RazorPagesOptions>,
         IConfigureNamedOptions<CookieAuthenticationOptions> where TUser : class
     {
-        private const string IdentityUIDefaultAreaName = "Identity";
+        private const string IdentityUiDefaultAreaName = "Identity";
 
-        public IdentityDefaultUIConfigureOptions(
+        public IdentityDefaultUiConfigureOptions(
             IWebHostEnvironment environment)        {
             Environment = environment;
         }
@@ -26,15 +26,15 @@ namespace MCMS.Auth.Identity
             name = name ?? throw new ArgumentNullException(nameof(name));
             options = options ?? throw new ArgumentNullException(nameof(options));
 
-            options.Conventions.AuthorizeAreaFolder(IdentityUIDefaultAreaName, "/Account/Manage");
-            options.Conventions.AuthorizeAreaPage(IdentityUIDefaultAreaName, "/Account/Logout");
+            options.Conventions.AuthorizeAreaFolder(IdentityUiDefaultAreaName, "/Account/Manage");
+            options.Conventions.AuthorizeAreaPage(IdentityUiDefaultAreaName, "/Account/Logout");
             var convention = new IdentityPageModelConvention<TUser>();
             options.Conventions.AddAreaFolderApplicationModelConvention(
-                IdentityUIDefaultAreaName,
+                IdentityUiDefaultAreaName,
                 "/",
                 pam => convention.Apply(pam));
             options.Conventions.AddAreaFolderApplicationModelConvention(
-                IdentityUIDefaultAreaName,
+                IdentityUiDefaultAreaName,
                 "/Account/Manage",
                 pam => pam.Filters.Add(new ExternalLoginsPageFilter<TUser>()));
         }
@@ -50,9 +50,9 @@ namespace MCMS.Auth.Identity
 
             if (string.Equals(IdentityConstants.ApplicationScheme, name, StringComparison.Ordinal))
             {
-                options.LoginPath = $"/{IdentityUIDefaultAreaName}/Account/Login";
-                options.LogoutPath = $"/{IdentityUIDefaultAreaName}/Account/Logout";
-                options.AccessDeniedPath = $"/{IdentityUIDefaultAreaName}/Account/AccessDenied";
+                options.LoginPath = $"/{IdentityUiDefaultAreaName}/Account/Login";
+                options.LogoutPath = $"/{IdentityUiDefaultAreaName}/Account/Logout";
+                options.AccessDeniedPath = $"/{IdentityUiDefaultAreaName}/Account/AccessDenied";
             }
         }
     }

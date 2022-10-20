@@ -15,8 +15,9 @@ namespace MCMS.Base.SwaggerFormly.Formly.Fields
             var obj = new OpenApiObject
             {
                 ["imageUploadUrl"] = new OpenApiString(
-                    Env.Get("ROUTE_PREFIX") +
-                    linkGenerator.GetPathByAction("UploadCkEditor", "FilesUpload")?.Substring(1)),
+                    // ReSharper disable once Mvc.ActionNotResolved
+                    // ReSharper disable once Mvc.ControllerNotResolved
+                    $"{Env.Get("ROUTE_PREFIX")}{linkGenerator.GetPathByAction("UploadCkEditor", "FilesUpload")?[1..]}"),
             };
 
             return obj;

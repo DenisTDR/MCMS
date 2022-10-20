@@ -4,11 +4,14 @@ using System.Reflection;
 using MCMS.Base.Controllers.Api;
 using MCMS.Base.Exceptions;
 using MCMS.Models;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace MCMS.Filters
 {
@@ -18,7 +21,7 @@ namespace MCMS.Filters
         {
             if (IsApiController(context))
             {
-                var responseModel = new {Error = GetRelevantExceptionMessage(context.Exception)};
+                var responseModel = new { Error = GetRelevantExceptionMessage(context.Exception) };
                 var dr = new ObjectResult(responseModel);
 
                 if (context.Exception is KnownException knownExc)
@@ -27,7 +30,7 @@ namespace MCMS.Filters
                 }
                 else
                 {
-                    Console.Error.WriteLine("Uncatched Exception: " + context.Exception + " ");
+                    Console.Error.WriteLine("Uncaught Exception: " + context.Exception + " ");
                     dr.StatusCode = 500;
                 }
 
@@ -35,7 +38,8 @@ namespace MCMS.Filters
             }
             else
             {
-                if (context.Exception is KnownException knownExc && knownExc.Code != 0 && knownExc.Code != 500)
+                if (context.Exception is KnownException knownExc && knownExc.Code != 0 && knownExc.Code != 500
+                    && !context.HttpContext.RequestServices.GetRequiredService<IWebHostEnvironment>().IsDevelopment())
                 {
                     var viewData = new ViewDataDictionary(new EmptyModelMetadataProvider(), context.ModelState)
                     {

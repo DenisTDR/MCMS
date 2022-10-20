@@ -1,13 +1,15 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Razor.Compilation;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace MCMS.Auth.Identity
 {
-    public static class IdentityServiceCollectionExtensions
+    internal static class IdentityServiceCollectionExtensions
     {
         public static IdentityBuilder AddDefaultIdentityWithBs4<TUser>(this IServiceCollection services,
             Action<IdentityOptions> configureOptions) where TUser : class
@@ -27,7 +29,8 @@ namespace MCMS.Auth.Identity
                 .AddBs4Ui()
                 .AddDefaultTokenProviders();
         }
-        public static IdentityBuilder AddBs4Ui(this IdentityBuilder builder)
+
+        private static IdentityBuilder AddBs4Ui(this IdentityBuilder builder)
         {
             builder.AddSignInManager();
             builder.Services
@@ -43,13 +46,14 @@ namespace MCMS.Auth.Identity
                 });
 
             builder.Services.ConfigureOptions(
-                typeof(IdentityDefaultUIConfigureOptions<>)
+                typeof(IdentityDefaultUiConfigureOptions<>)
                     .MakeGenericType(builder.UserType));
-            // builder.Services.TryAddTransient<IEmailSender, EmailSender>();
+            builder.Services.TryAddTransient<IEmailSender, MockEmailSender>();
 
             return builder;
         }
-        internal class ViewVersionFeatureProvider : IApplicationFeatureProvider<ViewsFeature>
+
+        private class ViewVersionFeatureProvider : IApplicationFeatureProvider<ViewsFeature>
         {
 
             public void PopulateFeature(IEnumerable<ApplicationPart> parts, ViewsFeature feature)
@@ -57,9 +61,9 @@ namespace MCMS.Auth.Identity
                 var viewsToRemove = new List<CompiledViewDescriptor>();
                 foreach (var descriptor in feature.ViewDescriptors)
                 {
-                    if (IsIdentityUIView(descriptor))
+                    if (IsIdentityUiView(descriptor))
                     {
-                        if (descriptor.Type.FullName.Contains("V5"))
+                        if (descriptor.Type!.FullName!.Contains("V5"))
                         {
                             // Remove V5 views
                             viewsToRemove.Add(descriptor);
@@ -78,7 +82,7 @@ namespace MCMS.Auth.Identity
                 }
             }
 
-            private static bool IsIdentityUIView(CompiledViewDescriptor desc) => desc.RelativePath.StartsWith("/Areas/Identity", StringComparison.OrdinalIgnoreCase) && desc.Type.Assembly == typeof(IdentityBuilderUIExtensions).Assembly;
+            private static bool IsIdentityUiView(CompiledViewDescriptor desc) => desc.RelativePath.StartsWith("/Areas/Identity", StringComparison.OrdinalIgnoreCase) && desc.Type.Assembly == typeof(IdentityBuilderUIExtensions).Assembly;
         }
     }
 }

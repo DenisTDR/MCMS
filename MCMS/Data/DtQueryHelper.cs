@@ -10,7 +10,7 @@ namespace MCMS.Data
     {
         public static QueryCondition BuildCondition(
             string propName, object compareValue, string format = null, bool exactMatch = false,
-            string objectName = "x", string paramName = "param")
+            string objectName = "x", string paramName = "param", bool useUnaccentForStrings = false)
         {
             string queryStr;
             var leftHand = (!string.IsNullOrEmpty(objectName) ? objectName + "." : "") + propName;
@@ -19,7 +19,10 @@ namespace MCMS.Data
             {
                 if (!exactMatch)
                 {
-                    queryStr = $"EF.Functions.ILike({leftHand}, MDbFunctions.Concat('%', {paramName}, '%'))";
+                    queryStr = useUnaccentForStrings
+                        ? $"EF.Functions.ILike(MDbFunctions.Unaccent({leftHand}), MDbFunctions.Unaccent(MDbFunctions.Concat('%', {paramName}, '%')))"
+                        : $"EF.Functions.ILike({leftHand}, MDbFunctions.Concat('%', {paramName}, '%'))";
+
                     compareValue = compareValue.ToString();
                 }
                 else
@@ -32,7 +35,7 @@ namespace MCMS.Data
             else
             {
                 var hasConditionPlaceholder = format.Contains("<condition>");
-                var hasSelectorTag = format.Contains("<sel>"); // && format.Contains("</sel>");
+                var hasSelectorTag = format.Contains("<sel>");
                 if (hasConditionPlaceholder != hasSelectorTag)
                 {
                     throw new ArgumentException(null, nameof(format));
@@ -46,7 +49,7 @@ namespace MCMS.Data
                 var selector = format.Split("<sel>")[1];
 
                 var qCond =
-                    BuildCondition(selector, compareValue, null, exactMatch, null, paramName);
+                    BuildCondition(selector, compareValue, null, exactMatch, null, paramName, useUnaccentForStrings);
                 parameters = qCond.Params;
                 format = format.Split("<sel>")[0].Replace("<condition>", qCond.Query);
 
@@ -57,7 +60,7 @@ namespace MCMS.Data
         }
 
         public static bool BuildMultiTermQuery(DtColumn dtColumn, out QueryCondition result,
-            DbColumnMetadata dbColumn)
+            DbColumnMetadata dbColumn, bool useUnaccentForStrings = false)
         {
             var terms = dtColumn.Search.Value.Split(" ",
                 StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
@@ -65,7 +68,6 @@ namespace MCMS.Data
 
             if (terms.Length == 0)
             {
-                // result = null;
                 result = new QueryCondition();
                 return false;
             }
@@ -80,7 +82,8 @@ namespace MCMS.Data
                 var format = dbColumn.DbFuncFormat;
                 var qCond =
                     BuildCondition(dbColumn.DbColumn, terms[index], format, paramName: "param" + index,
-                        objectName: string.IsNullOrEmpty(format) ? "(string)(object)x" : "x");
+                        objectName: string.IsNullOrEmpty(format) ? "(string)(object)x" : "x",
+                        useUnaccentForStrings: useUnaccentForStrings);
                 queryStrL.Add(qCond.Query);
             }
 

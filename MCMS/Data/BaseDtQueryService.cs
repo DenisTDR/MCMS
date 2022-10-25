@@ -20,6 +20,7 @@ namespace MCMS.Data
         private readonly ILogger _logger;
 
         public bool AlreadyOrdered { get; set; }
+        public bool UseUnaccentForStrings { get; set; }
 
         public BaseDtQueryService(
             IMapper mapper,

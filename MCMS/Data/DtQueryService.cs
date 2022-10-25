@@ -93,7 +93,8 @@ namespace MCMS.Data
                 }
                 default:
                 {
-                    if (DtQueryHelper.BuildMultiTermQuery(dtColumn, out var res, dbColumn))
+                    if (DtQueryHelper.BuildMultiTermQuery(dtColumn, out var res, dbColumn,
+                            useUnaccentForStrings: UseUnaccentForStrings))
                     {
                         return res;
                     }

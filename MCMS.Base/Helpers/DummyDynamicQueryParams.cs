@@ -8,7 +8,7 @@ namespace MCMS.Base.Helpers
     {
         public static object Create([NotNull] List<object> values)
         {
-            if (values.Count == 0 || values.Count > 7)
+            if (values.Count is 0 or > 7)
             {
                 throw new ArgumentException("Only lists with length between 1 and 7 are accepted.", nameof(values));
             }

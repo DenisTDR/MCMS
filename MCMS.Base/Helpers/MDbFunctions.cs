@@ -34,6 +34,9 @@ namespace MCMS.Base.Helpers
             string arg7, string arg8, string arg9)
             => Concat(arg1, arg2);
 
+        public static string Unaccent(string value)
+            => throw new InvalidOperationException($"{nameof(Unaccent)} cannot be called client side");
+
         public static void Register(ModelBuilder builder)
         {
             var methodInfos = typeof(MDbFunctions).GetMethods().Where(mi => mi.Name == nameof(Concat));
@@ -45,6 +48,13 @@ namespace MCMS.Base.Helpers
                         new SqlFunctionExpression("CONCAT", args, false, args.Select(x => false), typeof(string), null)
                     );
             }
+
+            var unaccentMethodInfo = typeof(MDbFunctions).GetMethod(nameof(Unaccent));
+            builder
+                .HasDbFunction(unaccentMethodInfo)
+                .HasTranslation(args =>
+                    new SqlFunctionExpression("unaccent", args, false, args.Select(x => false), typeof(string), null)
+                );
         }
     }
 }

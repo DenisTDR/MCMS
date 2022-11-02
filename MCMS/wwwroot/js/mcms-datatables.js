@@ -435,7 +435,7 @@ const mcmsTables = [];
             let i;
             const data = json.data ? json.data : json;
 
-            new ReferencesHelperService().populateReferences(data, true);
+            new ReferencesHelperService().populateReferences(data);
 
             if (shouldMakeActionsCellContent) {
                 for (i = 0; i < data.length; i++) {
@@ -560,7 +560,7 @@ jQuery.fn.dataTable.ext.buttons.resetSorting = {
 };
 
 class ReferencesHelperService {
-    populateReferences(obj, removeArtifacts) {
+    populateReferences(obj) {
         const cache = {};
         if (!obj || typeof obj !== 'object' || obj.$populated) {
             return;
@@ -568,28 +568,9 @@ class ReferencesHelperService {
         try {
             this.recFunc(obj, cache);
             obj.$populated = true;
-            if (removeArtifacts) {
-                this.removeRefArtifacts(obj);
-            }
         } catch (exc) {
             console.log("can't populate?");
-            console.error();
-        }
-    }
-
-    removeRefArtifacts(obj) {
-        if (!obj || typeof obj !== 'object') {
-            return;
-        }
-        if (obj.$id || obj.$ref) {
-            delete obj.$id;
-            delete obj.$ref;
-        }
-        const keys = Object.getOwnPropertyNames(obj);
-        for (const key of keys) {
-            if (obj[key] && typeof obj[key] === 'object') {
-                this.removeRefArtifacts(obj[key]);
-            }
+            console.error(exc);
         }
     }
 

@@ -3,6 +3,7 @@ using System.Linq;
 using MCMS.Base.Data;
 using MCMS.Base.Data.Entities;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace MCMS.Base.Extensions
@@ -17,6 +18,11 @@ namespace MCMS.Base.Extensions
         public static IRepository<T> Repo<T>(this IServiceProvider serviceProvider) where T : class, IEntity
         {
             return serviceProvider.GetRepo<T>();
+        }
+
+        public static ILogger<T> Logger<T>(this IServiceProvider serviceProvider)
+        {
+            return serviceProvider.GetRequiredService<ILogger<T>>();
         }
 
         public static object GetRepo(this IServiceProvider serviceProvider, Type entityType)

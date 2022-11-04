@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using MCMS.Base.Attributes;
 using MCMS.Controllers.Ui;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using MCMS.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Diagnostics;
@@ -13,17 +12,16 @@ namespace MCMS.Controllers
     [AllowAnonymous]
     public class HomeController : AdminUiController
     {
-        private readonly ILogger<HomeController> _logger;
-
-        public HomeController(ILogger<HomeController> logger)
-        {
-            _logger = logger;
-        }
-
         [AdminRoute("~/")]
         public override Task<IActionResult> Index()
         {
             return Task.FromResult(View() as IActionResult);
+        }
+
+        [AdminRoute("~/health")]
+        public IActionResult Health()
+        {
+            return Ok();
         }
 
         public IActionResult Privacy()

@@ -20,6 +20,7 @@ namespace MCMS.Base.SwaggerFormly.Formly
         public bool ForceEnableIfSourceChanged { get; set; } = true;
 
         public bool AlwaysEnabled { get; set; } = false;
+        public bool UseAsDefaultValue { get; set; } = false;
 
         public string EnableExpression { get; set; }
 
@@ -34,6 +35,7 @@ namespace MCMS.Base.SwaggerFormly.Formly
                 ["checkIfTouchedOnInit"] = new OpenApiBoolean(CheckIfTouchedOnInit && !AlwaysEnabled),
                 ["forceEnableIfSourceChanged"] = new OpenApiBoolean(ForceEnableIfSourceChanged && !AlwaysEnabled),
                 ["enableExpression"] = new OpenApiString(EnableExpression),
+                ["useAsDefaultValue"] = new OpenApiBoolean(UseAsDefaultValue),
             };
             templateOptions["autoFill"] = config;
         }

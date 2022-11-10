@@ -133,8 +133,21 @@ body.forced-modal-open {
     z-index: 1040 !important;
 }
 
+.modal-full-screen,
+.modal-full-height {
+    max-height: 100% !important;
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.modal-full-screen .modal-content,
 .modal-full-height .modal-content {
     height: 100% !important;
+}
+
+.modal-full-screen,
+.modal-full-width {
+    max-width: 100%;
 }
 
 @media (min-width: 650px) and (max-width: 750px) {

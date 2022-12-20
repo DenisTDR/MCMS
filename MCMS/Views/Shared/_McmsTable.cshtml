@@ -16,7 +16,7 @@
     {
         link.ModalSuccessCallback = "table" + Model.Id + ".mcms.callbacks.modalClosed";
     }
-    var columns = Model.GetColumnsOrdered();
+    var columns = Model.GetFinalColumns();
 }
 
 @if (Model.CreateNewItemLink != null)

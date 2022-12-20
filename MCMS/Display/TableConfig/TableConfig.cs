@@ -11,8 +11,6 @@ namespace MCMS.Display.TableConfig
     public class TableConfig : WithUniqueId
     {
         public int Index { get; set; }
-
-        // public string Id { get; set; } = Utils.GenerateRandomHexString();
         public string Id => UniqueId;
         public List<MRichLink> ItemActions { get; set; }
         public List<TableColumn> TableColumns { get; set; }
@@ -30,23 +28,23 @@ namespace MCMS.Display.TableConfig
         public bool ServerSide { get; set; }
         public int ServerSideSearchDelay { get; set; } = 500;
         public int DefaultDisplayLength { get; set; } = 50;
-        
+
         public string AdditionalClasses { get; set; }
 
         public object BuildRowGroupObject(List<TableColumn> columns)
         {
             var cols = columns?.Where(tc => tc.RowGroups).ToList();
-            return cols == null || !cols.Any() ? null : new {dataSrc = cols.Select(c => c.Key)};
+            return cols == null || !cols.Any() ? null : new { dataSrc = cols.Select(c => c.Key) };
         }
 
         public string GetConfigObjectSerialized(IUrlHelper url)
         {
-            var columns = GetColumnsOrdered();
+            var columns = GetFinalColumns();
             return JsonConvert.SerializeObject(new
             {
                 columns = columns.Select(tc => tc.GetDataTablesObject(ServerSide)),
                 rowGroup = BuildRowGroupObject(columns),
-                ajax = new {url = TableItemsApiUrl},
+                ajax = new { url = TableItemsApiUrl },
                 hasStaticIndexColumn = HasTableIndexColumn,
                 skipDefaultModalEventHandlers = SkipDefaultModalEventHandlers,
                 enableColumnSearch = EnableColumnSearch,
@@ -59,13 +57,13 @@ namespace MCMS.Display.TableConfig
             });
         }
 
-        public List<TableColumn> GetColumnsOrdered()
+        public List<TableColumn> GetFinalColumns()
         {
             var columns = TableColumns.OrderBy(tc => tc.OrderIndex).AsEnumerable();
             if (HasTableIndexColumn)
             {
                 columns = columns.Prepend(new TableColumn
-                    {Name = "#", ClassName = "non-toggleable", Data = ServerSide ? "_index" : null});
+                    { Name = "#", ClassName = "non-toggleable", Data = ServerSide ? "_index" : null });
             }
 
             if (CheckboxSelection)
@@ -79,12 +77,18 @@ namespace MCMS.Display.TableConfig
                 });
             }
 
+            if (ItemActions.Any())
+            {
+                columns = columns.Append(
+                    new TableColumn("<span class='col-name-hidden'>Actions</span>", "_actions", 100)
+                        { Orderable = ServerClient.None, Searchable = ServerClient.None });
+            }
+
             return columns.ToList();
         }
 
         protected override string GetHashSource()
         {
-            // Console.WriteLine(TableItemsApiUrl);
             return TableItemsApiUrl.Split("?").FirstOrDefaultDynamic() + "-" + Index;
         }
     }

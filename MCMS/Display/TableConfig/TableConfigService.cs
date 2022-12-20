@@ -53,16 +53,11 @@ namespace MCMS.Display.TableConfig
             tableColumnProps = tableColumnProps.Where(prop =>
             {
                 var attr = prop.GetCustomAttributes<TableColumnAttribute>().FirstOrDefault();
-                return attr == null || !attr.Hidden || attr.RowGroup;
+                return attr is not { Hidden: true } || attr.RowGroup;
             }).ToList();
 
             var list = tableColumnProps.Select(prop =>
                 new TableColumn(prop, prop.GetCustomAttributes<TableColumnAttribute>().ToList())).ToList();
-            if (!ExcludeActionsColumn)
-            {
-                list.Add(new TableColumn("<span class='col-name-hidden'>Actions</span>", "_actions", 100)
-                    {Orderable = ServerClient.None, Searchable = ServerClient.None});
-            }
 
             return list;
         }

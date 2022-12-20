@@ -5,7 +5,7 @@ namespace MCMS.Display
     public abstract class WithUniqueId
     {
         private string _uniqueId;
-        public string UniqueId => _uniqueId ??= BuildUniqueId();
+        protected string UniqueId => _uniqueId ??= BuildUniqueId();
         protected abstract string GetHashSource();
 
         private string BuildUniqueId()

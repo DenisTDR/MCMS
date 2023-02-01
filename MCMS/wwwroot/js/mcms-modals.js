@@ -66,8 +66,12 @@
                         'Please make sure you are connected to the internet. Try refreshing this page.', 'Failed');
                 });
         },
-        postRequestAjaxModal: function (url, data, callback) {
-
+        requestToAjaxModal: function (url, data, callback, method) {
+            method = method || 'GET';
+            mcmsModals.postRequestAjaxModal(url, data, callback, method);
+        },
+        postRequestAjaxModal: function (url, data, callback, method) {
+            method = method || 'POST';
             const modal = mcmsModals._backendModalTemplate.clone();
 
             mcmsModals.bindStackedModalsBehaviour(modal, true);
@@ -84,8 +88,8 @@
             const requestOptions = {
                 url: url,
                 headers: {'X-Request-Modal': 'true'},
-                type: 'POST',
-                data: JSON.stringify(data),
+                type: method,
+                data: method === 'POST' ? JSON.stringify(data) : undefined,
                 contentType: 'application/json'
             };
             // make backend request to get the content

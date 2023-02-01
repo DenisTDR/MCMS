@@ -36,6 +36,11 @@ namespace MCMS.Base.SwaggerFormly.Models
                 ForApi.Description = $"{homeUrl}{ForApi.Description}";
             }
 
+            foreach (var swaggerConfigOptions in CustomConfigs)
+            {
+                swaggerConfigOptions.Description = $"{homeUrl}{swaggerConfigOptions.Description}";
+            }
+
             JavascriptFiles.Add("_content/MCMS/api/docs/swagger-ui-theme.js");
             StylesheetFiles.Add("_content/MCMS/api/docs/swagger-ui-theme.css");
         }

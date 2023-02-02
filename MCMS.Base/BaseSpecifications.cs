@@ -25,11 +25,12 @@ namespace MCMS.Base
                 .Where(type => !type.IsAbstract && !type.IsInterface)
                 .Where(type => type.GetCustomAttribute<ServiceAttribute>() is { });
 
-            foreach (var serviceType in serviceTypes)
+            foreach (var implementationType in serviceTypes)
             {
-                var attr = serviceType.GetCustomAttribute<ServiceAttribute>();
+                var attr = implementationType.GetCustomAttribute<ServiceAttribute>();
                 if (attr == null) continue;
-                services.Add(new ServiceDescriptor(serviceType, serviceType, attr.Lifetime));
+                var serviceType = attr.ServiceType ?? implementationType;
+                services.Add(new ServiceDescriptor(serviceType, implementationType, attr.Lifetime));
             }
         }
     }

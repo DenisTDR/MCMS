@@ -3,6 +3,8 @@ using System.Linq;
 using System.Security.Claims;
 using AutoMapper;
 using MCMS.Base.Auth;
+using MCMS.Base.Data;
+using MCMS.Base.Data.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using MCMS.Base.Extensions;
@@ -27,5 +29,6 @@ namespace MCMS.Base.Controllers
             };
 
         protected T Service<T>() => Services.Service<T>();
+        protected IRepository<T> Repo<T>() where T : class, IEntity => Services.Repo<T>();
     }
 }

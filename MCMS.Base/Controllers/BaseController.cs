@@ -5,6 +5,7 @@ using AutoMapper;
 using MCMS.Base.Auth;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
+using MCMS.Base.Extensions;
 
 namespace MCMS.Base.Controllers
 {
@@ -24,5 +25,7 @@ namespace MCMS.Base.Controllers
                 Email = User.FindFirstValue(ClaimTypes.Email),
                 Roles = User.FindAll(ClaimTypes.Role).Select(claim => claim.Value).ToList()
             };
+
+        protected T Service<T>() => Services.Service<T>();
     }
 }

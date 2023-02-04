@@ -18,6 +18,7 @@ namespace MCMS.Data
         protected readonly BaseDbContext DbContext;
         public DbSet<T> DbSet { get; }
         public IQueryable<T> Queryable { get; protected set; }
+        public IQueryable<T> Query => Queryable;
         public bool SkipSaving { get; set; }
 
         public Repository(BaseDbContext dbContext)

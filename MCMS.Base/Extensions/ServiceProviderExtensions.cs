@@ -52,5 +52,10 @@ namespace MCMS.Base.Extensions
         {
             return serviceProvider.GetRequiredService<IOptions<T>>().Value;
         }
+
+        public static T Service<T>(this IServiceProvider serviceProvider) where T : class
+        {
+            return serviceProvider.GetRequiredService<T>();
+        }
     }
 }

@@ -17,6 +17,11 @@ const mcmsTables = [];
             const initialPatchRowData = function (rowData) {
                 if (shouldMakeActionsCellContent) {
                     rowData._actions = actionsColumnContent.replace(/ENTITY_ID/g, rowData.id);
+                    if(initialConfig.itemActionsPlaceholders) {
+                        for (let placeholder of Object.keys(initialConfig.itemActionsPlaceholders)) {
+                            rowData._actions = rowData._actions.replace(placeholder, rowData[initialConfig.itemActionsPlaceholders[placeholder]]);
+                        }
+                    }
                 }
             };
 

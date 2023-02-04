@@ -30,6 +30,7 @@ namespace MCMS.Display.TableConfig
         public int DefaultDisplayLength { get; set; } = 50;
 
         public string AdditionalClasses { get; set; }
+        public Dictionary<string, string> ItemActionsPlaceholders { get; set; }
 
         public object BuildRowGroupObject(List<TableColumn> columns)
         {
@@ -53,7 +54,8 @@ namespace MCMS.Display.TableConfig
                 tableActions = TableActions,
                 serverSide = ServerSide,
                 searchDelay = ServerSideSearchDelay,
-                iDisplayLength = DefaultDisplayLength
+                iDisplayLength = DefaultDisplayLength,
+                itemActionsPlaceholders = ItemActionsPlaceholders
             });
         }
 

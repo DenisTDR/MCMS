@@ -43,5 +43,6 @@ namespace MCMS.Base.Data
         bool SkipSaving { get; set; }
         DbSet<T> DbSet { get; }
         IQueryable<T> Queryable { get; }
+        IQueryable<T> Query { get; }
     }
 }

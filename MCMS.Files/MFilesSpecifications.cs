@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using MCMS.Base.Builder;
 using MCMS.Base.Data;
+using MCMS.Base.Extensions;
 using MCMS.Base.Files.UploadPurpose;
 using MCMS.Files.Filters;
 using MCMS.Files.Models;
@@ -36,7 +37,7 @@ namespace MCMS.Files
 
         private void CreateAndRegisterDirectories(IApplicationBuilder app, IServiceProvider serviceProvider)
         {
-            var logger = serviceProvider.GetRequiredService<ILogger<MFilesSpecifications>>();
+            var logger = serviceProvider.Service<ILogger<MFilesSpecifications>>();
             var neededDirs = new[] {MFiles.PublicPath, MFiles.PrivatePath};
             foreach (var neededDir in neededDirs)
             {

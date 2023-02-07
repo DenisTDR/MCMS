@@ -16,7 +16,6 @@ using Microsoft.AspNetCore.JsonPatch.Adapters;
 using Microsoft.AspNetCore.JsonPatch.Operations;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
 
 namespace MCMS.Base.Attributes
@@ -142,7 +141,7 @@ namespace MCMS.Base.Attributes
                 }
             }
 
-            var adapterFactory = context.HttpContext.RequestServices.GetRequiredService<IAdapterFactory>() ??
+            var adapterFactory = context.HttpContext.RequestServices.Service<IAdapterFactory>() ??
                                  new AdapterFactory();
             doc.ApplyTo(nfm, adapterFactory, context.ModelState);
             if (!context.ModelState.IsValid)

@@ -4,14 +4,13 @@ using MCMS.Admin;
 using MCMS.Base.Attributes;
 using MCMS.Controllers.Ui;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace MCMS.Controllers
 {
     public class McmsFrameworkController : UiController
     {
         private FrameworkInfoService FrameworkInfoService =>
-            ServiceProvider.GetRequiredService<FrameworkInfoService>();
+            Service<FrameworkInfoService>();
 
         public IActionResult FrameworkInfo()
         {

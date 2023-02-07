@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Security.Claims;
 using MCMS.Base.Auth;
 using MCMS.Base.Data;
+using MCMS.Base.Extensions;
 using MCMS.Logging.AuditLogs.AuditLogEntries;
 using MCMS.Logging.AuditLogs.Worker;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace MCMS.Logging.AuditLogs
 {
@@ -48,7 +48,7 @@ namespace MCMS.Logging.AuditLogs
                 Data = data,
                 Begin = DateTime.Now,
             };
-            var worker = _serviceProvider.GetRequiredService<MAuditLogWorker>();
+            var worker = _serviceProvider.Service<MAuditLogWorker>();
             worker.Enqueue(new LogActionWrapper<AuditLogEntryEntity>(log));
         }
 
@@ -62,7 +62,7 @@ namespace MCMS.Logging.AuditLogs
                 Data = data,
                 End = DateTime.Now,
             };
-            var worker = _serviceProvider.GetRequiredService<MAuditLogWorker>();
+            var worker = _serviceProvider.Service<MAuditLogWorker>();
             worker.Enqueue(new LogActionWrapper<AuditLogEntryEntity>(log, ActionType.Update));
         }
     }

@@ -17,7 +17,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace MCMS.Admin.Users
 {
@@ -27,10 +26,10 @@ namespace MCMS.Admin.Users
         protected IRepository<User> Repo => ServiceProvider.GetRepo<User>();
 
         protected ITableConfigService TableConfigService =>
-            ServiceProvider.GetRequiredService<UsersTableConfigService>();
+            Service<UsersTableConfigService>();
 
         protected IDetailsConfigServiceT<UserViewModel> DetailsConfigService =>
-            ServiceProvider.GetRequiredService<IDetailsConfigServiceT<UserViewModel>>();
+            Service<IDetailsConfigServiceT<UserViewModel>>();
 
         public override void OnActionExecuting(ActionExecutingContext context)
         {
@@ -59,7 +58,7 @@ namespace MCMS.Admin.Users
         public async Task<IActionResult> ChangeRoles([FromRoute] string id)
         {
             var userVm = await GetUserWithRoles(id);
-            ViewBag.Roles = await ServiceProvider.GetRequiredService<RoleManager<Role>>().Roles
+            ViewBag.Roles = await Service<RoleManager<Role>>().Roles
                 .Select(role => role.Name)
                 .Where(role => role != "God").ToListAsync();
             return View(userVm);
@@ -103,7 +102,7 @@ namespace MCMS.Admin.Users
                 return BadRequest("Can't delete your own user.");
             }
 
-            var usersManager = ServiceProvider.GetRequiredService<UserManager<User>>();
+            var usersManager = Service<UserManager<User>>();
             var user = await usersManager.FindByIdAsync(id);
             if (user == null)
             {
@@ -118,7 +117,7 @@ namespace MCMS.Admin.Users
         {
             var user = await Repo.GetOneOrThrow(id);
             var userVm = Mapper.Map<UserViewModel>(user);
-            userVm.RolesList = (await ServiceProvider.GetRequiredService<UserManager<User>>().GetRolesAsync(user))
+            userVm.RolesList = (await Service<UserManager<User>>().GetRolesAsync(user))
                 .ToList();
             return userVm;
         }

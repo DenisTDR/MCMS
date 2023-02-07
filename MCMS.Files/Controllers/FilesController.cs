@@ -9,7 +9,6 @@ using MCMS.Display.ModelDisplay;
 using MCMS.Files.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace MCMS.Files.Controllers
 {
@@ -85,7 +84,7 @@ namespace MCMS.Files.Controllers
                 return RedirectToAction(nameof(DownloadFile), new { id, fileName = e.OriginalName });
             }
 
-            return ServiceProvider.GetRequiredService<FilesService>().GetFileResult(e, fileName);
+            return Service<FilesService>().GetFileResult(e, fileName);
         }
     }
 }

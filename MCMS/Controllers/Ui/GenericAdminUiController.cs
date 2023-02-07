@@ -33,10 +33,10 @@ namespace MCMS.Controllers.Ui
         private IDetailsConfigServiceT<TVm> _detailsConfigService;
 
         public virtual IDetailsConfigServiceT<TVm> DetailsConfigService => _detailsConfigService ??=
-            ServiceProvider.GetRequiredService<IDetailsConfigServiceT<TVm>>();
+            Service<IDetailsConfigServiceT<TVm>>();
 
         public virtual FormParamsService FormParamsService =>
-            ServiceProvider.GetRequiredService<FormParamsForControllerService<TApiController, TFm>>();
+            Service<FormParamsForControllerService<TApiController, TFm>>();
 
         protected virtual IRepository<TE> Repo => ServiceProvider.GetRepo<TE>();
 

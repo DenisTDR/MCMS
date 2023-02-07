@@ -5,6 +5,7 @@ using System.Linq;
 using MCMS.Admin;
 using MCMS.Base.Builder;
 using MCMS.Base.Data.Seeder;
+using MCMS.Base.Extensions;
 using MCMS.Base.Helpers;
 using MCMS.Builder.Helpers;
 using MCMS.Data;
@@ -189,15 +190,15 @@ namespace MCMS.Builder
 
             if (seedOnStart)
             {
-                serviceProvider.GetRequiredService<DataSeeder>().SeedFromProvidedSources().Wait();
+                serviceProvider.Service<DataSeeder>().SeedFromProvidedSources().Wait();
             }
         }
 
         private static void EnsureDatabase(IServiceProvider serviceProvider)
         {
-            var logger = serviceProvider.GetRequiredService<ILogger<MApp>>();
+            var logger = serviceProvider.Service<ILogger<MApp>>();
             logger.LogInformation("Checking pending migrations");
-            var dbContext = serviceProvider.GetRequiredService<BaseDbContext>();
+            var dbContext = serviceProvider.Service<BaseDbContext>();
             var dbCreator = dbContext.Database.GetService<IDatabaseCreator>() as RelationalDatabaseCreator;
             if (dbCreator == null)
             {

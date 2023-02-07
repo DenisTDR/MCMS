@@ -1,9 +1,9 @@
 using System.Linq;
 using System.Threading.Tasks;
+using MCMS.Base.Extensions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace MCMS.Auth.Identity
 {
@@ -14,7 +14,7 @@ namespace MCMS.Auth.Identity
             var result = await next();
             if (result.Result is PageResult page)
             {
-                var signInManager = context.HttpContext.RequestServices.GetRequiredService<SignInManager<TUser>>();
+                var signInManager = context.HttpContext.RequestServices.Service<SignInManager<TUser>>();
                 var schemes = await signInManager.GetExternalAuthenticationSchemesAsync();
                 var hasExternalLogins = schemes.Any();
 

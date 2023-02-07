@@ -5,6 +5,7 @@ using MCMS.Base.Builder;
 using MCMS.Base.Data;
 using MCMS.Base.Data.Seeder;
 using MCMS.Base.Display.DisplayValue;
+using MCMS.Base.Extensions;
 using MCMS.Base.Helpers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
@@ -50,8 +51,8 @@ namespace MCMS
 
             services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
             services.AddTransient(serviceProvider => serviceProvider
-                .GetRequiredService<IUrlHelperFactory>()
-                .GetUrlHelper(serviceProvider.GetRequiredService<IActionContextAccessor>().ActionContext));
+                .Service<IUrlHelperFactory>()
+                .GetUrlHelper(serviceProvider.Service<IActionContextAccessor>().ActionContext));
 
             services.AddTransient<IAdapterFactory, AdapterFactory>();
 

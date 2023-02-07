@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
+using MCMS.Base.Extensions;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace MCMS.Data
 {
@@ -15,7 +15,7 @@ namespace MCMS.Data
                 throw new ArgumentNullException(nameof(next));
 
             var transaction = await context.HttpContext.RequestServices
-                .GetRequiredService<BaseDbContext>().Database
+                .Service<BaseDbContext>().Database
                 .BeginTransactionAsync();
 
             var executedContext = await next();

@@ -94,7 +94,7 @@ namespace MCMS.Controllers.Api
             var vm = MapV(e);
             var response = new FormSubmitResponse<TFm, TVm>(fm, vm, e.Id)
             {
-                Snack = await ServiceProvider.GetRequiredService<ITranslationsRepository>().GetValueOrSlug("updated"),
+                Snack = await Service<ITranslationsRepository>().GetValueOrSlug("updated"),
                 SnackType = "success",
                 SnackDuration = 3000
             };
@@ -107,7 +107,7 @@ namespace MCMS.Controllers.Api
             var vm = MapV(e);
             var response = new FormSubmitResponse<TFm, TVm>(fm, vm, e.Id)
             {
-                Snack = await ServiceProvider.GetRequiredService<ITranslationsRepository>().GetValueOrSlug("saved"),
+                Snack = await Service<ITranslationsRepository>().GetValueOrSlug("saved"),
                 SnackType = "success",
                 SnackDuration = 3000
             };

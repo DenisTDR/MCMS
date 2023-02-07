@@ -6,17 +6,16 @@ using MCMS.Controllers.Api;
 using MCMS.Files.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace MCMS.Files.Controllers
 {
     public class FilesUploadController : AdminApiController
     {
-        private FileUploadManager FileUploadManager => ServiceProvider.GetRequiredService<FileUploadManager>();
+        private FileUploadManager FileUploadManager => Service<FileUploadManager>();
 
         private ILogger<FilesUploadController> Logger =>
-            ServiceProvider.GetRequiredService<ILogger<FilesUploadController>>();
+            Service<ILogger<FilesUploadController>>();
 
         [HttpPost]
         [ModelValidation]

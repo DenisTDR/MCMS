@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MCMS.Base.Data.Seeder;
+using MCMS.Base.Extensions;
 using MCMS.Base.Helpers;
 using MCMS.Common.Translations.Languages;
 using MCMS.Common.Translations.Translations;
 using MCMS.Common.Translations.Translations.Item;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -21,9 +21,9 @@ namespace MCMS.Common.Translations.Seed
         {
             var seedTranslations = seedData.ToObject<List<TranslationSeedEntry>>();
 
-            var logger = serviceProvider.GetRequiredService<ILogger<TranslationsSeeder>>();
-            var langs = await serviceProvider.GetRequiredService<LanguagesRepository>().GetAll();
-            var transRepo = serviceProvider.GetRequiredService<TranslationsRepository>();
+            var logger = serviceProvider.Service<ILogger<TranslationsSeeder>>();
+            var langs = await serviceProvider.Service<LanguagesRepository>().GetAll();
+            var transRepo = serviceProvider.Service<TranslationsRepository>();
             var existingSlugs = await transRepo.Queryable.Select(t => t.Slug).ToListAsync();
             transRepo.SkipSaving = true;
             foreach (var translationSeedEntry in seedTranslations)
@@ -54,7 +54,7 @@ namespace MCMS.Common.Translations.Seed
 
         public async Task<JArray> BuildSeed(IServiceProvider serviceProvider)
         {
-            var transRepo = serviceProvider.GetRequiredService<TranslationsRepository>();
+            var transRepo = serviceProvider.Service<TranslationsRepository>();
 
             var entries = await transRepo.BuildSeed();
             return JsonConvert.DeserializeObject<JArray>(JsonConvert.SerializeObject(entries,

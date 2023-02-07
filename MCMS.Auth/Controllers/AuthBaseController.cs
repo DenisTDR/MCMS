@@ -14,19 +14,18 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace MCMS.Auth.Controllers
 {
     [Authorize]
     public abstract class AuthBaseController<TLogin> : ApiController where TLogin : LoginRequestFormModel
     {
-        protected UserManager<User> UserManager => ServiceProvider.GetRequiredService<UserManager<User>>();
-        protected SignInManager<User> SignInManager => ServiceProvider.GetRequiredService<SignInManager<User>>();
-        private ISessionService SessionService => ServiceProvider.GetRequiredService<ISessionService>();
+        protected UserManager<User> UserManager => Service<UserManager<User>>();
+        protected SignInManager<User> SignInManager => Service<SignInManager<User>>();
+        private ISessionService SessionService => Service<ISessionService>();
 
         protected IEnumerable<IMAuthInterceptor> AuthInterceptors =>
-            ServiceProvider.GetRequiredService<IEnumerable<IMAuthInterceptor>>();
+            Service<IEnumerable<IMAuthInterceptor>>();
 
         [HttpPost]
         [ModelValidation]

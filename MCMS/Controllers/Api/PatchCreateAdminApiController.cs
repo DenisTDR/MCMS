@@ -10,7 +10,6 @@ using MCMS.Models;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.JsonPatch.Adapters;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace MCMS.Controllers.Api
 {
@@ -41,7 +40,7 @@ namespace MCMS.Controllers.Api
 
             var eDoc = doc.CloneFor<TFm, TE>();
             await OnPatching(id, eDoc);
-            var e = await Repo.Patch(id, eDoc, ServiceProvider.GetRequiredService<IAdapterFactory>());
+            var e = await Repo.Patch(id, eDoc, Service<IAdapterFactory>());
             await OnPatched(e);
             return Ok(await GetPatchResponseModel(e));
         }

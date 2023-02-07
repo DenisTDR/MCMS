@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using MCMS.Base.Builder;
+using MCMS.Base.Extensions;
 using MCMS.Base.Files.UploadPurpose;
 using MCMS.Base.Helpers;
 using MCMS.Base.Middlewares;
@@ -38,7 +39,7 @@ namespace MCMS.SwaggerFormly
         {
             if (Env.GetBool("FORMLY_DEBUG"))
             {
-                var logger = serviceProvider.GetRequiredService<ILogger<SwaggerSpecifications>>();
+                var logger = serviceProvider.Service<ILogger<SwaggerSpecifications>>();
                 logger.LogWarning("FORMLY_DEBUG=True => enabling reverse proxy middleware");
                 var obj = new ReverseProxyMiddlewareOptions
                 {
@@ -56,7 +57,7 @@ namespace MCMS.SwaggerFormly
 
             app.UseSwagger(options => options.RouteTemplate = _configsOptions.ForAdmin.RouteTemplate);
 
-            RegisterUi(app, serviceProvider.GetRequiredService<IOptions<SwaggerConfigsOptions>>().Value);
+            RegisterUi(app, serviceProvider.Service<IOptions<SwaggerConfigsOptions>>().Value);
         }
 
         public override void ConfigureServices(IServiceCollection services)

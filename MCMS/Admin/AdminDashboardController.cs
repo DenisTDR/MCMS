@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace MCMS.Admin
 {
@@ -28,7 +27,7 @@ namespace MCMS.Admin
         [HttpPost, ActionName("Seed")]
         public async Task<IActionResult> BuildSeed()
         {
-            var dataSeeder = ServiceProvider.GetRequiredService<DataSeeder>();
+            var dataSeeder = Service<DataSeeder>();
             var seedData = await dataSeeder.BuildSeed();
             return View(seedData);
         }
@@ -36,7 +35,7 @@ namespace MCMS.Admin
         [HttpPost]
         public async Task<IActionResult> SeedRoles()
         {
-            var roleManager = ServiceProvider.GetRequiredService<RoleManager<Role>>();
+            var roleManager = Service<RoleManager<Role>>();
             if (!await roleManager.Roles.AnyAsync(r => r.Name == "Admin"))
             {
                 await roleManager.CreateAsync(new Role {Name = "Admin"});

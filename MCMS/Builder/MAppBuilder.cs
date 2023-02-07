@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using MCMS.Base;
 using MCMS.Base.Builder;
+using MCMS.Base.Extensions;
 using MCMS.Base.Helpers;
 using MCMS.Base.SwaggerFormly.Models;
 using MCMS.Data;
@@ -70,7 +71,7 @@ namespace MCMS.Builder
 
                 // this is required because service provider should use the same scoped instance for T and for BaseDbContext 
                 // otherwise there will be two scoped instances and we don't like that
-                services.AddScoped(serviceProvider => serviceProvider.GetRequiredService<BaseDbContext>() as T);
+                services.AddScoped(serviceProvider => serviceProvider.Service<BaseDbContext>() as T);
             };
             return this;
         }

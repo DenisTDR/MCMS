@@ -6,7 +6,6 @@ using MCMS.Base.Auth;
 using MCMS.Base.Data;
 using MCMS.Base.Data.Entities;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.DependencyInjection;
 using MCMS.Base.Extensions;
 
 namespace MCMS.Base.Controllers
@@ -16,7 +15,7 @@ namespace MCMS.Base.Controllers
     {
         protected IServiceProvider ServiceProvider => HttpContext.RequestServices;
         protected IServiceProvider Services => ServiceProvider;
-        protected IMapper Mapper => ServiceProvider.GetRequiredService<IMapper>();
+        protected IMapper Mapper => Service<IMapper>();
 
         private UserWithRoles _user;
 

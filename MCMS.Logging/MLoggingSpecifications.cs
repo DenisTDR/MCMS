@@ -1,5 +1,6 @@
 using System;
 using MCMS.Base.Builder;
+using MCMS.Base.Extensions;
 using MCMS.Logging.AuditLogs;
 using MCMS.Logging.AuditLogs.Worker;
 using MCMS.Logging.Logs.LogEntries;
@@ -34,10 +35,10 @@ namespace MCMS.Logging
 
         public override void Configure(IApplicationBuilder app, IServiceProvider serviceProvider)
         {
-            var auditLogWorker = serviceProvider.GetRequiredService<MAuditLogWorker>();
+            var auditLogWorker = serviceProvider.Service<MAuditLogWorker>();
             auditLogWorker.Start();
 
-            serviceProvider.GetRequiredService<IHostApplicationLifetime>()
+            serviceProvider.Service<IHostApplicationLifetime>()
                 .ApplicationStopping.Register(() => { auditLogWorker.Stop(); });
         }
     }

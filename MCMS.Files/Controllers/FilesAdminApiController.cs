@@ -16,7 +16,6 @@ using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.JsonPatch.Adapters;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace MCMS.Files.Controllers
@@ -25,9 +24,9 @@ namespace MCMS.Files.Controllers
     public class FilesAdminApiController : CrudAdminApiController<FileEntity, FileUploadFormModel, FileViewModel>
     {
         private ILogger<FilesAdminApiController> Logger =>
-            ServiceProvider.GetRequiredService<ILogger<FilesAdminApiController>>();
+            Service<ILogger<FilesAdminApiController>>();
 
-        private FileUploadManager FileUploadManager => ServiceProvider.GetRequiredService<FileUploadManager>();
+        private FileUploadManager FileUploadManager => Service<FileUploadManager>();
 
         public override void OnActionExecuting(ActionExecutingContext context)
         {
@@ -78,7 +77,7 @@ namespace MCMS.Files.Controllers
 
             var eDoc = doc.CloneFor<FileFormModel, FileEntity>();
 
-            var e = await Repo.Patch(id, eDoc, ServiceProvider.GetRequiredService<IAdapterFactory>());
+            var e = await Repo.Patch(id, eDoc, Service<IAdapterFactory>());
 
             return Ok(GetPatchResponseModel2(e));
         }

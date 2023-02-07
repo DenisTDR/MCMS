@@ -4,9 +4,9 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using MCMS.Base.Attributes;
+using MCMS.Base.Extensions;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace MCMS.Logging.AuditLogs
 {
@@ -40,7 +40,7 @@ namespace MCMS.Logging.AuditLogs
             if (ShouldSkipLog(context))
                 return;
 
-            _auditLogger = context.HttpContext.RequestServices.GetRequiredService<IMAuditLogger<MAuditLogAttribute>>();
+            _auditLogger = context.HttpContext.RequestServices.Service<IMAuditLogger<MAuditLogAttribute>>();
             var request = context.HttpContext.Request;
             var data = new Dictionary<string, object>
             {

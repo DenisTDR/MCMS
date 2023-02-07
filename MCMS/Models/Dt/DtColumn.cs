@@ -1,6 +1,3 @@
-using System.Text.Json.Serialization;
-using MCMS.Base.Display.ModelDisplay;
-
 namespace MCMS.Models.Dt
 {
     public class DtColumn

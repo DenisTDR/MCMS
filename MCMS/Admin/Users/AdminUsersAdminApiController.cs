@@ -28,8 +28,8 @@ namespace MCMS.Admin.Users
     public class AdminUsersAdminApiController : AdminApiController
     {
         protected IRepository<User> Repo => ServiceProvider.GetRepo<User>();
-        protected BaseDbContext DbContext => ServiceProvider.GetRequiredService<BaseDbContext>();
-        private IEmailSender EmailSender => ServiceProvider.GetRequiredService<IEmailSender>();
+        protected BaseDbContext DbContext => Service<BaseDbContext>();
+        private IEmailSender EmailSender => Service<IEmailSender>();
 
         protected virtual DtQueryService<UserViewModel> QueryService =>
             ServiceProvider.GetService<DtQueryService<UserViewModel>>();
@@ -68,9 +68,9 @@ namespace MCMS.Admin.Users
             [FromBody] Dictionary<string, object> roles)
         {
             var asMod = !UserFromClaims.HasRole("Admin");
-            var userManager = ServiceProvider.GetRequiredService<UserManager<User>>();
+            var userManager = Service<UserManager<User>>();
             var user = await Repo.GetOneOrThrow(id);
-            var allRoles = await ServiceProvider.GetRequiredService<RoleManager<Role>>().Roles.Select(role => role.Name)
+            var allRoles = await Service<RoleManager<Role>>().Roles.Select(role => role.Name)
                 .ToListAsync();
             var existingRoles = await userManager.GetRolesAsync(user);
             var newRoles = allRoles.Where(roles.ContainsKey)
@@ -110,7 +110,7 @@ namespace MCMS.Admin.Users
         [Route("{id}")]
         public virtual async Task<ActionResult<UserViewModel>> ConfirmEmail([FromRoute] string id)
         {
-            // var userManager = ServiceProvider.GetRequiredService<UserManager<User>>();
+            // var userManager = Service<UserManager<User>>();
             var user = await Repo.GetOneOrThrow(id);
             user.EmailConfirmed = true;
             await Repo.SaveChanges();
@@ -123,7 +123,7 @@ namespace MCMS.Admin.Users
         {
             var user = await Repo.GetOneOrThrow(id);
 
-            await ServiceProvider.GetRequiredService<AuthService>().SendActivationEmail(user, Url, Request.Scheme);
+            await Service<AuthService>().SendActivationEmail(user, Url, Request.Scheme);
 
             return Ok();
         }
@@ -136,7 +136,7 @@ namespace MCMS.Admin.Users
             var roles = model.Roles?.Split(",", StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
                 .ToList() ?? new List<string>();
 
-            var userManager = ServiceProvider.GetRequiredService<UserManager<User>>();
+            var userManager = Service<UserManager<User>>();
 
             var user = new User { Email = model.Email, UserName = model.Email };
 
@@ -166,7 +166,7 @@ namespace MCMS.Admin.Users
 
             if (model.SendActivationEmail)
             {
-                await ServiceProvider.GetRequiredService<AuthService>().SendActivationEmail(user, Url, Request.Scheme);
+                await Service<AuthService>().SendActivationEmail(user, Url, Request.Scheme);
             }
 
             return Ok(await GetCreateResponseModel(user, roles, model.SendActivationEmail));
@@ -183,7 +183,7 @@ namespace MCMS.Admin.Users
             var vm = MapV(e);
             var response = new FormSubmitResponse<CreateUserFormModel, UserViewModel>(fm, vm, e.Id)
             {
-                Snack = await ServiceProvider.GetRequiredService<ITranslationsRepository>().GetValueOrSlug("saved"),
+                Snack = await Service<ITranslationsRepository>().GetValueOrSlug("saved"),
                 SnackType = "success",
                 SnackDuration = 3000
             };

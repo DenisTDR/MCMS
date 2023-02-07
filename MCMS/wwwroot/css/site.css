@@ -266,7 +266,7 @@ ngb-modal-backdrop {
 
 /* mcms custom icons */
 .mi {
-    display: inline-block;
+    display: inline-flex;
 }
 
 .mi::before {

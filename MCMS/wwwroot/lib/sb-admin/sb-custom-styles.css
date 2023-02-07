@@ -195,3 +195,7 @@ body:not(.sb-sidenav-toggled) .sb-layout-sidenav .sb-layout-sidenav-content-over
 .sb-topnav .navbar-brand .navbar-logo {
     height: 40px;
 }
+
+.sb-sidenav .sb-sidenav-menu .nav .nav-link .sb-nav-link-icon {
+    display: flex;
+}

@@ -10,7 +10,7 @@ var redocDocSwitchMain = function () {
     var links = [];
     for (var i = 0; i < docs.length; i++) {
         var doc = docs[i];
-        var styleAttr = doc.name === switchDocConfig.current ? "style='text-decoration: underline'" : "";
+        var styleAttr = doc.name === switchDocConfig.current ? "style='text-decoration: underline; font-weight: bold;'" : "";
         links.push("<a href='../" + doc.name + "' " + styleAttr + ">" + doc.title + "</a>");
     }
 

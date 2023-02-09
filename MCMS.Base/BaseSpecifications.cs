@@ -29,8 +29,15 @@ namespace MCMS.Base
             {
                 var attr = implementationType.GetCustomAttribute<ServiceAttribute>();
                 if (attr == null) continue;
+
                 var serviceType = attr.ServiceType ?? implementationType;
                 services.Add(new ServiceDescriptor(serviceType, implementationType, attr.Lifetime));
+
+                if (attr.OverrideImplementationFor != null)
+                {
+                    services.Add(new ServiceDescriptor(attr.OverrideImplementationFor, implementationType,
+                        attr.Lifetime));
+                }
             }
         }
     }

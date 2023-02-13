@@ -42,7 +42,7 @@ namespace MCMS.Base.Extensions
                     ?.Value;
             }
 
-            return enumValue ?? value.ToString();
+            return enumValue ?? value.ToString().ToCamelCase();
         }
     }
 }

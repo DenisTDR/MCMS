@@ -22,6 +22,8 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Serialization;
 
 namespace MCMS.Builder
 {
@@ -60,7 +62,8 @@ namespace MCMS.Builder
                 .AddNewtonsoftJson(mvcJsonOptions =>
                 {
                     mvcJsonOptions.SerializerSettings.Converters.Add(
-                        new Newtonsoft.Json.Converters.StringEnumConverter());
+                        new StringEnumConverter(new CamelCaseNamingStrategy())
+                    );
                     mvcJsonOptions.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
                     mvcJsonOptions.SerializerSettings.PreserveReferencesHandling = PreserveReferencesHandling.Objects;
                 });

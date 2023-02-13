@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 
 namespace MCMS.Base.Helpers
@@ -50,26 +51,35 @@ namespace MCMS.Base.Helpers
             return Path.Combine(p).Replace("\\", "/");
         }
 
+        private static JsonSerializerSettings indentedSerializerSettings;
+        private static JsonSerializerSettings serializerSettings;
+
         public static JsonSerializerSettings DefaultJsonSerializerSettings(bool indented = false)
         {
-            var settings = new JsonSerializerSettings
-            {
-                ContractResolver = new CamelCasePropertyNamesContractResolver(),
-                Converters =
-                    new List<JsonConverter>
+            return indented
+                ? indentedSerializerSettings ??= new JsonSerializerSettings
+                {
+                    ContractResolver = new CamelCasePropertyNamesContractResolver(),
+                    Converters = new List<JsonConverter>
                     {
-                        new Newtonsoft.Json.Converters.StringEnumConverter()
+                        new StringEnumConverter(new CamelCaseNamingStrategy())
                     },
-                ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
-                NullValueHandling = NullValueHandling.Ignore,
-                DefaultValueHandling = DefaultValueHandling.Ignore,
-            };
-            if (indented)
-            {
-                settings.Formatting = Formatting.Indented;
-            }
-
-            return settings;
+                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                    NullValueHandling = NullValueHandling.Ignore,
+                    DefaultValueHandling = DefaultValueHandling.Ignore,
+                    Formatting = Formatting.Indented,
+                }
+                : serializerSettings ??= new JsonSerializerSettings
+                {
+                    ContractResolver = new CamelCasePropertyNamesContractResolver(),
+                    Converters = new List<JsonConverter>
+                    {
+                        new StringEnumConverter(new CamelCaseNamingStrategy())
+                    },
+                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                    NullValueHandling = NullValueHandling.Ignore,
+                    DefaultValueHandling = DefaultValueHandling.Ignore,
+                };
         }
 
         public static string Serialize(object obj, bool indented = true)

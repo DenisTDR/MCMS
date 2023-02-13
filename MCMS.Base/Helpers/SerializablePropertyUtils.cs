@@ -6,16 +6,17 @@ namespace MCMS.Base.Helpers
     {
         public static string SerializeOrEmpty<T>(T obj, JsonSerializerSettings settings = null) where T : new()
         {
-            settings ??= Base.Helpers.Utils.DefaultJsonSerializerSettings();
+            settings ??= Utils.DefaultJsonSerializerSettings();
 
             return JsonConvert.SerializeObject(obj ?? new T(), settings);
         }
 
-        public static T DeserializeOrDefault<T>(string serializedData, bool nullOnDefault = false) where T : new()
+        public static T DeserializeOrDefault<T>(string serializedData, bool nullOnDefault = false)
+            where T : class, new()
         {
             if (string.IsNullOrEmpty(serializedData))
             {
-                return new T();
+                return nullOnDefault ? null : new T();
             }
 
             try

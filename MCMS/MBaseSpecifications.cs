@@ -67,6 +67,7 @@ namespace MCMS
             }
 
             services.AddSingleton<FrameworkInfoService>();
+            services.AddHttpClient();
         }
 
         public override void ConfigMvc(MvcOptions options)

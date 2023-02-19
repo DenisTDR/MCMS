@@ -1,0 +1,18 @@
+@using MCMS.Base.Extensions
+@using MCMS.Common.Turnstile
+@using Microsoft.Extensions.Options
+
+@inject IOptions<TurnstileConfig> Config
+
+@if (Config.Value.IsEnabled && Config.Value.IncludeFormPaths.Contains(Context.Request.Path.ToString()))
+{
+    @using (Html.BeginMPageScripts())
+    {
+        <script>
+            (function ($){
+                const formGroup = $("<div>").addClass("form-group").html('<div class="cf-turnstile" data-theme="light" data-sitekey="@Config.Value.SiteKey"></div>');
+                $("form#login-form button[type=submit]").closest(".form-group").before(formGroup);
+            })(jQuery);
+        </script>
+    }
+}

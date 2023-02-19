@@ -8,6 +8,7 @@ using MCMS.Auth.Tokens.Dtos;
 using MCMS.Auth.Tokens.Models;
 using MCMS.Base.Attributes;
 using MCMS.Base.Auth;
+using MCMS.Base.Auth.Interceptors;
 using MCMS.Base.Exceptions;
 using MCMS.Base.Filters;
 using Microsoft.AspNetCore.Authorization;
@@ -23,15 +24,20 @@ namespace MCMS.Auth.Controllers
         protected UserManager<User> UserManager => Service<UserManager<User>>();
         protected SignInManager<User> SignInManager => Service<SignInManager<User>>();
         private ISessionService SessionService => Service<ISessionService>();
-
-        protected IEnumerable<IMAuthInterceptor> AuthInterceptors =>
-            Service<IEnumerable<IMAuthInterceptor>>();
+        private MAuthInterceptorManager AuthInterceptorManager => Service<MAuthInterceptorManager>();
 
         [HttpPost]
         [ModelValidation]
         [AllowAnonymous]
         public virtual async Task<ActionResult<SessionDto>> Login([FromBody] [Required] TLogin model)
         {
+            var interceptorResult = await AuthInterceptorManager.OnBeforeSignIn(model.Email, SignInType.Api);
+
+            if (!interceptorResult.Succeeded)
+            {
+                throw new KnownException(interceptorResult.Reason);
+            }
+
             var user = await UserManager.FindByNameAsync(model.Email);
             if (user == null)
             {
@@ -45,10 +51,7 @@ namespace MCMS.Auth.Controllers
                 throw new KnownException("Invalid credentials");
             }
 
-            foreach (var mAuthInterceptor in AuthInterceptors)
-            {
-                result = await mAuthInterceptor.OnSignIn(user, result, SignInType.Api);
-            }
+            result = await AuthInterceptorManager.OnAfterSignIn(user, result, SignInType.Api);
 
             if (result.IsNotAllowed)
             {

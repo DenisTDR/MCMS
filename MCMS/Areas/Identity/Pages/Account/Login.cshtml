@@ -1,5 +1,6 @@
 @page
 @using MCMS.Base.Helpers
+@using Microsoft.AspNetCore.Mvc.TagHelpers
 @model LoginModel
 
 @{
@@ -7,12 +8,12 @@
 }
 
 <h1>@ViewData["Title"]</h1>
+<h4>Use a local account to log in.</h4>
+<hr/>
 <div class="row">
     <div class="col-md-4">
         <section>
-            <form id="account" method="post">
-                <h4>Use a local account to log in.</h4>
-                <hr/>
+            <form id="login-form" method="post">
                 <div asp-validation-summary="All" class="text-danger"></div>
                 <div class="form-group">
                     <label asp-for="Input.Email"></label>
@@ -83,7 +84,4 @@
         </section>
     </div>
 </div>
-
-@section Scripts {
-    <partial name="_ValidationScriptsPartial"/>
-}
+<partial name="_ValidationScriptsPartial"/>

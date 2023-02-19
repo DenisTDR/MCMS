@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace MCMS.Base.Attributes
 {
+    [AttributeUsage(AttributeTargets.Class)]
     public class ServiceAttribute : Attribute
     {
         public ServiceLifetime Lifetime { get; } = ServiceLifetime.Scoped;

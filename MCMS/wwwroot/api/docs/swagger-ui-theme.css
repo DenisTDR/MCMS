@@ -215,6 +215,12 @@ body.dark, body.dark .swagger-ui .modal-ux {
 .dark .swagger-ui .opblock .opblock-summary-description {
     color: #C0C0C0;
 }
+
 .dark .swagger-ui .opblock-tag small {
     color: #A0A0A0;
+}
+
+.swagger-ui .btn.theme-toggle {
+    margin-left: 5px;
+    padding: 5px 10px;
 }

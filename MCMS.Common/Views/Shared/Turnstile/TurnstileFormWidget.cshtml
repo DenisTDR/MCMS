@@ -4,6 +4,7 @@
 
 @inject IOptions<TurnstileConfig> Config
 
+<h1>@Context.Request.Path.ToString()</h1>
 @if (Config.Value.IsEnabled && Config.Value.IncludeFormPaths.Contains(Context.Request.Path.ToString()))
 {
     @using (Html.BeginMPageScripts())
@@ -11,7 +12,7 @@
         <script>
             (function ($){
                 const formGroup = $("<div>").addClass("form-group").html('<div class="cf-turnstile" data-theme="light" data-sitekey="@Config.Value.SiteKey"></div>');
-                $("form#login-form button[type=submit]").closest(".form-group").before(formGroup);
+                $("form#account-form button[type=submit]").closest(".form-group").before(formGroup);
             })(jQuery);
         </script>
     }

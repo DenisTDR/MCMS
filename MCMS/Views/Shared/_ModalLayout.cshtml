@@ -7,7 +7,9 @@
     await Html.RenderBlindPartialAsync(valueLayoutInclude, null, ViewData);
 }
 @Html.RenderMStyles()
-<div class="modal stacked-modal fade" role="dialog" aria-hidden="true" tabindex="-1" data-keyboard="false" data-backdrop="static">
+<div class="modal stacked-modal fade" role="dialog" aria-hidden="true"
+     tabindex="@Html.Raw(ViewBag.TabIndex ?? "-1")"
+     data-keyboard="false" data-backdrop="static">
     <div class="modal-dialog @(ViewBag.ModalDialogClasses ?? "modal-lg") modal-dialog-scrollable modal-dialog-centered">
         <div class="modal-content">
             @if (!string.IsNullOrEmpty(ViewBag.Title))

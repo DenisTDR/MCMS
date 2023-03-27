@@ -212,6 +212,7 @@
                 if (opt.keyboard !== undefined && initialOpt?.keyboard === undefined) {
                     activeModal.data('bs.modal')._config.keyboard = opt.keyboard;
                 }
+                activeModal.attr("tabindex", modal.attr("tabindex"));
 
                 activeModal.find('>.modal-dialog')
                     .attr('class', dialog.attr('class'))
@@ -262,7 +263,7 @@
                 });
             }
         },
-        parseOptions: function (backdrop, keyboard) {
+        parseOptions: function (backdrop, keyboard, tabindex) {
             const opt = {};
             if (backdrop !== undefined) {
                 if (backdrop === 'static') {

@@ -14,7 +14,7 @@ namespace MCMS.SwaggerFormly.FormParamsHelpers
         protected object AdditionalData { get; set; }
         protected Dictionary<string, object> Options { get; set; }
 
-        protected string GetActionName { get; set; }
+        public string GetActionName { get; set; }
         public string SubmitActionName { get; set; }
 
         public string OpenApiConfigName { get; set; } = "admin-api";

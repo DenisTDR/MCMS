@@ -92,7 +92,7 @@
       "slug": "invalid_email",
       "tag": "formly",
       "items": {
-        "en": "The value have to math the email address format.",
+        "en": "The value have to match the email address format.",
         "ro": "Valoarea trebuie să respecte formatul unei adrese de email."
       }
     },

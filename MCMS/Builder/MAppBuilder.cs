@@ -71,7 +71,7 @@ namespace MCMS.Builder
 
                 // this is required because service provider should use the same scoped instance for T and for BaseDbContext 
                 // otherwise there will be two scoped instances and we don't like that
-                services.AddScoped(serviceProvider => serviceProvider.Service<BaseDbContext>() as T);
+                services.AddScoped<BaseDbContext>(serviceProvider => serviceProvider.Service<T>());
             };
             return this;
         }

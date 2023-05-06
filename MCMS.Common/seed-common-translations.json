@@ -140,6 +140,20 @@
       }
     },
     {
+      "slug": "update_email",
+      "items": {
+        "en": "Update Email",
+        "ro": "Modifică adresa de email"
+      }
+    },
+    {
+      "slug": "update_roles",
+      "items": {
+        "en": "Update Roles",
+        "ro": "Modifică rolurile"
+      }
+    },
+    {
       "slug": "yes",
       "items": {
         "en": "Yes",

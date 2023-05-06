@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -18,7 +17,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.EntityFrameworkCore;
 
 namespace MCMS.Admin.Users
 {
@@ -135,7 +133,7 @@ namespace MCMS.Admin.Users
         [HttpGet]
         [Route("{id}")]
         [ViewLayout("_ModalLayout")]
-        public async Task<IActionResult> ChangeRoles([FromRoute] string id)
+        public async Task<IActionResult> UpdateRoles([FromRoute] string id)
         {
             var userVm = await GetUserWithRoles(id);
             var fps =
@@ -145,14 +143,39 @@ namespace MCMS.Admin.Users
 
             var fp = fps.ForCreate();
 
-            fp.SubmitUrl = Url.ActionLink(nameof(AdminUsersAdminApiController.ChangeRoles),
+            fp.SubmitUrl = Url.ActionLink(nameof(AdminUsersAdminApiController.UpdateRoles),
                 TypeHelpers.GetControllerName(typeof(AdminUsersAdminApiController)), new { id = userVm.Id });
 
             fp.HideSubmitButton();
             fp.UseSpinnerOuterOverlay();
             fp.AdditionalFields = new { roles = userVm.RolesList };
 
-            ViewBag.ModalDialogClasses = "modal-lg";
+            // ViewBag.ModalDialogClasses = "modal-md";
+
+            return View((userVm.FullName, fp));
+        }
+
+        [HttpGet]
+        [Route("{id}")]
+        [ViewLayout("_ModalLayout")]
+        public async Task<IActionResult> UpdateEmail([FromRoute] string id)
+        {
+            var userVm = await GetUserWithRoles(id);
+            var fps =
+                new FormParamsService(Url, TypeHelpers.GetControllerName(typeof(AdminUsersAdminApiController)),
+                    nameof(UpdateEmailFormModel));
+
+
+            var fp = fps.ForCreate();
+
+            fp.SubmitUrl = Url.ActionLink(nameof(AdminUsersAdminApiController.UpdateEmail),
+                TypeHelpers.GetControllerName(typeof(AdminUsersAdminApiController)), new { id = userVm.Id });
+
+            fp.HideSubmitButton();
+            fp.UseSpinnerOuterOverlay();
+            fp.AdditionalFields = new { oldEmail = userVm.Email };
+
+            // ViewBag.ModalDialogClasses = "modal-sm";
 
             return View((userVm.FullName, fp));
         }

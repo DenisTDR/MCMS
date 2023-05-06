@@ -2,24 +2,21 @@
 @using MCMS.Base.Repositories
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @inject ITranslationsRepository TransRepo
+
 @model (string fullName, MCMS.SwaggerFormly.Models.FormlyFormParams formParams)
 
+
 @{
-    ViewBag.Title = "Change roles for: " + Model.fullName;
+    ViewBag.Title = "Update Email for: " + Model.fullName;
     var formParams = Model.formParams;
 
 }
 <div class="modal-body" id="@formParams.FormInstanceId-modal-body">
     <partial name="Formly/FormlyForm" model="formParams"/>
-    <div class="row">
-        <div class="col-12">
-            <div class="text-info ml-2 pt-4">Remember this user should refresh his session (logout and login again) in order to use the new roles.</div>
-        </div>
-    </div>
 </div>
 <div class="modal-footer">
     <button type="button" class="btn btn-secondary" data-dismiss="modal">@await TransRepo.GetValueOrSlug("cancel")</button>
-    <button type="button" class="btn btn-primary" id="@formParams.FormInstanceId-submit-button">@await TransRepo.GetValueOrSlug("save")</button>
+    <button type="button" class="btn btn-primary" id="@formParams.FormInstanceId-submit-button">@await TransRepo.GetValueOrSlug("update")</button>
 </div>
 
 @using (Html.BeginMPageScripts())

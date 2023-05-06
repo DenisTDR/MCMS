@@ -29,8 +29,6 @@ namespace MCMS.Admin.Users
     public class AdminUsersAdminApiController : AdminApiController
     {
         protected IRepository<User> Repo => ServiceProvider.GetRepo<User>();
-        protected BaseDbContext DbContext => Service<BaseDbContext>();
-        private IEmailSender EmailSender => Service<IEmailSender>();
 
         protected virtual DtQueryService<UserViewModel> QueryService =>
             ServiceProvider.GetService<DtQueryService<UserViewModel>>();
@@ -65,7 +63,8 @@ namespace MCMS.Admin.Users
 
         [HttpPost]
         [Route("{id}")]
-        public virtual async Task<ActionResult<UserViewModel>> ChangeRoles([FromRoute] string id,
+        [ModelValidation]
+        public virtual async Task<ActionResult<UserViewModel>> UpdateRoles([FromRoute] string id,
             [FromBody] UpdateRolesFormModel model)
         {
             var asMod = !UserFromClaims.HasRole("Admin");
@@ -100,12 +99,40 @@ namespace MCMS.Admin.Users
             await userManager.AddToRolesAsync(user, toAddRoles);
             await userManager.RemoveFromRolesAsync(user, toDeleteRoles);
 
-            return Ok(new
+            return Ok(new FormSubmitResponse<UpdateRolesFormModel>
             {
-                reloadTable = true
+                Snack = await Service<ITranslationsRepository>().GetValueOrSlug("updated"),
+                SnackType = "success",
+                SnackDuration = 3000
             });
         }
 
+        [HttpPost]
+        [Route("{id}")]
+        public virtual async Task<ActionResult<UserViewModel>> UpdateEmail([FromRoute] string id,
+            [Required] [FromBody] UpdateEmailFormModel model)
+        {
+            model.NewEmail = model.NewEmail.Trim().ToLower();
+            var userManager = Service<UserManager<User>>();
+            var user = await userManager.FindByIdAsync(id);
+            if (user == null) return NotFound();
+            if (user.Email != model.OldEmail)
+            {
+                throw new KnownException("Old mail is not the same. Please try again.");
+            }
+
+            user.Email = user.UserName = model.NewEmail;
+            user.EmailConfirmed = false;
+            
+            await userManager.UpdateAsync(user);
+
+            return Ok(new FormSubmitResponse<UpdateEmailFormModel>
+            {
+                Snack = await Service<ITranslationsRepository>().GetValueOrSlug("updated"),
+                SnackType = "success",
+                SnackDuration = 3000
+            });
+        }
 
         [HttpPost]
         [Route("{id}")]

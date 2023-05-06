@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -11,6 +12,7 @@ using MCMS.Controllers.Ui;
 using MCMS.Display.DetailsConfig;
 using MCMS.Display.ModelDisplay;
 using MCMS.Display.TableConfig;
+using MCMS.SwaggerFormly;
 using MCMS.SwaggerFormly.FormParamsHelpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -52,17 +54,6 @@ namespace MCMS.Admin.Users
             return View(DetailsConfigService.Wrap(userVm));
         }
 
-        [HttpGet]
-        [Route("{id}")]
-        [ViewLayout("_ModalLayout")]
-        public async Task<IActionResult> ChangeRoles([FromRoute] string id)
-        {
-            var userVm = await GetUserWithRoles(id);
-            ViewBag.Roles = await Service<RoleManager<Role>>().Roles
-                .Select(role => role.Name)
-                .Where(role => role != "God").ToListAsync();
-            return View(userVm);
-        }
 
         [HttpGet]
         [Route("{id}")]
@@ -137,8 +128,33 @@ namespace MCMS.Admin.Users
             ViewBag.FormParamsService =
                 new FormParamsService(Url, TypeHelpers.GetControllerName(typeof(AdminUsersAdminApiController)),
                     nameof(CreateUserFormModel));
-            ViewBag.ModalDialogClasses = "modal-md";
+            ViewBag.ModalDialogClasses = "modal-lg";
             return View("BasicModals/CreateModal");
+        }
+
+        [HttpGet]
+        [Route("{id}")]
+        [ViewLayout("_ModalLayout")]
+        public async Task<IActionResult> ChangeRoles([FromRoute] string id)
+        {
+            var userVm = await GetUserWithRoles(id);
+            var fps =
+                new FormParamsService(Url, TypeHelpers.GetControllerName(typeof(AdminUsersAdminApiController)),
+                    nameof(UpdateRolesFormModel));
+
+
+            var fp = fps.ForCreate();
+
+            fp.SubmitUrl = Url.ActionLink(nameof(AdminUsersAdminApiController.ChangeRoles),
+                TypeHelpers.GetControllerName(typeof(AdminUsersAdminApiController)), new { id = userVm.Id });
+
+            fp.HideSubmitButton();
+            fp.UseSpinnerOuterOverlay();
+            fp.AdditionalFields = new { roles = userVm.RolesList };
+
+            ViewBag.ModalDialogClasses = "modal-lg";
+
+            return View((userVm.FullName, fp));
         }
     }
 }

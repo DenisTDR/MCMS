@@ -1,32 +1,16 @@
-@using MCMS.Base.Helpers
 @using MCMS.Base.Extensions
-@model MCMS.Admin.Users.UserViewModel
+@using MCMS.Base.Repositories
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@inject ITranslationsRepository TransRepo
+@model (string fullName, MCMS.SwaggerFormly.Models.FormlyFormParams formParams)
 
 @{
-    ViewBag.Title = "Change roles for: " + Model.FullName;
-    var allRoles = ViewBag.Roles as List<string> ?? throw new Exception("no roles found");
-    var id = Utils.GenerateRandomHexString();
-}
-<div class="modal-body">
+    ViewBag.Title = "Change roles for: " + Model.fullName;
+    var formParams = Model.formParams;
 
-    <div class="container-fluid">
-        <ul class="list-group row" id="@id">
-            <form asp-action="ChangeRoles" asp-controller="AdminUsersAdminApi" asp-route-id="@Model.Id">
-                @foreach (var role in allRoles)
-                {
-                    <li class="list-group-item">
-                        <div class="custom-control custom-switch">
-                            <input class="custom-control-input" type="checkbox" value="true" name="@role" 
-                                   id="check-role-@role" @(Model.RolesList.Contains(role) ? "checked" : "")>
-                            <label class="custom-control-label" for="check-role-@role">
-                                @role
-                            </label>
-                        </div>
-                    </li>
-                }
-            </form>
-        </ul>
-    </div>
+}
+<div class="modal-body" id="@formParams.FormInstanceId-modal-body">
+    <partial name="Formly/FormlyForm" model="formParams"/>
     <div class="row">
         <div class="col-12">
             <div class="text-info ml-2 pt-4">Remember this user should refresh his session (logout and login again) in order to use the new roles.</div>
@@ -34,16 +18,19 @@
     </div>
 </div>
 <div class="modal-footer">
-    <button type="button" class="btn btn-secondary" data-dismiss="modal">Exit</button>
-    <button type="button" class="btn btn-primary" id="save-@id">Save</button>
+    <button type="button" class="btn btn-secondary" data-dismiss="modal">@await TransRepo.GetValueOrSlug("cancel")</button>
+    <button type="button" class="btn btn-primary" id="@formParams.FormInstanceId-submit-button">@await TransRepo.GetValueOrSlug("save")</button>
 </div>
 
 @using (Html.BeginMPageScripts())
 {
     <script>
-     $("#save-@id").click(function() {
-          $("#@id form").submit();
-     });
-     ajaxForm($("#@id form"), true);
+    function callback@(formParams.FormInstanceId)(sender, params) {
+        console.log(sender, params);
+        const modal = $("#@formParams.FormInstanceId-modal-body").closest(".modal");
+        modal.data('result', {params: params});
+        modal.modal('hide');
+        mcmsTables.reload();
+    }
     </script>
 }

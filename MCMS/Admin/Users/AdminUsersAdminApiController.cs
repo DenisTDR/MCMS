@@ -11,6 +11,7 @@ using MCMS.Base.Data;
 using MCMS.Base.Exceptions;
 using MCMS.Base.Extensions;
 using MCMS.Base.Repositories;
+using MCMS.Base.SwaggerFormly.Formly.Base;
 using MCMS.Controllers.Api;
 using MCMS.Data;
 using MCMS.Models;
@@ -65,7 +66,7 @@ namespace MCMS.Admin.Users
         [HttpPost]
         [Route("{id}")]
         public virtual async Task<ActionResult<UserViewModel>> ChangeRoles([FromRoute] string id,
-            [FromBody] Dictionary<string, object> roles)
+            [FromBody] UpdateRolesFormModel model)
         {
             var asMod = !UserFromClaims.HasRole("Admin");
             var userManager = Service<UserManager<User>>();
@@ -73,7 +74,7 @@ namespace MCMS.Admin.Users
             var allRoles = await Service<RoleManager<Role>>().Roles.Select(role => role.Name)
                 .ToListAsync();
             var existingRoles = await userManager.GetRolesAsync(user);
-            var newRoles = allRoles.Where(roles.ContainsKey)
+            var newRoles = allRoles.Where(role => model.Roles.Contains(role))
                 .ToList();
             var toDeleteRoles = existingRoles.Except(newRoles).ToList();
 
@@ -133,8 +134,7 @@ namespace MCMS.Admin.Users
         [ModelValidation]
         public virtual async Task<ActionResult<UserViewModel>> Create([Required] [FromBody] CreateUserFormModel model)
         {
-            var roles = model.Roles?.Split(",", StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
-                .ToList() ?? new List<string>();
+            var roles = model.Roles ?? new List<string>();
 
             var userManager = Service<UserManager<User>>();
 
@@ -172,12 +172,21 @@ namespace MCMS.Admin.Users
             return Ok(await GetCreateResponseModel(user, roles, model.SendActivationEmail));
         }
 
+        [HttpGet]
+        public async Task<ActionResult<List<ValueLabelModel>>> Roles()
+        {
+            var roles = await Service<RoleManager<Role>>().Roles
+                .Select(role => role.Name)
+                .Where(role => role != "God").ToListAsync();
+            return roles.Select(role => new ValueLabelModel() { Value = role, Label = role }).ToList();
+        }
+
         protected virtual async Task<ModelResponse<CreateUserFormModel>> GetCreateResponseModel(User e,
             List<string> roles, bool sendActivationEmail)
         {
             var fm = new CreateUserFormModel
             {
-                Email = e.Email, Roles = string.Join(", ", roles),
+                Email = e.Email, Roles = roles,
                 SendActivationEmail = sendActivationEmail
             };
             var vm = MapV(e);

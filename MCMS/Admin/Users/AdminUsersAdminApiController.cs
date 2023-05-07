@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -18,7 +17,6 @@ using MCMS.Models;
 using MCMS.Models.Dt;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -68,36 +66,25 @@ namespace MCMS.Admin.Users
             [FromBody] UpdateRolesFormModel model)
         {
             var asMod = !UserFromClaims.HasRole("Admin");
-            var userManager = Service<UserManager<User>>();
             var user = await Repo.GetOneOrThrow(id);
             var allRoles = await Service<RoleManager<Role>>().Roles.Select(role => role.Name)
                 .ToListAsync();
-            var existingRoles = await userManager.GetRolesAsync(user);
+            allRoles.Remove("God");
             var newRoles = allRoles.Where(role => model.Roles.Contains(role))
                 .ToList();
-            var toDeleteRoles = existingRoles.Except(newRoles).ToList();
 
             if (UserFromClaims.Id == id)
             {
-                toDeleteRoles = toDeleteRoles.Where(r => r != (asMod ? "Moderator" : "Admin")).ToList();
+                var requiredRole = asMod ? "Moderator" : "Admin";
+                if (!newRoles.Contains(requiredRole)) newRoles.Add(requiredRole);
             }
 
-            var toAddRoles = newRoles.Except(existingRoles).ToList();
-            if (asMod)
+            if (asMod && newRoles.Contains("Admin"))
             {
-                if (toAddRoles.Contains("Admin"))
-                {
-                    toAddRoles.RemoveAll(r => r == "Admin");
-                }
-
-                if (toDeleteRoles.Contains("Admin"))
-                {
-                    toDeleteRoles.RemoveAll(r => r == "Admin");
-                }
+                newRoles.Remove("Admin");
             }
 
-            await userManager.AddToRolesAsync(user, toAddRoles);
-            await userManager.RemoveFromRolesAsync(user, toDeleteRoles);
+            await Service<UserService>().UpdateUserRoles(user, newRoles);
 
             return Ok(new FormSubmitResponse<UpdateRolesFormModel>
             {
@@ -123,7 +110,7 @@ namespace MCMS.Admin.Users
 
             user.Email = user.UserName = model.NewEmail;
             user.EmailConfirmed = false;
-            
+
             await userManager.UpdateAsync(user);
 
             return Ok(new FormSubmitResponse<UpdateEmailFormModel>
@@ -162,34 +149,9 @@ namespace MCMS.Admin.Users
         public virtual async Task<ActionResult<UserViewModel>> Create([Required] [FromBody] CreateUserFormModel model)
         {
             var roles = model.Roles ?? new List<string>();
-
-            var userManager = Service<UserManager<User>>();
-
-            var user = new User { Email = model.Email, UserName = model.Email };
-
-            var result = await userManager.CreateAsync(user);
-
-            if (!result.Succeeded)
-            {
-                throw new KnownException(result.Errors.First().Description);
-            }
-
             roles.Remove("God");
-            if (roles is { Count: > 0 })
-            {
-                try
-                {
-                    result = await userManager.AddToRolesAsync(user, roles);
-                    if (!result.Succeeded)
-                    {
-                        throw new KnownException(result.Errors.First().Description);
-                    }
-                }
-                catch (InvalidOperationException exc)
-                {
-                    throw new KnownException(exc.Message);
-                }
-            }
+
+            var user = await Service<UserService>().CreateUser(model.Email, null, roles);
 
             if (model.SendActivationEmail)
             {

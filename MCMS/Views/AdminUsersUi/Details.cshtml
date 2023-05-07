@@ -1,6 +1,9 @@
 @using MCMS.Base.Repositories
 @using MCMS.Display.Link
 @using MCMS.Admin.Users
+@using MCMS.Base.Extensions
+@using MCMS.Base.Helpers
+@using Microsoft.AspNetCore.Mvc.TagHelpers
 @inject ITranslationsRepository TransRepo
 @model MCMS.Display.DetailsViewModelT<MCMS.Admin.Users.UserViewModel>
 
@@ -8,8 +11,9 @@
     ViewBag.Title = ViewBag.ModelName + ": " + Model.Model;
     Layout = "_ModalLayout";
     ViewBag.ModalDialogClasses = "modal-xl";
+    var id = $"ud_{Utils.GenerateRandomHexString()}";
 }
-<div class="modal-body">
+<div class="modal-body" id="@id">
     <div class="container-fluid">
         <partial name="BasicModals/_DetailsFields"/>
     </div>
@@ -19,30 +23,42 @@
     {
         var confirmEmailLink = new MRichLink(await TransRepo.GetValueOrSlug("confirm_email"), typeof(AdminUsersUiController),
             nameof(AdminUsersUiController.ConfirmEmail)).WithValues(new { Model.TModel.Id }).WithTag("confirm-email")
-            .AsButton("light").WithModal()
-            .WithIconClasses("fas fa-envelope-circle-check");
+            .AsButton("light").WithModal().WithIconClasses("fas fa-envelope-circle-check")
+            .WithData("modal-callback", $"callback_{id}");
         <partial name="Partials/_MRichLink" model="confirmEmailLink"/>
     }
     @{
         var resendResetLink = new MRichLink(await TransRepo.GetValueOrSlug("resend_activation_email"), typeof(AdminUsersUiController),
             nameof(AdminUsersUiController.ResendActivationMail)).WithValues(new { Model.TModel.Id }).WithTag("confirm-email")
-            .AsButton("light").WithModal()
-            .WithIconClasses("fas fa-paper-plane");
+            .AsButton("light").WithModal().WithIconClasses("fas fa-paper-plane");
         <partial name="Partials/_MRichLink" model="@resendResetLink"/>
     }
     @{
         var changeEmailLink = new MRichLink(await TransRepo.GetValueOrSlug("update_email"), typeof(AdminUsersUiController),
             nameof(AdminUsersUiController.UpdateEmail)).WithValues(new { Model.TModel.Id }).WithTag("update-email")
-            .AsButton("light").WithModal()
-            .WithIconClasses("fas fa-envelope");
+            .AsButton("light").WithModal().WithIconClasses("fas fa-envelope")
+            .WithData("modal-callback", $"callback_{id}");
         <partial name="Partials/_MRichLink" model="@changeEmailLink"/>
     }
     @{
         var updateRoles = new MRichLink(await TransRepo.GetValueOrSlug("update_roles"), typeof(AdminUsersUiController),
             nameof(AdminUsersUiController.UpdateRoles)).WithValues(new { Model.TModel.Id }).WithTag("update-email")
-            .AsButton("light").WithModal()
-            .WithIconClasses("fas fa-tags");
+            .AsButton("light").WithModal().WithIconClasses("fas fa-tags")
+            .WithData("modal-callback", $"callback_{id}");
         <partial name="Partials/_MRichLink" model="@updateRoles"/>
     }
     <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">@await TransRepo.GetValueOrSlug("close")</button>
 </div>
+@using (Html.BeginMScripts())
+{
+    <script>
+    (($) => {
+        window.callback_@(id) = (sender, result) => {
+            if (result?.params) {
+                const data = {reload: true, alsoTriggerCallback: true, reloadModal: true, ...result.params};
+                $("#@id").closest(".modal").data('result', data).modal('hide');
+            }
+        }
+    })(jQuery);
+    </script>
+}

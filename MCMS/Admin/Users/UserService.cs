@@ -64,15 +64,15 @@ namespace MCMS.Admin.Users
         /// <returns>True if the update was successful, false otherwise.</returns>
         public async Task<bool> UpdateUserRoles(User user, IList<string> roleNames)
         {
-            var roles = await _roleManager.Roles.ToListAsync();
+            var userRoles = await _userManager.GetRolesAsync(user);
+            var rolesToRemove = userRoles.Except(roleNames).ToList();
+            var rolesToAdd = roleNames.Except(userRoles).ToList();
 
-            // Remove existing roles
-            var result = await _userManager.RemoveFromRolesAsync(user, roles.Select(r => r.Name));
+            var result = await _userManager.RemoveFromRolesAsync(user, rolesToRemove);
 
             EnsureSucceeded(result);
 
-            // Add new roles
-            result = await _userManager.AddToRolesAsync(user, roleNames);
+            result = await _userManager.AddToRolesAsync(user, rolesToAdd);
 
             EnsureSucceeded(result);
 

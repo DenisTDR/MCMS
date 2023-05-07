@@ -100,6 +100,11 @@ namespace MCMS.Admin.Users
             [Required] [FromBody] UpdateEmailFormModel model)
         {
             model.NewEmail = model.NewEmail.Trim().ToLower();
+            if (model.OldEmail == model.NewEmail)
+            {
+                throw new KnownException("The new email is the same as old email.");
+            }
+
             var userManager = Service<UserManager<User>>();
             var user = await userManager.FindByIdAsync(id);
             if (user == null) return NotFound();
@@ -107,6 +112,7 @@ namespace MCMS.Admin.Users
             {
                 throw new KnownException("Old mail is not the same. Please try again.");
             }
+
 
             user.Email = user.UserName = model.NewEmail;
             user.EmailConfirmed = false;
@@ -125,7 +131,6 @@ namespace MCMS.Admin.Users
         [Route("{id}")]
         public virtual async Task<ActionResult<UserViewModel>> ConfirmEmail([FromRoute] string id)
         {
-            // var userManager = Service<UserManager<User>>();
             var user = await Repo.GetOneOrThrow(id);
             user.EmailConfirmed = true;
             await Repo.SaveChanges();

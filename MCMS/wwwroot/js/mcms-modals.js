@@ -227,7 +227,7 @@
             activeModal.on("hidden.bs.modal", function () {
                 const result = activeModal.data('result');
                 if (target && result?.reloadModal) {
-                    target.click();
+                    mcmsModals.ajaxModalItemAction.call(target[0])
                     if (!result.alsoTriggerCallback) {
                         return;
                     }

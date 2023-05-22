@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -11,13 +10,13 @@ using MCMS.Base.Data;
 using MCMS.Base.Exceptions;
 using MCMS.Base.Extensions;
 using MCMS.Base.Repositories;
+using MCMS.Base.SwaggerFormly.Formly.Base;
 using MCMS.Controllers.Api;
 using MCMS.Data;
 using MCMS.Models;
 using MCMS.Models.Dt;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -28,8 +27,6 @@ namespace MCMS.Admin.Users
     public class AdminUsersAdminApiController : AdminApiController
     {
         protected IRepository<User> Repo => ServiceProvider.GetRepo<User>();
-        protected BaseDbContext DbContext => Service<BaseDbContext>();
-        private IEmailSender EmailSender => Service<IEmailSender>();
 
         protected virtual DtQueryService<UserViewModel> QueryService =>
             ServiceProvider.GetService<DtQueryService<UserViewModel>>();
@@ -64,53 +61,76 @@ namespace MCMS.Admin.Users
 
         [HttpPost]
         [Route("{id}")]
-        public virtual async Task<ActionResult<UserViewModel>> ChangeRoles([FromRoute] string id,
-            [FromBody] Dictionary<string, object> roles)
+        [ModelValidation]
+        public virtual async Task<ActionResult<UserViewModel>> UpdateRoles([FromRoute] string id,
+            [FromBody] UpdateRolesFormModel model)
         {
             var asMod = !UserFromClaims.HasRole("Admin");
-            var userManager = Service<UserManager<User>>();
             var user = await Repo.GetOneOrThrow(id);
             var allRoles = await Service<RoleManager<Role>>().Roles.Select(role => role.Name)
                 .ToListAsync();
-            var existingRoles = await userManager.GetRolesAsync(user);
-            var newRoles = allRoles.Where(roles.ContainsKey)
+            allRoles.Remove("God");
+            var newRoles = allRoles.Where(role => model.Roles.Contains(role))
                 .ToList();
-            var toDeleteRoles = existingRoles.Except(newRoles).ToList();
 
             if (UserFromClaims.Id == id)
             {
-                toDeleteRoles = toDeleteRoles.Where(r => r != (asMod ? "Moderator" : "Admin")).ToList();
+                var requiredRole = asMod ? "Moderator" : "Admin";
+                if (!newRoles.Contains(requiredRole)) newRoles.Add(requiredRole);
             }
 
-            var toAddRoles = newRoles.Except(existingRoles).ToList();
-            if (asMod)
+            if (asMod && newRoles.Contains("Admin"))
             {
-                if (toAddRoles.Contains("Admin"))
-                {
-                    toAddRoles.RemoveAll(r => r == "Admin");
-                }
-
-                if (toDeleteRoles.Contains("Admin"))
-                {
-                    toDeleteRoles.RemoveAll(r => r == "Admin");
-                }
+                newRoles.Remove("Admin");
             }
 
-            await userManager.AddToRolesAsync(user, toAddRoles);
-            await userManager.RemoveFromRolesAsync(user, toDeleteRoles);
+            await Service<UserService>().UpdateUserRoles(user, newRoles);
 
-            return Ok(new
+            return Ok(new FormSubmitResponse<UpdateRolesFormModel>
             {
-                reloadTable = true
+                Snack = await Service<ITranslationsRepository>().GetValueOrSlug("updated"),
+                SnackType = "success",
+                SnackDuration = 3000
             });
         }
 
+        [HttpPost]
+        [Route("{id}")]
+        public virtual async Task<ActionResult<UserViewModel>> UpdateEmail([FromRoute] string id,
+            [Required] [FromBody] UpdateEmailFormModel model)
+        {
+            model.NewEmail = model.NewEmail.Trim().ToLower();
+            if (model.OldEmail == model.NewEmail)
+            {
+                throw new KnownException("The new email is the same as old email.");
+            }
+
+            var userManager = Service<UserManager<User>>();
+            var user = await userManager.FindByIdAsync(id);
+            if (user == null) return NotFound();
+            if (user.Email != model.OldEmail)
+            {
+                throw new KnownException("Old mail is not the same. Please try again.");
+            }
+
+
+            user.Email = user.UserName = model.NewEmail;
+            user.EmailConfirmed = false;
+
+            await userManager.UpdateAsync(user);
+
+            return Ok(new FormSubmitResponse<UpdateEmailFormModel>
+            {
+                Snack = await Service<ITranslationsRepository>().GetValueOrSlug("updated"),
+                SnackType = "success",
+                SnackDuration = 3000
+            });
+        }
 
         [HttpPost]
         [Route("{id}")]
         public virtual async Task<ActionResult<UserViewModel>> ConfirmEmail([FromRoute] string id)
         {
-            // var userManager = Service<UserManager<User>>();
             var user = await Repo.GetOneOrThrow(id);
             user.EmailConfirmed = true;
             await Repo.SaveChanges();
@@ -133,36 +153,10 @@ namespace MCMS.Admin.Users
         [ModelValidation]
         public virtual async Task<ActionResult<UserViewModel>> Create([Required] [FromBody] CreateUserFormModel model)
         {
-            var roles = model.Roles?.Split(",", StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
-                .ToList() ?? new List<string>();
-
-            var userManager = Service<UserManager<User>>();
-
-            var user = new User { Email = model.Email, UserName = model.Email };
-
-            var result = await userManager.CreateAsync(user);
-
-            if (!result.Succeeded)
-            {
-                throw new KnownException(result.Errors.First().Description);
-            }
-
+            var roles = model.Roles ?? new List<string>();
             roles.Remove("God");
-            if (roles is { Count: > 0 })
-            {
-                try
-                {
-                    result = await userManager.AddToRolesAsync(user, roles);
-                    if (!result.Succeeded)
-                    {
-                        throw new KnownException(result.Errors.First().Description);
-                    }
-                }
-                catch (InvalidOperationException exc)
-                {
-                    throw new KnownException(exc.Message);
-                }
-            }
+
+            var user = await Service<UserService>().CreateUser(model.Email, null, roles);
 
             if (model.SendActivationEmail)
             {
@@ -172,12 +166,21 @@ namespace MCMS.Admin.Users
             return Ok(await GetCreateResponseModel(user, roles, model.SendActivationEmail));
         }
 
+        [HttpGet]
+        public async Task<ActionResult<List<ValueLabelModel>>> Roles()
+        {
+            var roles = await Service<RoleManager<Role>>().Roles
+                .Select(role => role.Name)
+                .Where(role => role != "God").ToListAsync();
+            return roles.Select(role => new ValueLabelModel() { Value = role, Label = role }).ToList();
+        }
+
         protected virtual async Task<ModelResponse<CreateUserFormModel>> GetCreateResponseModel(User e,
             List<string> roles, bool sendActivationEmail)
         {
             var fm = new CreateUserFormModel
             {
-                Email = e.Email, Roles = string.Join(", ", roles),
+                Email = e.Email, Roles = roles,
                 SendActivationEmail = sendActivationEmail
             };
             var vm = MapV(e);

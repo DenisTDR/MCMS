@@ -16,7 +16,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace MCMS.Display.TableConfig
 {
-    public class TableConfigForControllerService<TE, TFm, TVm, TUiController, TApiController> : TableConfigService<TVm>
+    public class TableConfigForControllerService<TE, TFm, TVm, TUiController, TApiController> : TableConfigServiceOfT<TVm>
         where TUiController : GenericAdminUiController<TE, TFm, TVm, TApiController>
         where TE : class, IEntity
         where TFm : class, IFormModel

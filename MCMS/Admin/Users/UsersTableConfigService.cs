@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace MCMS.Admin.Users
 {
-    public class UsersTableConfigService : TableConfigService<UserViewModel>
+    public class UsersTableConfigService : TableConfigServiceOfT<UserViewModel>
     {
         private readonly ITranslationsRepository _translationsRepository;
 

@@ -44,7 +44,7 @@ namespace MCMS
 
             EvalManager.DefaultContext.RegisterType(typeof(MDbFunctions));
             services.AddScoped(typeof(IDetailsConfigServiceT<>), typeof(DetailsConfigService<>));
-            services.AddScoped(typeof(ITableConfigServiceT<>), typeof(TableConfigService<>));
+            services.AddScoped(typeof(ITableConfigServiceT<>), typeof(TableConfigServiceOfT<>));
             services.AddScoped(typeof(TableConfigForControllerService<,,,,>));
 
             services.AddSingleton<DisplayValueService>();

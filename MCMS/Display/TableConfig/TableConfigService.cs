@@ -1,73 +1,33 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
-using MCMS.Base.Data.ViewModels;
 using MCMS.Base.Display.ModelDisplay;
-using MCMS.Base.Display.ModelDisplay.Attributes;
-using MCMS.Base.Helpers;
 using MCMS.Display.Link;
 using MCMS.Display.ModelDisplay;
-using Microsoft.AspNetCore.Mvc;
 
 namespace MCMS.Display.TableConfig
 {
-    public class TableConfigService<TVm> : ITableConfigServiceT<TVm> where TVm : IViewModel
+    public abstract class TableConfigService : ITableConfigService
     {
-        public TableConfigService(IUrlHelper urlHelper)
-        {
-            UrlHelper = urlHelper;
-        }
-
-        public virtual Type ViewModelType => typeof(TVm);
-        public bool ExcludeActionsColumn { get; set; }
         public bool UseModals { get; set; }
         public object TableItemsApiUrlValues { get; set; }
-        public bool UseCreateNewItemLink { get; set; } = true;
+        public bool UseCreateNewItemLink { get; set; }
         public object CreateNewItemLinkValues { get; set; }
         public bool ExcludeDefaultItemActions { get; set; }
-
-        public IUrlHelper UrlHelper { get; set; }
-
-
+        public bool ExcludeActionsColumn { get; set; }
         public bool ServerSide { get; set; }
+        public string TableItemsApiUrl { get; set; }
+        public MRichLink CreateNewItemLink { get; set; }
 
-        public virtual string TableItemsApiUrl { get; set; }
+        public abstract string ModelName { get; }
 
-        public virtual MRichLink CreateNewItemLink { get; set; }
-
-        public virtual List<TableColumn> GetTableColumns()
-        {
-            var props = ViewModelType.GetProperties().ToList();
-            var tableColumnProps = props.Where(prop =>
-            {
-                var attr = prop.GetCustomAttributes<TableColumnAttribute>().FirstOrDefault();
-                return attr != null && (!attr.Hidden || attr.RowGroup);
-            }).ToList();
-            if (tableColumnProps.Count == 0)
-            {
-                tableColumnProps = props;
-            }
-
-            tableColumnProps = tableColumnProps.Where(prop =>
-            {
-                var attr = prop.GetCustomAttributes<TableColumnAttribute>().FirstOrDefault();
-                return attr is not { Hidden: true } || attr.RowGroup;
-            }).ToList();
-
-            var list = tableColumnProps.Select(prop =>
-                new TableColumn(prop, prop.GetCustomAttributes<TableColumnAttribute>().ToList())).ToList();
-
-            return list;
-        }
-
+        public Func<TableConfig, TableConfig> AfterBuildHook { get; set; }
 
         public virtual Task<TableConfig> GetTableConfig()
         {
             var config = new TableConfig
             {
-                ModelName = TypeHelpers.GetDisplayNameOrDefault<TVm>(),
+                ModelName = ModelName,
                 TableColumns = GetTableColumns(),
                 HasTableIndexColumn = true,
                 TableItemsApiUrl = TableItemsApiUrl,
@@ -89,9 +49,7 @@ namespace MCMS.Display.TableConfig
 
             return Task.FromResult(config);
         }
-
-        public Func<TableConfig, TableConfig> AfterBuildHook { get; set; }
-
+        public abstract List<TableColumn> GetTableColumns();
 
         public virtual List<MRichLink> GetItemActions()
         {

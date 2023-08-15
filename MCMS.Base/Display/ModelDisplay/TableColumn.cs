@@ -14,7 +14,8 @@ namespace MCMS.Base.Display.ModelDisplay
     {
         public int OrderIndex { get; set; }
 
-        public TableColumn(string name, string key, int orderIndex) : this(name, key)
+        public TableColumn(string name, string key, int orderIndex, TableColumnType type = TableColumnType.Default) :
+            this(name, key, type)
         {
             OrderIndex = orderIndex;
         }
@@ -39,11 +40,13 @@ namespace MCMS.Base.Display.ModelDisplay
             this.BuildTypeAndPatchFilter(prop);
         }
 
-        public TableColumn(string name, string key)
+        public TableColumn(string name, string key, TableColumnType type = TableColumnType.Default)
         {
             Name = name;
             Key = key;
             Data = key;
+            Type = type;
+            this.PatchFilter();
         }
 
         public TableColumn()
@@ -99,6 +102,25 @@ namespace MCMS.Base.Display.ModelDisplay
         {
             if (string.IsNullOrEmpty(col.HeaderClassName)) return null;
             return "class=\"" + col.HeaderClassName + "\"";
+        }
+
+        public static void PatchFilter(this TableColumn col)
+        {
+            if (col.Type is not TableColumnType.Bool and not TableColumnType.NullableBool)
+            {
+                return;
+            }
+
+            col.FilterValues = new List<ValueLabelPair>
+            {
+                new("", "-"),
+                new("true", "True"),
+                new("false", "False"),
+            };
+            if (col.Type == TableColumnType.NullableBool)
+            {
+                col.FilterValues.Add(new("null", "Not set"));
+            }
         }
 
         public static void BuildTypeAndPatchFilter(this TableColumn col, PropertyInfo prop)

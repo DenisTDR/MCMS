@@ -38,8 +38,10 @@ namespace MCMS.Base.Auth
 
         public List<UserRole> UserRoles { get; set; }
 
-        public List<string> RolesList =>
-            UserRoles?.Select(ur => ur.Role?.Name).Where(rn => !string.IsNullOrEmpty(rn)).ToList();
+        public List<string> RolesList => UserRoles?
+            .Select(ur => ur.Role?.Name)
+            .Where(rn => !string.IsNullOrEmpty(rn))
+            .ToList();
 
         public override string ToString()
         {

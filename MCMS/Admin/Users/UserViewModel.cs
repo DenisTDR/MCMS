@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 using MCMS.Base.Data.ViewModels;
 using MCMS.Base.Display.ModelDisplay;
 using MCMS.Base.Display.ModelDisplay.Attributes;
@@ -26,11 +25,10 @@ namespace MCMS.Admin.Users
         public bool EmailConfirmed { get; set; }
         public DateTime Created { get; set; }
 
-        [DetailsField(Hidden = true)] public List<string> RolesList { get; set; }
-
         [TableColumn(Orderable = ServerClient.Client, DbColumn = "UserRoles",
             DbFuncFormat = "{0}.Any(ur=> <condition>)<sel>ur.Role.Name")]
-        public string Roles => string.Join(", ", RolesList?.OrderBy(r => r).ToList() ?? new List<string>());
+        [DisplayName("Roles")]
+        public List<string> RolesList { get; set; }
 
         public override string ToString()
         {

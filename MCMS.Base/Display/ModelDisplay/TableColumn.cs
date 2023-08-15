@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -174,6 +175,10 @@ namespace MCMS.Base.Display.ModelDisplay
                     col.Type = TableColumnType.DateTime;
                 }
             }
+            else if (typeof(IList).IsAssignableFrom(prop.PropertyType))
+            {
+                col.Type = TableColumnType.Array;
+            }
         }
     }
 
@@ -187,5 +192,6 @@ namespace MCMS.Base.Display.ModelDisplay
         [EnumMember(Value = "date")] Date,
         [EnumMember(Value = "time")] Time,
         [EnumMember(Value = "select")] Select,
+        [EnumMember(Value = "array")] Array,
     }
 }

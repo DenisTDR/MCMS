@@ -17,7 +17,7 @@ const mcmsTables = [];
             const initialPatchRowData = function (rowData) {
                 if (shouldMakeActionsCellContent) {
                     rowData._actions = actionsColumnContent.replace(/ENTITY_ID/g, rowData.id);
-                    if(initialConfig.itemActionsPlaceholders) {
+                    if (initialConfig.itemActionsPlaceholders) {
                         for (let placeholder of Object.keys(initialConfig.itemActionsPlaceholders)) {
                             rowData._actions = rowData._actions.replace(placeholder, rowData[initialConfig.itemActionsPlaceholders[placeholder]]);
                         }
@@ -91,6 +91,8 @@ const mcmsTables = [];
                     selector: 'td:first-child'
                 };
             }
+
+            mcmsDatatables.buildRenderFieldsIfNeeded(config);
 
             const tableJQuery = tableElem.dataTable(config);
             const table = tableJQuery.api();
@@ -242,20 +244,20 @@ const mcmsTables = [];
             }
         },
         getInputElementForColumnSearch: function (colConfig, placeholder, serverSide) {
-            if (serverSide) {
-                switch (colConfig.mType) {
-                    case 'bool':
-                    case 'nBool':
-                    case 'select':
-                        const elem = $('<select>');
-                        if (colConfig.mFilterValues) {
-                            for (let i = 0; i < colConfig.mFilterValues.length; i++) {
-                                elem.append('<option value="' + colConfig.mFilterValues[i].value + '">' + colConfig.mFilterValues[i].label + '</option>');
-                            }
+            // if (serverSide) {
+            switch (colConfig.mType) {
+                case 'bool':
+                case 'nBool':
+                case 'select':
+                    const elem = $('<select>');
+                    if (colConfig.mFilterValues) {
+                        for (let i = 0; i < colConfig.mFilterValues.length; i++) {
+                            elem.append('<option value="' + colConfig.mFilterValues[i].value + '">' + colConfig.mFilterValues[i].label + '</option>');
                         }
-                        return elem;
-                }
+                    }
+                    return elem;
             }
+            // }
             return $('<input type="' + (colConfig.mType === 'number' ? 'number' : 'text') + '" placeholder="🔍 ' + placeholder + '" />');
         },
         enableColumnSearchRow: function (config, tableApi) {
@@ -452,21 +454,6 @@ const mcmsTables = [];
                     data[i]._index = i + 1;
                 }
             }
-
-            for (i = 0; i < initialConfig.columns.length; i++) {
-                const col = initialConfig.columns[i];
-                if (col.mType === "bool" || col.mType === "nBool") {
-                    for (let j = 0; j < data.length; j++) {
-                        if (data[j][col.data] === true) {
-                            data[j][col.data] = '<div class="bool-wrapper"><i class="far fa-check-circle fa-lg text-success"></i></div>';
-                        } else if (data[j][col.data] === false) {
-                            data[j][col.data] = '<div class="bool-wrapper"><i class="far fa-times-circle fa-lg text-danger st-text"></i></div>';
-                        } else if (col.mType === "nBool" && data[j][col.data] === undefined || data[j][col.data] === null) {
-                            data[j][col.data] = '<div class="bool-wrapper"><i class="far fa-question-circle fa-lg text-secondary"></i></div>';
-                        }
-                    }
-                }
-            }
             return data;
         },
         fixGlobalFilterDebounce: function (table, tableJq, config) {
@@ -498,6 +485,26 @@ const mcmsTables = [];
                     }));
                 }
             });
+        },
+        buildRenderFieldsIfNeeded: function (config) {
+            const columns = config.columns;
+            for (const col of columns) {
+                switch (col.mType) {
+                    case 'bool':
+                    case 'nBool':
+                        col.render = (data, type, row, meta) => {
+                            if (type !== 'display') return data;
+                            if (data === true) {
+                                return '<div class="bool-wrapper"><i class="far fa-check-circle fa-lg text-success"></i></div>';
+                            } else if (data === false) {
+                                return '<div class="bool-wrapper"><i class="far fa-times-circle fa-lg text-danger st-text"></i></div>';
+                            } else if (col.mType === 'nBool' && !data) {
+                                return '<div class="bool-wrapper"><i class="far fa-question-circle fa-lg text-secondary"></i></div>';
+                            }
+                            return data;
+                        }
+                }
+            }
         }
     };
 })(jQuery);

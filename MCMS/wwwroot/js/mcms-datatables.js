@@ -503,6 +503,17 @@ const mcmsTables = [];
                             }
                             return data;
                         }
+                        break;
+                    case 'array':
+                        col.render = (data, type, row, meta) => {
+                            if (type === 'display' && Array.isArray(data)) {
+                                return data.join(', ');
+                            }
+                            if (type === 'type' && !data) {
+                                return [];
+                            }
+                            return data;
+                        }
                 }
             }
         }

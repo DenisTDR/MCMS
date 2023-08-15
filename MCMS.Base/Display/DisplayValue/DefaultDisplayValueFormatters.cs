@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Linq;
 using System.Reflection;
 using MCMS.Base.Attributes.JsonConverters;
 using MCMS.Base.Extensions;
@@ -55,9 +56,9 @@ namespace MCMS.Base.Display.DisplayValue
 
         public static bool DisplayListValue(PropertyInfo pInfo, object o, out object value)
         {
-            if (typeof(IList).IsAssignableFrom(pInfo.PropertyType) && pInfo.GetValue(o) is { } src)
+            if (typeof(IList).IsAssignableFrom(pInfo.PropertyType) && pInfo.GetValue(o) is IList src)
             {
-                value = ToStringJsonConverter.GetToStringValue(src);
+                value = string.Join(", ", src.ToListDynamic().Select(ToStringJsonConverter.GetToStringValue));
                 return true;
             }
 

@@ -6,7 +6,7 @@ namespace MCMS.Base.Display.DisplayValue
 {
     public class DisplayValueService
     {
-        private List<DisplayValueFormatters.TryDisplayDelegate> _formatters;
+        private readonly List<DisplayValueFormatters.TryDisplayDelegate> _formatters;
         public DisplayValueService(IOptions<DisplayValueFormatters> options)
         {
             _formatters = options.Value.Formatters;

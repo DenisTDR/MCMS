@@ -13,17 +13,17 @@ using SendGrid.Helpers.Mail;
 
 namespace MCMS.Emailing.Clients.SendGrid
 {
-    public class MSendGridEmailClient : IMEmailClient
+    public class MSendGridClient : IMEmailClient
     {
         private readonly ILogger _logger;
-        private readonly MSendgridClientOptions _clientOptions;
+        private readonly MSendGridClientOptions _clientOptions;
 
         private SendGridClient _client;
         private SendGridClient Client => _client ??= new SendGridClient(_clientOptions.Key);
 
-        public MSendGridEmailClient(
+        public MSendGridClient(
             ILoggerFactory loggerFactory,
-            IOptions<MSendgridClientOptions> clientOptions)
+            IOptions<MSendGridClientOptions> clientOptions)
         {
             _clientOptions = clientOptions.Value;
             _logger = loggerFactory.CreateLogger("MailClient");

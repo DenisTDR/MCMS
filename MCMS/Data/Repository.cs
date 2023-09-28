@@ -50,12 +50,12 @@ namespace MCMS.Data
             return query.FirstOrDefaultAsync();
         }
 
-        public virtual async Task<T> GetOneOrThrow(string id)
+        public virtual async Task<T> GetOneOrThrow(string id, string throwMessage = null)
         {
             var e = await GetOne(id);
             if (e == null)
             {
-                throw new KnownException(code: 404);
+                throw new KnownException(throwMessage, 404);
             }
 
             return e;

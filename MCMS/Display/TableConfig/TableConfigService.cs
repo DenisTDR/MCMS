@@ -11,7 +11,7 @@ namespace MCMS.Display.TableConfig
     {
         public bool UseModals { get; set; }
         public object TableItemsApiUrlValues { get; set; }
-        public bool UseCreateNewItemLink { get; set; }
+        public bool UseCreateNewItemLink { get; set; } = true;
         public object CreateNewItemLinkValues { get; set; }
         public bool ExcludeDefaultItemActions { get; set; }
         public bool ExcludeActionsColumn { get; set; }

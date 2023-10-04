@@ -13,7 +13,7 @@ namespace MCMS.Base.Data
     public interface IRepository<T> where T : class, IEntity
     {
         Task<T> GetOne(string id);
-        Task<T> GetOneOrThrow(string id);
+        Task<T> GetOneOrThrow(string id, string throwMessage = null);
         Task<T> GetOne(Expression<Func<T, bool>> predicate);
         Task<List<T>> GetAll(Expression<Func<T, bool>> predicate = null);
         Task<T> Add(T e);

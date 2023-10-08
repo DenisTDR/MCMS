@@ -49,7 +49,7 @@ namespace MCMS.Controllers.Api
         [HttpGet]
         public virtual Task<ActionResult<List<TVm>>> IndexLight()
         {
-            Repo.ChainQueryable(q => q.Select(e => new TE {Id = e.Id}));
+            Repo.ChainQueryable(q => q.Select(e => new TE { Id = e.Id }));
             return Index();
         }
 
@@ -71,8 +71,9 @@ namespace MCMS.Controllers.Api
             return Ok(id);
         }
 
-        [HttpDelete]
-        public virtual async Task<ActionResult<List<string>>> BatchDelete([FromQuery] List<string> ids)
+        [HttpPost]
+        [ModelValidation]
+        public virtual async Task<ActionResult<List<string>>> BatchDelete([FromBody] [Required] List<string> ids)
         {
             await Repo.Delete(ids);
             return Ok(ids);

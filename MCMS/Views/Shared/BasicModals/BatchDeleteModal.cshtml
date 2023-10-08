@@ -9,8 +9,8 @@
     var formId = Utils.GenerateRandomHexString();
     Layout = "_ModalLayout";
 }
-<form data-ajax-method="delete" id="@formId"
-      action="@Url.ActionLink("BatchDelete", ViewBag.ApiControllerName as string, new {ids = Model})">
+<form data-ajax-method="post" id="@formId"
+      action="@Url.ActionLink("BatchDelete", ViewBag.ApiControllerName as string)">
     <div class="modal-body">
     </div>
     <div class="modal-footer">
@@ -22,6 +22,6 @@
 @using (Html.BeginMPageScripts())
 {
     <script>
-         ajaxForm($("#@formId"), true);
+         ajaxForm($("#@formId"), true, null, @Json.Serialize(Model));
     </script>
 }

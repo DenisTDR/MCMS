@@ -19,7 +19,7 @@
                 mcmsModals.ajaxModalItemAction.apply(this, [event]);
             });
         },
-        ajaxModalItemAction: function (event) {
+        ajaxModalItemAction: function (event, postData) {
             if (event) {
                 event.preventDefault();
             }
@@ -51,8 +51,14 @@
             const requestOptions = {
                 url: url,
                 headers: {'X-Request-Modal': 'true'},
-                type: 'GET'
+                method: button.data('modal-method') || 'GET',
             };
+
+            if (requestOptions.method === "POST" && postData) {
+                requestOptions.data = JSON.stringify(postData);
+                requestOptions.contentType = "application/json; charset=utf-8";
+            }
+
             // make backend request to get the content
             $.ajax(requestOptions)
                 .done(function (data) {

@@ -102,8 +102,8 @@ namespace MCMS.Controllers.Ui
             return View("BasicModals/DeleteModal", e);
         }
 
-        [HttpGet]
-        public virtual Task<IActionResult> BatchDelete([FromQuery] List<string> ids)
+        [HttpPost]
+        public virtual Task<IActionResult> BatchDelete([FromBody] List<string> ids)
         {
             return Task.FromResult(View("BasicModals/BatchDeleteModal", ids) as IActionResult);
         }

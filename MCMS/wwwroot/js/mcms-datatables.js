@@ -327,15 +327,15 @@ const mcmsTables = [];
                     for (let i = 0; i < sdt.length; i++) {
                         ids.push(encodeURIComponent(sdt[i].id));
                     }
-                    const pn = config.data['url-arg-name'];
-                    const url = config.data['url'] + '?' + pn + '=' + ids.join('&' + pn + '=');
+                    const url = config.data['url'];
                     const vEl = $("<div></div>");
                     const dataCloned = deepmerge({}, config.data);
                     dataCloned.url = url;
                     dataCloned['modal-callback'] = table.mcms.callbacks.modalClosed;
                     dataCloned['modal-callback-target'] = ids;
+                    dataCloned['modal-method'] = 'POST';
                     vEl.data(dataCloned);
-                    mModals.ajaxModalItemAction.apply(vEl[0]);
+                    mModals.ajaxModalItemAction.apply(vEl[0], [e, ids]);
                 }
             }
             table.one('preInit', function () {

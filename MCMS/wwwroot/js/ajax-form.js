@@ -1,5 +1,5 @@
 (function ($) {
-    window.ajaxForm = function (form, asModal, callback) {
+    window.ajaxForm = function (form, asModal, callback, customData) {
         if (!form.length) {
             return;
         }
@@ -18,9 +18,9 @@
             }
 
             $.ajax({
-                type: $(this).data("ajax-method") || this.method || 'POST',
+                method: $(this).data("ajax-method") || this.method || 'POST',
                 url: this.action,
-                data: JSON.stringify(serializeFormAsObject(form)),
+                data: JSON.stringify(customData || serializeFormAsObject(form)),
                 contentType: "application/json; charset=utf-8",
                 headers: {
                     'X-Request-Modal': asModal

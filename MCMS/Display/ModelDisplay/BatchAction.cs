@@ -22,10 +22,6 @@ namespace MCMS.Display.ModelDisplay
         public object GetConfigObject(IUrlHelper url)
         {
             this.SetData("url", BuildUrl(url));
-            if (Action != null)
-            {
-                this.SetData("url-arg-name", Action.GetParameters().FirstOrDefault()?.Name);
-            }
 
             return new
             {

@@ -129,6 +129,30 @@ namespace MCMS.Admin.Users
 
         [HttpPost]
         [Route("{id}")]
+        public virtual async Task<ActionResult<UserViewModel>> UpdateUserProfile([FromRoute] string id,
+            [Required] [FromBody] UpdateUserProfileFormModel model)
+        {
+            var userManager = Service<UserManager<User>>();
+            var user = await userManager.FindByIdAsync(id);
+            if (user == null) return NotFound();
+
+
+            user.FirstName = model.FirstName;
+            user.LastName = model.LastName;
+            user.PhoneNumber = model.PhoneNumber;
+
+            await userManager.UpdateAsync(user);
+
+            return Ok(new FormSubmitResponse<UpdateEmailFormModel>
+            {
+                Snack = await Service<ITranslationsRepository>().GetValueOrSlug("updated"),
+                SnackType = "success",
+                SnackDuration = 3000
+            });
+        }
+
+        [HttpPost]
+        [Route("{id}")]
         public virtual async Task<ActionResult<UserViewModel>> ConfirmEmail([FromRoute] string id)
         {
             var user = await Repo.GetOneOrThrow(id);

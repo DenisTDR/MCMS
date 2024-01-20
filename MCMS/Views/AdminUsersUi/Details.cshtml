@@ -22,31 +22,34 @@
     @if (!Model.TModel.EmailConfirmed)
     {
         var confirmEmailLink = new MRichLink(await TransRepo.GetValueOrSlug("confirm_email"), typeof(AdminUsersUiController),
-            nameof(AdminUsersUiController.ConfirmEmail)).WithValues(new { Model.TModel.Id }).WithTag("confirm-email")
+                nameof(AdminUsersUiController.ConfirmEmail)).WithValues(new { Model.TModel.Id }).WithTag("confirm-email")
             .AsButton("light").WithModal().WithIconClasses("fas fa-envelope-circle-check")
             .WithData("modal-callback", $"callback_{id}");
         <partial name="Partials/_MRichLink" model="confirmEmailLink"/>
     }
     @{
         var resendResetLink = new MRichLink(await TransRepo.GetValueOrSlug("resend_activation_email"), typeof(AdminUsersUiController),
-            nameof(AdminUsersUiController.ResendActivationMail)).WithValues(new { Model.TModel.Id }).WithTag("confirm-email")
+                nameof(AdminUsersUiController.ResendActivationMail)).WithValues(new { Model.TModel.Id }).WithTag("confirm-email")
             .AsButton("light").WithModal().WithIconClasses("fas fa-paper-plane");
-        <partial name="Partials/_MRichLink" model="@resendResetLink"/>
-    }
-    @{
         var changeEmailLink = new MRichLink(await TransRepo.GetValueOrSlug("update_email"), typeof(AdminUsersUiController),
-            nameof(AdminUsersUiController.UpdateEmail)).WithValues(new { Model.TModel.Id }).WithTag("update-email")
+                nameof(AdminUsersUiController.UpdateEmail)).WithValues(new { Model.TModel.Id }).WithTag("update-email")
             .AsButton("light").WithModal().WithIconClasses("fas fa-envelope")
             .WithData("modal-callback", $"callback_{id}");
-        <partial name="Partials/_MRichLink" model="@changeEmailLink"/>
-    }
-    @{
-        var updateRoles = new MRichLink(await TransRepo.GetValueOrSlug("update_roles"), typeof(AdminUsersUiController),
-            nameof(AdminUsersUiController.UpdateRoles)).WithValues(new { Model.TModel.Id }).WithTag("update-email")
+        var updateRolesLink = new MRichLink(await TransRepo.GetValueOrSlug("update_roles"), typeof(AdminUsersUiController),
+                nameof(AdminUsersUiController.UpdateRoles)).WithValues(new { Model.TModel.Id }).WithTag("update-email")
             .AsButton("light").WithModal().WithIconClasses("fas fa-tags")
             .WithData("modal-callback", $"callback_{id}");
-        <partial name="Partials/_MRichLink" model="@updateRoles"/>
+        var updateUserProfileLink = new MRichLink(await TransRepo.GetValueOrSlug("update_user_profile"), typeof(AdminUsersUiController),
+                nameof(AdminUsersUiController.UpdateUserProfile)).WithValues(new { Model.TModel.Id }).WithTag("update-user-profile")
+            .AsButton("light").WithModal().WithIconClasses("fas fa-user")
+            .WithData("modal-callback", $"callback_{id}");
+
+        <partial name="Partials/_MRichLink" model="@resendResetLink"/>
+        <partial name="Partials/_MRichLink" model="@changeEmailLink"/>
+        <partial name="Partials/_MRichLink" model="@updateRolesLink"/>
+        <partial name="Partials/_MRichLink" model="@updateUserProfileLink"/>
     }
+
     <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">@await TransRepo.GetValueOrSlug("close")</button>
 </div>
 @using (Html.BeginMScripts())

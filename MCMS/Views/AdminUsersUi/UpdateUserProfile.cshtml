@@ -1,0 +1,31 @@
+@using MCMS.Base.Extensions
+@using MCMS.Base.Repositories
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@inject ITranslationsRepository TransRepo
+
+@model (string fullName, MCMS.SwaggerFormly.Models.FormlyFormParams formParams)
+
+
+@{
+    ViewBag.Title = "Update profile for: " + Model.fullName;
+    var formParams = Model.formParams;
+
+}
+<div class="modal-body" id="@formParams.FormInstanceId-modal-body">
+    <partial name="Formly/FormlyForm" model="formParams"/>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-secondary" data-dismiss="modal">@await TransRepo.GetValueOrSlug("cancel")</button>
+    <button type="button" class="btn btn-primary" id="@formParams.FormInstanceId-submit-button">@await TransRepo.GetValueOrSlug("update")</button>
+</div>
+
+@using (Html.BeginMPageScripts())
+{
+    <script>
+    function callback@(formParams.FormInstanceId)(sender, params) {
+        const modal = $("#@formParams.FormInstanceId-modal-body").closest(".modal");
+        modal.data('result', {params: params});
+        modal.modal('hide');
+    }
+    </script>
+}

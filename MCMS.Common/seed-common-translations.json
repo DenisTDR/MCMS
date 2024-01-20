@@ -154,6 +154,13 @@
       }
     },
     {
+      "slug": "update_user_profile",
+      "items": {
+        "en": "Update Profile",
+        "ro": "Modifică profilul"
+      }
+    },
+    {
       "slug": "yes",
       "items": {
         "en": "Yes",

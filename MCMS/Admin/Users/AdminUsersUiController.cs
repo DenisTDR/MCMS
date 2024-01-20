@@ -179,5 +179,27 @@ namespace MCMS.Admin.Users
 
             return View((userVm.FullName, fp));
         }
+        [HttpGet]
+        [Route("{id}")]
+        [ViewLayout("_ModalLayout")]
+        public async Task<IActionResult> UpdateUserProfile([FromRoute] string id)
+        {
+            var user = await Repo.GetOneOrThrow(id);
+            var fps =
+                new FormParamsService(Url, TypeHelpers.GetControllerName(typeof(AdminUsersAdminApiController)),
+                    nameof(UpdateUserProfileFormModel));
+
+
+            var fp = fps.ForCreate();
+
+            fp.SubmitUrl = Url.ActionLink(nameof(AdminUsersAdminApiController.UpdateUserProfile),
+                TypeHelpers.GetControllerName(typeof(AdminUsersAdminApiController)), new { id = user.Id });
+
+            fp.HideSubmitButton();
+            fp.UseSpinnerOuterOverlay();
+            fp.AdditionalFields = new { firstName = user.FirstName, lastName = user.LastName, phoneNumber = user.PhoneNumber };
+
+            return View((user.FullName, fp));
+        }
     }
 }

@@ -4,7 +4,7 @@
 
 @inject IOptions<TurnstileConfig> Config
 
-@if (Config.Value.IsEnabled && Config.Value.IncludeFormPaths.Contains(Context.Request.Path.ToString()))
+@if (Config.Value.IsEnabled && Config.Value.IncludeFormPaths.Contains(Context.Request.Path.ToString(), StringComparer.OrdinalIgnoreCase))
 {
     @using (Html.BeginMPageScripts())
     {

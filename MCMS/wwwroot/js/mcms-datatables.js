@@ -5,7 +5,11 @@ const mcmsTables = [];
         for (let i = 0; i < this.length; i++) {
             this[i].ajax.reload();
         }
-    }
+    };
+    mcmsTables.reloadLast = function () {
+        if (this.length === 0) return;
+        this[this.length - 1].ajax.reload();
+    };
     window.mcmsDatatables = {
         bindDefaultDataTables: function (selector, initialConfig, actionsColumnContent, lang) {
             const tableId = selector.replace("#", "");

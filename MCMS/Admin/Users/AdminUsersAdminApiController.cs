@@ -114,7 +114,12 @@ namespace MCMS.Admin.Users
             }
 
 
-            user.Email = user.UserName = model.NewEmail;
+            if (user.UserName == user.Email)
+            {
+                user.UserName = model.NewEmail;
+            }
+
+            user.Email = model.NewEmail;
             user.EmailConfirmed = false;
 
             await userManager.UpdateAsync(user);

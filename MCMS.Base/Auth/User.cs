@@ -22,7 +22,7 @@ namespace MCMS.Base.Auth
             {
                 if (string.IsNullOrEmpty(FirstName) && string.IsNullOrEmpty(LastName))
                 {
-                    return Email;
+                    return Email ?? UserName;
                 }
 
                 return $"{FirstName} {LastName}".Trim();

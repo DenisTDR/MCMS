@@ -38,8 +38,6 @@ namespace MCMS.Emailing.Clients.Smtp
             await smtp.ConnectAsync(_clientOptions.Host, _clientOptions.Port, true);
             await smtp.AuthenticateAsync(_clientOptions.Email, _clientOptions.Password);
 
-            Console.WriteLine(message);
-            
             await smtp.SendAsync(message);
 
             await smtp.DisconnectAsync(true);

@@ -11,6 +11,8 @@ namespace MCMS.Logging.AuditLogs.AuditLogEntries
     [Display(Name = "LogEntry")]
     public class AuditLogEntryViewModel : ViewModel
     {
+        [TableColumn(Invisible = true)] public string AuthorId => Author?.Id;
+
         [JsonConverter(typeof(ToStringJsonConverter))]
         [TableColumn(DbColumn = "Author.FirstName",
             DbFuncFormat = "MDbFunctions.Concat({0}, x.Author.LastName, x.Author.Email)")]
@@ -31,7 +33,7 @@ namespace MCMS.Logging.AuditLogs.AuditLogEntries
         [TableColumn(Searchable = ServerClient.None)]
         public int Duration => (int)(End - Begin).TotalMilliseconds;
 
-        [TableColumn] public string SerializedData { get; set; }
+        [TableColumn(Invisible = true)] public string SerializedData { get; set; }
 
         public override string ToString()
         {

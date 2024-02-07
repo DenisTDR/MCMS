@@ -34,7 +34,7 @@ namespace MCMS.Files.Models
         public string Extension { get; set; }
         public string PhysicalPath { get; set; }
         public string VirtualPath { get; set; }
-        public long Size { get; set; }
+        [TableColumn(Invisible = true)] public long Size { get; set; }
         [TableColumn] public bool Claimed { get; set; }
         [TableColumn] public string Purpose { get; set; }
         public bool Protected { get; set; }
@@ -47,7 +47,7 @@ namespace MCMS.Files.Models
         public string GetPrivateLink(IUrlHelper urlHelper)
         {
             return urlHelper.Action(nameof(FilesController.DownloadFile), "Files",
-                new {id = Id, fileName = OriginalName});
+                new { id = Id, fileName = OriginalName });
         }
 
         public bool IsPublic =>

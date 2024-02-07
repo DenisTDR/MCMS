@@ -24,36 +24,25 @@ namespace MCMS.Common.Turnstile
 
         public override Task<AuthInterceptorResult> OnBeforeSignIn(string username, SignInType type)
         {
-            if (!_config.IsEnabled)
-            {
-                return Task.FromResult(new AuthInterceptorResult(true));
-            }
-
             if (type == SignInType.Dashboard)
-            {
                 return ValidateFormResponse(username);
-            }
 
             return ValidateApiResponse(username);
         }
 
         public override Task<AuthInterceptorResult> OnBeforeForgotPassword(string username, SignInType type)
         {
-            if (!_config.IsEnabled)
-            {
-                return Task.FromResult(new AuthInterceptorResult(true));
-            }
-
             if (type == SignInType.Dashboard)
-            {
                 return ValidateFormResponse(username);
-            }
 
             return ValidateApiResponse(username);
         }
 
-        private async Task<AuthInterceptorResult> ValidateApiResponse(string username)
+        public async Task<AuthInterceptorResult> ValidateApiResponse(string username)
         {
+            if (!_config.IsEnabled)
+                return new AuthInterceptorResult(true);
+
             var request = _httpContextAccessor.HttpContext!.Request;
             if (!request.Query.TryGetValue("turnstileResponse", out var queryValues) || queryValues.Count != 1)
             {
@@ -71,6 +60,9 @@ namespace MCMS.Common.Turnstile
 
         private async Task<AuthInterceptorResult> ValidateFormResponse(string username)
         {
+            if (!_config.IsEnabled)
+                return new AuthInterceptorResult(true);
+
             var request = _httpContextAccessor.HttpContext!.Request;
             if (!request.Form.TryGetValue("cf-turnstile-response", out var formValues) || formValues.Count != 1)
             {

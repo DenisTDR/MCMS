@@ -4,10 +4,11 @@
 {
     @if (!string.IsNullOrEmpty(Model.Name))
     {
-        <div class="sb-sidenav-menu-heading">
+        <div class="sb-sidenav-menu-heading @(string.IsNullOrEmpty(Model.CssClasses) ? "" : Model.CssClasses)">
             @(Model.Name)
         </div>
     }
+
     @foreach (var item in Model.GetItems())
     {
         @await Html.PartialAsync("Menu/_MenuItem", item)
@@ -15,7 +16,7 @@
 }
 else
 {
-    <a id="header-@Model.Id" class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#section-@Model.Id" aria-expanded="false" aria-controls="section-@Model.Id">
+    <a id="header-@Model.Id" class="nav-link collapsed @(string.IsNullOrEmpty(Model.CssClasses) ? "" : Model.CssClasses)" href="#" data-toggle="collapse" data-target="#section-@Model.Id" aria-expanded="false" aria-controls="section-@Model.Id">
         @if (!string.IsNullOrEmpty(Model.IconClasses))
         {
             <div class="sb-nav-link-icon">

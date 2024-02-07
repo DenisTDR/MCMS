@@ -36,5 +36,7 @@ namespace MCMS.Display.Menu
         {
             return Name + IconClasses + string.Join('-', RequiredRoles ?? Array.Empty<string>());
         }
+
+        public string CssClasses { get; set; }
     }
 }

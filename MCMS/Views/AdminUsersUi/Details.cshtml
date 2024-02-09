@@ -41,16 +41,21 @@
                 nameof(AdminUsersUiController.UpdateEmail)).WithValues(new { Model.TModel.Id }).WithTag("update-email")
             .AsButton("light").WithModal().WithIconClasses("fas fa-envelope")
             .WithData("modal-callback", $"callback_{id}");
+        var changeUserNameLink = new MRichLink(await TransRepo.GetValueOrSlug("update_username"), typeof(AdminUsersUiController),
+                nameof(AdminUsersUiController.UpdateUserName)).WithValues(new { Model.TModel.Id }).WithTag("update-username")
+            .AsButton("light").WithModal().WithIconClasses("fas fa-user")
+            .WithData("modal-callback", $"callback_{id}");
         var updateRolesLink = new MRichLink(await TransRepo.GetValueOrSlug("update_roles"), typeof(AdminUsersUiController),
                 nameof(AdminUsersUiController.UpdateRoles)).WithValues(new { Model.TModel.Id }).WithTag("update-email")
             .AsButton("light").WithModal().WithIconClasses("fas fa-tags")
             .WithData("modal-callback", $"callback_{id}");
         var updateUserProfileLink = new MRichLink(await TransRepo.GetValueOrSlug("update_user_profile"), typeof(AdminUsersUiController),
                 nameof(AdminUsersUiController.UpdateUserProfile)).WithValues(new { Model.TModel.Id }).WithTag("update-user-profile")
-            .AsButton("light").WithModal().WithIconClasses("fas fa-user")
+            .AsButton("light").WithModal().WithIconClasses("fas fa-id-card")
             .WithData("modal-callback", $"callback_{id}");
 
         <partial name="Partials/_MRichLink" model="@changeEmailLink"/>
+        <partial name="Partials/_MRichLink" model="@changeUserNameLink"/>
         <partial name="Partials/_MRichLink" model="@updateRolesLink"/>
         <partial name="Partials/_MRichLink" model="@updateUserProfileLink"/>
     }

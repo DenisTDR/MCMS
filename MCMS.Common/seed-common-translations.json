@@ -147,6 +147,13 @@
       }
     },
     {
+      "slug": "update_username",
+      "items": {
+        "en": "Update Username",
+        "ro": "Modifică numele de utilizator"
+      }
+    },
+    {
       "slug": "update_roles",
       "items": {
         "en": "Update Roles",

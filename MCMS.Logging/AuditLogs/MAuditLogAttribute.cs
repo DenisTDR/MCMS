@@ -44,7 +44,7 @@ namespace MCMS.Logging.AuditLogs
             var request = context.HttpContext.Request;
             var data = new Dictionary<string, object>
             {
-                {"method", request.Method}
+                { "method", request.Method }
             };
             if (context.ActionArguments.Any())
             {
@@ -59,11 +59,11 @@ namespace MCMS.Logging.AuditLogs
             if (ShouldSkipLog(context))
                 return;
 
-            var data = new Dictionary<string, object> {["statusCode"] = context.HttpContext.Response.StatusCode};
+            var data = new Dictionary<string, object> { ["statusCode"] = context.HttpContext.Response.StatusCode };
             _auditLogger.UpdateLog(data);
         }
 
-        private static readonly string[] NonReadonlyHttpMethods = {"POST", "PUT", "DELETE", "PATCH"};
+        private static readonly string[] NonReadonlyHttpMethods = { "POST", "PUT", "DELETE", "PATCH" };
 
         private bool ShouldSkipLog(FilterContext context)
         {
@@ -74,7 +74,7 @@ namespace MCMS.Logging.AuditLogs
                 return true;
             }
 
-            return !IgnoreReadOnlyRequests || !NonReadonlyHttpMethods.Contains(context.HttpContext.Request.Method);
+            return IgnoreReadOnlyRequests && !NonReadonlyHttpMethods.Contains(context.HttpContext.Request.Method);
         }
     }
 }

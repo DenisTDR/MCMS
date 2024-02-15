@@ -12,7 +12,7 @@ namespace MCMS.Display.Menu
             return item;
         }
 
-        public static bool SatisfiedByUSer<T>(this T item, ClaimsPrincipal claims)where T : IMenuItem
+        public static bool SatisfiedByUser<T>(this T item, ClaimsPrincipal claims)where T : IMenuItem
         {
             if (item.RequiredRoles == null)
             {

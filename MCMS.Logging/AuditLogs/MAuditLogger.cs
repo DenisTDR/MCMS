@@ -36,9 +36,11 @@ namespace MCMS.Logging.AuditLogs
 
             var log = new AuditLogEntryEntity
             {
-                Author = httpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier) is { } userId
-                    ? new User {Id = userId}
-                    : null,
+                Author = httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier) is { } userId
+                    ? new User { Id = userId }
+                    : httpContext.User.FindFirstValue("id") is { } userId2
+                        ? new User { Id = userId2 }
+                        : null,
                 Ip = httpContext?.Connection.RemoteIpAddress?.ToString(),
                 TraceIdentifier = httpContext.TraceIdentifier,
                 Action = actionName,

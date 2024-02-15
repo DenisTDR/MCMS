@@ -114,8 +114,44 @@ namespace MCMS.Admin.Users
             }
 
 
-            user.Email = user.UserName = model.NewEmail;
+            if (user.UserName == user.Email)
+            {
+                user.UserName = model.NewEmail;
+            }
+
+            user.Email = model.NewEmail;
             user.EmailConfirmed = false;
+
+            await userManager.UpdateAsync(user);
+
+            return Ok(new FormSubmitResponse<UpdateEmailFormModel>
+            {
+                Snack = await Service<ITranslationsRepository>().GetValueOrSlug("updated"),
+                SnackType = "success",
+                SnackDuration = 3000
+            });
+        }
+
+        [HttpPost]
+        [Route("{id}")]
+        public virtual async Task<ActionResult<UserViewModel>> UpdateUserName([FromRoute] string id,
+            [Required] [FromBody] UpdateUserNameFormModel model)
+        {
+            model.NewUserName = model.NewUserName.Trim().ToLower();
+            if (model.OldUserName == model.NewUserName)
+            {
+                throw new KnownException("The new email is the same as old email.");
+            }
+
+            var userManager = Service<UserManager<User>>();
+            var user = await userManager.FindByIdAsync(id);
+            if (user == null) return NotFound();
+            if (user.Email != model.OldUserName)
+            {
+                throw new KnownException("Old mail is not the same. Please try again.");
+            }
+
+            user.UserName = model.NewUserName;
 
             await userManager.UpdateAsync(user);
 

@@ -29,7 +29,6 @@ namespace MCMS.Emailing.Clients.SendGrid
             _logger = loggerFactory.CreateLogger("MailClient");
         }
 
-        // TODO: convert attachments too (from MimeMessage to SendGridMessage)
         public async Task<bool> SendEmail(MimeMessage message)
         {
             var sender = message.From.Mailboxes.FirstOrDefault();

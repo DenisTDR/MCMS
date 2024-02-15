@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using MCMS.Controllers.Ui;
 using MCMS.Display.ModelDisplay;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace MCMS.Logging.AuditLogs.AuditLogEntries
 {
@@ -13,6 +15,12 @@ namespace MCMS.Logging.AuditLogs.AuditLogEntries
     public class AuditLogEntriesUiController : GenericModalAdminUiController<AuditLogEntryEntity, AuditLogEntryFormModel
         , AuditLogEntryViewModel, AuditLogEntriesAdminApiController>
     {
+        public override Task<IActionResult> Details(string id)
+        {
+            Repo.ChainQueryable(q => q.Include(le => le.Author));
+            return base.Details(id);
+        }
+
         public override async Task<IndexPageConfig> GetIndexPageConfig()
         {
             TableConfigService.UseCreateNewItemLink = false;

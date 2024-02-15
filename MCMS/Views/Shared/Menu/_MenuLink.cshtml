@@ -1,6 +1,6 @@
 @using MCMS.Display.Link
 @model MCMS.Display.Menu.MenuLink
-<a class="nav-link"
+<a class="nav-link @(string.IsNullOrEmpty(Model.CssClasses) ? "" : Model.CssClasses)"
    href="@Model.BuildUrl(Url)"
    target="@Model.Target"
    @if (Model.HasData())

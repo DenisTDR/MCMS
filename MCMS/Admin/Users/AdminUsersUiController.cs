@@ -175,10 +175,32 @@ namespace MCMS.Admin.Users
             fp.UseSpinnerOuterOverlay();
             fp.AdditionalFields = new { oldEmail = userVm.Email };
 
-            // ViewBag.ModalDialogClasses = "modal-sm";
+            return View((userVm.FullName, fp));
+        }
+
+        [HttpGet]
+        [Route("{id}")]
+        [ViewLayout("_ModalLayout")]
+        public async Task<IActionResult> UpdateUserName([FromRoute] string id)
+        {
+            var userVm = await GetUserWithRoles(id);
+            var fps =
+                new FormParamsService(Url, TypeHelpers.GetControllerName(typeof(AdminUsersAdminApiController)),
+                    nameof(UpdateUserNameFormModel));
+
+
+            var fp = fps.ForCreate();
+
+            fp.SubmitUrl = Url.ActionLink(nameof(AdminUsersAdminApiController.UpdateUserName),
+                TypeHelpers.GetControllerName(typeof(AdminUsersAdminApiController)), new { id = userVm.Id });
+
+            fp.HideSubmitButton();
+            fp.UseSpinnerOuterOverlay();
+            fp.AdditionalFields = new { oldUsername = userVm.UserName };
 
             return View((userVm.FullName, fp));
         }
+
         [HttpGet]
         [Route("{id}")]
         [ViewLayout("_ModalLayout")]
@@ -197,7 +219,8 @@ namespace MCMS.Admin.Users
 
             fp.HideSubmitButton();
             fp.UseSpinnerOuterOverlay();
-            fp.AdditionalFields = new { firstName = user.FirstName, lastName = user.LastName, phoneNumber = user.PhoneNumber };
+            fp.AdditionalFields = new
+                { firstName = user.FirstName, lastName = user.LastName, phoneNumber = user.PhoneNumber };
 
             return View((user.FullName, fp));
         }

@@ -10,7 +10,7 @@ namespace MCMS.Admin.Users
     [DisplayName("User")]
     public class UserViewModel : ViewModel
     {
-        public string UserName { get; set; }
+        [TableColumn(Invisible = true)] public string UserName { get; set; }
 
         [TableColumn(DbColumn = "FirstName", DbFuncFormat = "MDbFunctions.Concat({0}, ' ', x.LastName)")]
         public string FullName { get; set; }
@@ -20,7 +20,8 @@ namespace MCMS.Admin.Users
         [DisplayName("Email")]
         [DetailsField(Hidden = true)]
         [TableColumn(DbColumn = "Email")]
-        public string EmailColumn => Email + (EmailConfirmed ? "" : " (not confirmed)");
+        public string EmailColumn =>
+            !string.IsNullOrEmpty(Email) ? Email + (EmailConfirmed ? "" : " (not confirmed)") : null;
 
         public bool EmailConfirmed { get; set; }
         public DateTime Created { get; set; }

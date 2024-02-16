@@ -248,7 +248,6 @@ const mcmsTables = [];
             }
         },
         getInputElementForColumnSearch: function (colConfig, placeholder, serverSide) {
-            // if (serverSide) {
             switch (colConfig.mType) {
                 case 'bool':
                 case 'nBool':
@@ -256,12 +255,11 @@ const mcmsTables = [];
                     const elem = $('<select>');
                     if (colConfig.mFilterValues) {
                         for (let i = 0; i < colConfig.mFilterValues.length; i++) {
-                            elem.append('<option value="' + colConfig.mFilterValues[i].value + '">' + colConfig.mFilterValues[i].label + '</option>');
+                            elem.append('<option value="' + colConfig.mFilterValues[i].dbValue + '">' + colConfig.mFilterValues[i].label + '</option>');
                         }
                     }
                     return elem;
             }
-            // }
             return $('<input type="' + (colConfig.mType === 'number' ? 'number' : 'text') + '" placeholder="🔍 ' + placeholder + '" />');
         },
         enableColumnSearchRow: function (config, tableApi) {
@@ -518,6 +516,15 @@ const mcmsTables = [];
                             }
                             return data;
                         }
+                        break;
+                    case 'select':
+                        col.render = (value, type, row, meta) => {
+                            if (type !== 'display') return value;
+                            if (!col.mFilterValues) return value;
+                            const triple = col.mFilterValues.find(t => t.value === value);
+                            return triple ? triple.label : value;
+                        };
+                        break;
                 }
             }
         }

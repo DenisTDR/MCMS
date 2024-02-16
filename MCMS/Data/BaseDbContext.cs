@@ -19,8 +19,10 @@ namespace MCMS.Data
     {
         private readonly EntitiesConfig _entitiesConfig;
 
-        public BaseDbContext(DbContextOptions options, IOptions<EntitiesConfig> entitiesConfig) : base(options)
+        public BaseDbContext(DbContextOptions options, IOptions<EntitiesConfig> entitiesConfig,
+            bool enableLegacyTimestampBehavior = true) : base(options)
         {
+            AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", enableLegacyTimestampBehavior);
             _entitiesConfig = entitiesConfig.Value;
         }
 

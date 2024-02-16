@@ -71,7 +71,7 @@ namespace MCMS.Base.Display.ModelDisplay
         public string DbColumn { get; set; }
         public string DbFuncFormat { get; set; }
         public TableColumnType Type { get; set; }
-        public List<ValueLabelPair> FilterValues { get; set; }
+        public List<EnumValueTriple> FilterValues { get; set; }
         public string Data { get; set; }
 
         public override string ToString()
@@ -112,7 +112,7 @@ namespace MCMS.Base.Display.ModelDisplay
                 return;
             }
 
-            col.FilterValues = new List<ValueLabelPair>
+            col.FilterValues = new List<EnumValueTriple>
             {
                 new("", "-"),
                 new("true", "True"),
@@ -134,7 +134,7 @@ namespace MCMS.Base.Display.ModelDisplay
             if (prop.PropertyType == typeof(bool) || prop.PropertyType == typeof(bool?))
             {
                 col.Type = TableColumnType.Bool;
-                col.FilterValues = new List<ValueLabelPair>
+                col.FilterValues = new List<EnumValueTriple>
                 {
                     new("", "-"),
                     new("true", "True"),
@@ -153,11 +153,15 @@ namespace MCMS.Base.Display.ModelDisplay
             else if (prop.PropertyType.IsEnum)
             {
                 col.Type = TableColumnType.Select;
-                col.FilterValues = Enum.GetValues(prop.PropertyType).Cast<Enum>()
-                    .Select(enumValue =>
-                        new ValueLabelPair(Convert.ToInt32(enumValue).ToString(), enumValue.GetDisplayName()))
-                    .Prepend(
-                        new("", "-")).ToList();
+                col.FilterValues =
+                    Enum.GetValues(prop.PropertyType).Cast<Enum>()
+                        .Select(enumValue =>
+                            new EnumValueTriple(enumValue.GetCustomValue()?.ToString(),
+                                Convert.ToInt32(enumValue),
+                                enumValue.GetDisplayName()))
+                        .Prepend(
+                            new("", "", "-"))
+                        .ToList();
             }
             else if (prop.PropertyType == typeof(DateTime) || prop.PropertyType == typeof(DateTime?))
             {

@@ -32,15 +32,19 @@ namespace MCMS.Emailing.Clients.Gmail
             _logger = loggerFactory.CreateLogger("MailClient");
         }
 
-        public async Task<bool> SendEmail(MimeMessage mimeMessage)
+        public async Task<bool> SendEmail(MimeMessage message)
         {
-            string[] scopes = {GmailService.Scope.GmailSend};
+            if (!message.To.Any(a => a is MailboxAddress))
+                throw new Exception("No `to` address provided!");
+
+            string[] scopes = { GmailService.Scope.GmailSend };
 
             await using var stream = new FileStream(_clientOptions.GmailCredentialsJsonPath, FileMode.Open,
                 FileAccess.Read);
 
             var credPath = _clientOptions.GmailTokenJsonPath;
-            var credential = await GoogleWebAuthorizationBroker.AuthorizeAsync((await GoogleClientSecrets.FromStreamAsync(stream)).Secrets,
+            var credential = await GoogleWebAuthorizationBroker.AuthorizeAsync(
+                (await GoogleClientSecrets.FromStreamAsync(stream)).Secrets,
                 scopes, "user", CancellationToken.None, new FileDataStore(credPath, true));
 
 
@@ -50,22 +54,26 @@ namespace MCMS.Emailing.Clients.Gmail
                 ApplicationName = _siteConfig.SiteName
             });
 
+            if (message.From.Count == 0 && !string.IsNullOrEmpty(_clientOptions.DefaultSenderAddress))
+            {
+                message.From.Add(new MailboxAddress(_clientOptions.DefaultSenderName,
+                    _clientOptions.DefaultSenderAddress));
+            }
 
-            var toAddress = mimeMessage.To.FirstOrDefault(a => a is MailboxAddress) as MailboxAddress ??
-                         throw new Exception("Invalid to address");
+            var toStr = string.Join(", ", message.To.Where(a => a is MailboxAddress).Cast<MailboxAddress>()
+                .Select(a => $"<{a.Address}> {a.Name}".Trim()));
 
-            var to = $"<{toAddress.Address}> {toAddress.Name}";
-
-            _logger.LogInformation("Sending mail with Gmail:\nTo: {To}\nSubject: {Subject}", to, mimeMessage.Subject);
+            _logger.LogInformation("Sending mail with GMail:\nTo: {To}\nSubject: {Subject}", toStr,
+                message.Subject);
 
             var ms = new MemoryStream();
-            await mimeMessage.WriteToAsync(ms);
+            await message.WriteToAsync(ms);
             var bytes = ms.ToArray();
             var encodedEmail = Convert.ToBase64String(bytes);
-            var message = new Message {Raw = encodedEmail};
+            var gmailMessage = new Message { Raw = encodedEmail };
 
-            var req = service.Users.Messages.Send(message, "me");
-            var x = await req.ExecuteAsync();
+            var req = service.Users.Messages.Send(gmailMessage, "me");
+            await req.ExecuteAsync();
 
             return true;
         }

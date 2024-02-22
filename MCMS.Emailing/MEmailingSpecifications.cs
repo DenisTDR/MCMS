@@ -39,6 +39,8 @@ namespace MCMS.Emailing
                 {
                     options.GmailCredentialsJsonPath = gmailCredentialsJsonPath;
                     options.GmailTokenJsonPath = gmailTokenJsonPath;
+                    options.DefaultSenderName = Env.Get("GMAIL_DEFAULT_SENDER_NAME");
+                    options.DefaultSenderAddress = Env.Get("GMAIL_DEFAULT_SENDER");
                 });
             }
             else if (Env.Get("SMTP_HOST") is { } smtpHost)

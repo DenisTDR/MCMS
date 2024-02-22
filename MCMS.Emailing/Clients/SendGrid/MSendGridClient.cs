@@ -33,6 +33,9 @@ namespace MCMS.Emailing.Clients.SendGrid
         {
             var sender = message.From.Mailboxes.FirstOrDefault();
 
+            if (!message.To.Any(a => a is MailboxAddress))
+                throw new Exception("No `to` address provided!");
+
             var msg = new SendGridMessage
             {
                 From = new EmailAddress(sender?.Address ?? _clientOptions.DefaultSenderAddress,
@@ -42,10 +45,12 @@ namespace MCMS.Emailing.Clients.SendGrid
                 HtmlContent = message.HtmlBody
             };
 
-            MapAddressList(message, msg, out var to);
+            MapAddressList(message, msg);
             MapAttachments(message, msg);
 
-            _logger.LogInformation("Sending mail with SendGrid:\nTo: {To}\nSubject: {Subject}", to, msg.Subject);
+            var toStr = string.Join(", ", message.To.Where(a => a is MailboxAddress).Cast<MailboxAddress>()
+                .Select(a => $"<{a.Address}> {a.Name}".Trim()));
+            _logger.LogInformation("Sending mail with SendGrid:\nTo: {To}\nSubject: {Subject}", toStr, msg.Subject);
 
             msg.SetClickTracking(false, false);
             var response = await Client.SendEmailAsync(msg);
@@ -82,14 +87,12 @@ namespace MCMS.Emailing.Clients.SendGrid
             }
         }
 
-        private void MapAddressList(MimeMessage message, SendGridMessage msg, out string to)
+        private void MapAddressList(MimeMessage message, SendGridMessage msg)
         {
-            to = null;
             foreach (var addr in message.To)
             {
                 if (addr is MailboxAddress mAddr)
                 {
-                    to = $"<{mAddr.Address}> {mAddr.Name}";
                     msg.AddTo(mAddr.Address, mAddr.Name);
                 }
                 else

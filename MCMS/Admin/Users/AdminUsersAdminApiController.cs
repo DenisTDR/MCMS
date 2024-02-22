@@ -122,7 +122,10 @@ namespace MCMS.Admin.Users
             user.Email = model.NewEmail;
             user.EmailConfirmed = false;
 
-            await userManager.UpdateAsync(user);
+            var result = await userManager.UpdateAsync(user);
+            
+            if (!result.Succeeded)
+                throw new KnownException(string.Join(", ", result.Errors.Select(e => $"{e.Code}: {e.Description}")));
 
             return Ok(new FormSubmitResponse<UpdateEmailFormModel>
             {
@@ -140,20 +143,22 @@ namespace MCMS.Admin.Users
             model.NewUserName = model.NewUserName.Trim().ToLower();
             if (model.OldUserName == model.NewUserName)
             {
-                throw new KnownException("The new email is the same as old email.");
+                throw new KnownException("The new username is the same as old username.");
             }
 
             var userManager = Service<UserManager<User>>();
             var user = await userManager.FindByIdAsync(id);
             if (user == null) return NotFound();
-            if (user.Email != model.OldUserName)
+            if (user.UserName != model.OldUserName)
             {
-                throw new KnownException("Old mail is not the same. Please try again.");
+                throw new KnownException("Old username is not the same. Please try again.");
             }
 
             user.UserName = model.NewUserName;
-
-            await userManager.UpdateAsync(user);
+            var result = await userManager.UpdateAsync(user);
+            
+            if (!result.Succeeded)
+                throw new KnownException(string.Join(", ", result.Errors.Select(e => $"{e.Code}: {e.Description}")));
 
             return Ok(new FormSubmitResponse<UpdateEmailFormModel>
             {

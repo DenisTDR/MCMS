@@ -1,5 +1,4 @@
 (function ($) {
-
     window.mcmsModals = window.mModals = {
         _waitModal: $("#processing-modal").find('.modal'),
         _alertModal: $("#alert-modal").find('.modal'),

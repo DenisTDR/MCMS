@@ -59,6 +59,13 @@ table.dataTable tr.row-selected th.select-checkbox::after {
     text-shadow: 1px 1px #B0BED9, -1px -1px #B0BED9, 1px -1px #B0BED9, -1px 1px #B0BED9;
 }
 
+table.dataTable tbody > tr.data-row-clickable {
+    cursor: pointer;
+}
+
+table.dataTable tbody > tr.data-row-clickable:hover {
+    background-color: rgba(2, 102, 253, 0.1);
+}
 
 table.dataTable:not(.vertical-align-top) tbody tr td {
     vertical-align: middle;
@@ -116,6 +123,6 @@ table.dataTable.break-words {
     word-break: break-word;
 }
 
-table.dataTable th>.col-name-hidden {
+table.dataTable th > .col-name-hidden {
     display: none;
 }

@@ -6,6 +6,13 @@
             document.cookie = "side-menu-toggled=" + (e && typeof e.detail !== 'undefined' && e.detail ? 1 : 0) + ";path=/;max-age=86400;samesite=strict";
         });
         bindSideMenuCollapseSectionsPersistence();
+
+        $('body').tooltip({
+            selector: '[data-toggle=tooltip], [data-tooltip=tooltip]',
+            placement: function (_, elem) {
+                return $(elem).data('placement') || 'bottom';
+            }
+        });
     }
 
     window.formatDate = function (date, separator) {

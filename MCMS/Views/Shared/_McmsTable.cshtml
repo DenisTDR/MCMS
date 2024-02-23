@@ -12,10 +12,12 @@
     {
         link.WithData("modal-callback-target", "ENTITY_ID");
     }
+
     foreach (var link in Model.ItemActions.Concat(Model.CreateNewItemLink != null ? new[] { Model.CreateNewItemLink } : Array.Empty<MRichLink>()))
     {
         link.ModalSuccessCallback = "table" + Model.Id + ".mcms.callbacks.modalClosed";
     }
+
     var columns = Model.GetFinalColumns();
 }
 
@@ -76,45 +78,39 @@
     </tfoot>
 </table>
 
-<div id="actions-cell-template-@Model.Id" class="d-none">
-    <div class="d-flex flex-wrap mb-n1">
-        @foreach (var action in Model.ItemActions)
-        {
-            action.CssClasses += " mr-1 mb-1";
-            <partial name="Partials/_MRichLink" model="action"/>
-        }
+@if (Model.ItemActions.Any())
+{
+    <div id="actions-cell-template-@Model.Id" class="d-none">
+        <div class="d-flex flex-wrap mb-n1">
+            @foreach (var action in Model.ItemActions)
+            {
+                action.CssClasses += " mr-1 mb-1";
+                <partial name="Partials/_MRichLink" model="action"/>
+            }
+        </div>
     </div>
-</div>
+}
+@if (Model.DefaultItemAction != null)
+{
+    <div id="default-item-action-table-@Model.Id" class="d-none">
+        <partial name="Partials/_MRichLink" model="Model.DefaultItemAction"/>
+    </div>
+}
 
 @using (Html.BeginMPageScripts())
 {
     <script>
     (function ($) {
-        let actionsColumnContent;
-        @if (Model.ItemActions.Any())
-        {
-            <text>
-                actionsColumnContent = $('#actions-cell-template-@Model.Id').html();
-            </text>
-        }
-        else
-        {
-            <text>
-                actionsColumnContent = null;
-            </text>
-        }
-        
-        const initTable@(Model.Id) = function () {
+        const initTable = function () {
             const table = window['table@(Model.Id)'] = mcmsDatatables.bindDefaultDataTables(
-                "#table-@Model.Id", @Html.Raw(Model.GetConfigObjectSerialized(Url)), actionsColumnContent, '@TransRepo.Language'
+                "@Model.Id", @Html.Raw(Model.GetConfigObjectSerialized(Url)), '@TransRepo.Language'
             );
                    
             table.mcms.callbacks.modalClosed = function (sender, params) {
                 table.mcms.$.trigger("modalClosed.mcms", [sender,  params]);
             };
         };
-        
-        initTable@(Model.Id)();
+        initTable();
     })(jQuery);
     </script>
 }

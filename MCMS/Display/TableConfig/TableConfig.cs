@@ -22,7 +22,6 @@ namespace MCMS.Display.TableConfig
         public string TableItemsApiUrl { get; set; }
         public bool SkipDefaultModalEventHandlers { get; set; }
         public bool EnableColumnSearch { get; set; } = true;
-
         public List<BatchAction> BatchActions { get; set; }
         public List<object> TableActions { get; set; }
         public bool ServerSide { get; set; }
@@ -31,6 +30,8 @@ namespace MCMS.Display.TableConfig
 
         public string AdditionalClasses { get; set; }
         public Dictionary<string, string> ItemActionsPlaceholders { get; set; }
+        public MRichLink DefaultItemAction { get; set; }
+        public bool StateSave { get; set; } = true;
 
         public object BuildRowGroupObject(List<TableColumn> columns)
         {
@@ -55,7 +56,9 @@ namespace MCMS.Display.TableConfig
                 serverSide = ServerSide,
                 searchDelay = ServerSideSearchDelay,
                 iDisplayLength = DefaultDisplayLength,
-                itemActionsPlaceholders = ItemActionsPlaceholders
+                itemActionsPlaceholders = ItemActionsPlaceholders,
+                hasDefaultItemAction = DefaultItemAction != null,
+                stateSave = StateSave,
             });
         }
 

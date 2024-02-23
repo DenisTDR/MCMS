@@ -501,8 +501,7 @@ const mcmsTables = [];
                         break;
                     case 'select':
                         col.render = (value, type, row, meta) => {
-                            if (type !== 'display') return value;
-                            if (!col.mFilterValues) return value;
+                            if (type !== 'display' || !col.mFilterValues) return value;
                             const triple = col.mFilterValues.find(t => t.value === value);
                             return triple ? triple.label : value;
                         };
@@ -519,6 +518,12 @@ const mcmsTables = [];
                             }
                         }
                         return result;
+                    }
+                }
+                if(col.data ==='_index') {
+                    col.render = (value, type, rowData, meta) => {
+                        if (type !== 'display') return value;
+                        return meta.row + 1;
                     }
                 }
             }

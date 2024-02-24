@@ -21,6 +21,7 @@
         ajaxModalItemAction: function (event, postData) {
             if (event) {
                 event.preventDefault();
+                event.stopPropagation();
             }
             const button = $(this);
             const url = button.data('url') || button.attr('href');

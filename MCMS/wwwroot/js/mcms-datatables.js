@@ -66,7 +66,6 @@ const mcmsTables = [];
                     rowJq.data('id', data.id);
                     if (config.hasDefaultItemAction) {
                         rowJq.addClass('data-row-clickable');
-                        mcmsDatatables.defaultItemActionBind(tableId, rowJq, data);
                     }
                 }
             };
@@ -93,6 +92,10 @@ const mcmsTables = [];
                     className: 'row-selected',
                     selector: 'td:first-child'
                 };
+            }
+
+            if (config.hasDefaultItemAction) {
+                mcmsDatatables.bindDefaultItemAction(elemId, tableId);
             }
 
             mcmsDatatables.defaultColRenderPatcher(tableId, config)
@@ -520,7 +523,7 @@ const mcmsTables = [];
                         return result;
                     }
                 }
-                if(col.data ==='_index') {
+                if (col.data === '_index') {
                     col.render = (value, type, rowData, meta) => {
                         if (type !== 'display') return value;
                         return meta.row + 1;
@@ -531,19 +534,21 @@ const mcmsTables = [];
                 window[`tableColRenderPatcher_${tableId}`](tableId, config);
             }
         },
-        defaultItemActionBind: function (tableId, rowJq, data) {
-            rowJq.click(event => {
-                if ($(event.target).data('toggle') === 'ajax-modal' || $(event.target).closest('[data-toggle="ajax-modal"]').length) {
+        bindDefaultItemAction: function (tableElemId, tableId) {
+            $('body').on('click', '#' + tableElemId + ' tr.data-row-clickable', event => {
+                if ($(event.target).closest('a, button').length) {
+                    console.log('skipping row click event');
                     return;
                 }
+                const rowId = $(event.currentTarget).data("id");
                 const elId = `default-item-action-table-${tableId}`;
                 const templateElem = $('#' + elId + ' a:first-child');
                 const actionElem = templateElem.clone();
-                actionElem.attr("href", actionElem.attr("href").replace("ENTITY_ID", data.id));
+                actionElem.attr("href", actionElem.attr("href").replace("ENTITY_ID", rowId));
                 templateElem.after(actionElem);
                 actionElem.click();
                 actionElem.detach();
-            })
+            });
         }
     };
 })(jQuery);

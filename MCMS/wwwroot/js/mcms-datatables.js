@@ -37,7 +37,7 @@ const mcmsTables = [];
                             msg = $(msg).find('.modal-body');
                         }
                         mcmsModals.alertModalText(msg, "Error");
-                        tableJQuery._fnProcessingDisplay(false);
+                        table.processing(false);
                     },
                     beforeSend: function (request) {
                         request.setRequestHeader("X-Request-Modal", true);
@@ -47,9 +47,9 @@ const mcmsTables = [];
                 lengthMenu: [[10, 25, 50, 100, 250, 500, 1000, -1], [10, 25, 50, 100, 250, 500, 1000, "All"]],
                 fixedHeader: {headerOffset: 50},
                 language: mcmsDatatables.getLang(lang),
-                dom: "<'processing-backdrop'><'row'<'col-sm-12 col-md-6 table-actions-container'><'col-sm-12 col-md-6'f>>" +
-                    "<'row'<'col-sm-12 table-horizontal-scroll 'tr>>" +
-                    "<'row'<'col-12 batch-actions-container'>>" +
+                dom: "<'processing-backdrop'<'processing-container'>><'row'<'col-sm-12 col-md-6 table-actions-container'><'col-sm-12 col-md-6 justify-content-end d-flex'f>>" +
+                    "<'row mb-0'<'col-sm-12 table-horizontal-scroll 'tr>>" +
+                    "<'row mb-0'<'col-12 batch-actions-container'>>" +
                     "<'row footer-table-row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7 d-flex justify-content-between 'pB>>",
                 buttons: [
                     {
@@ -135,7 +135,7 @@ const mcmsTables = [];
             }
 
             table.on('processing.dt', function (e, settings, processing) {
-                tableJQuery.closest('.dataTables_wrapper').find('.processing-backdrop').toggle(processing);
+                tableJQuery.closest('.dt-container').find('.processing-backdrop').toggle(processing);
             });
 
             mcmsDatatables.properlyDestroyInModal(tableElem, table);
@@ -143,6 +143,7 @@ const mcmsTables = [];
             mcmsDatatables.fixGlobalFilterDebounce(table, tableJQuery, config);
 
             mcmsDatatables.bindAutoAdjustFixedHeader(table, tableJQuery);
+            mcmsDatatables.fixProcessingIndicator(table, tableJQuery);
 
             mcmsTables.push(table);
             table.on('destroy', function () {
@@ -346,7 +347,7 @@ const mcmsTables = [];
                     buttons: config.batchActions
                 });
                 const babContainer = bab.dom.container;
-                table.mcms.batchActionsContainer = table.mcms.$.closest(".dataTables_wrapper").find(".batch-actions-container");
+                table.mcms.batchActionsContainer = table.mcms.$.closest(".dt-container").find(".batch-actions-container");
                 table.mcms.batchActionsContainer.hide();
                 babContainer.appendTo(table.mcms.batchActionsContainer);
             });
@@ -365,7 +366,7 @@ const mcmsTables = [];
                     buttons: config.tableActions
                 });
                 const babContainer = tab.dom.container;
-                babContainer.appendTo(tableJQuery.closest(".dataTables_wrapper").find(".table-actions-container"));
+                babContainer.appendTo(tableJQuery.closest(".dt-container").find(".table-actions-container"));
             });
         },
         bindDefaultModalEventHandlers: function (table) {
@@ -443,8 +444,8 @@ const mcmsTables = [];
             return data;
         },
         fixGlobalFilterDebounce: function (table, tableJq, config) {
-            table.on('preInit', function () {
-                const filterInput = tableJq.closest(".dataTables_wrapper").find(".dataTables_filter input")
+            table.one('preInit', function () {
+                const filterInput = tableJq.closest(".dt-container").find(".dt-search input")
                     .unbind();
 
                 filterInput.bind('input', $.debounce(config.serverSide ? config.searchDelay : 100,
@@ -548,6 +549,15 @@ const mcmsTables = [];
                 templateElem.after(actionElem);
                 actionElem.click();
                 actionElem.detach();
+            });
+        },
+        fixProcessingIndicator: function (table, tableJQuery) {
+            table.one('preInit', function () {
+                console.log('fixProcessingIndicator');
+                const container = tableJQuery.closest(".dt-container");
+                const processing = container.find(".dt-processing");
+                container.find(".processing-container").append(processing);
+                processing.children().last().remove();
             });
         }
     };

@@ -20,7 +20,7 @@
                     </tr>
                     </thead>
                     <tbody>
-                    @foreach (var lib in FrameworkInfoService.GetDetails().Libs)
+                    @foreach (var lib in FrameworkInfoService.GetDetails().Libs.OrderBy(lib => lib.Name))
                     {
                         <tr>
                             <td>@lib.Name</td>

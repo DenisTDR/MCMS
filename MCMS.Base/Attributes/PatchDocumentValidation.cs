@@ -81,13 +81,15 @@ namespace MCMS.Base.Attributes
                     {
                         var noPatchOnThisProp =
                             propInfo.GetCustomAttribute<DisablePatchSubPropertiesAttribute>() != null;
+                        var ignoreValueUpdateThisProp =
+                            propInfo.GetCustomAttribute<IgnoreValueUpdatesAttribute>() != null;
                         if (op.value is JObject jObj)
                         {
                             doc.Operations.Remove(op);
                             i--;
                             foreach (var kvp in jObj)
                             {
-                                if (noPatchOnThisProp && kvp.Key != "id")
+                                if (noPatchOnThisProp && kvp.Key != "id" || ignoreValueUpdateThisProp)
                                 {
                                     continue;
                                 }
@@ -112,6 +114,14 @@ namespace MCMS.Base.Attributes
                             continue;
                         }
 
+                        if (obj.GetType().GetProperty(splitPath[0].ToPascalCase()) is { } prop2 &&
+                            prop2.GetCustomAttribute<IgnoreValueUpdatesAttribute>() != null)
+                        {
+                            doc.Operations.Remove(op);
+                            i--;
+                            continue;
+                        }
+
                         foreach (var pathPart in splitPath.Take(splitPath.Length - 1))
                         {
                             obj = EnsureSubPropertyExists(obj, pathPart);
@@ -127,10 +137,16 @@ namespace MCMS.Base.Attributes
 
                     var finalProp = obj.GetType().GetProperty(splitPath[^1].ToPascalCase());
                     if (finalProp?.CanWrite == false ||
-                        finalProp?.GetCustomAttributes<FormlyFieldAttribute>().LastOrDefault()?.Disabled == true)
+                        finalProp?.GetCustomAttributes<FormlyFieldAttribute>().LastOrDefault()?.Disabled == true ||
+                        finalProp?.GetCustomAttribute<IgnoreValueUpdatesAttribute>() != null)
                     {
                         doc.Operations.Remove(op);
                         i--;
+                    }
+
+                    if (finalProp?.GetCustomAttribute<ReplacesPathAttribute>() is { } rpAttr)
+                    {
+                        op.path = op.path.Replace(splitPath[0], rpAttr.PathToReplace);
                     }
                 }
                 catch (KnownException exc)

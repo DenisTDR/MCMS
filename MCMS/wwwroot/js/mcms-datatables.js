@@ -169,7 +169,7 @@ const mcmsTables = [];
             if (!sumTotalCols.length) {
                 return;
             }
-            tableApi.on('init', function () {
+            tableApi.one('init', function () {
                 const sumTotalRow = tableApi.footer().toJQuery().find('tr.sum-total-row');
                 if (!sumTotalRow.length) {
                     return;
@@ -222,7 +222,6 @@ const mcmsTables = [];
             if (!searchRow.data('build')) {
                 searchRow.data('build', true)
                 const searchFooterRowIndex = searchRow.index();
-
                 const searchFooterObjects = tableApi.settings()[0].aoFooter[searchFooterRowIndex];
                 for (let i = 0; i < searchFooterObjects.length; i++) {
                     const cell = $(searchFooterObjects[i].cell);
@@ -275,10 +274,13 @@ const mcmsTables = [];
                     }
                 });
             const search = tableApi.columns().search();
-            //if there is any search in at least one column, then toggle (show) the row right now
+
+            //if there is any search in at least one column, then toggle (show) the row in preInit
             for (let i = 0; i < search.length; i++) {
                 if (search[i]) {
-                    mcmsDatatables.toggleColumnSearchRow(tableApi, config.columns, config);
+                    tableApi.one('preInit', function () {
+                        mcmsDatatables.toggleColumnSearchRow(tableApi, config.columns, config);
+                    });
                     break;
                 }
             }

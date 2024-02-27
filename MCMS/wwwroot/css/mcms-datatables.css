@@ -74,7 +74,7 @@ table.dataTable tbody > tr.data-row-clickable {
 }
 
 table.dataTable tbody > tr.data-row-clickable:hover {
-    background-color: rgba(2, 102, 253, 0.1);
+    background-color: rgba(2, 102, 253, 0.1) !important;
 }
 
 table.dataTable:not(.vertical-align-top) tbody tr td {

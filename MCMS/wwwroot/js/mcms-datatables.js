@@ -67,10 +67,12 @@ const mcmsTables = [];
                     if (config.hasDefaultItemAction) {
                         rowJq.addClass('data-row-clickable');
                     }
-                }
+                },
+                order: [],
             };
 
             config = deepmerge(initialConfig, config);
+            console.log(config);
 
             if (config.serverSide) {
                 config.ajax = deepmerge(config.ajax, {

@@ -72,7 +72,6 @@ const mcmsTables = [];
             };
 
             config = deepmerge(initialConfig, config);
-            console.log(config);
 
             if (config.serverSide) {
                 config.ajax = deepmerge(config.ajax, {

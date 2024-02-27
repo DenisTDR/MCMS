@@ -554,7 +554,6 @@ const mcmsTables = [];
         },
         fixProcessingIndicator: function (table, tableJQuery) {
             table.one('preInit', function () {
-                console.log('fixProcessingIndicator');
                 const container = tableJQuery.closest(".dt-container");
                 const processing = container.find(".dt-processing");
                 container.find(".processing-container").append(processing);

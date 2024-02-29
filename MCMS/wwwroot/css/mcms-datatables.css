@@ -66,6 +66,7 @@ table.dataTable tr td.select-checkbox::before {
     font-size: .9em;
     border: none !important;
 }
+
 table.dataTable tr.row-selected td.select-checkbox::before {
     content: "\f14a" !important;
 }
@@ -90,6 +91,11 @@ table.dataTable tfoot th.select-all-checkbox {
 
 table.dataTable thead th.select-all-checkbox {
     padding-right: .5rem !important;
+}
+
+table.dataTable th.dt-type-date,
+table.dataTable th.numeric {
+    text-align: left;
 }
 
 .table td, .table th {

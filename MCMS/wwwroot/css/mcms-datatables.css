@@ -60,13 +60,14 @@ table.dataTable.table-striped tbody > tr:nth-of-type(2n+1) > .row-selected {
     background-color: rgba(2, 102, 253, 0.2);
 }
 
-table.dataTable tr.row-selected td.select-checkbox::after,
-table.dataTable tr.row-selected th.select-checkbox::after {
-    content: '\2714';
-    margin-top: -11px;
-    margin-left: -4px;
-    text-align: center;
-    text-shadow: 1px 1px #B0BED9, -1px -1px #B0BED9, 1px -1px #B0BED9, -1px 1px #B0BED9;
+table.dataTable tr td.select-checkbox::before {
+    content: "\f0c8" !important;
+    font-family: "Font Awesome 6 Free", serif;
+    font-size: .9em;
+    border: none !important;
+}
+table.dataTable tr.row-selected td.select-checkbox::before {
+    content: "\f14a" !important;
 }
 
 table.dataTable tbody > tr.data-row-clickable {
@@ -81,14 +82,10 @@ table.dataTable:not(.vertical-align-top) tbody tr td {
     vertical-align: middle;
 }
 
-table.dataTable:not(.vertical-align-top) tbody td.select-checkbox::before,
-table.dataTable:not(.vertical-align-top) tbody td.select-checkbox::after {
-    top: 50%;
-}
-
 table.dataTable thead th.select-all-checkbox,
 table.dataTable tfoot th.select-all-checkbox {
     text-align: center;
+    font-size: 1.1em;
 }
 
 table.dataTable thead th.select-all-checkbox {

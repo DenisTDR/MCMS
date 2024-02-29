@@ -19,6 +19,10 @@
     }
 
     var columns = Model.GetFinalColumns();
+    foreach (var col in columns)
+    {
+        col.PrepareDataAttributes();
+    }
 }
 
 @if (Model.CreateNewItemLink != null)
@@ -33,7 +37,7 @@
         @* Table header column names *@
         @foreach (var col in columns)
         {
-            <th @Html.Raw(col.BuildHeaderClassSyntax())>
+            <th @Html.Raw(col.BuildHeaderClassSyntax()) @Html.Raw(col.BuildDataAttributesSyntax())>
                 @Html.Raw(col.Name)
             </th>
         }

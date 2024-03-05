@@ -2,6 +2,7 @@
 @using MCMS.Base.Repositories
 @using MCMS.Display.Link
 @using MCMS.Base.Display.ModelDisplay
+@using MCMS.Display.TableConfig
 
 @model MCMS.Display.TableConfig.TableConfig
 
@@ -13,9 +14,12 @@
         link.WithData("modal-callback-target", "ENTITY_ID");
     }
 
-    foreach (var link in Model.ItemActions.Concat(Model.CreateNewItemLink != null ? new[] { Model.CreateNewItemLink } : Array.Empty<MRichLink>()))
+    foreach (var link in Model.GetAllItemActions().Concat(Model.CreateNewItemLink != null ? new[] { Model.CreateNewItemLink } : Array.Empty<MRichLink>()))
     {
-        link.ModalSuccessCallback = "table" + Model.Id + ".mcms.callbacks.modalClosed";
+        if (string.IsNullOrEmpty(link.GetData("modal-callback")?.ToString()))
+        {
+            link.ModalSuccessCallback = $"table{Model.Id}.mcms.callbacks.modalClosed";
+        }
     }
 
     var columns = Model.GetFinalColumns();
@@ -96,6 +100,8 @@
 }
 @if (Model.DefaultItemAction != null)
 {
+    Model.DefaultItemAction.ModalSuccessCallback = $"table{Model.Id}.mcms.callbacks.modalClosed";
+
     <div id="default-item-action-table-@Model.Id" class="d-none">
         <partial name="Partials/_MRichLink" model="Model.DefaultItemAction"/>
     </div>
@@ -111,6 +117,7 @@
             );
                    
             table.mcms.callbacks.modalClosed = function (sender, params) {
+                // console.log('modalClosed', {sender, params});
                 table.mcms.$.trigger("modalClosed.mcms", [sender,  params]);
             };
         };

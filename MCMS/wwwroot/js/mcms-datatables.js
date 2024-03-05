@@ -342,7 +342,7 @@ const mcmsTables = [];
                     dataCloned['modal-callback-target'] = ids;
                     dataCloned['modal-method'] = 'POST';
                     vEl.data(dataCloned);
-                    mModals.ajaxModalItemAction.apply(vEl[0], [e, ids]);
+                    mModals.processDataToggleModalElemClick.apply(vEl[0], [e, ids]);
                 }
             }
             table.one('preInit', function () {
@@ -375,7 +375,7 @@ const mcmsTables = [];
         bindDefaultModalEventHandlers: function (table) {
             table.on("modalClosed.mcms", function (e, sender, params) {
                 if (!params || params.failed) return;
-                if (params.reload) {
+                if (params.reload || params.reloaded) {
                     table.ajax.reload();
                     return;
                 }
@@ -394,7 +394,7 @@ const mcmsTables = [];
                         if (model && typeof model === 'object') {
                             const index = table.mcms.getDataIndexById(table.data(), senderData.modalCallbackTarget);
                             if (index >= 0) {
-                                table.row(index).data(model).draw();
+                                table.row(index).data(model).draw(false);
                             }
                         }
                         break;
@@ -407,9 +407,7 @@ const mcmsTables = [];
                         if (!senderData.modalCallbackTarget) {
                             return;
                         }
-                        for (let i = 0; i < senderData.modalCallbackTarget.length; i++) {
-                            table.mcms.removeRowWithDataId(table, table.data(), senderData.modalCallbackTarget[i]);
-                        }
+                        table.mcms.removeRowWithDataIds(table, table.data(), senderData.modalCallbackTarget);
                         table.mcms.dataJustUpdated = true;
                         table.draw();
                         break;
@@ -435,10 +433,12 @@ const mcmsTables = [];
             };
             table.mcms.removeRowWithDataId = function (table, data, id) {
                 if (!id) return;
-                const index = table.mcms.getDataIndexById(data, id);
-                if (index >= 0) {
-                    table.rows(index).remove();
-                }
+                table.rows(`#${id}`).remove();
+            };
+            table.mcms.removeRowWithDataIds = function (table, data, ids) {
+                if (!ids) return;
+                const idSelectors = ids.map(id => `#${id}`);
+                table.rows(idSelectors).remove();
             };
         },
         formatDataFromApi: function (json, initialConfig) {
@@ -539,14 +539,14 @@ const mcmsTables = [];
             }
         },
         bindDefaultItemAction: function (tableElemId, tableId) {
-            $('body').on('click', '#' + tableElemId + ' tr.data-row-clickable', event => {
+            $('body').on('click', `#${tableElemId} tr.data-row-clickable td:not(.select-checkbox)`, event => {
                 if ($(event.target).closest('a, button').length) {
-                    console.log('skipping row click event');
                     return;
                 }
-                const rowId = $(event.currentTarget).data("id");
+                const rowJq = $(event.currentTarget).closest('.data-row');
+                const rowId = rowJq.data("id");
                 const elId = `default-item-action-table-${tableId}`;
-                const templateElem = $('#' + elId + ' a:first-child');
+                const templateElem = $(`#${elId} a:first-child`);
                 const actionElem = templateElem.clone();
                 actionElem.attr("href", actionElem.attr("href").replace("ENTITY_ID", rowId));
                 templateElem.after(actionElem);

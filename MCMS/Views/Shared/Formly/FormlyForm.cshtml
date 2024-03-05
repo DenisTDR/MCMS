@@ -26,7 +26,7 @@
     else
     {
         var baseUrl = Url.Content("~/mcms-forms/");
-        <iframe src="@baseUrl?@Model.ToUrlQuery()" class="col-12" id="@Model.FormInstanceId"></iframe>
+        <iframe src="@baseUrl?@Model.ToUrlQuery()" class="col-12 formly-debug" id="@Model.FormInstanceId"></iframe>
     }
 
     @if (Model.UsesSpinnerOuterOverlay())

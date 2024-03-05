@@ -68,8 +68,7 @@
     (($) => {
         window.callback_@(id) = (sender, result) => {
             if (result?.params) {
-                const data = {reload: true, alsoTriggerCallback: true, reloadModal: true, ...result.params};
-                $("#@id").closest(".modal").data('result', data).modal('hide');
+                mcmsModals.reloadBackendModal($("#@id").closest(".modal"));
             }
         }
     })(jQuery);

@@ -94,8 +94,8 @@ table.dataTable thead th.select-all-checkbox {
 }
 
 table.dataTable th.dt-type-date,
-table.dataTable th.numeric {
-    text-align: left;
+table.dataTable th.dt-type-numeric {
+    text-align: left !important;
 }
 
 .table td, .table th {

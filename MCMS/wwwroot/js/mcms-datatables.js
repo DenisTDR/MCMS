@@ -23,25 +23,46 @@ const mcmsTables = [];
 
             let config = {
                 processing: true,
-                ajax: {
-                    dataSrc: function (json) {
-                        return mcmsDatatables.formatDataFromApi(json, initialConfig);
-                    },
-                    error: function (jqXHR, textStatus, errorThrown) {
-                        if (errorThrown === 'abort') {
-                            return;
-                        }
-                        let msg = (jqXHR.responseJSON ? jqXHR.responseJSON.error : jqXHR.responseText)
-                            || "An error occurred while trying to access data. Please try again.";
-                        if (msg.indexOf('modal-body')) {
-                            msg = $(msg).find('.modal-body');
-                        }
-                        mcmsModals.alertModalText(msg, "Error");
+                ajax: function (data, callback, settings) {
+                    if (table.mcms.skipInitialAjaxRequest) {
+                        // console.log('forcing a callback call with 0 data');
+                        table.mcms.skipInitialAjaxRequest = false;
+                        const dataToLoad = {data: [], draw: data.draw, recordsTotal: 0, recordsFiltered: 0}
+                        callback(dataToLoad);
                         table.processing(false);
-                    },
-                    beforeSend: function (request) {
-                        request.setRequestHeader("X-Request-Modal", true);
+                        return;
                     }
+                    let ajaxUrl = initialConfig.ajaxUrl;
+                    if (table.mcms.ajaxUrl) {
+                        ajaxUrl = table.mcms.ajaxUrl;
+                    }
+
+                    $.ajax({
+                        beforeSend: function (request) {
+                            request.setRequestHeader("X-Request-Modal", true);
+                        },
+                        method: config.serverSide ? 'POST' : 'GET',
+                        contentType: config.serverSide ? "application/json" : undefined,
+                        data: config.serverSide ? JSON.stringify(data) : undefined,
+                        dataType: "json",
+                        url: ajaxUrl,
+                        success: (data) => {
+                            mcmsDatatables.formatDataFromApi(data);
+                            callback(data);
+                        },
+                        error: (jqXHR, textStatus, errorThrown) => {
+                            if (errorThrown === 'abort') {
+                                return;
+                            }
+                            table.processing(false);
+                            let msg = (jqXHR.responseJSON ? jqXHR.responseJSON.error : jqXHR.responseText)
+                                || "An error occurred while trying to access data. Please try again.";
+                            if (msg.indexOf('modal-body') > 0) {
+                                msg = $(msg).find('.modal-body');
+                            }
+                            mcmsModals.alertModalText(msg, "Error");
+                        }
+                    });
                 },
                 bAutoWidth: false,
                 lengthMenu: [[10, 25, 50, 100, 250, 500, 1000, -1], [10, 25, 50, 100, 250, 500, 1000, "All"]],
@@ -72,16 +93,6 @@ const mcmsTables = [];
             };
 
             config = deepmerge(initialConfig, config);
-
-            if (config.serverSide) {
-                config.ajax = deepmerge(config.ajax, {
-                    type: "POST",
-                    contentType: 'application/json',
-                    data: function (d) {
-                        return JSON.stringify(d);
-                    },
-                })
-            }
 
             if (config.hasStaticIndexColumn || config.checkboxSelection) {
                 config.aaSorting = [];
@@ -334,10 +345,8 @@ const mcmsTables = [];
                     for (let i = 0; i < sdt.length; i++) {
                         ids.push(encodeURIComponent(sdt[i].id));
                     }
-                    const url = config.data['url'];
                     const vEl = $("<div></div>");
                     const dataCloned = deepmerge({}, config.data);
-                    dataCloned.url = url;
                     dataCloned['modal-callback'] = table.mcms.callbacks.modalClosed;
                     dataCloned['modal-callback-target'] = ids;
                     dataCloned['modal-method'] = 'POST';
@@ -373,48 +382,48 @@ const mcmsTables = [];
             });
         },
         bindDefaultModalEventHandlers: function (table) {
-            table.on("modalClosed.mcms", function (e, sender, params) {
-                if (!params || params.failed) return;
-                if (params.reload || params.reloaded) {
+            table.on("modalClosed.mcms", function (e, modal, result, trigger) {
+                if (!result || result.failed) return;
+                if (result.reload || result.reloaded) {
                     table.ajax.reload();
                     return;
                 }
-                const senderData = sender.data();
+                const triggerData = trigger.data();
                 let model;
-                switch (senderData.tag) {
+                switch (triggerData.tag) {
                     case 'create':
-                        model = params && params.params && (params.params.secondaryModel || params.params.model);
+                        model = result && result.params && (result.params.secondaryModel || result.params.model);
                         if (model && typeof model === 'object') {
-                            model.id = params.params.id;
+                            model.id = result.params.id;
                             table.row.add(model).draw(false);
                         }
                         break;
                     case 'edit':
-                        model = params && params.params && (params.params.secondaryModel || params.params.model);
+                        model = result && result.params && (result.params.secondaryModel || result.params.model);
                         if (model && typeof model === 'object') {
-                            const index = table.mcms.getDataIndexById(table.data(), senderData.modalCallbackTarget);
+                            const index = table.mcms.getDataIndexById(table.data(), triggerData.modalCallbackTarget);
                             if (index >= 0) {
                                 table.row(index).data(model).draw(false);
                             }
                         }
                         break;
                     case 'delete':
-                        table.mcms.removeRowWithDataId(table, table.data(), senderData.modalCallbackTarget);
+                        table.mcms.removeRowWithDataId(table, table.data(), result.params);
                         table.mcms.dataJustUpdated = true;
                         table.draw();
                         break;
                     case 'batch-delete':
-                        if (!senderData.modalCallbackTarget) {
+                        if (!triggerData.modalCallbackTarget) {
                             return;
                         }
-                        table.mcms.removeRowWithDataIds(table, table.data(), senderData.modalCallbackTarget);
+                        table.mcms.removeRowWithDataIds(table, table.data(), result.params);
                         table.mcms.dataJustUpdated = true;
                         table.draw();
                         break;
                     case 'none':
                         break;
                     default:
-                        if (params?.params?.reloadTable) {
+                        if (result?.params?.reloadTable) {
                             table.draw();
                             break;
                         }
@@ -441,7 +450,7 @@ const mcmsTables = [];
                 table.rows(idSelectors).remove();
             };
         },
-        formatDataFromApi: function (json, initialConfig) {
+        formatDataFromApi: function (json) {
             const data = json.data ? json.data : json;
             new ReferencesHelperService().populateReferences(data);
             return data;

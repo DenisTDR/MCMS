@@ -38,6 +38,7 @@
                 },
                 // triggerElem: elem,
                 onHideCallback: elem.data('modal-callback'),
+                trigger: elem,
                 method: elem.data('modal-method') || 'GET',
             };
             // console.log(opt);
@@ -139,17 +140,14 @@
                 currentModal.data("added-hidden-result", true);
                 currentModal.one("hidden.bs.modal", function () {
                     const result = currentModal.data('result');
-                    // console.log('modal closed, processing result data', result);
-
                     const callback = options.onHideCallback;
                     if (typeof callback === 'string') {
                         const callbackFn = getFnRefByDottedName(callback);
                         if (typeof callbackFn === 'function') {
-                            // console.log('calling callbackFn');
-                            callbackFn(currentModal, result);
+                            callbackFn(currentModal, result, options.trigger);
                         }
                     } else if (typeof callback === 'function') {
-                        callback(currentModal, result);
+                        callback(currentModal, result, options.trigger);
                     }
                 });
             }

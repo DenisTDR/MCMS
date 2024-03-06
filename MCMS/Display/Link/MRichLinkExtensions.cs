@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace MCMS.Display.Link
 {
@@ -84,6 +85,25 @@ namespace MCMS.Display.Link
         public static bool HasData<T>(this T link) where T : MRichLink
         {
             return link.AnchorData != null && link.AnchorData.Any();
+        }
+
+        public static T Clone<T>(this T link) where T : MRichLink, new()
+        {
+            var clone = new T();
+
+            var props = typeof(T).GetProperties().Where(prop => prop.CanWrite);
+            foreach (var propertyInfo in props)
+            {
+                var value = propertyInfo.GetValue(link);
+                if (value == null || propertyInfo.PropertyType.GetDefaultValue() == value)
+                {
+                    continue;
+                }
+
+                propertyInfo.SetValue(clone, value);
+            }
+
+            return clone;
         }
     }
 }

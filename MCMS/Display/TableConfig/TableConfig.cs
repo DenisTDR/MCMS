@@ -46,7 +46,7 @@ namespace MCMS.Display.TableConfig
             {
                 columns = columns.Select(tc => tc.GetDataTablesObject(ServerSide)),
                 rowGroup = BuildRowGroupObject(columns),
-                ajax = new { url = TableItemsApiUrl },
+                ajaxUrl = TableItemsApiUrl,
                 hasStaticIndexColumn = HasTableIndexColumn,
                 skipDefaultModalEventHandlers = SkipDefaultModalEventHandlers,
                 enableColumnSearch = EnableColumnSearch,

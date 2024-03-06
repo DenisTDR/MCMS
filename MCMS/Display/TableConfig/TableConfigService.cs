@@ -64,7 +64,7 @@ namespace MCMS.Display.TableConfig
         {
             return !UseDefaultItemAction
                 ? null
-                : DefaultItemAction ?? GetItemActions().FirstOrDefault(ia => ia.Tag == "details");
+                : DefaultItemAction ?? GetItemActions().FirstOrDefault(ia => ia.Tag == "details")?.Clone();
         }
 
         public virtual List<BatchAction> GetBatchActions(bool excludeDefault = false)

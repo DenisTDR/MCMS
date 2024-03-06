@@ -50,6 +50,10 @@ namespace MCMS.Display.Link
         {
         }
 
+        public MRichLink()
+        {
+        }
+
         public override string BuildUrl(IUrlHelper urlHelper = null)
         {
             if (urlHelper == null || Controller == null)

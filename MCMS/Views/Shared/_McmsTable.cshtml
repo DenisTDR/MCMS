@@ -15,18 +15,12 @@
     }
 
     foreach (var link in Model.GetAllItemActions().Concat(Model.CreateNewItemLink != null ? new[] { Model.CreateNewItemLink } : Array.Empty<MRichLink>()))
-    {
-        if (string.IsNullOrEmpty(link.GetData("modal-callback")?.ToString()))
-        {
+        if (string.IsNullOrEmpty(link.ModalSuccessCallback))
             link.ModalSuccessCallback = $"table{Model.Id}.mcms.callbacks.modalClosed";
-        }
-    }
 
     var columns = Model.GetFinalColumns();
     foreach (var col in columns)
-    {
         col.PrepareDataAttributes();
-    }
 }
 
 @if (Model.CreateNewItemLink != null)
@@ -116,9 +110,9 @@
                 "@Model.Id", @Html.Raw(Model.GetConfigObjectSerialized(Url)), '@TransRepo.Language'
             );
                    
-            table.mcms.callbacks.modalClosed = function (sender, params) {
+            table.mcms.callbacks.modalClosed = function (sender, params, trigger) {
                 // console.log('modalClosed', {sender, params});
-                table.mcms.$.trigger("modalClosed.mcms", [sender,  params]);
+                table.mcms.$.trigger("modalClosed.mcms", [sender,  params, trigger]);
             };
         };
         initTable();

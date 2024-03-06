@@ -10,8 +10,8 @@ namespace MCMS.Display.Link
     public class MLink : IItemWithIcon
     {
         public string Text { get; set; }
-        public string Url { get; }
-        public Type Controller { get; }
+        public string Url { get; set; }
+        public Type Controller { get; set; }
         [JsonIgnore] public MethodInfo Action { get; set; }
         public string Target { get; internal set; }
         public string ControllerName => Controller != null ? TypeHelpers.GetControllerName(Controller) : null;
@@ -55,6 +55,10 @@ namespace MCMS.Display.Link
         {
             Text = text;
             Url = url;
+        }
+
+        internal MLink()
+        {
         }
     }
 }

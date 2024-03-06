@@ -7,7 +7,7 @@ namespace MCMS.Display.TableConfig
     {
         public static IEnumerable<MRichLink> GetAllItemActions(this TableConfig config)
         {
-            if (config.ItemActions != null)
+            if (config.ItemActions is { Count: > 0 })
             {
                 foreach (var configItemAction in config.ItemActions)
                 {
@@ -18,6 +18,14 @@ namespace MCMS.Display.TableConfig
             if (config.DefaultItemAction != null)
             {
                 yield return config.DefaultItemAction;
+            }
+
+            if (config.BatchActions is { Count: > 0 })
+            {
+                foreach (var configBatchAction in config.BatchActions)
+                {
+                    yield return configBatchAction;
+                }
             }
         }
     }

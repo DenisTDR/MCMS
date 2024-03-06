@@ -41,6 +41,9 @@ namespace MCMS.Base.Data.TypeConfig
             {
                 builder.HasIndex(e => ((ICanBeDeleted)e).Deleted);
             }
+
+            builder.HasIndex(e => e.Created);
+            builder.HasIndex(e => e.Updated);
         }
 
         public virtual string GetTableName()

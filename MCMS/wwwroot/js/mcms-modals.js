@@ -62,11 +62,11 @@
         reloadBackendModal: modal => {
             // console.log('reload backend modal', modal);
             const opt = modal.data('requestBackendModalOptions');
-            if(!opt) {
+            if (!opt) {
                 console.log('no options from modal data requestBackendModalOptions');
             }
             // modal.data("reloaded", true);
-            modal.data("result", { reloaded: true });
+            modal.data("result", {reloaded: true});
             return mcmsModals.requestBackendModal(opt, modal);
         },
         requestBackendModal: (options, modal) => {
@@ -242,6 +242,11 @@
 
             mcmsModals.bindCustomModalsBehaviour(modal);
             return modal.modal('show');
+        },
+        alertError: e => {
+            // console.log(e);
+            let msg = e?.responseJSON?.error ?? 'An error occurred while trying to access data. Please try again.';
+            mcmsModals.alertModalText(msg, "Error");
         },
         fixStackedModalBehaviour: function (modal) {
             // 1. Adjust backdrop if this is a stacked modal. The backdrop of this modal should be right before it.

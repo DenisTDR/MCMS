@@ -25,37 +25,36 @@
                 headers: {
                     'X-Request-Modal': asModal
                 }
-            })
-                .done(function (e) {
-                    mModals.loadingUpModal.hide();
-                    if (asModal) {
-                        close(e || true);
-                    }
-                    if (typeof callback === 'function') {
-                        callback(true, e);
-                    }
-                })
-                .fail(function (e) {
-                    mModals.loadingUpModal.hide();
-                    console.log('error')
-                    console.error(e);
-                    if (asModal) {
-                        close(false, true);
-                    }
-                    if (typeof callback === 'function') {
-                        callback(false);
-                    }
-                    if (e.responseJSON) {
-                        const obj = e.responseJSON;
-                        if (obj.error) {
-                            mModals.alertModalText(obj.error, "Error");
-                        } else {
-                            mModals.alertModalText(e.responseText, "Json Error");
-                        }
+            }).done(function (e) {
+                mModals.loadingUpModal.hide();
+                if (asModal) {
+                    close(e || true);
+                }
+                if (typeof callback === 'function') {
+                    callback(true, e);
+                }
+            }).fail(function (e) {
+                mModals.loadingUpModal.hide();
+                console.log('error')
+                console.error(e);
+                if (asModal) {
+                    close(false, true);
+                }
+                if (typeof callback === 'function') {
+                    // console.log(e.responseJSON);
+                    callback(false, e?.responseJSON);
+                }
+                if (e.responseJSON) {
+                    const obj = e.responseJSON;
+                    if (obj.error) {
+                        mModals.alertModalText(obj.error, "Error");
                     } else {
-                        mModals.alertModal(e.responseText);
+                        mModals.alertModalText(e.responseText, "Json Error");
                     }
-                });
+                } else {
+                    mModals.alertModal(e.responseText);
+                }
+            });
         });
     }
 

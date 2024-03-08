@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations;
 using MCMS.Base.Data.FormModels;
 using MCMS.Base.SwaggerFormly.Formly.Fields;
 

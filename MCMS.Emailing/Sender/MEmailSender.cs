@@ -6,7 +6,7 @@ namespace MCMS.Emailing.Sender
 {
     public class MEmailSender : IMEmailSender
     {
-        private IMEmailClient _emailClient;
+        private readonly IMEmailClient _emailClient;
 
         public MEmailSender(IMEmailClient emailClient)
         {

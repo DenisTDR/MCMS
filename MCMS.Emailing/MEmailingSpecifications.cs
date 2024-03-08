@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using MCMS.Base.Builder;
 using MCMS.Base.Helpers;
 using MCMS.Emailing.Clients;
@@ -65,7 +65,7 @@ namespace MCMS.Emailing
             }
             else
             {
-                services.AddScoped<IMEmailClient, MStdoutEmailClient>();
+                services.AddSingleton<IMEmailClient, MStdoutEmailClient>();
             }
 
             services.AddScoped<IMEmailSender, MEmailSender>();

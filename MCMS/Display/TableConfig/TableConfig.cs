@@ -32,6 +32,7 @@ namespace MCMS.Display.TableConfig
         public Dictionary<string, string> ItemActionsPlaceholders { get; set; }
         public MRichLink DefaultItemAction { get; set; }
         public bool StateSave { get; set; } = true;
+        public List<List<object>> DefaultOrdering { get; set; }
 
         public object BuildRowGroupObject(List<TableColumn> columns)
         {
@@ -59,6 +60,7 @@ namespace MCMS.Display.TableConfig
                 itemActionsPlaceholders = ItemActionsPlaceholders,
                 hasDefaultItemAction = DefaultItemAction != null,
                 stateSave = StateSave,
+                order = DefaultOrdering
             });
         }
 

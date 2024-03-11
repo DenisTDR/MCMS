@@ -25,7 +25,6 @@ const mcmsTables = [];
                 processing: true,
                 ajax: function (data, callback, settings) {
                     if (table.mcms.skipInitialAjaxRequest) {
-                        // console.log('forcing a callback call with 0 data');
                         table.mcms.skipInitialAjaxRequest = false;
                         const dataToLoad = {data: [], draw: data.draw, recordsTotal: 0, recordsFiltered: 0}
                         callback(dataToLoad);
@@ -49,6 +48,7 @@ const mcmsTables = [];
                         success: (data) => {
                             mcmsDatatables.formatDataFromApi(data);
                             callback(data);
+                            table.processing(false);
                         },
                         error: (jqXHR, textStatus, errorThrown) => {
                             if (errorThrown === 'abort') {
@@ -68,8 +68,8 @@ const mcmsTables = [];
                 lengthMenu: [[10, 25, 50, 100, 250, 500, 1000, -1], [10, 25, 50, 100, 250, 500, 1000, "All"]],
                 fixedHeader: {headerOffset: 50},
                 language: mcmsDatatables.getLang(lang),
-                dom: "<'processing-backdrop'<'processing-container'>><'row'<'col-sm-12 col-md-6 table-actions-container'><'col-sm-12 col-md-6 justify-content-end d-flex'f>>" +
-                    "<'row mb-0'<'col-sm-12 table-horizontal-scroll 'tr>>" +
+                dom: "<'processing-backdrop'><'row'<'col-sm-12 col-md-6 table-actions-container'><'col-sm-12 col-md-6 justify-content-end d-flex'f>>" +
+                    "<'row mb-0'<'col-sm-12 table-horizontal-scroll 't>>" +
                     "<'row mb-0'<'col-12 batch-actions-container'>>" +
                     "<'row footer-table-row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7 d-flex justify-content-between 'pB>>",
                 buttons: [
@@ -118,7 +118,7 @@ const mcmsTables = [];
             mcmsDatatables.sumTotalRowIfNeeded(config, table, tableJQuery);
 
             table.mcms = {
-                id: elemId, $: tableJQuery, callbacks: {},
+                id: elemId, $: tableJQuery, callbacks: {}, processingCnt: 0
             };
 
             if (!config.skipDefaultModalEventHandlers) {
@@ -140,22 +140,19 @@ const mcmsTables = [];
             }
 
             if (config.checkboxSelection) {
-                mcmsDatatables.enableBatchActions(table, tableJQuery, config);
+                mcmsDatatables.enableBatchActions(table, config);
             }
             if (config.tableActions && config.tableActions.length) {
                 mcmsDatatables.enableTableActions(table, tableJQuery, config);
             }
-
-            table.on('processing.dt', function (e, settings, processing) {
-                tableJQuery.closest('.dt-container').find('.processing-backdrop').toggle(processing);
-            });
 
             mcmsDatatables.properlyDestroyInModal(tableElem, table);
 
             mcmsDatatables.fixGlobalFilterDebounce(table, tableJQuery, config);
 
             mcmsDatatables.bindAutoAdjustFixedHeader(table, tableJQuery);
-            mcmsDatatables.fixProcessingIndicator(table, tableJQuery);
+
+            mcmsDatatables.patchProcessingIndicator(table, tableJQuery);
 
             mcmsTables.push(table);
             table.on('destroy', function () {
@@ -306,7 +303,7 @@ const mcmsTables = [];
                 datatable.mcms.$.attr("id", datatable.mcms.$.attr("id") + "-old");
             });
         },
-        enableCheckboxSelection: function (table, tableJQuery) {
+        enableCheckboxSelection: function (table) {
             table.header().toJQuery().add(table.footer().toJQuery()).find("th.select-all-checkbox").on('click', function () {
                 if (table.rows({selected: true}).count() === table.rows().count()) {
                     table.rows().deselect();
@@ -315,7 +312,7 @@ const mcmsTables = [];
                 }
             });
             table.on('select deselect', function () {
-                table.updateSelectAllCheckbox(table, tableJQuery);
+                table.updateSelectAllCheckbox(table);
             });
             table.on('xhr', function () {
                 table.mcms.dataJustUpdated = true;
@@ -323,15 +320,15 @@ const mcmsTables = [];
             table.on('draw', function () {
                 if (table.mcms.dataJustUpdated) {
                     table.mcms.dataJustUpdated = false;
-                    table.updateSelectAllCheckbox(table, tableJQuery);
+                    table.updateSelectAllCheckbox(table);
                 }
             });
         },
-        enableBatchActions: function (table, tableJQuery, config) {
+        enableBatchActions: function (table, config) {
             if (!config.batchActions || !config.batchActions.length) {
                 return;
             }
-            mcmsDatatables.enableCheckboxSelection(table, tableJQuery);
+            mcmsDatatables.enableCheckboxSelection(table);
 
             for (let i = 0; i < config.batchActions.length; i++) {
                 const ba = config.batchActions[i];
@@ -563,14 +560,35 @@ const mcmsTables = [];
                 actionElem.detach();
             });
         },
-        fixProcessingIndicator: function (table, tableJQuery) {
+        patchProcessingIndicator: function (table, tableJQuery) {
             table.one('preInit', function () {
                 const container = tableJQuery.closest(".dt-container");
+                
+                const processingContainer = $("<div class='processing-container'><div class='processing-wrapper card'></div></div>");
+                container.find(".processing-backdrop").append(processingContainer);
+
                 const processing = container.find(".dt-processing");
-                container.find(".processing-container").append(processing);
-                processing.children().last().remove();
+                processing.detach();
+                processingContainer.find(".processing-wrapper").append(processing.contents());
             });
-        }
+
+            tableJQuery.on('processing.dt', (e, settings, processing) => {
+                if (processing) {
+                    table.mcms.processingCnt++;
+                    if (table.mcms.processingCnt === 1) {
+                        table.mcms.$.closest('.dt-container').find('.processing-backdrop').show(processing);
+                    }
+                } else {
+                    table.mcms.processingCnt--;
+                    if (table.mcms.processingCnt < 0) {
+                        table.mcms.processingCnt = 0;
+                    }
+                    if (table.mcms.processingCnt === 0) {
+                        table.mcms.$.closest('.dt-container').find('.processing-backdrop').hide(processing);
+                    }
+                }
+            });
+        },
     };
 })(jQuery);
 

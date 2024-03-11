@@ -49,6 +49,12 @@ table.dataTable tr.column-search-row td input {
     display: block;
 }
 
+.dt-container .processing-container .processing-wrapper {
+    padding: 1em 0;
+    width: 200px;
+    align-items: center;
+}
+
 
 table.dataTable tbody > tr.row-selected,
 table.dataTable tbody > tr > .row-selected {

@@ -50,16 +50,16 @@
                 }
             }
             @if (!Env.GetBool("FORMLY_DEBUG"))
-            {
+            { 
                 <text>
-                const formElement = document.getElementById('@Model.FormInstanceId');
-                formElement.addEventListener('done', function(e) { processEvent({type: 'mcms-form-done', data: e.detail}); });
-                formElement.addEventListener('customEvent', function(e) { processEvent(e.detail); });
-                $("#@Model.FormInstanceId-submit-button").on('click', function() {
-                    $("#@Model.FormInstanceId .submit-button").click();
-                });
-                mcmsFormsStaticFiles.load();
-            </text>
+                    const formElement = document.getElementById('@Model.FormInstanceId');
+                    formElement.addEventListener('done', function(e) { processEvent({type: 'mcms-form-done', data: e.detail}); });
+                    formElement.addEventListener('customEvent', function(e) { processEvent(e.detail); });
+                    $("#@Model.FormInstanceId-submit-button").on('click', function() {
+                        $("#@Model.FormInstanceId .submit-button").click();
+                    });
+                    mcmsFormsStaticFiles.load();
+                </text>
             }
             else
             {

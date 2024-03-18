@@ -300,6 +300,7 @@ const mcmsTables = [];
             }
             modal.on('hide.bs.modal', function () {
                 datatable.destroy();
+                $('body').unbind(`click.${tableElem.attr('id')}`)
                 datatable.mcms.$.attr("id", datatable.mcms.$.attr("id") + "-old");
             });
         },
@@ -545,7 +546,7 @@ const mcmsTables = [];
             }
         },
         bindDefaultItemAction: function (tableElemId, tableId) {
-            $('body').on('click', `#${tableElemId} tr.data-row-clickable td:not(.select-checkbox)`, event => {
+            $('body').on(`click.${tableElemId}`, `#${tableElemId} tr.data-row-clickable td:not(.select-checkbox)`, event => {
                 if ($(event.target).closest('a, button').length) {
                     return;
                 }

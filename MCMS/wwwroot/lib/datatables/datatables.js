@@ -4,20 +4,20 @@
  *
  * To rebuild or modify this file with the latest versions of the included
  * software please visit:
- *   https://datatables.net/download/#bs4/dt-2.0.0/b-3.0.0/b-colvis-3.0.0/b-html5-3.0.0/b-print-3.0.0/cr-2.0.0/fc-5.0.0/fh-4.0.0/kt-2.12.0/r-3.0.0/rg-1.5.0/rr-1.5.0/sc-2.4.0/sp-2.3.0/sl-2.0.0
+ *   https://datatables.net/download/#bs4/dt-2.0.3/b-3.0.1/b-colvis-3.0.1/b-html5-3.0.1/b-print-3.0.1/cr-2.0.0/fc-5.0.0/fh-4.0.1/kt-2.12.0/r-3.0.1/rg-1.5.0/rr-1.5.0/sc-2.4.1/sp-2.3.0/sl-2.0.0
  *
  * Included libraries:
- *  DataTables 2.0.0, Buttons 3.0.0, Column visibility 3.0.0, HTML5 export 3.0.0, Print view 3.0.0, ColReorder 2.0.0, FixedColumns 5.0.0, FixedHeader 4.0.0, KeyTable 2.12.0, Responsive 3.0.0, RowGroup 1.5.0, RowReorder 1.5.0, Scroller 2.4.0, SearchPanes 2.3.0, Select 2.0.0
+ *   DataTables 2.0.3, Buttons 3.0.1, Column visibility 3.0.1, HTML5 export 3.0.1, Print view 3.0.1, ColReorder 2.0.0, FixedColumns 5.0.0, FixedHeader 4.0.1, KeyTable 2.12.0, Responsive 3.0.1, RowGroup 1.5.0, RowReorder 1.5.0, Scroller 2.4.1, SearchPanes 2.3.0, Select 2.0.0
  */
 
-/*! DataTables 2.0.0
+/*! DataTables 2.0.3
  * © SpryMedia Ltd - datatables.net/license
  */
 
 /**
  * @summary     DataTables
  * @description Paginate, search and order HTML tables
- * @version     2.0.0
+ * @version     2.0.3
  * @author      SpryMedia Ltd
  * @contact     www.datatables.net
  * @copyright   SpryMedia Ltd.
@@ -329,7 +329,7 @@
 						_fnCamelToHungarian( defaults.oLanguage, json );
 						$.extend( true, oLanguage, json, oSettings.oInit.oLanguage );
 			
-						_fnCallbackFire( oSettings, null, 'i18n', [oSettings]);
+						_fnCallbackFire( oSettings, null, 'i18n', [oSettings], true);
 						_fnInitialise( oSettings );
 					},
 					error: function () {
@@ -563,7 +563,7 @@
 		 *
 		 *  @type string
 		 */
-		builder: "bs4/dt-2.0.0/b-3.0.0/b-colvis-3.0.0/b-html5-3.0.0/b-print-3.0.0/cr-2.0.0/fc-5.0.0/fh-4.0.0/kt-2.12.0/r-3.0.0/rg-1.5.0/rr-1.5.0/sc-2.4.0/sp-2.3.0/sl-2.0.0",
+		builder: "bs4/dt-2.0.3/b-3.0.1/b-colvis-3.0.1/b-html5-3.0.1/b-print-3.0.1/cr-2.0.0/fc-5.0.0/fh-4.0.1/kt-2.12.0/r-3.0.1/rg-1.5.0/rr-1.5.0/sc-2.4.1/sp-2.3.0/sl-2.0.0",
 	
 	
 		/**
@@ -2367,7 +2367,7 @@
 	 */
 	function _columnAutoClass(container, colIdx, className) {
 		container.forEach(function (row) {
-			if (row[colIdx].unique) {
+			if (row[colIdx] && row[colIdx].unique) {
 				_addClass(row[colIdx].cell, className);
 			}
 		});
@@ -2441,24 +2441,32 @@
 					else if ( typeof target === 'string' )
 					{
 						for ( k=0, kLen=columns.length ; k<kLen ; k++ ) {
-							if (target.indexOf(':name') !== -1) {
+							if (target === '_all') {
+								// Apply to all columns
+								fn( k, def );
+							}
+							else if (target.indexOf(':name') !== -1) {
+								// Column selector
 								if (columns[k].sName === target.replace(':name', '')) {
 									fn( k, def );
 								}
 							}
 							else {
+								// Cell selector
 								headerLayout.forEach(function (row) {
-									var cell = $(row[k].cell);
+									if (row[k]) {
+										var cell = $(row[k].cell);
 	
-									// Legacy support. Note that it means that we don't support
-									// an element name selector only, since they are treated as
-									// class names for 1.x compat.
-									if (target.match(/^[a-z][\w-]*$/i)) {
-										target = '.' + target;
-									}
+										// Legacy support. Note that it means that we don't support
+										// an element name selector only, since they are treated as
+										// class names for 1.x compat.
+										if (target.match(/^[a-z][\w-]*$/i)) {
+											target = '.' + target;
+										}
 	
-									if (target === '_all' || cell.is( target )) {
-										fn( k, def );
+										if (cell.is( target )) {
+											fn( k, def );
+										}
 									}
 								});
 							}
@@ -3042,7 +3050,7 @@
 			for ( i=0, iLen=oSettings.aoColumns.length ; i<iLen ; i++ )
 			{
 				oCol = oSettings.aoColumns[i];
-				create = nTrIn ? false : true;
+				create = nTrIn && anTds[i] ? false : true;
 	
 				nTd = create ? document.createElement( oCol.sCellType ) : anTds[i];
 	
@@ -3071,11 +3079,11 @@
 				}
 	
 				// Visibility - add or remove as required
-				if ( oCol.bVisible && ! nTrIn )
+				if ( oCol.bVisible && create )
 				{
 					nTr.appendChild( nTd );
 				}
-				else if ( ! oCol.bVisible && nTrIn )
+				else if ( ! oCol.bVisible && ! create )
 				{
 					nTd.parentNode.removeChild( nTd );
 				}
@@ -3159,14 +3167,23 @@
 		}
 	
 		// If no cells yet and we have content for them, then create
-		if ( $('th, td', target).length === 0 && (side === 'header' || _pluck(settings.aoColumns, titleProp).join('')) ) {
-			row = $('<tr/>')
-				.appendTo( target );
+		if (side === 'header' || _pluck(settings.aoColumns, titleProp).join('')) {
+			row = $('tr', target);
 	
-			for ( i=0, ien=columns.length ; i<ien ; i++ ) {
-				$('<th/>')
-					.html( columns[i][titleProp] || '' )
-					.appendTo( row );
+			// Add a row if needed
+			if (! row.length) {
+				row = $('<tr/>').appendTo(target)
+			}
+	
+			// Add the number of cells needed to make up to the number of columns
+			if (row.length === 1) {
+				var cells = $('td, th', row);
+	
+				for ( i=cells.length, ien=columns.length ; i<ien ; i++ ) {
+					$('<th/>')
+						.html( columns[i][titleProp] || '' )
+						.appendTo( row );
+				}
 			}
 		}
 	
@@ -3263,11 +3280,15 @@
 						colspan++;
 					}
 	
+					var titleSpan = $('span.dt-column-title', cell);
+	
 					structure[row][column] = {
 						cell: cell,
 						colspan: colspan,
 						rowspan: rowspan,
-						title: $('span.dt-column-title', cell).html()
+						title: titleSpan.length
+							? titleSpan.html()
+							: $(cell).html()
 					};
 				}
 			}
@@ -3408,8 +3429,15 @@
 		_fnCallbackFire( oSettings, 'aoFooterCallback', 'footer', [ $(oSettings.nTFoot).children('tr')[0],
 			_fnGetDataMaster( oSettings ), iDisplayStart, iDisplayEnd, aiDisplay ] );
 	
-		body.children().detach();
-		body.append( $(anRows) );
+		// replaceChildren is faster, but only became widespread in 2020,
+		// so a fall back in jQuery is provided for older browsers.
+		if (body[0].replaceChildren) {
+			body[0].replaceChildren.apply(body[0], anRows);
+		}
+		else {
+			body.children().detach();
+			body.append( $(anRows) );
+		}
 	
 		// Empty table needs a specific class
 		$(oSettings.nTableWrapper).toggleClass('dt-empty-footer', $('tr', oSettings.nTFoot).length === 0);
@@ -3474,8 +3502,10 @@
 		var zero = oLang.sZeroRecords;
 		var dataSrc = _fnDataSource( settings );
 	
-		if ( settings.iDraw <= 1 && (dataSrc === 'ajax' || dataSrc === 'ssp') )
-		{
+		if (
+			(settings.iDraw < 1 && dataSrc === 'ssp') ||
+			(settings.iDraw <= 1 && dataSrc === 'ajax')
+		) {
 			zero = oLang.sLoadingRecords;
 		}
 		else if ( oLang.sEmptyTable && settings.fnRecordsTotal() === 0 )
@@ -3521,30 +3551,34 @@
 				'full' :
 				splitPos[1].toLowerCase();
 			var group = groups[ splitPos[0] ];
-	
-			// Transform to an object with a contents property
-			if ( $.isPlainObject( val ) ) {
-				// Already a group from a previous pass
-				if (val.contents) {
-					group[ align ] = val;
+			var groupRun = function (contents, innerVal) {
+				// If it is an object, then there can be multiple features contained in it
+				if ( $.isPlainObject( innerVal ) ) {
+					Object.keys(innerVal).map(function (key) {
+						contents.push( {
+							feature: key,
+							opts: innerVal[key]
+						});
+					});
 				}
 				else {
-					// For objects, each property becomes an entry in the contents
-					// array for this insert position
-					group[ align ] = {
-						contents: Object.keys(val).map(function (key) {
-							return {
-								feature: key,
-								opts: val[key]
-							};
-						})
-					};
+					contents.push(innerVal);
+				}
+			}
+	
+			// Transform to an object with a contents property
+			if (! group[align] || ! group[align].contents) {
+				group[align] = { contents: [] };
+			}
+	
+			// Allow for an array or just a single object
+			if ( Array.isArray(val)) {
+				for (var i=0 ; i<val.length ; i++) {
+					groupRun(group[align].contents, val[i]);
 				}
 			}
 			else {
-				group[ align ] = {
-					contents: val
-				};
+				groupRun(group[ align ].contents, val);
 			}
 	
 			// And make contents an array
@@ -3671,15 +3705,15 @@
 	
 		settings.nTableWrapper = insert[0];
 	
-		var top = _layoutArray( settings, settings.layout, 'top' );
-		var bottom = _layoutArray( settings, settings.layout, 'bottom' );
-		var renderer = _fnRenderer( settings, 'layout' );
-	
 		if (settings.sDom) {
 			// Legacy
 			_fnLayoutDom(settings, settings.sDom, insert);
 		}
 		else {
+			var top = _layoutArray( settings, settings.layout, 'top' );
+			var bottom = _layoutArray( settings, settings.layout, 'bottom' );
+			var renderer = _fnRenderer( settings, 'layout' );
+		
 			// Everything above - the renderer will actually insert the contents into the document
 			top.forEach(function (item) {
 				renderer( settings, insert, item );
@@ -4046,7 +4080,12 @@
 			oSettings.jqXHR = ajax.call( instance, data, callback, oSettings );
 		}
 		else if (ajax.url === '') {
-			callback({});
+			// No url, so don't load any data. Just apply an empty data array
+			// to the object for the callback.
+			var empty = {};
+	
+			DataTable.util.set(ajax.dataSrc)(empty, []);
+			callback(empty);
 		}
 		else {
 			// Object to extend the base settings
@@ -4424,6 +4463,9 @@
 		if (typeof search !== 'string') {
 			search = search.toString();
 		}
+	
+		// Remove diacritics if normalize is set up to do so
+		search = _normalize(search);
 	
 		if (options.exact) {
 			return new RegExp(
@@ -5045,12 +5087,12 @@
 		// the content of the cell so that the width applied to the header and body
 		// both match, but we want to hide it completely.
 		$('th, td', headerCopy).each(function () {
-			$(this).children().wrapAll('<div class="dt-scroll-sizing">');
+			$(this.childNodes).wrapAll('<div class="dt-scroll-sizing">');
 		});
 	
 		if ( footer ) {
 			$('th, td', footerCopy).each(function () {
-				$(this).children().wrapAll('<div class="dt-scroll-sizing">');
+				$(this.childNodes).wrapAll('<div class="dt-scroll-sizing">');
 			});
 		}
 	
@@ -5405,30 +5447,44 @@
 	
 	function _fnSortAttachListener(settings, node, selector, column, callback) {
 		_fnBindAction( node, selector, function (e) {
+			var run = false;
 			var columns = column === undefined
 				? _fnColumnsFromHeader( e.target )
 				: [column];
 	
 			if ( columns.length ) {
-				_fnProcessingDisplay( settings, true );
+				for ( var i=0, ien=columns.length ; i<ien ; i++ ) {
+					var ret = _fnSortAdd( settings, columns[i], i, e.shiftKey );
 	
-				// Allow the processing display to show
-				setTimeout( function () {
-					for ( var i=0, ien=columns.length ; i<ien ; i++ ) {
-						var append = e.shiftKey || i > 0;
-			
-						_fnSortAdd( settings, columns[i], append );
+					if (ret !== false) {
+						run = true;
+					}					
+	
+					// If the first entry is no sort, then subsequent
+					// sort columns are ignored
+					if (settings.aaSorting.length === 1 && settings.aaSorting[0][1] === '') {
+						break;
 					}
+				}
 	
-					_fnSort( settings );
-					_fnSortDisplay( settings );
-					_fnReDraw( settings, false, false );
-					_fnProcessingDisplay( settings, false );
+				if (run) {
+					_fnProcessingDisplay( settings, true );
 	
-					if (callback) {
-						callback();
-					}
-				}, 0);
+					// Allow the processing display to show
+					setTimeout( function () {
+						_fnSort( settings );
+						_fnSortDisplay( settings, settings.aiDisplay );
+	
+						// Sort processing done - redraw has its own processing display
+						_fnProcessingDisplay( settings, false );
+	
+						_fnReDraw( settings, false, false );
+	
+						if (callback) {
+							callback();
+						}
+					}, 0);
+				}
 			}
 		} );
 	}
@@ -5437,12 +5493,25 @@
 	 * Sort the display array to match the master's order
 	 * @param {*} settings
 	 */
-	function _fnSortDisplay(settings) {
-		var display = settings.aiDisplay;
+	function _fnSortDisplay(settings, display) {
 		var master = settings.aiDisplayMaster;
+		var masterMap = {};
+		var map = {};
+		var i;
 	
-		display.sort(function(a, b){  
-			return master.indexOf(a) - master.indexOf(b);
+		// Rather than needing an `indexOf` on master array, we can create a map
+		for (i=0 ; i<master.length ; i++) {
+			masterMap[master[i]] = i;
+		}
+	
+		// And then cache what would be the indexOf fom the display
+		for (i=0 ; i<display.length ; i++) {
+			map[display[i]] = masterMap[display[i]];
+		}
+	
+		display.sort(function(a, b){
+			// Short version of this function is simply `master.indexOf(a) - master.indexOf(b);`
+			return map[a] - map[b];
 		});
 	}
 	
@@ -5693,12 +5762,12 @@
 	 *  @param {object} settings dataTables settings object
 	 *  @param {node} attachTo node to attach the handler to
 	 *  @param {int} colIdx column sorting index
-	 *  @param {boolean} [append=false] Append the requested sort to the existing
-	 *    sort if true (i.e. multi-column sort)
+	 *  @param {int} addIndex Counter
+	 *  @param {boolean} [shift=false] Shift click add
 	 *  @param {function} [callback] callback function
 	 *  @memberof DataTable#oApi
 	 */
-	function _fnSortAdd ( settings, colIdx, append )
+	function _fnSortAdd ( settings, colIdx, addIndex, shift )
 	{
 		var col = settings.aoColumns[ colIdx ];
 		var sorting = settings.aaSorting;
@@ -5718,7 +5787,7 @@
 		};
 	
 		if ( ! col.bSortable ) {
-			return;
+			return false;
 		}
 	
 		// Convert to 2D array if needed
@@ -5727,7 +5796,7 @@
 		}
 	
 		// If appending the sort then we are multi-column sorting
-		if ( append && settings.oFeatures.bSortMulti ) {
+		if ( (shift || addIndex) && settings.oFeatures.bSortMulti ) {
 			// Are we already doing some kind of sort on this column?
 			var sortIdx = _pluck(sorting, '0').indexOf(colIdx);
 	
@@ -5747,9 +5816,16 @@
 					sorting[sortIdx]._idx = nextSortIdx;
 				}
 			}
-			else {
-				// No sort on this column yet
+			else if (shift) {
+				// No sort on this column yet, being added by shift click
+				// add it as itself
 				sorting.push( [ colIdx, asSorting[0], 0 ] );
+				sorting[sorting.length-1]._idx = 0;
+			}
+			else {
+				// No sort on this column yet, being added from a colspan
+				// so add with same direction as first column
+				sorting.push( [ colIdx, sorting[0][1], 0 ] );
 				sorting[sorting.length-1]._idx = 0;
 			}
 		}
@@ -7638,11 +7714,7 @@
 		var matched = _selector_run( 'row', selector, run, settings, opts );
 	
 		if (opts.order === 'current' || opts.order === 'applied') {
-			var master = settings.aiDisplayMaster;
-	
-			matched.sort(function(a, b) {  
-				return master.indexOf(a) - master.indexOf(b);
-			});
+			_fnSortDisplay(settings, matched);
 		}
 	
 		return matched;
@@ -8036,7 +8108,7 @@
 				for ( var i=0, ien=data.length ; i<ien ; i++ ) {
 					row = data[i];
 	
-					if ( row._details ) {
+					if ( row && row._details ) {
 						row._details.each(function () {
 							var el = $(this).children('td');
 	
@@ -8055,7 +8127,7 @@
 				}
 	
 				for ( var i=0, ien=data.length ; i<ien ; i++ ) {
-					if ( data[i]._details ) {
+					if ( data[i] && data[i]._details ) {
 						__details_remove( api, i );
 					}
 				}
@@ -8077,9 +8149,9 @@
 	
 		if ( data === undefined ) {
 			// get
-			return ctx.length && this.length ?
-				ctx[0].aoData[ this[0] ]._details :
-				undefined;
+			return ctx.length && this.length && ctx[0].aoData[ this[0] ]
+				? ctx[0].aoData[ this[0] ]._details
+				: undefined;
 		}
 		else if ( data === true ) {
 			// show
@@ -9402,6 +9474,8 @@
 				jqTable.append( tfoot );
 			}
 	
+			settings.colgroup.remove();
+	
 			settings.aaSorting = [];
 			settings.aaSortingFixed = [];
 			_fnSortingClasses( settings );
@@ -9501,7 +9575,7 @@
 	 *  @type string
 	 *  @default Version number
 	 */
-	DataTable.version = "2.0.0";
+	DataTable.version = "2.0.3";
 	
 	/**
 	 * Private data store, containing all of the settings objects that are
@@ -11641,7 +11715,7 @@
 		 *
 		 *  @type string
 		 */
-		builder: "bs4/dt-2.0.0/b-3.0.0/b-colvis-3.0.0/b-html5-3.0.0/b-print-3.0.0/cr-2.0.0/fc-5.0.0/fh-4.0.0/kt-2.12.0/r-3.0.0/rg-1.5.0/rr-1.5.0/sc-2.4.0/sp-2.3.0/sl-2.0.0",
+		builder: "bs4/dt-2.0.3/b-3.0.1/b-colvis-3.0.1/b-html5-3.0.1/b-print-3.0.1/cr-2.0.0/fc-5.0.0/fh-4.0.1/kt-2.12.0/r-3.0.1/rg-1.5.0/rr-1.5.0/sc-2.4.1/sp-2.3.0/sl-2.0.0",
 	
 	
 		/**
@@ -12246,7 +12320,7 @@
 	} );
 	
 	// Common function to remove new lines, strip HTML and diacritic control
-	var _filterString = function (stripHtml, diacritics) {
+	var _filterString = function (stripHtml, normalize) {
 		return function (str) {
 			if (_empty(str) || typeof str !== 'string') {
 				return str;
@@ -12258,8 +12332,8 @@
 				str = _stripHtml(str);
 			}
 	
-			if (diacritics) {
-				str = _normalize(str, true);
+			if (normalize) {
+				str = _normalize(str, false);
 			}
 	
 			return str;
@@ -12637,7 +12711,7 @@
 		};
 	
 		// prop is optional
-		if (! val) {
+		if (val === undefined) {
 			val = prop;
 			prop = null;
 		}
@@ -12903,9 +12977,9 @@
 					var ariaType = '';
 					var indexes = columns.indexes();
 					var sortDirs = columns.orderable(true).flatten();
-					var orderedColumns = sorting.map( function (val) {
+					var orderedColumns = ',' + sorting.map( function (val) {
 						return val.col;
-					} ).join(',');
+					} ).join(',') + ',';
 	
 					cell
 						.removeClass(
@@ -12916,7 +12990,7 @@
 						.toggleClass( orderClasses.canAsc, orderable && sortDirs.includes('asc') )
 						.toggleClass( orderClasses.canDesc, orderable && sortDirs.includes('desc') );
 					
-					var sortIdx = orderedColumns.indexOf( indexes.toArray().join(',') );
+					var sortIdx = orderedColumns.indexOf( ',' + indexes.toArray().join(',') + ',' );
 	
 					if ( sortIdx !== -1 ) {
 						// Get the ordering direction for the columns under this cell
@@ -12931,7 +13005,7 @@
 					}
 	
 					// The ARIA spec says that only one column should be marked with aria-sort
-					if ( sortIdx === 0 && orderedColumns.length === indexes.count() ) {
+					if ( sortIdx === 0 ) {
 						var firstSort = sorting[0];
 						var sortOrder = col.asSorting;
 	
@@ -13296,7 +13370,7 @@
 		if (
 			buttonEls.length && // any buttons
 			opts.numbers > 1 && // prevent infinite
-			$(host).outerHeight() >= ($(buttonEls[0]).outerHeight() * 2) - 10
+			$(host).height() >= ($(buttonEls[0]).outerHeight() * 2) - 10
 		) {
 			_pagingDraw(settings, host, $.extend({}, opts, { numbers: opts.numbers - 2 }));
 		}
@@ -13732,7 +13806,7 @@ return DataTable;
 }));
 
 
-/*! Buttons for DataTables 3.0.0
+/*! Buttons for DataTables 3.0.1
  * © SpryMedia Ltd - datatables.net/license
  */
 
@@ -15730,7 +15804,7 @@ Buttons.defaults = {
  * @type {string}
  * @static
  */
-Buttons.version = '3.0.0';
+Buttons.version = '3.0.1';
 
 $.extend(_dtButtons, {
 	collection: {
@@ -16365,11 +16439,17 @@ var _exportData = function (dt, inOpts) {
 				.indexes()
 				.map(function (idx) {
 					var el = dt.column(idx).footer();
-					return config.format.footer(
-						el ? $('.dt-column-title', el).html() : '',
-						idx,
-						el
-					);
+					var val = '';
+
+					if (el) {
+						var inner = $('.dt-column-title', el);
+
+						val = inner.length
+							? inner.html()
+							: $(el).html();
+					}
+
+					return config.format.footer(val, idx, el);
 				})
 				.toArray()
 		: null;
@@ -16398,7 +16478,7 @@ var _exportData = function (dt, inOpts) {
 	var cellNodes = selectedCells.nodes().toArray();
 	var cellIndexes = selectedCells.indexes().toArray();
 
-	var columns = header.length;
+	var columns = dt.columns(config.columns).count();
 	var rows = columns > 0 ? cells.length / columns : 0;
 	var body = [];
 	var cellCounter = 0;
@@ -16409,8 +16489,8 @@ var _exportData = function (dt, inOpts) {
 		for (var j = 0; j < columns; j++) {
 			row[j] = config.format.body(
 				cells[cellCounter],
-				cellIndexes[i + j].row,
-				cellIndexes[i + j].column,
+				cellIndexes[cellCounter].row,
+				cellIndexes[cellCounter].column,
 				cellNodes[cellCounter]
 			);
 			cellCounter++;
@@ -16421,9 +16501,15 @@ var _exportData = function (dt, inOpts) {
 
 	var data = {
 		header: header,
-		headerStructure: dt.table().header.structure(config.columns),
+		headerStructure: _headerFormatter(
+			config.format.header,
+			dt.table().header.structure(config.columns)
+		),
 		footer: footer,
-		footerStructure: dt.table().footer.structure(config.columns),
+		footerStructure: _headerFormatter(
+			config.format.footer,
+			dt.table().footer.structure(config.columns)
+		),
 		body: body
 	};
 
@@ -16433,6 +16519,24 @@ var _exportData = function (dt, inOpts) {
 
 	return data;
 };
+
+function _headerFormatter(formatter, struct) {
+	for (var i=0 ; i<struct.length ; i++) {
+		for (var j=0 ; j<struct[i].length ; j++) {
+			var item = struct[i][j];
+
+			if (item) {
+				item.title = formatter(
+					item.title,
+					j,
+					item.cell
+				);
+			}
+		}
+	}
+
+	return struct;
+}
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * DataTables interface
@@ -17252,7 +17356,7 @@ var _exportData = function (dt, config) {
 	}
 
 	return {
-		str: header + body.join(newLine) + footer,
+		str: header + body.join(newLine) + newLine + footer,
 		rows: body.length
 	};
 };
@@ -17435,7 +17539,7 @@ function _excelColWidth(data, col) {
 	var max = data.header[col].length;
 	var len, lineSplit, str;
 
-	if (data.footer && data.footer[col].length > max) {
+	if (data.footer && data.footer[col] && data.footer[col].length > max) {
 		max = data.footer[col].length;
 	}
 
@@ -17911,7 +18015,7 @@ DataTable.ext.buttons.copyHtml5 = {
 
 	header: true,
 
-	footer: false,
+	footer: true,
 
 	title: '*',
 
@@ -17990,7 +18094,7 @@ DataTable.ext.buttons.csvHtml5 = {
 
 	header: true,
 
-	footer: false
+	footer: true
 };
 
 //
@@ -18836,7 +18940,7 @@ DataTable.ext.buttons.print = {
 
 	header: true,
 
-	footer: false,
+	footer: true,
 
 	autoPrint: true,
 
@@ -19825,66 +19929,6 @@ return DataTable;
 }));
 
 
-/*! Bootstrap 4 styling wrapper for ColReorder
- * © SpryMedia Ltd - datatables.net/license
- */
-
-(function( factory ){
-	if ( typeof define === 'function' && define.amd ) {
-		// AMD
-		define( ['jquery', 'datatables.net-bs4', 'datatables.net-colreorder'], function ( $ ) {
-			return factory( $, window, document );
-		} );
-	}
-	else if ( typeof exports === 'object' ) {
-		// CommonJS
-		var jq = require('jquery');
-		var cjsRequires = function (root, $) {
-			if ( ! $.fn.dataTable ) {
-				require('datatables.net-bs4')(root, $);
-			}
-
-			if ( ! $.fn.dataTable.ColReorder ) {
-				require('datatables.net-colreorder')(root, $);
-			}
-		};
-
-		if (typeof window === 'undefined') {
-			module.exports = function (root, $) {
-				if ( ! root ) {
-					// CommonJS environments without a window global must pass a
-					// root. This will give an error otherwise
-					root = window;
-				}
-
-				if ( ! $ ) {
-					$ = jq( root );
-				}
-
-				cjsRequires( root, $ );
-				return factory( $, root, root.document );
-			};
-		}
-		else {
-			cjsRequires( window, jq );
-			module.exports = factory( jq, window, window.document );
-		}
-	}
-	else {
-		// Browser
-		factory( jQuery, window, document );
-	}
-}(function( $, window, document ) {
-'use strict';
-var DataTable = $.fn.dataTable;
-
-
-
-
-return DataTable;
-}));
-
-
 /*! FixedColumns 5.0.0
  * © SpryMedia Ltd - datatables.net/license
  */
@@ -20413,67 +20457,7 @@ return DataTable;
 }));
 
 
-/*! Bootstrap 4 integration for DataTables' FixedColumns
- * © SpryMedia Ltd - datatables.net/license
- */
-
-(function( factory ){
-	if ( typeof define === 'function' && define.amd ) {
-		// AMD
-		define( ['jquery', 'datatables.net-bs4', 'datatables.net-fixedcolumns'], function ( $ ) {
-			return factory( $, window, document );
-		} );
-	}
-	else if ( typeof exports === 'object' ) {
-		// CommonJS
-		var jq = require('jquery');
-		var cjsRequires = function (root, $) {
-			if ( ! $.fn.dataTable ) {
-				require('datatables.net-bs4')(root, $);
-			}
-
-			if ( ! $.fn.dataTable.FixedColumns ) {
-				require('datatables.net-fixedcolumns')(root, $);
-			}
-		};
-
-		if (typeof window === 'undefined') {
-			module.exports = function (root, $) {
-				if ( ! root ) {
-					// CommonJS environments without a window global must pass a
-					// root. This will give an error otherwise
-					root = window;
-				}
-
-				if ( ! $ ) {
-					$ = jq( root );
-				}
-
-				cjsRequires( root, $ );
-				return factory( $, root, root.document );
-			};
-		}
-		else {
-			cjsRequires( window, jq );
-			module.exports = factory( jq, window, window.document );
-		}
-	}
-	else {
-		// Browser
-		factory( jQuery, window, document );
-	}
-}(function( $, window, document ) {
-'use strict';
-var DataTable = $.fn.dataTable;
-
-
-
-
-return DataTable;
-}));
-
-
-/*! FixedHeader 4.0.0
+/*! FixedHeader 4.0.1
  * © SpryMedia Ltd - datatables.net/license
  */
 
@@ -20528,7 +20512,7 @@ var DataTable = $.fn.dataTable;
  * @summary     FixedHeader
  * @description Fix a table's header or footer, so it is always visible while
  *              scrolling
- * @version     4.0.0
+ * @version     4.0.1
  * @author      SpryMedia Ltd
  * @contact     datatables.net
  *
@@ -20744,6 +20728,8 @@ $.extend(FixedHeader.prototype, {
 
 		this._positions();
 		this._scroll(force !== undefined ? force : true);
+		this._widths(this.dom.header);
+		this._widths(this.dom.footer);
 	},
 
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -20931,25 +20917,7 @@ $.extend(FixedHeader.prototype, {
 			itemDom.host.prepend(itemDom.placeholder);
 			itemDom.floating.append(itemElement);
 
-			// Copy the `colgroup` element to define the number of columns - needed
-			// for complex header cases where a column might not have a unique
-			// header 
-			var cols = itemDom.placeholder
-				.parent()
-				.find('colgroup')
-				.clone()
-				.appendTo(itemDom.floating)
-				.find('col');
-
-			// However, the widths defined in the colgroup from the DataTable might
-			// not exactly reflect the actual widths of the columns (content can
-			// force it to stretch). So we need to copy the actual widths into the
-			// colgroup / col's used for the floating header.
-			var widths = this.s.dt.columns({visible:true}).widths();
-
-			for (var i=0 ; i<widths.length ; i++) {
-				cols.eq(i).css('width', widths[i]);
-			}
+			this._widths(itemDom);
 		}
 	},
 
@@ -21498,6 +21466,46 @@ $.extend(FixedHeader.prototype, {
 			return true;
 		}
 		return false;
+	},
+
+	/**
+	 * Realign columns by using the colgroup tag and
+	 * checking column widths
+	 */
+	_widths: function (itemDom) {
+		if (! itemDom || ! itemDom.placeholder) {
+			return;
+		}
+
+		// Match the table overall width
+		var tableNode = $(this.s.dt.table().node());
+		var scrollBody = $(tableNode.parent());
+
+		itemDom.floatingParent.css('width', scrollBody[0].offsetWidth);
+		itemDom.floating.css('width', tableNode[0].offsetWidth);
+
+		// Strip out the old colgroup
+		$('colgroup', itemDom.floating).remove();
+
+		// Copy the `colgroup` element to define the number of columns - needed
+		// for complex header cases where a column might not have a unique
+		// header
+		var cols = itemDom.placeholder
+			.parent()
+			.find('colgroup')
+			.clone()
+			.appendTo(itemDom.floating)
+			.find('col');
+
+		// However, the widths defined in the colgroup from the DataTable might
+		// not exactly reflect the actual widths of the columns (content can
+		// force it to stretch). So we need to copy the actual widths into the
+		// colgroup / col's used for the floating header.
+		var widths = this.s.dt.columns(':visible').widths();
+
+		for (var i=0 ; i<widths.length ; i++) {
+			cols.eq(i).css('width', widths[i]);
+		}
 	}
 });
 
@@ -21506,7 +21514,7 @@ $.extend(FixedHeader.prototype, {
  * @type {String}
  * @static
  */
-FixedHeader.version = '4.0.0';
+FixedHeader.version = '4.0.1';
 
 /**
  * Defaults
@@ -21612,66 +21620,6 @@ $.each(['header', 'footer'], function (i, el) {
 		});
 	});
 });
-
-
-return DataTable;
-}));
-
-
-/*! Bootstrap 4 styling wrapper for FixedHeader
- * © SpryMedia Ltd - datatables.net/license
- */
-
-(function( factory ){
-	if ( typeof define === 'function' && define.amd ) {
-		// AMD
-		define( ['jquery', 'datatables.net-bs4', 'datatables.net-fixedheader'], function ( $ ) {
-			return factory( $, window, document );
-		} );
-	}
-	else if ( typeof exports === 'object' ) {
-		// CommonJS
-		var jq = require('jquery');
-		var cjsRequires = function (root, $) {
-			if ( ! $.fn.dataTable ) {
-				require('datatables.net-bs4')(root, $);
-			}
-
-			if ( ! $.fn.dataTable.FixedHeader ) {
-				require('datatables.net-fixedheader')(root, $);
-			}
-		};
-
-		if (typeof window === 'undefined') {
-			module.exports = function (root, $) {
-				if ( ! root ) {
-					// CommonJS environments without a window global must pass a
-					// root. This will give an error otherwise
-					root = window;
-				}
-
-				if ( ! $ ) {
-					$ = jq( root );
-				}
-
-				cjsRequires( root, $ );
-				return factory( $, root, root.document );
-			};
-		}
-		else {
-			cjsRequires( window, jq );
-			module.exports = factory( jq, window, window.document );
-		}
-	}
-	else {
-		// Browser
-		factory( jQuery, window, document );
-	}
-}(function( $, window, document ) {
-'use strict';
-var DataTable = $.fn.dataTable;
-
-
 
 
 return DataTable;
@@ -23108,67 +23056,7 @@ return DataTable;
 }));
 
 
-/*! Bootstrap 4 styling wrapper for KeyTable
- * © SpryMedia Ltd - datatables.net/license
- */
-
-(function( factory ){
-	if ( typeof define === 'function' && define.amd ) {
-		// AMD
-		define( ['jquery', 'datatables.net-bs4', 'datatables.net-keytable'], function ( $ ) {
-			return factory( $, window, document );
-		} );
-	}
-	else if ( typeof exports === 'object' ) {
-		// CommonJS
-		var jq = require('jquery');
-		var cjsRequires = function (root, $) {
-			if ( ! $.fn.dataTable ) {
-				require('datatables.net-bs4')(root, $);
-			}
-
-			if ( ! $.fn.dataTable.KeyTable ) {
-				require('datatables.net-keytable')(root, $);
-			}
-		};
-
-		if (typeof window === 'undefined') {
-			module.exports = function (root, $) {
-				if ( ! root ) {
-					// CommonJS environments without a window global must pass a
-					// root. This will give an error otherwise
-					root = window;
-				}
-
-				if ( ! $ ) {
-					$ = jq( root );
-				}
-
-				cjsRequires( root, $ );
-				return factory( $, root, root.document );
-			};
-		}
-		else {
-			cjsRequires( window, jq );
-			module.exports = factory( jq, window, window.document );
-		}
-	}
-	else {
-		// Browser
-		factory( jQuery, window, document );
-	}
-}(function( $, window, document ) {
-'use strict';
-var DataTable = $.fn.dataTable;
-
-
-
-
-return DataTable;
-}));
-
-
-/*! Responsive 3.0.0
+/*! Responsive 3.0.1
  * © SpryMedia Ltd - datatables.net/license
  */
 
@@ -23222,7 +23110,7 @@ var DataTable = $.fn.dataTable;
 /**
  * @summary     Responsive
  * @description Responsive tables plug-in for DataTables
- * @version     3.0.0
+ * @version     3.0.1
  * @author      SpryMedia Ltd
  * @copyright   SpryMedia Ltd.
  *
@@ -24931,7 +24819,7 @@ Api.registerPlural(
  * @name Responsive.version
  * @static
  */
-Responsive.version = '3.0.0';
+Responsive.version = '3.0.1';
 
 $.fn.dataTable.Responsive = Responsive;
 $.fn.DataTable.Responsive = Responsive;
@@ -25564,66 +25452,6 @@ $(document).on('preInit.dt.dtrg', function (e, settings, json) {
 		}
 	}
 });
-
-
-return DataTable;
-}));
-
-
-/*! Bootstrap 4 styling wrapper for RowGroup
- * © SpryMedia Ltd - datatables.net/license
- */
-
-(function( factory ){
-	if ( typeof define === 'function' && define.amd ) {
-		// AMD
-		define( ['jquery', 'datatables.net-bs4', 'datatables.net-rowgroup'], function ( $ ) {
-			return factory( $, window, document );
-		} );
-	}
-	else if ( typeof exports === 'object' ) {
-		// CommonJS
-		var jq = require('jquery');
-		var cjsRequires = function (root, $) {
-			if ( ! $.fn.dataTable ) {
-				require('datatables.net-bs4')(root, $);
-			}
-
-			if ( ! $.fn.dataTable.RowGroup ) {
-				require('datatables.net-rowgroup')(root, $);
-			}
-		};
-
-		if (typeof window === 'undefined') {
-			module.exports = function (root, $) {
-				if ( ! root ) {
-					// CommonJS environments without a window global must pass a
-					// root. This will give an error otherwise
-					root = window;
-				}
-
-				if ( ! $ ) {
-					$ = jq( root );
-				}
-
-				cjsRequires( root, $ );
-				return factory( $, root, root.document );
-			};
-		}
-		else {
-			cjsRequires( window, jq );
-			module.exports = factory( jq, window, window.document );
-		}
-	}
-	else {
-		// Browser
-		factory( jQuery, window, document );
-	}
-}(function( $, window, document ) {
-'use strict';
-var DataTable = $.fn.dataTable;
-
-
 
 
 return DataTable;
@@ -26667,67 +26495,7 @@ return DataTable;
 }));
 
 
-/*! Bootstrap 4 styling wrapper for RowReorder
- * © SpryMedia Ltd - datatables.net/license
- */
-
-(function( factory ){
-	if ( typeof define === 'function' && define.amd ) {
-		// AMD
-		define( ['jquery', 'datatables.net-bs4', 'datatables.net-rowreorder'], function ( $ ) {
-			return factory( $, window, document );
-		} );
-	}
-	else if ( typeof exports === 'object' ) {
-		// CommonJS
-		var jq = require('jquery');
-		var cjsRequires = function (root, $) {
-			if ( ! $.fn.dataTable ) {
-				require('datatables.net-bs4')(root, $);
-			}
-
-			if ( ! $.fn.dataTable.RowReorder ) {
-				require('datatables.net-rowreorder')(root, $);
-			}
-		};
-
-		if (typeof window === 'undefined') {
-			module.exports = function (root, $) {
-				if ( ! root ) {
-					// CommonJS environments without a window global must pass a
-					// root. This will give an error otherwise
-					root = window;
-				}
-
-				if ( ! $ ) {
-					$ = jq( root );
-				}
-
-				cjsRequires( root, $ );
-				return factory( $, root, root.document );
-			};
-		}
-		else {
-			cjsRequires( window, jq );
-			module.exports = factory( jq, window, window.document );
-		}
-	}
-	else {
-		// Browser
-		factory( jQuery, window, document );
-	}
-}(function( $, window, document ) {
-'use strict';
-var DataTable = $.fn.dataTable;
-
-
-
-
-return DataTable;
-}));
-
-
-/*! Scroller 2.4.0
+/*! Scroller 2.4.1
  * © SpryMedia Ltd - datatables.net/license
  */
 
@@ -26781,7 +26549,7 @@ var DataTable = $.fn.dataTable;
 /**
  * @summary     Scroller
  * @description Virtual rendering for DataTables
- * @version     2.4.0
+ * @version     2.4.1
  * @copyright   SpryMedia Ltd.
  *
  * This source file is free software, available under the following license:
@@ -27037,7 +26805,7 @@ $.extend(Scroller.prototype, {
 		heights.labelHeight = label;
 
 		if (redraw === undefined || redraw) {
-			this.s.dt.oInstance.fnDraw(false);
+			this.s.dtApi.draw(false);
 		}
 	},
 
@@ -28013,7 +27781,7 @@ Scroller.oDefaults = Scroller.defaults;
  *  @name      Scroller.version
  *  @static
  */
-Scroller.version = '2.4.0';
+Scroller.version = '2.4.1';
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Initialisation
@@ -28118,66 +27886,6 @@ Api.register('scroller.page()', function () {
 	}
 	// undefined
 });
-
-
-return DataTable;
-}));
-
-
-/*! Bootstrap 4 styling wrapper for Scroller
- * © SpryMedia Ltd - datatables.net/license
- */
-
-(function( factory ){
-	if ( typeof define === 'function' && define.amd ) {
-		// AMD
-		define( ['jquery', 'datatables.net-bs4', 'datatables.net-scroller'], function ( $ ) {
-			return factory( $, window, document );
-		} );
-	}
-	else if ( typeof exports === 'object' ) {
-		// CommonJS
-		var jq = require('jquery');
-		var cjsRequires = function (root, $) {
-			if ( ! $.fn.dataTable ) {
-				require('datatables.net-bs4')(root, $);
-			}
-
-			if ( ! $.fn.dataTable.Scroller ) {
-				require('datatables.net-scroller')(root, $);
-			}
-		};
-
-		if (typeof window === 'undefined') {
-			module.exports = function (root, $) {
-				if ( ! root ) {
-					// CommonJS environments without a window global must pass a
-					// root. This will give an error otherwise
-					root = window;
-				}
-
-				if ( ! $ ) {
-					$ = jq( root );
-				}
-
-				cjsRequires( root, $ );
-				return factory( $, root, root.document );
-			};
-		}
-		else {
-			cjsRequires( window, jq );
-			module.exports = factory( jq, window, window.document );
-		}
-	}
-	else {
-		// Browser
-		factory( jQuery, window, document );
-	}
-}(function( $, window, document ) {
-'use strict';
-var DataTable = $.fn.dataTable;
-
-
 
 
 return DataTable;
@@ -33352,66 +33060,6 @@ $(document).on('preInit.dt.dtSelect', function (e, ctx) {
 
 	DataTable.select.init(new DataTable.Api(ctx));
 });
-
-
-return DataTable;
-}));
-
-
-/*! Bootstrap 4 styling wrapper for Select
- * © SpryMedia Ltd - datatables.net/license
- */
-
-(function( factory ){
-	if ( typeof define === 'function' && define.amd ) {
-		// AMD
-		define( ['jquery', 'datatables.net-bs4', 'datatables.net-select'], function ( $ ) {
-			return factory( $, window, document );
-		} );
-	}
-	else if ( typeof exports === 'object' ) {
-		// CommonJS
-		var jq = require('jquery');
-		var cjsRequires = function (root, $) {
-			if ( ! $.fn.dataTable ) {
-				require('datatables.net-bs4')(root, $);
-			}
-
-			if ( ! $.fn.dataTable.select ) {
-				require('datatables.net-select')(root, $);
-			}
-		};
-
-		if (typeof window === 'undefined') {
-			module.exports = function (root, $) {
-				if ( ! root ) {
-					// CommonJS environments without a window global must pass a
-					// root. This will give an error otherwise
-					root = window;
-				}
-
-				if ( ! $ ) {
-					$ = jq( root );
-				}
-
-				cjsRequires( root, $ );
-				return factory( $, root, root.document );
-			};
-		}
-		else {
-			cjsRequires( window, jq );
-			module.exports = factory( jq, window, window.document );
-		}
-	}
-	else {
-		// Browser
-		factory( jQuery, window, document );
-	}
-}(function( $, window, document ) {
-'use strict';
-var DataTable = $.fn.dataTable;
-
-
 
 
 return DataTable;

@@ -38,7 +38,7 @@ const mcmsTables = [];
 
                     $.ajax({
                         beforeSend: function (request) {
-                            request.setRequestHeader("X-Request-Modal", true);
+                            request.setRequestHeader("X-Request-Modal", "true");
                         },
                         method: config.serverSide ? 'POST' : 'GET',
                         contentType: config.serverSide ? "application/json" : undefined,

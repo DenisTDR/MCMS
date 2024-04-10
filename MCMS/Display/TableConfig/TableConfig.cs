@@ -70,7 +70,7 @@ namespace MCMS.Display.TableConfig
             if (HasTableIndexColumn)
             {
                 columns = columns.Prepend(new TableColumn
-                    { Name = "#", ClassName = "non-toggleable", Data = ServerSide ? "_index" : null });
+                    { Name = "#", ClassName = "non-toggleable", Data = "_index" });
             }
 
             if (CheckboxSelection)

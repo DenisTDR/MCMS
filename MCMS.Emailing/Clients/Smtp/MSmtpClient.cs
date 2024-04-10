@@ -24,15 +24,18 @@ namespace MCMS.Emailing.Clients.Smtp
 
         public async Task<bool> SendEmail(MimeMessage message)
         {
+            if (!message.To.Any(a => a is MailboxAddress))
+                throw new Exception("No `to` address provided!");
+
             if (!message.From.Any())
             {
                 message.From.Add(new MailboxAddress(_clientOptions.DefaultSenderName, _clientOptions.DefaultSender));
             }
 
-            var toAddress = message.To.FirstOrDefault(a => a is MailboxAddress) as MailboxAddress ??
-                            throw new Exception("Invalid to address");
-            var to = $"<{toAddress.Address}> {toAddress.Name}";
-            _logger.LogInformation("Sending mail with SMTP:\nTo: {To}\nSubject: {Subject}", to, message.Subject);
+            var toStr = string.Join(", ", message.To.Where(a => a is MailboxAddress).Cast<MailboxAddress>()
+                .Select(a => $"<{a.Address}> {a.Name}".Trim()));
+            _logger.LogInformation("Sending mail with SMTP:\nTo: {To}\nSubject: {Subject}", toStr,
+                message.Subject);
 
             using var smtp = new SmtpClient();
             await smtp.ConnectAsync(_clientOptions.Host, _clientOptions.Port, true);

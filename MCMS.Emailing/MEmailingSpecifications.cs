@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using MCMS.Base.Builder;
 using MCMS.Base.Helpers;
 using MCMS.Emailing.Clients;
@@ -39,6 +39,8 @@ namespace MCMS.Emailing
                 {
                     options.GmailCredentialsJsonPath = gmailCredentialsJsonPath;
                     options.GmailTokenJsonPath = gmailTokenJsonPath;
+                    options.DefaultSenderName = Env.Get("GMAIL_DEFAULT_SENDER_NAME");
+                    options.DefaultSenderAddress = Env.Get("GMAIL_DEFAULT_SENDER");
                 });
             }
             else if (Env.Get("SMTP_HOST") is { } smtpHost)
@@ -63,7 +65,7 @@ namespace MCMS.Emailing
             }
             else
             {
-                services.AddScoped<IMEmailClient, MStdoutEmailClient>();
+                services.AddSingleton<IMEmailClient, MStdoutEmailClient>();
             }
 
             services.AddScoped<IMEmailSender, MEmailSender>();

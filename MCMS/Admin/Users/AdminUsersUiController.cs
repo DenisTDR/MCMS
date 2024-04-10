@@ -196,7 +196,7 @@ namespace MCMS.Admin.Users
 
             fp.HideSubmitButton();
             fp.UseSpinnerOuterOverlay();
-            fp.AdditionalFields = new { oldUsername = userVm.UserName };
+            fp.AdditionalFields = new { oldUserName = userVm.UserName };
 
             return View((userVm.FullName, fp));
         }

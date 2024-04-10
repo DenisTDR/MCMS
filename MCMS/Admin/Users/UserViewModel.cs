@@ -26,7 +26,7 @@ namespace MCMS.Admin.Users
         public bool EmailConfirmed { get; set; }
         public DateTime Created { get; set; }
 
-        [TableColumn(Orderable = ServerClient.Client, DbColumn = "UserRoles",
+        [TableColumn(Orderable = ServerClient.None, DbColumn = "UserRoles",
             DbFuncFormat = "{0}.Any(ur=> <condition>)<sel>ur.Role.Name")]
         [DisplayName("Roles")]
         public List<string> RolesList { get; set; }

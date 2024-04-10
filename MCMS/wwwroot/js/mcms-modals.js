@@ -1,5 +1,4 @@
 (function ($) {
-
     window.mcmsModals = window.mModals = {
         _waitModal: $("#processing-modal").find('.modal'),
         _alertModal: $("#alert-modal").find('.modal'),
@@ -7,6 +6,7 @@
         closeWaitModal: false,
         visibleModals: 0,
         body: $('body'),
+        currentStack: [],
         init: function () {
             this._waitModal.on("shown.bs.modal", function () {
                 if (mcmsModals.closeWaitModal) {
@@ -16,110 +16,150 @@
             });
 
             mcmsModals.body.on('click', '[data-toggle="ajax-modal"]', function (event) {
-                mcmsModals.ajaxModalItemAction.apply(this, [event]);
+                mcmsModals.processDataToggleModalElemClick.apply(this, [event]);
             });
         },
-        ajaxModalItemAction: function (event, postData) {
+        processDataToggleModalElemClick: function (event, postData) {
             if (event) {
                 event.preventDefault();
+                event.stopPropagation();
             }
-            const button = $(this);
-            const url = button.data('url') || button.attr('href');
+            const elem = $(this);
+            const url = elem.data('url') || elem.attr('href');
             if (!url) {
                 console.error('Modal triggered by', this);
                 throw new Error('But url for modal content not found!');
             }
-
-            const modal = mcmsModals._backendModalTemplate.clone();
-
-            mcmsModals.bindStackedModalsBehaviour(modal, true);
-
-            // set options from button if set
-            const opt = mcmsModals.parseOptions(button.data('modal-backdrop'), button.data('modal-keyboard'));
-
-            modal.data('initialOpt', opt);
-
-            modal.on("shown.bs.modal", function () {
-                if (modal.data('shouldHide')) {
-                    modal.modal('hide');
-                }
-            })
-
-            // show initial modal (with the spinner)
-            modal.modal(opt);
-
-            const requestOptions = {
-                url: url,
-                headers: {'X-Request-Modal': 'true'},
-                method: button.data('modal-method') || 'GET',
+            const options = {
+                url,
+                postData,
+                modalOptions: {
+                    ...mcmsModals.parseOptions(elem.data('modal-backdrop'), elem.data('modal-keyboard')),
+                },
+                // triggerElem: elem,
+                onHideCallback: elem.data('modal-callback'),
+                trigger: elem,
+                method: elem.data('modal-method') || 'GET',
             };
-
-            if (requestOptions.method === "POST" && postData) {
-                requestOptions.data = JSON.stringify(postData);
-                requestOptions.contentType = "application/json; charset=utf-8";
-            }
-
-            // make backend request to get the content
-            $.ajax(requestOptions)
-                .done(function (data) {
-                    // display received content in the previous shown modal
-                    mcmsModals.displayModalLinkResponse(modal, data, button);
-                })
-                .fail(function (e) {
-                    modal.data('shouldHide', true);
-                    modal.modal('hide');
-                    mcmsModals.alertModalText(e.responseText || 'A fatal error occurred when tried to get modal content from backend. ' +
-                        'Please make sure you are connected to the internet. Try refreshing this page.', 'Failed');
-                });
+            // console.log(opt);
+            const modal = mcmsModals.requestNewBackendModal(options);
+            // console.log(modal);
+            return modal;
         },
-        requestToAjaxModal: function (url, data, callback, method) {
-            method = method || 'GET';
-            mcmsModals.postRequestAjaxModal(url, data, callback, method);
-        },
-        postRequestAjaxModal: function (url, data, callback, method) {
-            method = method || 'POST';
+        requestNewBackendModal: options => {
             const modal = mcmsModals._backendModalTemplate.clone();
-
-            mcmsModals.bindStackedModalsBehaviour(modal, true);
-
-            modal.on("shown.bs.modal", function () {
-                if (modal.data('shouldHide')) {
-                    modal.modal('hide');
-                }
-            })
-
-            // show initial modal (with the spinner)
+            mcmsModals.bindCustomModalsBehaviour(modal, true);
+            if (options.modalOptions) {
+                modal.data('initialOpt', options.modalOptions);
+            }
+            // show initial modal (with the loading spinner)
             modal.modal({});
 
-            const requestOptions = {
-                url: url,
-                headers: {'X-Request-Modal': 'true'},
-                type: method,
-                data: method === 'POST' ? JSON.stringify(data) : undefined,
-                contentType: 'application/json'
-            };
-            // make backend request to get the content
-            $.ajax(requestOptions)
-                .done(function (data) {
-                    const fakeTarget = $("<div></div>");
-                    if (callback) {
-                        fakeTarget.data('modal-callback', callback)
-                    }
+            modal.data('requestBackendModalOptions', options);
 
-                    // display received content in the previous shown modal
-                    mcmsModals.displayModalLinkResponse(modal, data, fakeTarget);
-                })
-                .fail(function (e) {
+            return mcmsModals.requestBackendModal(options, modal);
+        },
+        reloadBackendModal: modal => {
+            // console.log('reload backend modal', modal);
+            const opt = modal.data('requestBackendModalOptions');
+            if (!opt) {
+                console.log('no options from modal data requestBackendModalOptions');
+            }
+            // modal.data("reloaded", true);
+            modal.data("result", {reloaded: true});
+            return mcmsModals.requestBackendModal(opt, modal);
+        },
+        requestBackendModal: (options, modal) => {
+            const reqOptions = {
+                url: options.url,
+                headers: {'X-Request-Modal': 'true'},
+                method: options.method || 'GET',
+            };
+
+            if (reqOptions.method === "POST" && options.postData) {
+                reqOptions.data = JSON.stringify(options.postData);
+                reqOptions.contentType = "application/json; charset=utf-8";
+            }
+
+            // do backend request to get the content
+            $.ajax({
+                ...reqOptions,
+                success: data => {
+                    if (!data) {
+                        modal.data('shouldHide', true);
+                        modal.modal('hide');
+                        mcmsModals.alertModalText('No content received from the server to display in a modal.', 'Something weird occurred');
+                        return;
+                    }
+                    mcmsModals.displayDataInShownModal(data, modal, options);
+                },
+                error: e => {
                     modal.data('shouldHide', true);
                     modal.modal('hide');
                     mcmsModals.alertModalText(e.responseText || 'A fatal error occurred when tried to get modal content from backend. ' +
                         'Please make sure you are connected to the internet. Try refreshing this page.', 'Failed');
+                }
+            });
+            return modal;
+        },
+        displayDataInShownModal: (data, currentModal, options) => {
+            const vElem = $("<div></div>");
+            vElem.append(data);
+
+            $(".tooltip").tooltip("hide");
+            // console.log('clearing current modal dialog content');
+            const currentDialog = currentModal.find('>.modal-dialog');
+            currentDialog.html('');
+
+            const newModal = vElem.find('>.modal');
+            const newDialog = newModal.find('>.modal-dialog');
+
+            // const opt = mcmsModals.parseOptions(newModal.data('backdrop'), newModal.data('keyboard'));
+            // const initialOpt = currentModal.data('initialOpt');
+
+            currentModal.attr("tabindex", newModal.attr("tabindex"));
+
+            currentDialog
+                .attr('class', newDialog.attr('class'))
+                .append(newDialog.find('>*'));
+
+            const hasForms = currentDialog.find('form :input:not([type=hidden]):not(button), mcms-form-params-wrapper, .formly-debug').length;
+            currentModal.data('bs.modal')._config.keyboard = !hasForms;
+            currentModal.data('bs.modal')._config.backdrop = hasForms ? 'static' : true;
+
+            setTimeout(() => {
+                // clear pre existing script, style and link tags
+                currentModal.find('>script, >style, >link').detach();
+
+                //append existing script, style and link tags;
+                const scriptTags = vElem.find('script, style, link');
+                currentModal.append(scriptTags);
+            }, 250);
+
+            if (!currentModal.data("added-hidden-result")) {
+                currentModal.data("added-hidden-result", true);
+                currentModal.one("hidden.bs.modal", function () {
+                    const result = currentModal.data('result');
+                    const callback = options.onHideCallback;
+                    if (typeof callback === 'string') {
+                        const callbackFn = getFnRefByDottedName(callback);
+                        if (typeof callbackFn === 'function') {
+                            callbackFn(currentModal, result, options.trigger);
+                        }
+                    } else if (typeof callback === 'function') {
+                        callback(currentModal, result, options.trigger);
+                    }
                 });
+            }
+
+            mcmsModals.fixStackedModalBehaviour(currentModal);
+            return currentModal;
+
         },
         loadingUpModal: {
             show: function () {
                 mcmsModals.closeWaitModal = false;
-                mcmsModals.bindStackedModalsBehaviour(mcmsModals._waitModal);
+                mcmsModals.bindCustomModalsBehaviour(mcmsModals._waitModal);
                 mcmsModals._waitModal.modal('show');
                 mcmsModals.body.append(mcmsModals._waitModal.parent());
             },
@@ -130,41 +170,48 @@
         },
         initialScrollPosition: {x: 0, y: 0},
         customShowModal: function (modal) {
-            mcmsModals.bindStackedModalsBehaviour(modal);
+            mcmsModals.bindCustomModalsBehaviour(modal);
             return modal.modal('show');
         },
-        bindStackedModalsBehaviour: function (modal, removeOnHidden) {
+        bindCustomModalsBehaviour: (modal, removeOnHidden) => {
+            // console.log('bindCustomModalsBehaviour');
             if (!modal.data('custom-modal-patched')) {
                 modal.data('custom-modal-patched', true);
-                modal.on("show.bs.modal", function () {
+                modal.one("show.bs.modal", () => {
                     if (mcmsModals.visibleModals === 0) {
                         mcmsModals.body.addClass('forced-modal-open');
 
-                        mcmsModals.initialScrollPosition = {x: window.scrollX, y: window.scrollY};
-                        window.scrollTo(0, 0);
-                        window.mcms.adjustSafeScrollbarWidth();
+                        // mcmsModals.initialScrollPosition = {x: window.scrollX, y: window.scrollY};
+                        // window.scrollTo(0, 0);
+                        // window.mcms.adjustSafeScrollbarWidth();
                     }
                     mcmsModals.visibleModals++;
                 });
-                modal.on("hidden.bs.modal", function () {
+                modal.on("hidden.bs.modal", () => {
                     mcmsModals.visibleModals--;
                     if (mcmsModals.visibleModals === 0) {
                         mcmsModals.body.removeClass('forced-modal-open');
 
-                        window.scrollTo(mcmsModals.initialScrollPosition.x, mcmsModals.initialScrollPosition.y);
-                        window.mcms.adjustSafeScrollbarWidth();
+                        // window.scrollTo(mcmsModals.initialScrollPosition.x, mcmsModals.initialScrollPosition.y);
+                        // window.mcms.adjustSafeScrollbarWidth();
                     }
                 });
 
                 if (removeOnHidden) {
-                    modal.on("hidden.bs.modal", function () {
-                        setTimeout(function () {
+                    // console.log('bindCustomModalsBehaviour.removeOnHidden');
+                    modal.on("hidden.bs.modal", () => {
+                        setTimeout(() => {
                             modal.remove();
                         }, 1000);
                     });
                 }
+                modal.one("shown.bs.modal", () => {
+                    if (modal.data('shouldHide')) {
+                        modal.modal('hide');
+                    }
+                });
             }
-            mcmsModals.fixStackedModalBackDropBehaviour(modal);
+            mcmsModals.fixStackedModalBehaviour(modal);
         },
         alertModalText: function (text, title, options) {
             const crtAlertModal = mcmsModals._alertModal.clone();
@@ -173,7 +220,7 @@
             if (options?.size) {
                 crtAlertModal.find(".modal-dialog").addClass(options.size);
             }
-            mcmsModals.bindStackedModalsBehaviour(crtAlertModal);
+            mcmsModals.bindCustomModalsBehaviour(crtAlertModal);
             return crtAlertModal.modal('show');
         },
         alertModal: function (modalHtml) {
@@ -193,71 +240,21 @@
                 modal.data('backdrop', 'static');
             }
 
-            mcmsModals.bindStackedModalsBehaviour(modal);
+            mcmsModals.bindCustomModalsBehaviour(modal);
             return modal.modal('show');
         },
-        displayModalLinkResponse: function (activeModal, backendData, target) {
-            if (!backendData) {
-                mcmsModals.alertModalText('No content received from the server to display in a modal.', 'Something weird occurred');
-                return;
-            }
-            const vElem = $("<div></div>");
-            vElem.append(backendData);
-
-            setTimeout(() => {
-                activeModal.find('>.modal-dialog').html('');
-                const modal = vElem.find('>.modal');
-                const dialog = modal.find('>.modal-dialog');
-
-                const opt = mcmsModals.parseOptions(modal.data('backdrop'), modal.data('keyboard'));
-                const initialOpt = activeModal.data('initialOpt');
-
-                if (opt.backdrop !== undefined && initialOpt?.backdrop === undefined) {
-                    activeModal.data('bs.modal')._config.backdrop = opt.backdrop;
-                }
-                if (opt.keyboard !== undefined && initialOpt?.keyboard === undefined) {
-                    activeModal.data('bs.modal')._config.keyboard = opt.keyboard;
-                }
-                activeModal.attr("tabindex", modal.attr("tabindex"));
-
-                activeModal.find('>.modal-dialog')
-                    .attr('class', dialog.attr('class'))
-                    .append(dialog.find('>*'));
-
-                const scriptTags = vElem.find('script, style, link');
-                activeModal.append(scriptTags);
-            }, 500);
-
-
-            // do specific actions when modal was hidden
-            activeModal.on("hidden.bs.modal", function () {
-                const result = activeModal.data('result');
-                if (target && result?.reloadModal) {
-                    mcmsModals.ajaxModalItemAction.call(target[0])
-                    if (!result.alsoTriggerCallback) {
-                        return;
-                    }
-                }
-                const callback = target.data('modal-callback');
-                if (typeof callback === 'string') {
-                    const callbackFn = getFnRefByDottedName(callback);
-                    if (typeof callbackFn === 'function') {
-                        callbackFn(target, result);
-                    }
-                } else if (typeof callback === 'function') {
-                    callback(target, result);
-                }
-            });
-
-            mcmsModals.fixStackedModalBackDropBehaviour(activeModal);
+        alertError: e => {
+            // console.log(e);
+            let msg = e?.responseJSON?.error ?? 'An error occurred while trying to access data. Please try again.';
+            mcmsModals.alertModalText(msg, "Error");
         },
-        fixStackedModalBackDropBehaviour: function (modal) {
-            // adjust backdrop if this is a stacked modal
-            // the backdrop of this modal should be right before it
-            if (modal.hasClass('stacked-modal') && !modal.data('stacked-modal-fixed')) {
-                modal.data('stacked-modal-fixed', true);
+        fixStackedModalBehaviour: function (modal) {
+            // 1. Adjust backdrop if this is a stacked modal. The backdrop of this modal should be right before it.
+            // 2. Keep track of opened modals in a stack and when a modal is hidden focus the modal opened right before it.
+            if (modal.hasClass('stacked-modal') && !modal.data('stacked-modal-patched')) {
+                modal.data('stacked-modal-patched', true);
 
-                modal.on("shown.bs.modal", function () {
+                modal.one("shown.bs.modal", () => {
                     const backdropEl = $(modal.data('bs.modal')._backdrop);
                     if (!backdropEl.length) {
                         console.error('couldn\'t find modal backdrop for', modal);
@@ -266,6 +263,17 @@
                     backdropEl.remove();
                     modal.before(backdropEl);
                     modal.addClass('shown-modal');
+                    mcmsModals.currentStack.push(modal);
+                });
+                modal.one("hidden.bs.modal", () => {
+                    if (mcmsModals.currentStack.indexOf(modal) === mcmsModals.currentStack.length - 1) {
+                        mcmsModals.currentStack.pop();
+                    } else {
+                        mcmsModals.currentStack.splice(mcmsModals.currentStack.indexOf(modal), 1);
+                    }
+                    if (mcmsModals.currentStack.length) {
+                        mcmsModals.currentStack[mcmsModals.currentStack.length - 1].focus();
+                    }
                 });
             }
         },

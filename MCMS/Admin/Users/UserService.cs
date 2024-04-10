@@ -6,7 +6,6 @@ using MCMS.Base.Attributes;
 using MCMS.Base.Auth;
 using MCMS.Base.Exceptions;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 
 namespace MCMS.Admin.Users
 {

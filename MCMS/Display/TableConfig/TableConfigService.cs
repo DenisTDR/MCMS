@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using MCMS.Base.Display.ModelDisplay;
 using MCMS.Display.Link;
@@ -18,7 +19,8 @@ namespace MCMS.Display.TableConfig
         public bool ServerSide { get; set; }
         public string TableItemsApiUrl { get; set; }
         public MRichLink CreateNewItemLink { get; set; }
-
+        public bool UseDefaultItemAction { get; set; } = true;
+        public MRichLink DefaultItemAction { get; set; }
         public abstract string ModelName { get; }
 
         public Func<TableConfig, TableConfig> AfterBuildHook { get; set; }
@@ -35,6 +37,7 @@ namespace MCMS.Display.TableConfig
                 BatchActions = GetBatchActions(),
                 TableActions = GetTableActions(),
                 ServerSide = ServerSide,
+                DefaultItemAction = GetDefaultItemAction()
             };
             if (UseCreateNewItemLink)
             {
@@ -49,11 +52,19 @@ namespace MCMS.Display.TableConfig
 
             return Task.FromResult(config);
         }
+
         public abstract List<TableColumn> GetTableColumns();
 
         public virtual List<MRichLink> GetItemActions()
         {
             return new();
+        }
+
+        public virtual MRichLink GetDefaultItemAction()
+        {
+            return !UseDefaultItemAction
+                ? null
+                : DefaultItemAction ?? GetItemActions().FirstOrDefault(ia => ia.Tag == "details")?.Clone();
         }
 
         public virtual List<BatchAction> GetBatchActions(bool excludeDefault = false)

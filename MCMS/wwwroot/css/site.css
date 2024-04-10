@@ -87,6 +87,10 @@ body {
     opacity: .2;
 }
 
+.st-text-2 {
+    opacity: .5;
+}
+
 .image {
     display: table;
     clear: both;

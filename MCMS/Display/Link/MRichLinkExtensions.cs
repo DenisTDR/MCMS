@@ -1,15 +1,13 @@
 using System.Collections.Generic;
 using System.Linq;
+using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace MCMS.Display.Link
 {
     public static class MRichLinkExtensions
     {
-        public static T AsButton<T>(this T value, string cssClasses) where T : MRichLink
-        {
-            value.CssClasses = "btn btn-" + cssClasses;
-            return value;
-        }
+        public static T AsButton<T>(this T value, string cssClasses) where T : MRichLink =>
+            value.WithCssClasses($"btn btn-{cssClasses}");
 
         public static T ToggleModal<T>(this T value, bool isWith) where T : MRichLink
         {
@@ -28,7 +26,8 @@ namespace MCMS.Display.Link
             return value;
         }
 
-        public static T WithModal<T>(this T value, string backdrop = "static", bool keyboard = false) where T : MRichLink
+        public static T WithModal<T>(this T value, string backdrop = "static", bool keyboard = false)
+            where T : MRichLink
         {
             value.SetData("toggle", "ajax-modal");
             value.SetData("modal-backdrop", backdrop);
@@ -39,6 +38,12 @@ namespace MCMS.Display.Link
         public static T WithValues<T>(this T value, object values) where T : MRichLink
         {
             value.Values = values;
+            return value;
+        }
+
+        public static T WithCssClasses<T>(this T value, string cssClasses) where T : MRichLink
+        {
+            value.CssClasses = $"{(value.CssClasses != null ? value.CssClasses + " " : "")}{cssClasses}";
             return value;
         }
 
@@ -80,6 +85,25 @@ namespace MCMS.Display.Link
         public static bool HasData<T>(this T link) where T : MRichLink
         {
             return link.AnchorData != null && link.AnchorData.Any();
+        }
+
+        public static T Clone<T>(this T link) where T : MRichLink, new()
+        {
+            var clone = new T();
+
+            var props = typeof(T).GetProperties().Where(prop => prop.CanWrite);
+            foreach (var propertyInfo in props)
+            {
+                var value = propertyInfo.GetValue(link);
+                if (value == null || propertyInfo.PropertyType.GetDefaultValue() == value)
+                {
+                    continue;
+                }
+
+                propertyInfo.SetValue(clone, value);
+            }
+
+            return clone;
         }
     }
 }

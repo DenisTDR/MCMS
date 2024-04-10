@@ -6,6 +6,7 @@
    @if (!string.IsNullOrEmpty(Model.Title))
    {
        @Html.Raw("title=\"" + Model.Title + "\"")
+       @Html.Raw("data-tooltip=\"tooltip\"")
    }
    @if (Model.HasData())
    {

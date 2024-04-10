@@ -67,7 +67,7 @@ namespace MCMS.Base.Display.ModelDisplay
         public string DefaultContent { get; set; }
         public string ClassName { get; set; }
         public string HeaderClassName { get; set; }
-
+        public Dictionary<string, string> DataAttributes { get; set; }
         public string DbColumn { get; set; }
         public string DbFuncFormat { get; set; }
         public TableColumnType Type { get; set; }
@@ -103,6 +103,21 @@ namespace MCMS.Base.Display.ModelDisplay
         {
             if (string.IsNullOrEmpty(col.HeaderClassName)) return null;
             return "class=\"" + col.HeaderClassName + "\"";
+        }
+
+        public static string BuildDataAttributesSyntax(this TableColumn col)
+        {
+            if (col.DataAttributes == null || col.DataAttributes.Count == 0) return null;
+            return string.Join(" ", col.DataAttributes.Select(kvp => $"data-{kvp.Key}=\"{kvp.Value}\""));
+        }
+
+        public static void PrepareDataAttributes(this TableColumn col)
+        {
+            if (col.Orderable == ServerClient.None)
+            {
+                col.DataAttributes ??= new Dictionary<string, string>();
+                col.DataAttributes["dt-order"] = "disable";
+            }
         }
 
         public static void PatchFilter(this TableColumn col)

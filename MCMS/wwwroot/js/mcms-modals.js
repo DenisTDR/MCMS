@@ -96,7 +96,7 @@
                 error: e => {
                     modal.data('shouldHide', true);
                     modal.modal('hide');
-                    mcmsModals.alertModalText(e.responseText || 'A fatal error occurred when tried to get modal content from backend. ' +
+                    mcmsModals.alertModalText(e.responseText || 'A fatal error occurred when trying to get modal content from backend. ' +
                         'Please make sure you are connected to the internet. Try refreshing this page.', 'Failed');
                 }
             });

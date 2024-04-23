@@ -7,7 +7,6 @@ namespace MCMS.Display
     {
         public DetailsViewModelT()
         {
-            
         }
 
         public DetailsViewModelT(T model, List<DetailsField> fields)
@@ -25,5 +24,6 @@ namespace MCMS.Display
     {
         public object Model { get; set; }
         public List<DetailsField> Fields { get; set; }
+        public string TableClassName { get; set; }
     }
 }

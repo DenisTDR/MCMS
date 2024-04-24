@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 
 namespace MCMS.Display.Link
 {
-    public class MLink : IItemWithIcon
+    public class MLink : IItemWithIcon, IItemWithRequiredRoles
     {
         public string Text { get; set; }
         public string Url { get; set; }

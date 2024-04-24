@@ -1,19 +1,23 @@
 @using MCMS.Display.Link
+@using MCMS.Display.Menu
 @model MCMS.Display.Link.MRichLink
-<a href="@Model.BuildUrl(Url)"
-   class="@Model.CssClasses"
-   target="@Model.Target"
-   @if (!string.IsNullOrEmpty(Model.Title))
-   {
-       @Html.Raw("title=\"" + Model.Title + "\"")
-       @Html.Raw("data-tooltip=\"tooltip\"")
-   }
-   @if (Model.HasData())
-   {
-       foreach (var kvp in Model.GetData())
+@if (Model.SatisfiedByUser(User))
+{
+    <a href="@Model.BuildUrl(Url)"
+       class="@Model.CssClasses"
+       target="@Model.Target"
+       @if (!string.IsNullOrEmpty(Model.Title))
        {
-           @Html.Raw("data-" + kvp.Key + "=\"" + kvp.Value + "\"")
+           @Html.Raw("title=\"" + Model.Title + "\"")
+           @Html.Raw("data-tooltip=\"tooltip\"")
        }
-   }>
-    @Html.Raw(Model.BuildText())
-</a>
+       @if (Model.HasData())
+       {
+           foreach (var kvp in Model.GetData())
+           {
+               @Html.Raw("data-" + kvp.Key + "=\"" + kvp.Value + "\"")
+           }
+       }>
+        @Html.Raw(Model.BuildText())
+    </a>
+}

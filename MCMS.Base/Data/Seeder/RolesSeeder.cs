@@ -19,13 +19,30 @@ namespace MCMS.Base.Data.Seeder
         {
             var roleManager = serviceProvider.Service<RoleManager<Role>>();
             var logger = serviceProvider.Service<ILogger<RolesSeeder>>();
-            var seedRoles = seedData.ToObject<List<string>>();
-            var existingRoles = await roleManager.Roles.Select(r => r.Name).ToListAsync();
-            var rolesToAdd = seedRoles.Except(existingRoles);
+            var seedRoles = Deserialize(seedData);
+
+            var existingRoles = await roleManager.Roles.ToListAsync();
+            var rolesToAdd = seedRoles.Where(sr => existingRoles.All(er => er.Name != sr.Name));
+
             foreach (var roleToAdd in rolesToAdd)
             {
-                logger.LogInformation("Creating role '{Role}'...", roleToAdd);
-                await roleManager.CreateAsync(new Role { Name = roleToAdd });
+                logger.LogInformation("Creating auth role '{Role}'...", roleToAdd.Name);
+                await roleManager.CreateAsync(new Role
+                    { Name = roleToAdd.Name, Description = roleToAdd.Description, Rank = roleToAdd.Rank });
+            }
+
+            var rolesToUpdate = seedRoles
+                .Select(sr => (sr, er: existingRoles.FirstOrDefault(er => er.Name == sr.Name)))
+                .Where(tuple =>
+                    tuple.er != null &&
+                    (tuple.sr.Description != tuple.er.Description || tuple.sr.Rank != tuple.er.Rank))
+                .ToList();
+            foreach (var (sr, er) in rolesToUpdate)
+            {
+                logger.LogInformation("Updating auth role '{Role}'...", er.Name);
+                er.Description = sr.Description;
+                er.Rank = sr.Rank;
+                await roleManager.UpdateAsync(er);
             }
         }
 
@@ -37,7 +54,35 @@ namespace MCMS.Base.Data.Seeder
                 Utils.DefaultJsonSerializerSettings()));
         }
 
+        private List<RoleJsonDto> Deserialize(JArray array)
+        {
+            var list = new List<RoleJsonDto>();
+
+            foreach (var jToken in array)
+            {
+                var dto = jToken.Type == JTokenType.String
+                    ? new RoleJsonDto { Name = jToken.Value<string>() }
+                    : jToken.ToObject<RoleJsonDto>();
+                if (dto.Rank == 0)
+                {
+                    dto.Rank = 10;
+                }
+
+                list.Add(dto);
+            }
+
+            return list;
+        }
+
 
         public string SeedKey() => "roles";
     }
+}
+
+
+public class RoleJsonDto
+{
+    public string Name { get; set; }
+    public string Description { get; set; }
+    public int Rank { get; set; }
 }

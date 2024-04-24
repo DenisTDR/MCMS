@@ -16,12 +16,10 @@ namespace MCMS.Admin.Users
     public class UserService
     {
         private readonly UserManager<User> _userManager;
-        private readonly RoleManager<Role> _roleManager;
 
-        public UserService(UserManager<User> userManager, RoleManager<Role> roleManager)
+        public UserService(UserManager<User> userManager)
         {
             _userManager = userManager;
-            _roleManager = roleManager;
         }
 
         /// <summary>
@@ -113,6 +111,7 @@ namespace MCMS.Admin.Users
 
             return await UpdateUserRoles(user, roleNames);
         }
+
 
         private void EnsureSucceeded(IdentityResult result)
         {

@@ -3,15 +3,12 @@ using System.Linq;
 using System.Reflection;
 using MCMS.Base.Controllers.Api;
 using MCMS.Base.Exceptions;
-using MCMS.Base.Extensions;
 using MCMS.Models;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.Extensions.Hosting;
 
 namespace MCMS.Filters
 {
@@ -39,7 +36,8 @@ namespace MCMS.Filters
             else
             {
                 if (context.Exception is KnownException knownExc && knownExc.Code != 0 && knownExc.Code != 500
-                    && !context.HttpContext.RequestServices.Service<IWebHostEnvironment>().IsDevelopment())
+                    // && !context.HttpContext.RequestServices.Service<IWebHostEnvironment>().IsDevelopment()
+                   )
                 {
                     var viewData = new ViewDataDictionary(new EmptyModelMetadataProvider(), context.ModelState)
                     {
@@ -52,7 +50,7 @@ namespace MCMS.Filters
                     };
                     var result = new ViewResult
                     {
-                        ViewName = "Error",
+                        ViewName = "KnownError",
                         ViewData = viewData,
                     };
 

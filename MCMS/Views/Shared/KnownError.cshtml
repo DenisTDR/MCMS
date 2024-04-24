@@ -1,0 +1,80 @@
+@using Microsoft.AspNetCore.Hosting
+@using Microsoft.Extensions.Hosting
+@using MCMS.Base.Exceptions
+@using MCMS.Base.Extensions
+@model MCMS.Models.ErrorViewModel
+@inject IWebHostEnvironment HostEnvironment
+@{
+    ViewData["Title"] = "Error";
+}
+@if (Layout == "_ModalLayout")
+{
+    @Html.Raw("<div class=\"modal-body\">")
+}
+<div class="error-page">
+    @{
+        var exc = Model?.Exception;
+    }
+
+    @while (exc != null)
+    {
+        <div class="exception text-danger">
+            <div class="exception-text">
+                @if (exc is KnownException kExc)
+                {
+                    @Html.Raw(kExc.HtmlMessage ?? kExc.Message)
+                }
+                else
+                {
+                    @exc.Message
+                }
+            </div>
+        </div>
+        exc = exc.InnerException;
+    }
+    @if (!HostEnvironment.IsDevelopment())
+    {
+        <div>
+            <i>Check admin logs for full stack trace and more details.</i>
+        </div>
+    }
+</div>
+
+@using (Html.BeginMStyles())
+{
+    <style>
+        .error-page {
+            margin-top: 30px;
+        }
+
+        .error-page .exception {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+        }
+
+        .error-page .exception svg {
+            margin-right: 15px;
+            margin-left: 10px;
+            min-width: 8px;
+        }
+
+        .error-page .exception-text {
+            font-size: 1.2em;
+            font-weight: 500;
+            /*color: #666;*/
+        }
+
+        .error-page .exception-text i {
+            color: #333;
+            font-weight: bold;
+        }
+    </style>
+}
+@if (Layout == "_ModalLayout")
+{
+    @Html.Raw("</div>")
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Ok</button>
+    </div>
+}

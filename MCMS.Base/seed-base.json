@@ -1,7 +1,17 @@
 {
   "roles": [
-    "Admin",
-    "God",
-    "Moderator"
+    {
+      "name": "God",
+      "rank": "1"
+    },
+    {
+      "name": "Admin",
+      "rank": "2"
+    },
+    {
+      "name": "Moderator",
+      "description": "Needed to update other users",
+      "rank": "3"
+    }
   ]
 }

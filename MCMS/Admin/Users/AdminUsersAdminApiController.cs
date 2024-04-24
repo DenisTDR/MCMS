@@ -8,7 +8,6 @@ using MCMS.Base.Attributes;
 using MCMS.Base.Auth;
 using MCMS.Base.Data;
 using MCMS.Base.Exceptions;
-using MCMS.Base.Extensions;
 using MCMS.Base.Repositories;
 using MCMS.Base.SwaggerFormly.Formly.Base;
 using MCMS.Controllers.Api;
@@ -19,17 +18,16 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace MCMS.Admin.Users
 {
     [Authorize(Roles = "Admin, Moderator")]
     public class AdminUsersAdminApiController : AdminApiController
     {
-        protected IRepository<User> Repo => ServiceProvider.GetRepo<User>();
+        protected IRepository<User> Repo => Repo<User>();
+        protected UserRolesService UserRolesService => Service<UserRolesService>();
 
-        protected virtual DtQueryService<UserViewModel> QueryService =>
-            ServiceProvider.GetService<DtQueryService<UserViewModel>>();
+        protected virtual DtQueryService<UserViewModel> QueryService => Service<DtQueryService<UserViewModel>>();
 
         [AdminApiRoute("~/[controller]")]
         [HttpGet]
@@ -65,26 +63,32 @@ namespace MCMS.Admin.Users
         public virtual async Task<ActionResult<UserViewModel>> UpdateRoles([FromRoute] string id,
             [FromBody] UpdateRolesFormModel model)
         {
-            var asMod = !UserFromClaims.HasRole("Admin");
+            // var asMod = !UserFromClaims.HasRole("Admin");
             var user = await Repo.GetOneOrThrow(id);
-            var allRoles = await Service<RoleManager<Role>>().Roles.Select(role => role.Name)
-                .ToListAsync();
-            allRoles.Remove("God");
-            var newRoles = allRoles.Where(role => model.Roles.Contains(role))
-                .ToList();
+
+            UserRolesService.Ensure(await UserRolesService.UserHasHigherRank(UserFromClaims.Roles, id));
+
+            var allRoles = await UserRolesService.GetRolesCached();
+
+            // allRoles.Remove("God");
+            var newRoles = allRoles.Where(role => model.Roles.Contains(role.Name))
+                .Select(role => role.Name).ToList();
+
+            var canSetThoseRoles = await UserRolesService.UserHasHigherRank(UserFromClaims.Roles, newRoles);
+            if (!canSetThoseRoles)
+            {
+                throw new KnownException("Can't set those roles. Your rank is to low to do that");
+            }
 
             if (UserFromClaims.Id == id)
             {
-                var requiredRole = asMod ? "Moderator" : "Admin";
-                if (!newRoles.Contains(requiredRole)) newRoles.Add(requiredRole);
+                if (await UserRolesService.GetRank(UserFromClaims.Roles) != await UserRolesService.GetRank(newRoles))
+                {
+                    throw new KnownException("You can't downgrade yourself.");
+                }
             }
 
-            if (asMod && newRoles.Contains("Admin"))
-            {
-                newRoles.Remove("Admin");
-            }
-
-            await Service<UserService>().UpdateUserRoles(user, newRoles);
+            await Service<UserService>().UpdateUserRoles(user, newRoles.ToList());
 
             return Ok(new FormSubmitResponse<UpdateRolesFormModel>
             {
@@ -123,7 +127,7 @@ namespace MCMS.Admin.Users
             user.EmailConfirmed = false;
 
             var result = await userManager.UpdateAsync(user);
-            
+
             if (!result.Succeeded)
                 throw new KnownException(string.Join(", ", result.Errors.Select(e => $"{e.Code}: {e.Description}")));
 
@@ -156,7 +160,7 @@ namespace MCMS.Admin.Users
 
             user.UserName = model.NewUserName;
             var result = await userManager.UpdateAsync(user);
-            
+
             if (!result.Succeeded)
                 throw new KnownException(string.Join(", ", result.Errors.Select(e => $"{e.Code}: {e.Description}")));
 
@@ -235,9 +239,42 @@ namespace MCMS.Admin.Users
         public async Task<ActionResult<List<ValueLabelModel>>> Roles()
         {
             var roles = await Service<RoleManager<Role>>().Roles
-                .Select(role => role.Name)
-                .Where(role => role != "God").ToListAsync();
-            return roles.Select(role => new ValueLabelModel() { Value = role, Label = role }).ToList();
+                // .Where(role => role.Name != "God")
+                .ToListAsync();
+            var currentUserRank = UserFromClaims.Roles
+                .Select(name => roles.FirstOrDefault(role => role.Name == name))
+                .Where(role => role != null)
+                .Min(role => role.Rank);
+
+            var visibleRoles = roles.Where(role => role.Rank >= currentUserRank)
+                .OrderBy(role => role.Rank)
+                .ThenBy(role => role.Name);
+            return visibleRoles.Select(role => new ValueLabelModel
+                {
+                    Value = role.Name,
+                    Label = role.Name,
+                    Description = role.Description
+                })
+                .ToList();
+        }
+
+        [HttpDelete("{id}")]
+        public virtual async Task<IActionResult> Delete([FromRoute] string id)
+        {
+            if (UserFromClaims.Id == id)
+            {
+                throw new KnownException("Can't delete your own user.");
+            }
+
+            var usersManager = Service<UserManager<User>>();
+            var user = await usersManager.FindByIdAsync(id);
+            if (user == null)
+            {
+                throw new KnownException("User not found", 404);
+            }
+
+            await usersManager.DeleteAsync(user);
+            return Ok();
         }
 
         protected virtual async Task<ModelResponse<CreateUserFormModel>> GetCreateResponseModel(User e,

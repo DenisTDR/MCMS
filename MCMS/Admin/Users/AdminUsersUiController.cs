@@ -5,7 +5,6 @@ using MCMS.Admin.Users.Models;
 using MCMS.Base.Attributes;
 using MCMS.Base.Auth;
 using MCMS.Base.Data;
-using MCMS.Base.Extensions;
 using MCMS.Base.Helpers;
 using MCMS.Controllers.Ui;
 using MCMS.Display.DetailsConfig;
@@ -23,10 +22,10 @@ namespace MCMS.Admin.Users
     [Authorize(Roles = "Admin, Moderator")]
     public class AdminUsersUiController : AdminUiController
     {
-        protected IRepository<User> Repo => ServiceProvider.GetRepo<User>();
+        protected IRepository<User> Repo => Repo<User>();
+        protected UserRolesService UserRolesService => Service<UserRolesService>();
 
-        protected ITableConfigService TableConfigService =>
-            Service<UsersTableConfigService>();
+        protected ITableConfigService TableConfigService => Service<UsersTableConfigService>();
 
         protected IDetailsConfigServiceT<UserViewModel> DetailsConfigService =>
             Service<IDetailsConfigServiceT<UserViewModel>>();
@@ -78,28 +77,9 @@ namespace MCMS.Admin.Users
         public virtual async Task<IActionResult> Delete([FromRoute] string id)
         {
             var e = await Repo.GetOneOrThrow(id);
+            UserRolesService.Ensure(await UserRolesService.UserHasHigherRank(UserFromClaims.Roles, id));
+            ViewBag.ApiControllerName = nameof(AdminUsersAdminApiController).Replace("Controller", "");
             return View("BasicModals/DeleteModal", e);
-        }
-
-        [HttpDelete("{id}"), ActionName("Delete")]
-        [Produces("application/json")]
-        public virtual async Task<IActionResult> DeleteConfirmed([FromRoute] string id)
-        {
-            var isCurrentUser = User.FindFirstValue("Id") == id;
-            if (isCurrentUser)
-            {
-                return BadRequest("Can't delete your own user.");
-            }
-
-            var usersManager = Service<UserManager<User>>();
-            var user = await usersManager.FindByIdAsync(id);
-            if (user == null)
-            {
-                return NotFound();
-            }
-
-            await usersManager.DeleteAsync(user);
-            return Ok();
         }
 
         private async Task<UserViewModel> GetUserWithRoles(string id)
@@ -136,6 +116,7 @@ namespace MCMS.Admin.Users
         public async Task<IActionResult> UpdateRoles([FromRoute] string id)
         {
             var userVm = await GetUserWithRoles(id);
+            UserRolesService.Ensure(await UserRolesService.UserHasHigherRank(UserFromClaims.Roles, userVm.RolesList));
             var fps =
                 new FormParamsService(Url, TypeHelpers.GetControllerName(typeof(AdminUsersAdminApiController)),
                     nameof(UpdateRolesFormModel));
@@ -161,6 +142,7 @@ namespace MCMS.Admin.Users
         public async Task<IActionResult> UpdateEmail([FromRoute] string id)
         {
             var userVm = await GetUserWithRoles(id);
+            UserRolesService.Ensure(await UserRolesService.UserHasHigherRank(UserFromClaims.Roles, userVm.RolesList));
             var fps =
                 new FormParamsService(Url, TypeHelpers.GetControllerName(typeof(AdminUsersAdminApiController)),
                     nameof(UpdateEmailFormModel));
@@ -184,6 +166,7 @@ namespace MCMS.Admin.Users
         public async Task<IActionResult> UpdateUserName([FromRoute] string id)
         {
             var userVm = await GetUserWithRoles(id);
+            UserRolesService.Ensure(await UserRolesService.UserHasHigherRank(UserFromClaims.Roles, userVm.RolesList));
             var fps =
                 new FormParamsService(Url, TypeHelpers.GetControllerName(typeof(AdminUsersAdminApiController)),
                     nameof(UpdateUserNameFormModel));
@@ -207,6 +190,7 @@ namespace MCMS.Admin.Users
         public async Task<IActionResult> UpdateUserProfile([FromRoute] string id)
         {
             var user = await Repo.GetOneOrThrow(id);
+            UserRolesService.Ensure(await UserRolesService.UserHasHigherRank(UserFromClaims.Roles, user.Id));
             var fps =
                 new FormParamsService(Url, TypeHelpers.GetControllerName(typeof(AdminUsersAdminApiController)),
                     nameof(UpdateUserProfileFormModel));

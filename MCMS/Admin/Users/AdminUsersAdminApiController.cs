@@ -57,8 +57,7 @@ namespace MCMS.Admin.Users
         }
 
 
-        [HttpPost]
-        [Route("{id}")]
+        [HttpPost("{id}")]
         [ModelValidation]
         public virtual async Task<ActionResult<UserViewModel>> UpdateRoles([FromRoute] string id,
             [FromBody] UpdateRolesFormModel model)
@@ -98,8 +97,7 @@ namespace MCMS.Admin.Users
             });
         }
 
-        [HttpPost]
-        [Route("{id}")]
+        [HttpPost("{id}")]
         public virtual async Task<ActionResult<UserViewModel>> UpdateEmail([FromRoute] string id,
             [Required] [FromBody] UpdateEmailFormModel model)
         {
@@ -139,8 +137,8 @@ namespace MCMS.Admin.Users
             });
         }
 
-        [HttpPost]
-        [Route("{id}")]
+
+        [HttpPost("{id}")]
         public virtual async Task<ActionResult<UserViewModel>> UpdateUserName([FromRoute] string id,
             [Required] [FromBody] UpdateUserNameFormModel model)
         {
@@ -172,8 +170,7 @@ namespace MCMS.Admin.Users
             });
         }
 
-        [HttpPost]
-        [Route("{id}")]
+        [HttpPost("{id}")]
         public virtual async Task<ActionResult<UserViewModel>> UpdateUserProfile([FromRoute] string id,
             [Required] [FromBody] UpdateUserProfileFormModel model)
         {
@@ -196,8 +193,8 @@ namespace MCMS.Admin.Users
             });
         }
 
-        [HttpPost]
-        [Route("{id}")]
+
+        [HttpPost("{id}")]
         public virtual async Task<ActionResult<UserViewModel>> ConfirmEmail([FromRoute] string id)
         {
             var user = await Repo.GetOneOrThrow(id);
@@ -206,8 +203,7 @@ namespace MCMS.Admin.Users
             return Ok();
         }
 
-        [HttpPost]
-        [Route("{id}")]
+        [HttpPost("{id}")]
         public virtual async Task<ActionResult<UserViewModel>> ResendActivationMail([FromRoute] string id)
         {
             var user = await Repo.GetOneOrThrow(id);

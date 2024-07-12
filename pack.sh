@@ -21,7 +21,7 @@ mkdir -p $buildDir
 dotnet nuget add source "$(pwd)/$buildDir" -n "Temporary build dir" || exit 1
 
 for i in "${projects[@]}"; do
-  printf "\n Packing %s...\n" "$i"
+  printf "\n Packing %s %s...\n" "$i" "$version"
   dotnet pack -c Release -o "$buildDir" -p:PackageVersion="$version" "$i".csproj
 done
 

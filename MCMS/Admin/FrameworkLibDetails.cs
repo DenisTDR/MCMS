@@ -40,8 +40,7 @@ namespace MCMS.Admin
         public FrameworkLibDetails(Assembly assembly)
         {
             Name = assembly.GetName().Name;
-            Version = assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()
-                ?.InformationalVersion ?? "unknown";
+            Version = assembly.GetName().Version?.ToString(3);
         }
 
         public string Name { get; set; }

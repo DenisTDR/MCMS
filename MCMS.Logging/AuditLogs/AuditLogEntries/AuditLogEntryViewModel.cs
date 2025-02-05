@@ -16,7 +16,7 @@ namespace MCMS.Logging.AuditLogs.AuditLogEntries
 
         [JsonConverter(typeof(ToStringJsonConverter))]
         [TableColumn(DbColumn = "Author.FirstName",
-            DbFuncFormat = "MDbFunctions.Concat({0}, x.Author.LastName, x.Author.Email)")]
+            DbFuncFormat = "MDbFunctions.Concat({0}, ' ', x.Author.LastName, ' ', x.Author.Email, ' ', x.Author.UserName)")]
         public MCMS.Base.Auth.User Author { get; set; }
 
         [TableColumn] public string Category { get; set; }

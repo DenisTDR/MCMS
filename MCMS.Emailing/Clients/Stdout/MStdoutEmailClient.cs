@@ -15,7 +15,7 @@ namespace MCMS.Emailing.Clients.Stdout
 
         public Task<bool> SendEmail(MimeMessage message)
         {
-            _logger.LogWarning($"   Sending email:\nTo: {message}");
+            _logger.LogWarning($"Sending email:\n      {message}");
             return Task.FromResult(true);
         }
     }

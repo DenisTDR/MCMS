@@ -28,8 +28,8 @@
         <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="8.0.7" />
         <PackageReference Include="Microsoft.AspNetCore.JsonPatch" Version="8.0.7" />
         <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="8.0.7" />
-        <PackageReference Include="Microsoft.OpenApi" Version="1.6.15" />
-        <PackageReference Include="dotenv.net" Version="3.2.0" />
+        <PackageReference Include="Microsoft.OpenApi" Version="1.6.23" />
+        <PackageReference Include="dotenv.net" Version="3.2.1" />
         <PackageReference Include="Z.EntityFramework.Extensions.EFCore" Version="8.103.0" />
         <PackageReference Include="Z.EntityFramework.Plus.EFCore" Version="8.103.0" />
     </ItemGroup>

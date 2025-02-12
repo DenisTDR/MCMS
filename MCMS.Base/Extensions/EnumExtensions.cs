@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reflection;
@@ -36,7 +37,7 @@ namespace MCMS.Base.Extensions
             var memberInfos = enumType.GetMember(value.ToString());
             var enumValueMemberInfo = memberInfos.FirstOrDefault(m => m.DeclaringType == enumType);
             object enumValue = enumValueMemberInfo?.GetCustomAttributes<EnumMemberAttribute>().FirstOrDefault()?.Value;
-            if (string.IsNullOrEmpty((string) enumValue))
+            if (string.IsNullOrEmpty((string)enumValue))
             {
                 enumValue = enumValueMemberInfo?.GetCustomAttributes<CustomEnumValueAttribute>().FirstOrDefault()
                     ?.Value;
@@ -44,5 +45,8 @@ namespace MCMS.Base.Extensions
 
             return enumValue ?? value.ToString().ToCamelCase();
         }
+
+        public static Dictionary<T, string> MapCustomValues<T>() where T : struct, Enum
+            => Enum.GetValues<T>().ToDictionary(value => value, value => value.GetCustomValue().ToString());
     }
 }

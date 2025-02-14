@@ -102,9 +102,9 @@ namespace MCMS.Data
                     var qStr = string.Join(" || ", gFilters.Select(gf => gf.Query));
                     try
                     {
-                        query = query.WhereDynamic(x => qStr, gFilters.First().Params);
                         _logger.LogInformation("queryStr= {Query}\nparams={Params}", qStr,
                             JsonConvert.SerializeObject(gFilters.First().Params));
+                        query = query.WhereDynamic(x => qStr, gFilters.First().Params);
                     }
                     catch
                     {

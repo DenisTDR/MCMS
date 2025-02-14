@@ -113,9 +113,9 @@ namespace MCMS.Data
                 throw new KnownException("Invalid column '" + data + "'.");
             }
 
-            if (_matchedColumns.ContainsKey(data))
+            if (_matchedColumns.TryGetValue(data, out var column))
             {
-                return _matchedColumns[data];
+                return column;
             }
 
             _matchedColumns[data] = _tableColumns.FirstOrDefault(col => col.Data == data);

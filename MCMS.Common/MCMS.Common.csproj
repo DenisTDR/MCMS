@@ -5,7 +5,7 @@
         <OutputType>Library</OutputType>
         <RootNamespace>MCMS.Common</RootNamespace>
         <AssemblyName>MCMS.Common</AssemblyName>
-        <LangVersion>11</LangVersion>
+        <LangVersion>12</LangVersion>
 
         <Title>MCMS Common</Title>
         <Description>MCMS Common package</Description>

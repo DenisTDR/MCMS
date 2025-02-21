@@ -5,7 +5,7 @@
         <OutputType>Library</OutputType>
         <RootNamespace>MCMS.Emailing</RootNamespace>
         <AssemblyName>MCMS.Emailing</AssemblyName>
-        <LangVersion>11</LangVersion>
+        <LangVersion>12</LangVersion>
 
         <Title>MCMS Emailing</Title>
         <Description>MCMS Emailing package</Description>

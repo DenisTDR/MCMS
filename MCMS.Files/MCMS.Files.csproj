@@ -5,7 +5,7 @@
         <OutputType>Library</OutputType>
         <RootNamespace>MCMS.Files</RootNamespace>
         <AssemblyName>MCMS.Files</AssemblyName>
-        <LangVersion>9</LangVersion>
+        <LangVersion>11</LangVersion>
 
         <Title>MCMS Files</Title>
         <Description>MCMS Files package</Description>

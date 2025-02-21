@@ -16,7 +16,7 @@ namespace MCMS.Emailing
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            if (Env.Get("SENDGRID_KEY") is { } sendgridKey)
+            if (Env.Get("SENDGRID_KEY") is { } sendgridKey && sendgridKey != string.Empty)
             {
                 Console.WriteLine("Loading SendGrid emailing...");
                 // get default sender here to throw on app start if not set
@@ -29,7 +29,8 @@ namespace MCMS.Emailing
                     options.DefaultSenderName = Env.Get("SENDGRID_DEFAULT_SENDER_NAME");
                 });
             }
-            else if (Env.Get("GMAIL_CREDENTIALS_JSON_PATH") is { } gmailCredentialsJsonPath)
+            else if (Env.Get("GMAIL_CREDENTIALS_JSON_PATH") is { } gmailCredentialsJsonPath &&
+                     gmailCredentialsJsonPath != string.Empty)
             {
                 Console.WriteLine("Loading GMail emailing...");
                 // get token_json_path here to throw on app start if not set
@@ -43,9 +44,9 @@ namespace MCMS.Emailing
                     options.DefaultSenderAddress = Env.Get("GMAIL_DEFAULT_SENDER");
                 });
             }
-            else if (Env.Get("SMTP_HOST") is { } smtpHost)
+            else if (Env.Get("SMTP_HOST") is { } smtpHost && smtpHost != string.Empty)
             {
-                Console.WriteLine("Loading SMTP emailing...");
+                Console.WriteLine("Loading SMTP emailing...<{0}>", smtpHost);
                 var port = int.Parse(Env.GetOrThrow("SMTP_PORT"));
                 var email = Env.GetOrThrow("SMTP_EMAIL");
                 var password = Env.GetOrThrow("SMTP_PASSWORD");

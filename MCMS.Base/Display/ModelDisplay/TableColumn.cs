@@ -74,7 +74,7 @@ namespace MCMS.Base.Display.ModelDisplay
         public List<EnumValueTriple> FilterValues { get; set; }
         public string Data { get; set; }
 
-        public object DefaultSearchValue { get; set; }
+        public string DefaultSearchValue { get; set; }
 
         public override string ToString()
         {

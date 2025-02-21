@@ -26,6 +26,6 @@ namespace MCMS.Base.Display.ModelDisplay.Attributes
         public string DbFuncFormat { get; set; }
         public TableColumnType Type { get; set; }
         public string DataSelector { get; set; }
-        public object DefaultSearchValue { get; set; }
+        public string DefaultSearchValue { get; set; }
     }
 }

@@ -5,7 +5,7 @@
         <OutputType>Library</OutputType>
         <RootNamespace>MCMS.Auth</RootNamespace>
         <AssemblyName>MCMS.Auth</AssemblyName>
-        <LangVersion>9</LangVersion>
+        <LangVersion>11</LangVersion>
 
         <Title>MCMS Auth</Title>
         <Description>MCMS Auth package</Description>

@@ -5,7 +5,7 @@
         <OutputType>Library</OutputType>
         <RootNamespace>MCMS.Logging</RootNamespace>
         <AssemblyName>MCMS.Logging</AssemblyName>
-        <LangVersion>9</LangVersion>
+        <LangVersion>12</LangVersion>
 
         <Title>MCMS Logging</Title>
         <Description>MCMS Logging package</Description>

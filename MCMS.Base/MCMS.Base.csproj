@@ -5,7 +5,7 @@
         <OutputType>Library</OutputType>
         <RootNamespace>MCMS.Base</RootNamespace>
         <AssemblyName>MCMS.Base</AssemblyName>
-        <LangVersion>9</LangVersion>
+        <LangVersion>12</LangVersion>
 
         <Title>MCMS Base</Title>
         <Description>MCMS Base package</Description>

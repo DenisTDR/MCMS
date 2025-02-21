@@ -36,7 +36,7 @@ namespace MCMS.Base.Display.ModelDisplay
             DbColumn = attr?.DbColumn ?? Key;
             DbFuncFormat = attr?.DbFuncFormat;
             Data = attr?.DataSelector ?? Key;
-
+            DefaultSearchValue = attr?.DefaultSearchValue;
             Type = attr?.Type ?? TableColumnType.Default;
             this.BuildTypeAndPatchFilter(prop);
         }
@@ -73,6 +73,8 @@ namespace MCMS.Base.Display.ModelDisplay
         public TableColumnType Type { get; set; }
         public List<EnumValueTriple> FilterValues { get; set; }
         public string Data { get; set; }
+
+        public object DefaultSearchValue { get; set; }
 
         public override string ToString()
         {

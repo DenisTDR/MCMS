@@ -86,7 +86,7 @@ namespace MCMS.Areas.Identity.Pages.Account
             {
                 throw new Exception("Registration is disabled.");
             }
-            returnUrl ??= Url.Content("~/");
+            returnUrl ??= $"{Url.Content("~/")}{RoutePrefixes.AdminRoutePrefix.TrimStart('/')}";
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             await using (var transaction = await _dbContext.Database.BeginTransactionAsync())
             {

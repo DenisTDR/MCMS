@@ -2,6 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Text;
 using System.Threading.Tasks;
 using MCMS.Base.Auth;
+using MCMS.Base.Helpers;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -66,7 +67,7 @@ namespace MCMS.Areas.Identity.Pages.Account
 
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
-            returnUrl ??= Url.Content("~/");
+            returnUrl ??= $"{Url.Content("~/")}{RoutePrefixes.AdminRoutePrefix.TrimStart('/')}";
             if (!ModelState.IsValid)
             {
                 return Page();

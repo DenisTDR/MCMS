@@ -16,4 +16,8 @@
     * `SMTP_PASSWORD`
     * `SMTP_DEFAULT_SENDER`
     * `SMTP_DEFAULT_SENDER_NAME`
+* Brevo
+  * `BREVO_API_KEY`
+  * `BREVO_SENDER_ADDRESS`
+  * `BREVO_SENDER_NAME`
 * if neither `SENDGRID_KEY`, `GMAIL_CREDENTIALS_JSON_PATH` or `SMTP_HOST` is set the emails are logged in stdout.

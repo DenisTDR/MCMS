@@ -2,6 +2,7 @@ using System;
 using MCMS.Base.Builder;
 using MCMS.Base.Helpers;
 using MCMS.Emailing.Clients;
+using MCMS.Emailing.Clients.Brevo;
 using MCMS.Emailing.Clients.Gmail;
 using MCMS.Emailing.Clients.SendGrid;
 using MCMS.Emailing.Clients.Smtp;
@@ -19,7 +20,7 @@ namespace MCMS.Emailing
             if (Env.Get("SENDGRID_KEY") is { } sendgridKey)
             {
                 Console.WriteLine("Loading SendGrid emailing...");
-                // get default sender here to throw on app start if not set
+                // get default sender here to throw on app start error if not set
                 var defaultSenderAddress = Env.GetOrThrow("SENDGRID_DEFAULT_SENDER");
                 services.AddScoped<IMEmailClient, MSendGridClient>();
                 services.AddOptions<MSendGridClientOptions>().Configure(options =>
@@ -61,6 +62,19 @@ namespace MCMS.Emailing
                     options.Password = password;
                     options.DefaultSender = defaultSender;
                     options.DefaultSenderName = defaultSenderName;
+                });
+            }
+            else if (Env.Get("BREVO_API_KEY") is { } brevoApiKey && !string.IsNullOrEmpty(brevoApiKey))
+            {
+                Console.WriteLine("Loading Brevo emailing...");
+                var senderAddress = Env.GetOrThrow("BREVO_SENDER_ADDRESS");
+
+                services.AddScoped<IMEmailClient, MBrevoClient>();
+                services.AddOptions<MBrevoClientOptions>().Configure(options =>
+                {
+                    options.ApiKey = brevoApiKey;
+                    options.DefaultSenderAddress = senderAddress;
+                    options.DefaultSenderName = Env.Get("BREVO_SENDER_NAME");
                 });
             }
             else

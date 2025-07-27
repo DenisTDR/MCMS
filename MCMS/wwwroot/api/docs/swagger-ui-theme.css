@@ -208,6 +208,7 @@ body.dark, body.dark .swagger-ui .modal-ux {
     color: #3b4151;
 }
 
+.dark .swagger-ui .opblock-summary .opblock-control-arrow,
 .dark .swagger-ui .opblock-summary-control .arrow {
     fill: white;
 }

@@ -1,11 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
     <PropertyGroup>
-        <TargetFramework>net9.0</TargetFramework>
+        <TargetFramework>net10.0</TargetFramework>
+        <LangVersion>14</LangVersion>
         <OutputType>Library</OutputType>
         <RootNamespace>MCMS.Auth</RootNamespace>
         <AssemblyName>MCMS.Auth</AssemblyName>
-        <LangVersion>13</LangVersion>
 
         <Title>MCMS Auth</Title>
         <Description>MCMS Auth package</Description>
@@ -25,8 +25,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.6" />
-        <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="9.0.1" />
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.0" />
+        <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="9.0.6" />
     </ItemGroup>
 
     <ItemGroup Condition="$(ENV_TYPE) != 'CI_BUILD'">

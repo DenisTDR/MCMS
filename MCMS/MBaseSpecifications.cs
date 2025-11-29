@@ -14,8 +14,10 @@ using MCMS.Display.DetailsConfig;
 using MCMS.Display.TableConfig;
 using MCMS.Filters;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch.Adapters;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Z.Expressions;
@@ -49,10 +51,8 @@ namespace MCMS
 
             services.AddSingleton<DisplayValueService>();
 
-            services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
-            services.AddTransient(serviceProvider => serviceProvider
-                .Service<IUrlHelperFactory>()
-                .GetUrlHelper(serviceProvider.Service<IActionContextAccessor>().ActionContext));
+            services.AddScoped(sp => sp.Service<IHttpContextAccessor>().HttpContext.GetUrlHelper());
+
 
             services.AddTransient<IAdapterFactory, AdapterFactory>();
 

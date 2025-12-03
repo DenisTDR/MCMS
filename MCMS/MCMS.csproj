@@ -41,7 +41,7 @@
         <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="9.0.6" />
         <PackageReference Include="Swashbuckle.AspNetCore.Newtonsoft" Version="9.0.6" />
         <PackageReference Include="Swashbuckle.AspNetCore.ReDoc" Version="9.0.6" />
-        <PackageReference Include="MCMS.Forms" Version="1.8.5" />
+        <PackageReference Include="MCMS.Forms" Version="1.8.6" />
     </ItemGroup>
 
     <ItemGroup Condition="$(ENV_TYPE) != 'CI_BUILD'">

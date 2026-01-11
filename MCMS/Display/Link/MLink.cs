@@ -5,60 +5,59 @@ using MCMS.Base.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
-namespace MCMS.Display.Link
+namespace MCMS.Display.Link;
+
+public class MLink : IItemWithIcon, IItemWithRequiredRoles
 {
-    public class MLink : IItemWithIcon, IItemWithRequiredRoles
+    public string Text { get; set; }
+    public string Url { get; set; }
+    public Type Controller { get; set; }
+    [JsonIgnore] public MethodInfo Action { get; set; }
+    public string Target { get; internal set; }
+    public string ControllerName => Controller != null ? TypeHelpers.GetControllerName(Controller) : null;
+    public string ActionName => Action != null ? Action.Name : "Index";
+    public string IconClasses { get; set; }
+    public virtual string Tag { get; set; }
+    public string[] RequiredRoles { get; set; }
+    public string Title { get; set; }
+
+    public virtual string BuildUrl(IUrlHelper urlHelper = null)
     {
-        public string Text { get; set; }
-        public string Url { get; set; }
-        public Type Controller { get; set; }
-        [JsonIgnore] public MethodInfo Action { get; set; }
-        public string Target { get; internal set; }
-        public string ControllerName => Controller != null ? TypeHelpers.GetControllerName(Controller) : null;
-        public string ActionName => Action != null ? Action.Name : "Index";
-        public string IconClasses { get; set; }
-        public virtual string Tag { get; set; }
-        public string[] RequiredRoles { get; set; }
-        public string Title { get; set; }
-
-        public virtual string BuildUrl(IUrlHelper urlHelper = null)
+        if (urlHelper == null || Controller == null)
         {
-            if (urlHelper == null || Controller == null)
+            return Url;
+        }
+
+        return urlHelper.ActionLink(ActionName, ControllerName);
+    }
+
+    public MLink(string text, Type controller, MethodInfo action = null)
+    {
+        if (controller != null)
+        {
+            if (action == null)
             {
-                return Url;
+                action = controller.GetMethods().FirstOrDefault(mi => mi.Name == "Index");
             }
-
-            return urlHelper.ActionLink(ActionName, ControllerName);
         }
 
-        public MLink(string text, Type controller, MethodInfo action = null)
-        {
-            if (controller != null)
-            {
-                if (action == null)
-                {
-                    action = controller.GetMethods().FirstOrDefault(mi => mi.Name == "Index");
-                }
-            }
+        Text = text;
+        Controller = controller;
+        Action = action;
+    }
 
-            Text = text;
-            Controller = controller;
-            Action = action;
-        }
+    public MLink(string text, Type controller, string actionName)
+        : this(text, controller, controller.GetMethods().FirstOrDefault(mi => mi.Name == actionName))
+    {
+    }
 
-        public MLink(string text, Type controller, string actionName)
-            : this(text, controller, controller.GetMethods().FirstOrDefault(mi => mi.Name == actionName))
-        {
-        }
+    public MLink(string text, string url)
+    {
+        Text = text;
+        Url = url;
+    }
 
-        public MLink(string text, string url)
-        {
-            Text = text;
-            Url = url;
-        }
-
-        internal MLink()
-        {
-        }
+    internal MLink()
+    {
     }
 }

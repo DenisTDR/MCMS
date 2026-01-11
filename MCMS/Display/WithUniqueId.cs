@@ -1,21 +1,20 @@
 using MCMS.Base.Helpers;
 
-namespace MCMS.Display
+namespace MCMS.Display;
+
+public abstract class WithUniqueId
 {
-    public abstract class WithUniqueId
+    private string _uniqueId;
+    protected string UniqueId => _uniqueId ??= BuildUniqueId();
+    protected abstract string GetHashSource();
+
+    private string BuildUniqueId()
     {
-        private string _uniqueId;
-        protected string UniqueId => _uniqueId ??= BuildUniqueId();
-        protected abstract string GetHashSource();
+        return FastHash.Hash(GetHashSource() ?? Utils.GenerateRandomHexString());
+    }
 
-        private string BuildUniqueId()
-        {
-            return FastHash.Hash(GetHashSource() ?? Utils.GenerateRandomHexString());
-        }
-
-        public void SetCustomId(string idToSet)
-        {
-            _uniqueId = idToSet;
-        }
+    public void SetCustomId(string idToSet)
+    {
+        _uniqueId = idToSet;
     }
 }

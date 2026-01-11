@@ -1,20 +1,19 @@
 using MCMS.Controllers.Api;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 
-namespace MCMS.Filters
-{
-    public class ApiControllerNameAttributeConvention : IControllerModelConvention
-    {
-        public void Apply(ControllerModel controller)
-        {
-            if (controller.ControllerType.IsSubclassOf(typeof(AdminApiController)))
-            {
-                var typeName = controller.ControllerType.Name;
-                
-                var toReplace = typeName.Contains("ApiController") ? "ApiController" : "Controller";
+namespace MCMS.Filters;
 
-                controller.ControllerName = typeName.Replace(toReplace, "");
-            }
+public class ApiControllerNameAttributeConvention : IControllerModelConvention
+{
+    public void Apply(ControllerModel controller)
+    {
+        if (controller.ControllerType.IsSubclassOf(typeof(AdminApiController)))
+        {
+            var typeName = controller.ControllerType.Name;
+                
+            var toReplace = typeName.Contains("ApiController") ? "ApiController" : "Controller";
+
+            controller.ControllerName = typeName.Replace(toReplace, "");
         }
     }
 }

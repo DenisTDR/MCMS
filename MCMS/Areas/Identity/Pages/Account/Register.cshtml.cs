@@ -18,147 +18,146 @@ using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace MCMS.Areas.Identity.Pages.Account
+namespace MCMS.Areas.Identity.Pages.Account;
+
+[AllowAnonymous]
+public class RegisterModel : PageModel
 {
-    [AllowAnonymous]
-    public class RegisterModel : PageModel
+    private readonly SignInManager<User> _signInManager;
+    private readonly UserManager<User> _userManager;
+    private readonly ILogger<RegisterModel> _logger;
+    private readonly IEmailSender _emailSender;
+    private readonly BaseDbContext _dbContext;
+
+    public RegisterModel(
+        UserManager<User> userManager,
+        SignInManager<User> signInManager,
+        ILogger<RegisterModel> logger,
+        IEmailSender emailSender,
+        BaseDbContext dbContext
+    )
     {
-        private readonly SignInManager<User> _signInManager;
-        private readonly UserManager<User> _userManager;
-        private readonly ILogger<RegisterModel> _logger;
-        private readonly IEmailSender _emailSender;
-        private readonly BaseDbContext _dbContext;
+        _userManager = userManager;
+        _signInManager = signInManager;
+        _logger = logger;
+        _emailSender = emailSender;
+        _dbContext = dbContext;
+    }
 
-        public RegisterModel(
-            UserManager<User> userManager,
-            SignInManager<User> signInManager,
-            ILogger<RegisterModel> logger,
-            IEmailSender emailSender,
-            BaseDbContext dbContext
-        )
+    [BindProperty] public InputModel Input { get; set; }
+
+    public string ReturnUrl { get; set; }
+
+    public IList<AuthenticationScheme> ExternalLogins { get; set; }
+
+    public class InputModel
+    {
+        [Required]
+        [EmailAddress]
+        [Display(Name = "Email")]
+        public string Email { get; set; }
+
+        [Required]
+        [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.",
+            MinimumLength = 6)]
+        [DataType(DataType.Password)]
+        [Display(Name = "Password")]
+        public string Password { get; set; }
+
+        [DataType(DataType.Password)]
+        [Display(Name = "Confirm password")]
+        [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
+        public string ConfirmPassword { get; set; }
+    }
+
+    public async Task OnGetAsync(string returnUrl = null)
+    {
+        if (Env.GetBool("DISABLE_REGISTRATION"))
         {
-            _userManager = userManager;
-            _signInManager = signInManager;
-            _logger = logger;
-            _emailSender = emailSender;
-            _dbContext = dbContext;
+            throw new Exception("Registration is disabled.");
         }
+        ReturnUrl = returnUrl;
+        ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+    }
 
-        [BindProperty] public InputModel Input { get; set; }
-
-        public string ReturnUrl { get; set; }
-
-        public IList<AuthenticationScheme> ExternalLogins { get; set; }
-
-        public class InputModel
+    public async Task<IActionResult> OnPostAsync(string returnUrl = null)
+    {
+        if (Env.GetBool("DISABLE_REGISTRATION"))
         {
-            [Required]
-            [EmailAddress]
-            [Display(Name = "Email")]
-            public string Email { get; set; }
-
-            [Required]
-            [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.",
-                MinimumLength = 6)]
-            [DataType(DataType.Password)]
-            [Display(Name = "Password")]
-            public string Password { get; set; }
-
-            [DataType(DataType.Password)]
-            [Display(Name = "Confirm password")]
-            [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
-            public string ConfirmPassword { get; set; }
+            throw new Exception("Registration is disabled.");
         }
-
-        public async Task OnGetAsync(string returnUrl = null)
+        returnUrl ??= $"{Url.Content("~/")}{RoutePrefixes.AdminRoutePrefix.TrimStart('/')}";
+        ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+        await using (var transaction = await _dbContext.Database.BeginTransactionAsync())
         {
-            if (Env.GetBool("DISABLE_REGISTRATION"))
+            if (ModelState.IsValid)
             {
-                throw new Exception("Registration is disabled.");
-            }
-            ReturnUrl = returnUrl;
-            ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
-        }
-
-        public async Task<IActionResult> OnPostAsync(string returnUrl = null)
-        {
-            if (Env.GetBool("DISABLE_REGISTRATION"))
-            {
-                throw new Exception("Registration is disabled.");
-            }
-            returnUrl ??= $"{Url.Content("~/")}{RoutePrefixes.AdminRoutePrefix.TrimStart('/')}";
-            ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
-            await using (var transaction = await _dbContext.Database.BeginTransactionAsync())
-            {
-                if (ModelState.IsValid)
+                var isFirstUser = !await _userManager.Users.AnyAsync();
+                var user = new User {UserName = Input.Email, Email = Input.Email};
+                var result = await _userManager.CreateAsync(user, Input.Password);
+                if (!result.Succeeded)
                 {
-                    var isFirstUser = !await _userManager.Users.AnyAsync();
-                    var user = new User {UserName = Input.Email, Email = Input.Email};
-                    var result = await _userManager.CreateAsync(user, Input.Password);
+                    return ProcessErrors(result);
+                }
+
+                _logger.LogInformation("User created a new account with password");
+
+                if (isFirstUser && Env.GetBool("FIRST_USER_ADMIN"))
+                {
+                    result = await _userManager.AddToRoleAsync(user, "Admin");
                     if (!result.Succeeded)
                     {
                         return ProcessErrors(result);
                     }
 
-                    _logger.LogInformation("User created a new account with password");
-
-                    if (isFirstUser && Env.GetBool("FIRST_USER_ADMIN"))
-                    {
-                        result = await _userManager.AddToRoleAsync(user, "Admin");
-                        if (!result.Succeeded)
-                        {
-                            return ProcessErrors(result);
-                        }
-
-                        _logger.LogInformation("Created first user as admin");
-
-                        await transaction.CommitAsync();
-                        user.EmailConfirmed = true;
-                        await _dbContext.SaveChangesAsync();
-                        await _signInManager.SignInAsync(user, isPersistent: false);
-                        return LocalRedirect(returnUrl);
-                    }
-
-                    if (_userManager.Options.SignIn.RequireConfirmedAccount)
-                    {
-                        var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                        code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-                        var callbackUrl = Url.Page(
-                            "/Account/ConfirmEmail",
-                            pageHandler: null,
-                            values: new {area = "Identity", userId = user.Id, code, returnUrl},
-                            protocol: Request.Scheme);
-                        await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
-                            $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
-                    }
+                    _logger.LogInformation("Created first user as admin");
 
                     await transaction.CommitAsync();
-                    if (_userManager.Options.SignIn.RequireConfirmedAccount)
-                    {
-                        return RedirectToPage("RegisterConfirmation",
-                            new {email = Input.Email, returnUrl});
-                    }
-
                     user.EmailConfirmed = true;
                     await _dbContext.SaveChangesAsync();
-                    
                     await _signInManager.SignInAsync(user, isPersistent: false);
                     return LocalRedirect(returnUrl);
                 }
-            }
 
-            // If we got this far, something failed, redisplay form
-            return Page();
+                if (_userManager.Options.SignIn.RequireConfirmedAccount)
+                {
+                    var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                    code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+                    var callbackUrl = Url.Page(
+                        "/Account/ConfirmEmail",
+                        pageHandler: null,
+                        values: new {area = "Identity", userId = user.Id, code, returnUrl},
+                        protocol: Request.Scheme);
+                    await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
+                        $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+                }
+
+                await transaction.CommitAsync();
+                if (_userManager.Options.SignIn.RequireConfirmedAccount)
+                {
+                    return RedirectToPage("RegisterConfirmation",
+                        new {email = Input.Email, returnUrl});
+                }
+
+                user.EmailConfirmed = true;
+                await _dbContext.SaveChangesAsync();
+                    
+                await _signInManager.SignInAsync(user, isPersistent: false);
+                return LocalRedirect(returnUrl);
+            }
         }
 
-        private IActionResult ProcessErrors(IdentityResult result)
+        // If we got this far, something failed, redisplay form
+        return Page();
+    }
+
+    private IActionResult ProcessErrors(IdentityResult result)
+    {
+        foreach (var error in result.Errors)
         {
-            foreach (var error in result.Errors)
-            {
-                ModelState.AddModelError(string.Empty, error.Description);
-            }
-
-            return Page();
+            ModelState.AddModelError(string.Empty, error.Description);
         }
+
+        return Page();
     }
 }

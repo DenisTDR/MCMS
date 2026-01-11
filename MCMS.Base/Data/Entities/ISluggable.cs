@@ -1,7 +1,6 @@
-namespace MCMS.Base.Data.Entities
+namespace MCMS.Base.Data.Entities;
+
+public interface ISluggable
 {
-    public interface ISluggable
-    {
-        public string Slug { get; set; }
-    }
+    public string Slug { get; set; }
 }

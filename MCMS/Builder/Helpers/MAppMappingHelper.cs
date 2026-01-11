@@ -7,80 +7,79 @@ using MCMS.Base.Data.MappingConfig;
 using MCMS.Base.Data.ViewModels;
 using MCMS.Base.Extensions;
 
-namespace MCMS.Builder.Helpers
+namespace MCMS.Builder.Helpers;
+
+public class MAppMappingHelper
 {
-    public class MAppMappingHelper
+    private readonly MApp _app;
+
+    public MAppMappingHelper(MApp app)
     {
-        private readonly MApp _app;
+        _app = app;
+    }
 
-        public MAppMappingHelper(MApp app)
+    public List<IMappingConfig> BuildMappingConfigs()
+    {
+        var mappingConfigs = BuildStacks();
+        // foreach (var mappingConfig in mappingConfigs)
+        // {
+        //     Console.WriteLine(mappingConfig.GetType().CSharpName());
+        // }
+        return mappingConfigs;
+    }
+
+    private List<IMappingConfig> BuildStacks()
+    {
+        var listMappingConfigs = new List<IMappingConfig>();
+
+        var allTypes = new MSpecificationsTypeFilter().FilterMapped(_app).ToList();
+        var entityTypes = allTypes.Where(type => typeof(IEntity).IsAssignableFrom(type)).ToList();
+        var modelTypes = allTypes.Where(type =>
+            typeof(IViewModel).IsAssignableFrom(type) || typeof(IFormModel).IsAssignableFrom(type)).ToList();
+
+        var mappingConfigTypes = allTypes.Where(type => typeof(IMappingConfig).IsAssignableFrom(type) && !type.IsGenericTypeDefinition).ToList();
+
+        var mappingStacks = entityTypes.Select(et => new EntityMappingStack(et)).ToList();
+
+        foreach (var viewModelType in modelTypes)
         {
-            _app = app;
+            var stack = mappingStacks.FirstOrDefault(st => st.CanPutModel(viewModelType));
+            stack?.WithModel(viewModelType);
         }
 
-        public List<IMappingConfig> BuildMappingConfigs()
+        foreach (var mappingConfigType in mappingConfigTypes)
         {
-            var mappingConfigs = BuildStacks();
-            // foreach (var mappingConfig in mappingConfigs)
-            // {
-            //     Console.WriteLine(mappingConfig.GetType().CSharpName());
-            // }
-            return mappingConfigs;
-        }
-
-        private List<IMappingConfig> BuildStacks()
-        {
-            var listMappingConfigs = new List<IMappingConfig>();
-
-            var allTypes = new MSpecificationsTypeFilter().FilterMapped(_app).ToList();
-            var entityTypes = allTypes.Where(type => typeof(IEntity).IsAssignableFrom(type)).ToList();
-            var modelTypes = allTypes.Where(type =>
-                typeof(IViewModel).IsAssignableFrom(type) || typeof(IFormModel).IsAssignableFrom(type)).ToList();
-
-            var mappingConfigTypes = allTypes.Where(type => typeof(IMappingConfig).IsAssignableFrom(type) && !type.IsGenericTypeDefinition).ToList();
-
-            var mappingStacks = entityTypes.Select(et => new EntityMappingStack(et)).ToList();
-
-            foreach (var viewModelType in modelTypes)
+            var bestMatchStack = mappingStacks.Select(stack => new
             {
-                var stack = mappingStacks.FirstOrDefault(st => st.CanPutModel(viewModelType));
-                stack?.WithModel(viewModelType);
+                stack,
+                matchPoints = stack.CanPutMappingConfig(mappingConfigType)
+            }).Where(b => b.matchPoints > 0).OrderByDescending(b => b.matchPoints).FirstOrDefault();
+            if (bestMatchStack != null)
+            {
+                bestMatchStack.stack.PutMappingConfig(mappingConfigType);
             }
-
-            foreach (var mappingConfigType in mappingConfigTypes)
+            else
             {
-                var bestMatchStack = mappingStacks.Select(stack => new
+                if (mappingConfigType.IsA(typeof(EntityViewModelMappingConfig<,>)) ||
+                    mappingConfigType.IsA(typeof(EntityFormModelMappingConfig<,>)))
                 {
-                    stack,
-                    matchPoints = stack.CanPutMappingConfig(mappingConfigType)
-                }).Where(b => b.matchPoints > 0).OrderByDescending(b => b.matchPoints).FirstOrDefault();
-                if (bestMatchStack != null)
-                {
-                    bestMatchStack.stack.PutMappingConfig(mappingConfigType);
+                    var stack = new EntityMappingStack();
+                    stack.PutMappingConfig(mappingConfigType);
+                    mappingStacks.Add(stack);
                 }
                 else
                 {
-                    if (mappingConfigType.IsA(typeof(EntityViewModelMappingConfig<,>)) ||
-                        mappingConfigType.IsA(typeof(EntityFormModelMappingConfig<,>)))
-                    {
-                        var stack = new EntityMappingStack();
-                        stack.PutMappingConfig(mappingConfigType);
-                        mappingStacks.Add(stack);
-                    }
-                    else
-                    {
-                        listMappingConfigs.Add(Activator.CreateInstance(mappingConfigType) as IMappingConfig);
-                    }
+                    listMappingConfigs.Add(Activator.CreateInstance(mappingConfigType) as IMappingConfig);
                 }
             }
-
-            foreach (var entityMappingStack in mappingStacks)
-            {
-                entityMappingStack.TryNormalize();
-            }
-
-            listMappingConfigs.AddRange(mappingStacks.SelectMany(stack => stack.MappingConfigsInstances()));
-            return listMappingConfigs;
         }
+
+        foreach (var entityMappingStack in mappingStacks)
+        {
+            entityMappingStack.TryNormalize();
+        }
+
+        listMappingConfigs.AddRange(mappingStacks.SelectMany(stack => stack.MappingConfigsInstances()));
+        return listMappingConfigs;
     }
 }

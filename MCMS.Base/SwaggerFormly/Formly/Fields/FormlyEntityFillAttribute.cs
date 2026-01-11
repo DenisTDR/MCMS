@@ -8,60 +8,59 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.OpenApi.Any;
 using Microsoft.OpenApi.Models;
 
-namespace MCMS.Base.SwaggerFormly.Formly.Fields
+namespace MCMS.Base.SwaggerFormly.Formly.Fields;
+
+[AttributeUsage(AttributeTargets.Property)]
+public class FormlyEntityFillAttribute : FormlyConfigPatcherAttribute
 {
-    [AttributeUsage(AttributeTargets.Property)]
-    public class FormlyEntityFillAttribute : FormlyConfigPatcherAttribute
+    public string OptionsUrl { get; }
+    public Type OptionsControllerType { get; }
+    public string OptionsActionName { get; }
+    public string LabelProp { get; set; } = "name";
+    public string ValueProp { get; set; } = "id";
+
+    public string SelectorFieldType { get; set; }
+    public bool KeepValueProp { get; set; } = true;
+
+    public bool ReloadOptionsOnInit { get; set; }
+    public bool ShowReloadButton { get; set; }
+
+    public FormlyEntityFillAttribute(string optionsUrl)
     {
-        public string OptionsUrl { get; }
-        public Type OptionsControllerType { get; }
-        public string OptionsActionName { get; }
-        public string LabelProp { get; set; } = "name";
-        public string ValueProp { get; set; } = "id";
+        OptionsUrl = optionsUrl;
+    }
 
-        public string SelectorFieldType { get; set; }
-        public bool KeepValueProp { get; set; } = true;
+    public FormlyEntityFillAttribute(Type optionsController, string actionName = "Index")
+    {
+        OptionsActionName = actionName;
+        OptionsControllerType = optionsController;
+    }
 
-        public bool ReloadOptionsOnInit { get; set; }
-        public bool ShowReloadButton { get; set; }
+    public override void Patch(OpenApiSchema schema, OpenApiObject xProps, OpenApiObject templateOptions,
+        LinkGenerator linkGenerator,
+        List<ValidatorModel> validators)
+    {
+        base.Patch(schema, xProps, templateOptions, linkGenerator, validators);
 
-        public FormlyEntityFillAttribute(string optionsUrl)
-        {
-            OptionsUrl = optionsUrl;
-        }
+        var customConfig = templateOptions.GetOrSetDefault<OpenApiObject, IOpenApiAny>("customFieldConfig");
 
-        public FormlyEntityFillAttribute(Type optionsController, string actionName = "Index")
-        {
-            OptionsActionName = actionName;
-            OptionsControllerType = optionsController;
-        }
+        customConfig["labelProp"] = new OpenApiString(LabelProp);
+        customConfig["valueProp"] = new OpenApiString(ValueProp);
 
-        public override void Patch(OpenApiSchema schema, OpenApiObject xProps, OpenApiObject templateOptions,
-            LinkGenerator linkGenerator,
-            List<ValidatorModel> validators)
-        {
-            base.Patch(schema, xProps, templateOptions, linkGenerator, validators);
+        var optionsUrl = OptionsControllerType != null
+            ? linkGenerator.GetAbsolutePathByAction(OptionsActionName,
+                TypeHelpers.GetControllerName(OptionsControllerType))
+            : OptionsUrl;
+        customConfig["loadOptionsFromUrl"] = new OpenApiBoolean(true);
+        customConfig["optionsUrl"] = new OpenApiString(optionsUrl);
 
-            var customConfig = templateOptions.GetOrSetDefault<OpenApiObject, IOpenApiAny>("customFieldConfig");
+        customConfig["reloadOptionsOnInit"] = new OpenApiBoolean(ReloadOptionsOnInit);
+        customConfig["showReloadButton"] = new OpenApiBoolean(ShowReloadButton);
 
-            customConfig["labelProp"] = new OpenApiString(LabelProp);
-            customConfig["valueProp"] = new OpenApiString(ValueProp);
+        var fieldGroupFill = customConfig.GetOrSetDefault<OpenApiObject, IOpenApiAny>("fieldGroupFill");
 
-            var optionsUrl = OptionsControllerType != null
-                ? linkGenerator.GetAbsolutePathByAction(OptionsActionName,
-                    TypeHelpers.GetControllerName(OptionsControllerType))
-                : OptionsUrl;
-            customConfig["loadOptionsFromUrl"] = new OpenApiBoolean(true);
-            customConfig["optionsUrl"] = new OpenApiString(optionsUrl);
-
-            customConfig["reloadOptionsOnInit"] = new OpenApiBoolean(ReloadOptionsOnInit);
-            customConfig["showReloadButton"] = new OpenApiBoolean(ShowReloadButton);
-
-            var fieldGroupFill = customConfig.GetOrSetDefault<OpenApiObject, IOpenApiAny>("fieldGroupFill");
-
-            fieldGroupFill["enabled"] = new OpenApiBoolean(true);
-            fieldGroupFill["keepValueProp"] = new OpenApiBoolean(KeepValueProp);
-            fieldGroupFill["selectorFieldType"] = new OpenApiString(SelectorFieldType ?? "autocomplete");
-        }
+        fieldGroupFill["enabled"] = new OpenApiBoolean(true);
+        fieldGroupFill["keepValueProp"] = new OpenApiBoolean(KeepValueProp);
+        fieldGroupFill["selectorFieldType"] = new OpenApiString(SelectorFieldType ?? "autocomplete");
     }
 }

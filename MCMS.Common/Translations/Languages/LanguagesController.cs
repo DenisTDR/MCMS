@@ -4,18 +4,17 @@ using MCMS.Controllers.Ui;
 using MCMS.Display.ModelDisplay;
 using Microsoft.AspNetCore.Authorization;
 
-namespace MCMS.Common.Translations.Languages
+namespace MCMS.Common.Translations.Languages;
+
+[Authorize(Roles = "Admin")]
+public class
+    LanguagesController : GenericModalAdminUiController<LanguageEntity, LanguageFormModel, LanguageViewModel,
+    LanguagesAdminApiController>
 {
-    [Authorize(Roles = "Admin")]
-    public class
-        LanguagesController : GenericModalAdminUiController<LanguageEntity, LanguageFormModel, LanguageViewModel,
-            LanguagesAdminApiController>
+    public override async Task<IndexPageConfig> GetIndexPageConfig()
     {
-        public override async Task<IndexPageConfig> GetIndexPageConfig()
-        {
-            var config = await base.GetIndexPageConfig();
-            config.TableConfig.ItemActions = config.TableConfig.ItemActions.Where(tia => tia.Tag != "details").ToList();
-            return config;
-        }
+        var config = await base.GetIndexPageConfig();
+        config.TableConfig.ItemActions = config.TableConfig.ItemActions.Where(tia => tia.Tag != "details").ToList();
+        return config;
     }
 }

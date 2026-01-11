@@ -13,106 +13,105 @@ using MCMS.Models.Dt;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace MCMS.Controllers.Api
+namespace MCMS.Controllers.Api;
+
+public class CrudAdminApiController<TE, TFm, TVm> : PatchCreateAdminApiController<TE, TFm>,
+    ICrudAdminApiController<TFm, TVm>
+    where TE : class, IEntity, new() where TFm : class, IFormModel where TVm : class, IViewModel
 {
-    public class CrudAdminApiController<TE, TFm, TVm> : PatchCreateAdminApiController<TE, TFm>,
-        ICrudAdminApiController<TFm, TVm>
-        where TE : class, IEntity, new() where TFm : class, IFormModel where TVm : class, IViewModel
+    protected virtual DtQueryService<TVm> QueryService => ServiceProvider.GetService<DtQueryService<TVm>>();
+
+    [AdminApiRoute("~/[controller]")]
+    [HttpGet]
+    public virtual async Task<ActionResult<List<TVm>>> Index()
     {
-        protected virtual DtQueryService<TVm> QueryService => ServiceProvider.GetService<DtQueryService<TVm>>();
+        var all = await Repo.GetAll();
+        var allVm = Map(all);
+        return Ok(allVm);
+    }
 
-        [AdminApiRoute("~/[controller]")]
-        [HttpGet]
-        public virtual async Task<ActionResult<List<TVm>>> Index()
+    [AdminApiRoute("~/[controller]/dtquery")]
+    [HttpPost]
+    [ModelValidation]
+    [ReadOnlyApi]
+    public virtual async Task<ActionResult<DtResult<TVm>>> DtQuery([FromBody] [Required] DtParameters model)
+    {
+        if (!ModelState.IsValid)
         {
-            var all = await Repo.GetAll();
-            var allVm = Map(all);
-            return Ok(allVm);
+            return BadRequest(ModelState);
         }
 
-        [AdminApiRoute("~/[controller]/dtquery")]
-        [HttpPost]
-        [ModelValidation]
-        [ReadOnlyApi]
-        public virtual async Task<ActionResult<DtResult<TVm>>> DtQuery([FromBody] [Required] DtParameters model)
+        var result = await QueryService.Query(Repo, model);
+        return Ok(result);
+    }
+
+    [AdminApiRoute("~/[controller]/light")]
+    [HttpGet]
+    public virtual Task<ActionResult<List<TVm>>> IndexLight()
+    {
+        Repo.ChainQueryable(q => q.Select(e => new TE { Id = e.Id }));
+        return Index();
+    }
+
+    [Route("{id}")]
+    [HttpGet]
+    public virtual async Task<ActionResult<TVm>> Preview([FromRoute] string id)
+    {
+        var e = await Repo.GetOneOrThrow(id);
+        var fm = MapV(e);
+        return Ok(fm);
+    }
+
+
+    [HttpDelete]
+    [AdminApiRoute("~/[controller]/{id}")]
+    public virtual async Task<ActionResult<string>> Delete([FromRoute] string id)
+    {
+        await Repo.Delete(id);
+        return Ok(id);
+    }
+
+    [HttpPost]
+    [ModelValidation]
+    public virtual async Task<ActionResult<List<string>>> BatchDelete([FromBody] [Required] List<string> ids)
+    {
+        await Repo.Delete(ids);
+        return Ok(ids);
+    }
+
+    protected virtual List<TVm> Map(List<TE> entities)
+    {
+        return Mapper.Map<List<TVm>>(entities);
+    }
+
+    protected virtual TVm MapV(TE e)
+    {
+        return Mapper.Map<TVm>(e);
+    }
+
+    protected override async Task<ModelResponse<TFm>> GetPatchResponseModel(TE e)
+    {
+        var fm = MapF(e);
+        var vm = MapV(e);
+        var response = new FormSubmitResponse<TFm, TVm>(fm, vm, e.Id)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+            Snack = await Service<ITranslationsRepository>().GetValueOrSlug("updated"),
+            SnackType = "success",
+            SnackDuration = 3000
+        };
+        return response;
+    }
 
-            var result = await QueryService.Query(Repo, model);
-            return Ok(result);
-        }
-
-        [AdminApiRoute("~/[controller]/light")]
-        [HttpGet]
-        public virtual Task<ActionResult<List<TVm>>> IndexLight()
+    protected override async Task<ModelResponse<TFm>> GetCreateResponseModel(TE e)
+    {
+        var fm = MapF(e);
+        var vm = MapV(e);
+        var response = new FormSubmitResponse<TFm, TVm>(fm, vm, e.Id)
         {
-            Repo.ChainQueryable(q => q.Select(e => new TE { Id = e.Id }));
-            return Index();
-        }
-
-        [Route("{id}")]
-        [HttpGet]
-        public virtual async Task<ActionResult<TVm>> Preview([FromRoute] string id)
-        {
-            var e = await Repo.GetOneOrThrow(id);
-            var fm = MapV(e);
-            return Ok(fm);
-        }
-
-
-        [HttpDelete]
-        [AdminApiRoute("~/[controller]/{id}")]
-        public virtual async Task<ActionResult<string>> Delete([FromRoute] string id)
-        {
-            await Repo.Delete(id);
-            return Ok(id);
-        }
-
-        [HttpPost]
-        [ModelValidation]
-        public virtual async Task<ActionResult<List<string>>> BatchDelete([FromBody] [Required] List<string> ids)
-        {
-            await Repo.Delete(ids);
-            return Ok(ids);
-        }
-
-        protected virtual List<TVm> Map(List<TE> entities)
-        {
-            return Mapper.Map<List<TVm>>(entities);
-        }
-
-        protected virtual TVm MapV(TE e)
-        {
-            return Mapper.Map<TVm>(e);
-        }
-
-        protected override async Task<ModelResponse<TFm>> GetPatchResponseModel(TE e)
-        {
-            var fm = MapF(e);
-            var vm = MapV(e);
-            var response = new FormSubmitResponse<TFm, TVm>(fm, vm, e.Id)
-            {
-                Snack = await Service<ITranslationsRepository>().GetValueOrSlug("updated"),
-                SnackType = "success",
-                SnackDuration = 3000
-            };
-            return response;
-        }
-
-        protected override async Task<ModelResponse<TFm>> GetCreateResponseModel(TE e)
-        {
-            var fm = MapF(e);
-            var vm = MapV(e);
-            var response = new FormSubmitResponse<TFm, TVm>(fm, vm, e.Id)
-            {
-                Snack = await Service<ITranslationsRepository>().GetValueOrSlug("saved"),
-                SnackType = "success",
-                SnackDuration = 3000
-            };
-            return response;
-        }
+            Snack = await Service<ITranslationsRepository>().GetValueOrSlug("saved"),
+            SnackType = "success",
+            SnackDuration = 3000
+        };
+        return response;
     }
 }

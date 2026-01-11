@@ -7,108 +7,107 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using MCMS.Data;
 
-namespace MCMS.Areas.Identity.Pages.Account.Manage
+namespace MCMS.Areas.Identity.Pages.Account.Manage;
+
+public partial class IndexModel : PageModel
 {
-    public partial class IndexModel : PageModel
+    private readonly UserManager<User> _userManager;
+    private readonly SignInManager<User> _signInManager;
+    private readonly BaseDbContext _baseDbContext;
+
+    public IndexModel(
+        UserManager<User> userManager,
+        SignInManager<User> signInManager,
+        BaseDbContext baseDbContext)
     {
-        private readonly UserManager<User> _userManager;
-        private readonly SignInManager<User> _signInManager;
-        private readonly BaseDbContext _baseDbContext;
+        _userManager = userManager;
+        _signInManager = signInManager;
+        _baseDbContext = baseDbContext;
+    }
 
-        public IndexModel(
-            UserManager<User> userManager,
-            SignInManager<User> signInManager,
-            BaseDbContext baseDbContext)
+    public string FirstName { get; set; }
+    public string LastName { get; set; }
+    public string Username { get; set; }
+
+    [TempData] public string StatusMessage { get; set; }
+
+    [BindProperty] public InputModel Input { get; set; }
+
+    public class InputModel
+    {
+        [Phone]
+        [Display(Name = "Phone number")]
+        public string PhoneNumber { get; set; }
+
+        [Display(Name = "First name")] public string FirstName { get; set; }
+        [Display(Name = "Last name")] public string LastName { get; set; }
+        [Display(Name = "Roles")] public IList<string> Roles { get; set; }
+    }
+
+    private async Task LoadAsync(User user)
+    {
+        var userName = await _userManager.GetUserNameAsync(user);
+        var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
+        var roles = await _userManager.GetRolesAsync(user);
+
+        Username = userName;
+
+        Input = new InputModel
         {
-            _userManager = userManager;
-            _signInManager = signInManager;
-            _baseDbContext = baseDbContext;
+            PhoneNumber = phoneNumber,
+            FirstName = user.FirstName,
+            LastName = user.LastName,
+            Roles = roles
+        };
+    }
+
+    public async Task<IActionResult> OnGetAsync()
+    {
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null)
+        {
+            return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
         }
 
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public string Username { get; set; }
+        await LoadAsync(user);
+        return Page();
+    }
 
-        [TempData] public string StatusMessage { get; set; }
-
-        [BindProperty] public InputModel Input { get; set; }
-
-        public class InputModel
+    public async Task<IActionResult> OnPostAsync()
+    {
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null)
         {
-            [Phone]
-            [Display(Name = "Phone number")]
-            public string PhoneNumber { get; set; }
-
-            [Display(Name = "First name")] public string FirstName { get; set; }
-            [Display(Name = "Last name")] public string LastName { get; set; }
-            [Display(Name = "Roles")] public IList<string> Roles { get; set; }
+            return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
         }
 
-        private async Task LoadAsync(User user)
+        if (!ModelState.IsValid)
         {
-            var userName = await _userManager.GetUserNameAsync(user);
-            var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
-            var roles = await _userManager.GetRolesAsync(user);
-
-            Username = userName;
-
-            Input = new InputModel
-            {
-                PhoneNumber = phoneNumber,
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-                Roles = roles
-            };
-        }
-
-        public async Task<IActionResult> OnGetAsync()
-        {
-            var user = await _userManager.GetUserAsync(User);
-            if (user == null)
-            {
-                return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
-            }
-
             await LoadAsync(user);
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync()
+        var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
+        if (Input.PhoneNumber != phoneNumber)
         {
-            var user = await _userManager.GetUserAsync(User);
-            if (user == null)
+            var setPhoneResult = await _userManager.SetPhoneNumberAsync(user, Input.PhoneNumber);
+            if (!setPhoneResult.Succeeded)
             {
-                return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+                StatusMessage = "Unexpected error when trying to set phone number.";
+                return RedirectToPage();
             }
-
-            if (!ModelState.IsValid)
-            {
-                await LoadAsync(user);
-                return Page();
-            }
-
-            var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
-            if (Input.PhoneNumber != phoneNumber)
-            {
-                var setPhoneResult = await _userManager.SetPhoneNumberAsync(user, Input.PhoneNumber);
-                if (!setPhoneResult.Succeeded)
-                {
-                    StatusMessage = "Unexpected error when trying to set phone number.";
-                    return RedirectToPage();
-                }
-            }
-
-            if (Input.FirstName != user.FirstName || Input.LastName != user.LastName)
-            {
-                var realUser = await _userManager.FindByIdAsync(user.Id);
-                realUser.LastName = Input.LastName;
-                realUser.FirstName = Input.FirstName;
-                await _baseDbContext.SaveChangesAsync();
-            }
-
-            await _signInManager.RefreshSignInAsync(user);
-            StatusMessage = "Your profile has been updated";
-            return RedirectToPage();
         }
+
+        if (Input.FirstName != user.FirstName || Input.LastName != user.LastName)
+        {
+            var realUser = await _userManager.FindByIdAsync(user.Id);
+            realUser.LastName = Input.LastName;
+            realUser.FirstName = Input.FirstName;
+            await _baseDbContext.SaveChangesAsync();
+        }
+
+        await _signInManager.RefreshSignInAsync(user);
+        StatusMessage = "Your profile has been updated";
+        return RedirectToPage();
     }
 }

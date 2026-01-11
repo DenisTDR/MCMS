@@ -4,17 +4,16 @@ using System.Threading.Tasks;
 using MCMS.Data;
 using Microsoft.EntityFrameworkCore;
 
-namespace MCMS.Common.Translations.Languages
-{
-    public class LanguagesRepository : Repository<LanguageEntity>
-    {
-        public LanguagesRepository(BaseDbContext dbContext) : base(dbContext)
-        {
-        }
+namespace MCMS.Common.Translations.Languages;
 
-        public Task<List<string>> GetLanguagesCodes()
-        {
-            return Queryable.Select(l => l.Code).OrderBy(c => c).ToListAsync();
-        }
+public class LanguagesRepository : Repository<LanguageEntity>
+{
+    public LanguagesRepository(BaseDbContext dbContext) : base(dbContext)
+    {
+    }
+
+    public Task<List<string>> GetLanguagesCodes()
+    {
+        return Queryable.Select(l => l.Code).OrderBy(c => c).ToListAsync();
     }
 }

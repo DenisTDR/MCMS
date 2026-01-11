@@ -18,243 +18,242 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Newtonsoft.Json.Linq;
 
-namespace MCMS.Base.Attributes
-{
-    public class PatchDocumentValidation : ActionFilterAttribute
-    {
-        public override void OnActionExecuting(ActionExecutingContext context)
-        {
-            if (!context.ModelState.IsValid)
-            {
-                context.Result = new BadRequestObjectResult(context.ModelState);
-                return;
-            }
+namespace MCMS.Base.Attributes;
 
-            foreach (var kvp in context.ActionArguments)
+public class PatchDocumentValidation : ActionFilterAttribute
+{
+    public override void OnActionExecuting(ActionExecutingContext context)
+    {
+        if (!context.ModelState.IsValid)
+        {
+            context.Result = new BadRequestObjectResult(context.ModelState);
+            return;
+        }
+
+        foreach (var kvp in context.ActionArguments)
+        {
+            if (kvp.Value is IJsonPatchDocument doc &&
+                doc.GetType().IsSubclassOfGenericType(typeof(JsonPatchDocument<>)))
             {
-                if (kvp.Value is IJsonPatchDocument doc &&
-                    doc.GetType().IsSubclassOfGenericType(typeof(JsonPatchDocument<>)))
+                if (!ValidateJsonPatchDocument(doc, context))
                 {
-                    if (!ValidateJsonPatchDocument(doc, context))
-                    {
-                        context.Result = new BadRequestObjectResult(context.ModelState);
-                        return;
-                    }
+                    context.Result = new BadRequestObjectResult(context.ModelState);
+                    return;
                 }
             }
         }
+    }
 
-        private bool ValidateJsonPatchDocument(IJsonPatchDocument doc, ActionExecutingContext context)
+    private bool ValidateJsonPatchDocument(IJsonPatchDocument doc, ActionExecutingContext context)
+    {
+        doc.GetType()
+            .TryGetGenericTypeOfImplementedGenericType(typeof(JsonPatchDocument<>), out var buildGenericType);
+        var argType = buildGenericType.GenericTypeArguments[0];
+        if (!typeof(IFormModel).IsAssignableFrom(argType))
         {
-            doc.GetType()
-                .TryGetGenericTypeOfImplementedGenericType(typeof(JsonPatchDocument<>), out var buildGenericType);
-            var argType = buildGenericType.GenericTypeArguments[0];
-            if (!typeof(IFormModel).IsAssignableFrom(argType))
-            {
-                return true;
-            }
-
-            var mi = GetType().GetMethod(nameof(ValidateJsonPatchDocumentOfT),
-                BindingFlags.NonPublic | BindingFlags.Instance);
-            var gmi = mi?.MakeGenericMethod(argType);
-            var resp = gmi?.Invoke(this, new object[] { doc, context }) as bool? == true;
-
-            return resp;
+            return true;
         }
 
-        private bool ValidateJsonPatchDocumentOfT<TFm>(JsonPatchDocument<TFm> doc, ActionExecutingContext context)
-            where TFm : class, IFormModel, new()
+        var mi = GetType().GetMethod(nameof(ValidateJsonPatchDocumentOfT),
+            BindingFlags.NonPublic | BindingFlags.Instance);
+        var gmi = mi?.MakeGenericMethod(argType);
+        var resp = gmi?.Invoke(this, new object[] { doc, context }) as bool? == true;
+
+        return resp;
+    }
+
+    private bool ValidateJsonPatchDocumentOfT<TFm>(JsonPatchDocument<TFm> doc, ActionExecutingContext context)
+        where TFm : class, IFormModel, new()
+    {
+        var nfm = new TFm();
+        for (var i = 0; i < doc.Operations.Count; i++)
         {
-            var nfm = new TFm();
-            for (var i = 0; i < doc.Operations.Count; i++)
+            var op = doc.Operations[i];
+            try
             {
-                var op = doc.Operations[i];
-                try
+                var splitPath = op?.path?.Split('/', StringSplitOptions.RemoveEmptyEntries);
+                if (splitPath?.Length == null)
                 {
-                    var splitPath = op?.path?.Split('/', StringSplitOptions.RemoveEmptyEntries);
-                    if (splitPath?.Length == null)
-                    {
-                        continue;
-                    }
+                    continue;
+                }
 
-                    if (op.op != "remove" && IsSubEntityProperty(typeof(TFm), splitPath[0], out var propInfo))
-                    {
-                        var noPatchOnThisProp =
-                            propInfo.GetCustomAttribute<DisablePatchSubPropertiesAttribute>() != null;
-                        var ignoreValueUpdateThisProp =
-                            propInfo.GetCustomAttribute<IgnoreValueUpdatesAttribute>() != null;
-                        if (op.value is JObject jObj)
-                        {
-                            doc.Operations.Remove(op);
-                            i--;
-                            foreach (var kvp in jObj)
-                            {
-                                if (noPatchOnThisProp && kvp.Key != "id" || ignoreValueUpdateThisProp)
-                                {
-                                    continue;
-                                }
-
-                                doc.Operations.Add(new Operation<TFm>(op.op, op.path + "/" + kvp.Key, op.from,
-                                    kvp.Value.ToObject(propInfo.PropertyType.GetProperty(kvp.Key.ToPascalCase())
-                                        ?.PropertyType)));
-                            }
-                        }
-                    }
-
-                    object obj = nfm;
-                    if (splitPath.Length != 1)
-                    {
-                        // TODO: generalize this
-                        if (obj.GetType().GetProperty(splitPath[0].ToPascalCase()) is { } prop &&
-                            splitPath[1].ToPascalCase() != "Id" &&
-                            prop.GetCustomAttribute<DisablePatchSubPropertiesAttribute>() != null)
-                        {
-                            doc.Operations.Remove(op);
-                            i--;
-                            continue;
-                        }
-
-                        if (obj.GetType().GetProperty(splitPath[0].ToPascalCase()) is { } prop2 &&
-                            prop2.GetCustomAttribute<IgnoreValueUpdatesAttribute>() != null)
-                        {
-                            doc.Operations.Remove(op);
-                            i--;
-                            continue;
-                        }
-
-                        foreach (var pathPart in splitPath.Take(splitPath.Length - 1))
-                        {
-                            obj = EnsureSubPropertyExists(obj, pathPart);
-                        }
-
-                        if (obj.GetType().ImplementsGenericInterface(typeof(IList<>)) &&
-                            int.TryParse(splitPath[^1], out _))
-                        {
-                            EnsureSubPropertyExists(obj, splitPath[^1]);
-                            continue;
-                        }
-                    }
-
-                    var finalProp = obj.GetType().GetProperty(splitPath[^1].ToPascalCase());
-                    if (finalProp?.CanWrite == false ||
-                        finalProp?.GetCustomAttributes<FormlyFieldAttribute>().LastOrDefault()?.Disabled == true ||
-                        finalProp?.GetCustomAttribute<IgnoreValueUpdatesAttribute>() != null)
+                if (op.op != "remove" && IsSubEntityProperty(typeof(TFm), splitPath[0], out var propInfo))
+                {
+                    var noPatchOnThisProp =
+                        propInfo.GetCustomAttribute<DisablePatchSubPropertiesAttribute>() != null;
+                    var ignoreValueUpdateThisProp =
+                        propInfo.GetCustomAttribute<IgnoreValueUpdatesAttribute>() != null;
+                    if (op.value is JObject jObj)
                     {
                         doc.Operations.Remove(op);
                         i--;
-                    }
+                        foreach (var kvp in jObj)
+                        {
+                            if (noPatchOnThisProp && kvp.Key != "id" || ignoreValueUpdateThisProp)
+                            {
+                                continue;
+                            }
 
-                    if (finalProp?.GetCustomAttribute<ReplacesPathAttribute>() is { } rpAttr)
-                    {
-                        op.path = op.path.Replace(splitPath[0], rpAttr.PathToReplace);
+                            doc.Operations.Add(new Operation<TFm>(op.op, op.path + "/" + kvp.Key, op.from,
+                                kvp.Value.ToObject(propInfo.PropertyType.GetProperty(kvp.Key.ToPascalCase())
+                                    ?.PropertyType)));
+                        }
                     }
                 }
-                catch (KnownException exc)
+
+                object obj = nfm;
+                if (splitPath.Length != 1)
                 {
-                    context.ModelState.AddModelError(op.path, exc.Message);
+                    // TODO: generalize this
+                    if (obj.GetType().GetProperty(splitPath[0].ToPascalCase()) is { } prop &&
+                        splitPath[1].ToPascalCase() != "Id" &&
+                        prop.GetCustomAttribute<DisablePatchSubPropertiesAttribute>() != null)
+                    {
+                        doc.Operations.Remove(op);
+                        i--;
+                        continue;
+                    }
+
+                    if (obj.GetType().GetProperty(splitPath[0].ToPascalCase()) is { } prop2 &&
+                        prop2.GetCustomAttribute<IgnoreValueUpdatesAttribute>() != null)
+                    {
+                        doc.Operations.Remove(op);
+                        i--;
+                        continue;
+                    }
+
+                    foreach (var pathPart in splitPath.Take(splitPath.Length - 1))
+                    {
+                        obj = EnsureSubPropertyExists(obj, pathPart);
+                    }
+
+                    if (obj.GetType().ImplementsGenericInterface(typeof(IList<>)) &&
+                        int.TryParse(splitPath[^1], out _))
+                    {
+                        EnsureSubPropertyExists(obj, splitPath[^1]);
+                        continue;
+                    }
+                }
+
+                var finalProp = obj.GetType().GetProperty(splitPath[^1].ToPascalCase());
+                if (finalProp?.CanWrite == false ||
+                    finalProp?.GetCustomAttributes<FormlyFieldAttribute>().LastOrDefault()?.Disabled == true ||
+                    finalProp?.GetCustomAttribute<IgnoreValueUpdatesAttribute>() != null)
+                {
                     doc.Operations.Remove(op);
                     i--;
                 }
-            }
 
-            var adapterFactory = context.HttpContext.RequestServices.Service<IAdapterFactory>() ??
-                                 new AdapterFactory();
-            doc.ApplyTo(nfm, adapterFactory, context.ModelState);
-            if (!context.ModelState.IsValid)
-            {
-                return false;
-            }
-
-            var keys = context.ModelState.Keys.ToList();
-            var updatedPaths = doc.Operations.Select(op => string.Join('.',
-                    op.path.Split('/', StringSplitOptions.RemoveEmptyEntries)
-                        .Select(pathPath => pathPath.ToPascalCase())))
-                .ToList();
-            var diff = keys.Except(updatedPaths).ToList();
-            diff.ForEach(d => context.ModelState.Remove(d));
-
-            if (!context.ModelState.IsValid)
-            {
-                return false;
-            }
-
-
-            var legitValidationResults = new List<ValidationResult>();
-            var items = new Dictionary<object, object>();
-
-            var validationContext =
-                new ValidationContext(nfm, context.HttpContext.RequestServices, items);
-            var isValid = Validator.TryValidateObject(nfm, validationContext, legitValidationResults, true);
-
-            if (isValid)
-            {
-                return true;
-            }
-
-            legitValidationResults =
-                legitValidationResults.Where(vr => vr.MemberNames.Any(mn => updatedPaths.Contains(mn))).ToList();
-
-
-            if (legitValidationResults.Any())
-            {
-                foreach (var vr in legitValidationResults)
+                if (finalProp?.GetCustomAttribute<ReplacesPathAttribute>() is { } rpAttr)
                 {
-                    context.ModelState.AddModelError(string.Join(",", vr.MemberNames), vr.ErrorMessage);
+                    op.path = op.path.Replace(splitPath[0], rpAttr.PathToReplace);
                 }
             }
-
-            return context.ModelState.IsValid;
+            catch (KnownException exc)
+            {
+                context.ModelState.AddModelError(op.path, exc.Message);
+                doc.Operations.Remove(op);
+                i--;
+            }
         }
 
-        private object EnsureSubPropertyExists(object mainObj, string propertyName)
+        var adapterFactory = context.HttpContext.RequestServices.Service<IAdapterFactory>() ??
+                             new AdapterFactory();
+        doc.ApplyTo(nfm, adapterFactory, context.ModelState);
+        if (!context.ModelState.IsValid)
         {
-            if (mainObj.GetType().ImplementsGenericInterface(typeof(IList<>)))
+            return false;
+        }
+
+        var keys = context.ModelState.Keys.ToList();
+        var updatedPaths = doc.Operations.Select(op => string.Join('.',
+                op.path.Split('/', StringSplitOptions.RemoveEmptyEntries)
+                    .Select(pathPath => pathPath.ToPascalCase())))
+            .ToList();
+        var diff = keys.Except(updatedPaths).ToList();
+        diff.ForEach(d => context.ModelState.Remove(d));
+
+        if (!context.ModelState.IsValid)
+        {
+            return false;
+        }
+
+
+        var legitValidationResults = new List<ValidationResult>();
+        var items = new Dictionary<object, object>();
+
+        var validationContext =
+            new ValidationContext(nfm, context.HttpContext.RequestServices, items);
+        var isValid = Validator.TryValidateObject(nfm, validationContext, legitValidationResults, true);
+
+        if (isValid)
+        {
+            return true;
+        }
+
+        legitValidationResults =
+            legitValidationResults.Where(vr => vr.MemberNames.Any(mn => updatedPaths.Contains(mn))).ToList();
+
+
+        if (legitValidationResults.Any())
+        {
+            foreach (var vr in legitValidationResults)
             {
-                if (int.TryParse(propertyName, out var index) && index.ToString() == propertyName)
+                context.ModelState.AddModelError(string.Join(",", vr.MemberNames), vr.ErrorMessage);
+            }
+        }
+
+        return context.ModelState.IsValid;
+    }
+
+    private object EnsureSubPropertyExists(object mainObj, string propertyName)
+    {
+        if (mainObj.GetType().ImplementsGenericInterface(typeof(IList<>)))
+        {
+            if (int.TryParse(propertyName, out var index) && index.ToString() == propertyName)
+            {
+                var list = mainObj as IList;
+                if (list.Count <= index)
                 {
-                    var list = mainObj as IList;
-                    if (list.Count <= index)
+                    var itemType = mainObj.GetType()
+                        .GetGenericArgumentTypeOfImplementedGenericInterface(typeof(IList<>));
+                    while (list.Count <= index)
                     {
-                        var itemType = mainObj.GetType()
-                            .GetGenericArgumentTypeOfImplementedGenericInterface(typeof(IList<>));
-                        while (list.Count <= index)
-                        {
-                            list.Add(SafeCreateInstance(itemType));
-                        }
+                        list.Add(SafeCreateInstance(itemType));
                     }
-
-                    return list[index];
                 }
-            }
 
-            var propInfo = mainObj.GetType().GetProperty(propertyName.ToPascalCase()) ??
-                           throw new KnownException("Invalid property: " + propertyName);
-            if (propInfo.GetValue(mainObj) is { } existing)
-            {
-                return existing;
+                return list[index];
             }
-
-            var subOjb = Activator.CreateInstance(propInfo.PropertyType);
-            propInfo.SetValue(mainObj, subOjb);
-            return subOjb;
         }
 
-        private bool IsSubEntityProperty(Type objType, string propertyName, out PropertyInfo propertyInfo)
+        var propInfo = mainObj.GetType().GetProperty(propertyName.ToPascalCase()) ??
+                       throw new KnownException("Invalid property: " + propertyName);
+        if (propInfo.GetValue(mainObj) is { } existing)
         {
-            propertyInfo = objType.GetProperty(propertyName.ToPascalCase()) ??
-                           throw new KnownException("Invalid property: " + propertyName);
-            return typeof(IFormModel).IsAssignableFrom(propertyInfo.PropertyType) ||
-                   typeof(IViewModel).IsAssignableFrom(propertyInfo.PropertyType);
+            return existing;
         }
 
-        private object SafeCreateInstance(Type type)
+        var subOjb = Activator.CreateInstance(propInfo.PropertyType);
+        propInfo.SetValue(mainObj, subOjb);
+        return subOjb;
+    }
+
+    private bool IsSubEntityProperty(Type objType, string propertyName, out PropertyInfo propertyInfo)
+    {
+        propertyInfo = objType.GetProperty(propertyName.ToPascalCase()) ??
+                       throw new KnownException("Invalid property: " + propertyName);
+        return typeof(IFormModel).IsAssignableFrom(propertyInfo.PropertyType) ||
+               typeof(IViewModel).IsAssignableFrom(propertyInfo.PropertyType);
+    }
+
+    private object SafeCreateInstance(Type type)
+    {
+        if (type == typeof(string))
         {
-            if (type == typeof(string))
-            {
-                return "";
-            }
-
-            return Activator.CreateInstance(type);
+            return "";
         }
+
+        return Activator.CreateInstance(type);
     }
 }

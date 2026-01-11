@@ -1,7 +1,6 @@
-namespace MCMS.Base.Data.Entities
+namespace MCMS.Base.Data.Entities;
+
+public interface IPublishable
 {
-    public interface IPublishable
-    {
-        public bool Published { get; set; }
-    }
+    public bool Published { get; set; }
 }

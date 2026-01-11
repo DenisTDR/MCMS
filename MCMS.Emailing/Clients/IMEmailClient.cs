@@ -1,10 +1,9 @@
 using System.Threading.Tasks;
 using MimeKit;
 
-namespace MCMS.Emailing.Clients
+namespace MCMS.Emailing.Clients;
+
+public interface IMEmailClient
 {
-    public interface IMEmailClient
-    {
-        Task<bool> SendEmail(MimeMessage message);
-    }
+    Task<bool> SendEmail(MimeMessage message);
 }

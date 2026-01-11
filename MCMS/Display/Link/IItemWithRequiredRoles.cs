@@ -1,7 +1,6 @@
-namespace MCMS.Display.Link
+namespace MCMS.Display.Link;
+
+public interface IItemWithRequiredRoles
 {
-    public interface IItemWithRequiredRoles
-    {
-        public string[] RequiredRoles { get; set; }
-    }
+    public string[] RequiredRoles { get; set; }
 }

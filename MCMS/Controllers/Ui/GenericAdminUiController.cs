@@ -16,96 +16,95 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace MCMS.Controllers.Ui
+namespace MCMS.Controllers.Ui;
+
+public abstract class GenericAdminUiController<TE, TFm, TVm, TApiController> : AdminUiController
+    where TE : class, IEntity
+    where TFm : class, IFormModel
+    where TVm : class, IViewModel
+    where TApiController : ICrudAdminApiController<TFm, TVm>
 {
-    public abstract class GenericAdminUiController<TE, TFm, TVm, TApiController> : AdminUiController
-        where TE : class, IEntity
-        where TFm : class, IFormModel
-        where TVm : class, IViewModel
-        where TApiController : ICrudAdminApiController<TFm, TVm>
+    private ITableConfigService _tableConfigService;
+
+    public virtual ITableConfigService TableConfigService => _tableConfigService ??=
+        ServiceProvider.GetRequiredService(TableConfigServiceHelper.GetTypeForUiController(GetType())) as
+            ITableConfigService;
+
+    private IDetailsConfigServiceT<TVm> _detailsConfigService;
+
+    public virtual IDetailsConfigServiceT<TVm> DetailsConfigService => _detailsConfigService ??=
+        Service<IDetailsConfigServiceT<TVm>>();
+
+    public virtual FormParamsService FormParamsService =>
+        Service<FormParamsForControllerService<TApiController, TFm>>();
+
+    protected virtual IRepository<TE> Repo => ServiceProvider.GetRepo<TE>();
+
+    public override void OnActionExecuting(ActionExecutingContext context)
     {
-        private ITableConfigService _tableConfigService;
+        base.OnActionExecuting(context);
+        ViewBag.ModelName = TypeHelpers.GetDisplayNameOrDefault<TVm>();
+        ViewBag.FormParamsService = FormParamsService;
 
-        public virtual ITableConfigService TableConfigService => _tableConfigService ??=
-            ServiceProvider.GetRequiredService(TableConfigServiceHelper.GetTypeForUiController(GetType())) as
-                ITableConfigService;
+        ViewBag.ApiControllerName = TypeHelpers.GetControllerName(typeof(TApiController));
 
-        private IDetailsConfigServiceT<TVm> _detailsConfigService;
+        TableConfigService.ServerSide = true;
+        TableConfigService.UseModals = UsesModals;
+    }
 
-        public virtual IDetailsConfigServiceT<TVm> DetailsConfigService => _detailsConfigService ??=
-            Service<IDetailsConfigServiceT<TVm>>();
-
-        public virtual FormParamsService FormParamsService =>
-            Service<FormParamsForControllerService<TApiController, TFm>>();
-
-        protected virtual IRepository<TE> Repo => ServiceProvider.GetRepo<TE>();
-
-        public override void OnActionExecuting(ActionExecutingContext context)
+    public override async Task<IActionResult> Index()
+    {
+        if (HttpContext.Request.Headers.TryGetValue("X-Request-Modal", out var value) &&
+            value.ToString().ToLower() == "true")
         {
-            base.OnActionExecuting(context);
-            ViewBag.ModelName = TypeHelpers.GetDisplayNameOrDefault<TVm>();
-            ViewBag.FormParamsService = FormParamsService;
-
-            ViewBag.ApiControllerName = TypeHelpers.GetControllerName(typeof(TApiController));
-
-            TableConfigService.ServerSide = true;
-            TableConfigService.UseModals = UsesModals;
+            return View("BasicModals/IndexModal", await GetIndexPageConfig());
         }
 
-        public override async Task<IActionResult> Index()
-        {
-            if (HttpContext.Request.Headers.TryGetValue("X-Request-Modal", out var value) &&
-                value.ToString().ToLower() == "true")
-            {
-                return View("BasicModals/IndexModal", await GetIndexPageConfig());
-            }
+        return View("BasicPages/Index", await GetIndexPageConfig());
+    }
 
-            return View("BasicPages/Index", await GetIndexPageConfig());
-        }
-
-        [NonAction]
-        public virtual async Task<IndexPageConfig> GetIndexPageConfig()
+    [NonAction]
+    public virtual async Task<IndexPageConfig> GetIndexPageConfig()
+    {
+        return new()
         {
-            return new()
-            {
-                IndexPageTitle = TypeHelpers.GetDisplayName(GetType()),
-                TableConfig = await TableConfigService.GetTableConfig()
-            };
-        }
+            IndexPageTitle = TypeHelpers.GetDisplayName(GetType()),
+            TableConfig = await TableConfigService.GetTableConfig()
+        };
+    }
 
-        [HttpGet("{id}")]
-        public virtual async Task<IActionResult> Details([FromRoute] string id)
-        {
-            var e = await Repo.GetOneOrThrow(id);
-            var vm = Mapper.Map<TVm>(e);
-            var model = new DetailsViewModelT<TVm>(vm, DetailsConfigService.GetDetailsFields());
-            return View(model);
-        }
+    [HttpGet("{id}")]
+    public virtual async Task<IActionResult> Details([FromRoute] string id)
+    {
+        var e = await Repo.GetOneOrThrow(id);
+        var vm = Mapper.Map<TVm>(e);
+        var model = new DetailsViewModelT<TVm>(vm, DetailsConfigService.GetDetailsFields());
+        return View(model);
+    }
 
-        [HttpGet]
-        public virtual IActionResult Create()
-        {
-            return View("BasicPages/Create");
-        }
+    [HttpGet]
+    public virtual IActionResult Create()
+    {
+        return View("BasicPages/Create");
+    }
 
-        [HttpGet("{id}")]
-        public virtual async Task<IActionResult> Edit([FromRoute] string id)
-        {
-            var e = await Repo.GetOneOrThrow(id);
-            return View("BasicPages/Edit", e);
-        }
+    [HttpGet("{id}")]
+    public virtual async Task<IActionResult> Edit([FromRoute] string id)
+    {
+        var e = await Repo.GetOneOrThrow(id);
+        return View("BasicPages/Edit", e);
+    }
 
-        [HttpGet("{id}")]
-        public virtual async Task<IActionResult> Delete([FromRoute] string id)
-        {
-            var e = await Repo.GetOneOrThrow(id);
-            return View("BasicModals/DeleteModal", e);
-        }
+    [HttpGet("{id}")]
+    public virtual async Task<IActionResult> Delete([FromRoute] string id)
+    {
+        var e = await Repo.GetOneOrThrow(id);
+        return View("BasicModals/DeleteModal", e);
+    }
 
-        [HttpPost]
-        public virtual Task<IActionResult> BatchDelete([FromBody] List<string> ids)
-        {
-            return Task.FromResult(View("BasicModals/BatchDeleteModal", ids) as IActionResult);
-        }
+    [HttpPost]
+    public virtual Task<IActionResult> BatchDelete([FromBody] List<string> ids)
+    {
+        return Task.FromResult(View("BasicModals/BatchDeleteModal", ids) as IActionResult);
     }
 }

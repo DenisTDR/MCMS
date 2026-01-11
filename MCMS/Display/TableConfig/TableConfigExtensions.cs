@@ -1,31 +1,30 @@
 using System.Collections.Generic;
 using MCMS.Display.Link;
 
-namespace MCMS.Display.TableConfig
+namespace MCMS.Display.TableConfig;
+
+public static class TableConfigExtensions
 {
-    public static class TableConfigExtensions
+    public static IEnumerable<MRichLink> GetAllItemActions(this TableConfig config)
     {
-        public static IEnumerable<MRichLink> GetAllItemActions(this TableConfig config)
+        if (config.ItemActions is { Count: > 0 })
         {
-            if (config.ItemActions is { Count: > 0 })
+            foreach (var configItemAction in config.ItemActions)
             {
-                foreach (var configItemAction in config.ItemActions)
-                {
-                    yield return configItemAction;
-                }
+                yield return configItemAction;
             }
+        }
 
-            if (config.DefaultItemAction != null)
-            {
-                yield return config.DefaultItemAction;
-            }
+        if (config.DefaultItemAction != null)
+        {
+            yield return config.DefaultItemAction;
+        }
 
-            if (config.BatchActions is { Count: > 0 })
+        if (config.BatchActions is { Count: > 0 })
+        {
+            foreach (var configBatchAction in config.BatchActions)
             {
-                foreach (var configBatchAction in config.BatchActions)
-                {
-                    yield return configBatchAction;
-                }
+                yield return configBatchAction;
             }
         }
     }

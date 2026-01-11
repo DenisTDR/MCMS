@@ -7,37 +7,36 @@ using MCMS.Common.Translations.Seed;
 using MCMS.Common.Translations.Translations;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace MCMS.Common
+namespace MCMS.Common;
+
+public class MCommonSpecifications : MSpecifications
 {
-    public class MCommonSpecifications : MSpecifications
+    public MCommonConfig Config { get; } = new();
+
+    public MCommonSpecifications()
     {
-        public MCommonConfig Config { get; } = new();
+        HasRazorViews = true;
+        PrePublishRootPath = "../MCMS";
+    }
 
-        public MCommonSpecifications()
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddScoped<IRepository<TranslationEntity>, TranslationsRepository>();
+        services.AddScoped<TranslationsRepository>();
+        services.AddScoped<IRepository<LanguageEntity>, LanguagesRepository>();
+        services.AddScoped<LanguagesRepository>();
+        services.AddScoped<ITranslationsRepository, TranslationsRepository>();
+
+        services.AddOptions<EntitySeeders>().Configure(seeders =>
         {
-            HasRazorViews = true;
-            PrePublishRootPath = "../MCMS";
-        }
+            seeders.Add<LanguagesSeeder>().Add<TranslationsSeeder>();
+        });
 
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddScoped<IRepository<TranslationEntity>, TranslationsRepository>();
-            services.AddScoped<TranslationsRepository>();
-            services.AddScoped<IRepository<LanguageEntity>, LanguagesRepository>();
-            services.AddScoped<LanguagesRepository>();
-            services.AddScoped<ITranslationsRepository, TranslationsRepository>();
+        services.AddOptions<SeedSources>().Configure(ss =>
+            ss.Add((typeof(MCommonSpecifications).Assembly, "seed-common-translations.json")));
 
-            services.AddOptions<EntitySeeders>().Configure(seeders =>
-            {
-                seeders.Add<LanguagesSeeder>().Add<TranslationsSeeder>();
-            });
+        services.AddOptions<LayoutIncludesOptions>().Configure(c => { c.AddForPages("CommonLibIncludes"); });
 
-            services.AddOptions<SeedSources>().Configure(ss =>
-                ss.Add((typeof(MCommonSpecifications).Assembly, "seed-common-translations.json")));
-
-            services.AddOptions<LayoutIncludesOptions>().Configure(c => { c.AddForPages("CommonLibIncludes"); });
-
-            services.AddSingleton(Config);
-        }
+        services.AddSingleton(Config);
     }
 }

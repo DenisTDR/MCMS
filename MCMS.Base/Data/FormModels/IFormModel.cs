@@ -1,6 +1,5 @@
-namespace MCMS.Base.Data.FormModels
+namespace MCMS.Base.Data.FormModels;
+
+public interface IFormModel
 {
-    public interface IFormModel
-    {
-    }
 }

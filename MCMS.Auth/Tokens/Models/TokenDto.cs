@@ -1,21 +1,20 @@
 using System;
 
-namespace MCMS.Auth.Tokens.Models
-{
-    public class TokenDto
-    {
-        public string Token { get; set; }
-        public string TokenType { get; set; }
-        public DateTime Expiration { get; set; }
+namespace MCMS.Auth.Tokens.Models;
 
-        public static TokenDto FromRefreshTokenEntity(RefreshTokenEntity refreshToken)
+public class TokenDto
+{
+    public string Token { get; set; }
+    public string TokenType { get; set; }
+    public DateTime Expiration { get; set; }
+
+    public static TokenDto FromRefreshTokenEntity(RefreshTokenEntity refreshToken)
+    {
+        return new TokenDto
         {
-            return new TokenDto
-            {
-                Token = refreshToken.Token,
-                TokenType = "Refresh",
-                Expiration = refreshToken.Expires
-            };
-        }
+            Token = refreshToken.Token,
+            TokenType = "Refresh",
+            Expiration = refreshToken.Expires
+        };
     }
 }

@@ -1,19 +1,18 @@
 using Microsoft.Extensions.Options;
 
-namespace MCMS.Admin
+namespace MCMS.Admin;
+
+public class FrameworkInfoService
 {
-    public class FrameworkInfoService
+    private readonly FrameworkLibsDetails _details;
+
+    public FrameworkInfoService(IOptions<FrameworkLibsDetails> detailsOptions)
     {
-        private readonly FrameworkLibsDetails _details;
+        _details = detailsOptions.Value;
+    }
 
-        public FrameworkInfoService(IOptions<FrameworkLibsDetails> detailsOptions)
-        {
-            _details = detailsOptions.Value;
-        }
-
-        public FrameworkLibsDetails GetDetails()
-        {
-            return _details;
-        }
+    public FrameworkLibsDetails GetDetails()
+    {
+        return _details;
     }
 }

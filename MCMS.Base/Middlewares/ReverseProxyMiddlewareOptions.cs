@@ -1,9 +1,8 @@
 using System.Collections.Generic;
 
-namespace MCMS.Base.Middlewares
+namespace MCMS.Base.Middlewares;
+
+public class ReverseProxyMiddlewareOptions
 {
-    public class ReverseProxyMiddlewareOptions
-    {
-        public Dictionary<string, string> ProxyRules { get; set; }
-    }
+    public Dictionary<string, string> ProxyRules { get; set; }
 }

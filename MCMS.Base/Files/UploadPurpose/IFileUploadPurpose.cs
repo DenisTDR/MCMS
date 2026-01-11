@@ -1,11 +1,10 @@
-namespace MCMS.Base.Files.UploadPurpose
+namespace MCMS.Base.Files.UploadPurpose;
+
+public interface IFileUploadPurpose
 {
-    public interface IFileUploadPurpose
-    {
-        public string Purpose { get;  }
-        bool Private { get; set; }
-        string Path { get; }
-        string[] Accept { get; set; }
-        public string AcceptStr { get; }
-    }
+    public string Purpose { get;  }
+    bool Private { get; set; }
+    string Path { get; }
+    string[] Accept { get; set; }
+    public string AcceptStr { get; }
 }

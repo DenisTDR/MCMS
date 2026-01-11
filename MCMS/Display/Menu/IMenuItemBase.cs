@@ -1,6 +1,5 @@
-namespace MCMS.Display.Menu
+namespace MCMS.Display.Menu;
+
+public interface IMenuItemBase
 {
-    public interface IMenuItemBase
-    {
-    }
 }

@@ -10,64 +10,63 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.OpenApi.Any;
 using Microsoft.OpenApi.Models;
 
-namespace MCMS.Base.SwaggerFormly.Formly.Fields
+namespace MCMS.Base.SwaggerFormly.Formly.Fields;
+
+[AttributeUsage(AttributeTargets.Property)]
+public class FormlyFieldAttribute : FormlyConfigPatcherAttribute
 {
-    [AttributeUsage(AttributeTargets.Property)]
-    public class FormlyFieldAttribute : FormlyConfigPatcherAttribute
+    public bool IgnoreField { get; set; }
+    public double OrderIndex { get; set; }
+    public object DefaultValue { get; set; }
+    public string[] Wrappers { get; set; }
+    public string ClassName { get; set; }
+    public bool HasCustomValidators { get; set; }
+    public bool Disabled { get; set; }
+
+
+    public override void Patch(OpenApiSchema schema, OpenApiObject xProps, OpenApiObject templateOptions,
+        LinkGenerator linkGenerator, List<ValidatorModel> validators)
     {
-        public bool IgnoreField { get; set; }
-        public double OrderIndex { get; set; }
-        public object DefaultValue { get; set; }
-        public string[] Wrappers { get; set; }
-        public string ClassName { get; set; }
-        public bool HasCustomValidators { get; set; }
-        public bool Disabled { get; set; }
-
-
-        public override void Patch(OpenApiSchema schema, OpenApiObject xProps, OpenApiObject templateOptions,
-            LinkGenerator linkGenerator, List<ValidatorModel> validators)
+        AttachBasicProps(schema, xProps, templateOptions, linkGenerator);
+        if (HasCustomValidators)
         {
-            AttachBasicProps(schema, xProps, templateOptions, linkGenerator);
-            if (HasCustomValidators)
-            {
-                validators.AddRange(GetCustomValidators());
-            }
+            validators.AddRange(GetCustomValidators());
+        }
+    }
+
+    protected virtual void AttachBasicProps(OpenApiSchema schema, OpenApiObject xProps,
+        OpenApiObject templateOptions, LinkGenerator linkGenerator)
+    {
+        if (ClassName != null)
+        {
+            xProps["className"] = OpenApiExtensions.ToOpenApi(ClassName);
         }
 
-        protected virtual void AttachBasicProps(OpenApiSchema schema, OpenApiObject xProps,
-            OpenApiObject templateOptions, LinkGenerator linkGenerator)
+        if (DefaultValue != null)
         {
-            if (ClassName != null)
-            {
-                xProps["className"] = OpenApiExtensions.ToOpenApi(ClassName);
-            }
-
-            if (DefaultValue != null)
-            {
-                xProps["defaultValue"] = OpenApiExtensions.ToOpenApi(DefaultValue);
-            }
-
-            if (Wrappers != null)
-            {
-                var arr = new OpenApiArray();
-                arr.AddRange(from object o in Wrappers select OpenApiExtensions.ToOpenApi(o));
-                xProps["wrappers"] = arr;
-            }
-
-            if (Disabled)
-            {
-                templateOptions["disabled"] = OpenApiExtensions.ToOpenApi(true);
-            }
+            xProps["defaultValue"] = OpenApiExtensions.ToOpenApi(DefaultValue);
         }
 
-        public virtual List<ValidatorModel> GetCustomValidators()
+        if (Wrappers != null)
         {
-            return null;
+            var arr = new OpenApiArray();
+            arr.AddRange(from object o in Wrappers select OpenApiExtensions.ToOpenApi(o));
+            xProps["wrappers"] = arr;
         }
 
-        public virtual string GetDisplayName(PropertyInfo prop)
+        if (Disabled)
         {
-            return TypeHelpers.GetDisplayNameOrDefault(prop);
+            templateOptions["disabled"] = OpenApiExtensions.ToOpenApi(true);
         }
+    }
+
+    public virtual List<ValidatorModel> GetCustomValidators()
+    {
+        return null;
+    }
+
+    public virtual string GetDisplayName(PropertyInfo prop)
+    {
+        return TypeHelpers.GetDisplayNameOrDefault(prop);
     }
 }

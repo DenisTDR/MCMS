@@ -1,23 +1,22 @@
 using System.Threading.Tasks;
 using MCMS.Base.Data;
 
-namespace MCMS.Logging.Logs.LogEntries
+namespace MCMS.Logging.Logs.LogEntries;
+
+public class LoggerService
 {
-    public class LoggerService
+    private readonly IRepository<LogEntryEntity> _entriesRepo;
+
+    public LoggerService(IRepository<LogEntryEntity> entriesRepo)
     {
-        private readonly IRepository<LogEntryEntity> _entriesRepo;
+        _entriesRepo = entriesRepo;
+    }
 
-        public LoggerService(IRepository<LogEntryEntity> entriesRepo)
+    public async Task AddLog(string type, string title, string data, string rawData, string context)
+    {
+        await _entriesRepo.Add(new LogEntryEntity
         {
-            _entriesRepo = entriesRepo;
-        }
-
-        public async Task AddLog(string type, string title, string data, string rawData, string context)
-        {
-            await _entriesRepo.Add(new LogEntryEntity
-            {
-                Type = type, Title = title, Data = data, Context = context, RawData = rawData
-            });
-        }
+            Type = type, Title = title, Data = data, Context = context, RawData = rawData
+        });
     }
 }

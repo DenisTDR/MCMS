@@ -14,92 +14,91 @@ using MCMS.Display.Link;
 using MCMS.Display.ModelDisplay;
 using Microsoft.AspNetCore.Mvc;
 
-namespace MCMS.Display.TableConfig
+namespace MCMS.Display.TableConfig;
+
+public class TableConfigForControllerService<TE, TFm, TVm, TUiController, TApiController> : TableConfigServiceOfT<TVm>
+    where TUiController : GenericAdminUiController<TE, TFm, TVm, TApiController>
+    where TE : class, IEntity
+    where TFm : class, IFormModel
+    where TVm : class, IViewModel
+    where TApiController : ICrudAdminApiController<TFm, TVm>
 {
-    public class TableConfigForControllerService<TE, TFm, TVm, TUiController, TApiController> : TableConfigServiceOfT<TVm>
-        where TUiController : GenericAdminUiController<TE, TFm, TVm, TApiController>
-        where TE : class, IEntity
-        where TFm : class, IFormModel
-        where TVm : class, IViewModel
-        where TApiController : ICrudAdminApiController<TFm, TVm>
+    private readonly ITranslationsRepository _translationsRepository;
+
+    public TableConfigForControllerService(IUrlHelper urlHelper, ITranslationsRepository translationsRepository) :
+        base(urlHelper)
     {
-        private readonly ITranslationsRepository _translationsRepository;
+        _translationsRepository = translationsRepository;
+    }
 
-        public TableConfigForControllerService(IUrlHelper urlHelper, ITranslationsRepository translationsRepository) :
-            base(urlHelper)
+    public override List<MRichLink> GetItemActions()
+    {
+        if (ExcludeDefaultItemActions)
         {
-            _translationsRepository = translationsRepository;
+            return new List<MRichLink>();
         }
 
-        public override List<MRichLink> GetItemActions()
+        return new List<MRichLink>
         {
-            if (ExcludeDefaultItemActions)
-            {
-                return new List<MRichLink>();
-            }
+            new MRichLink("", typeof(TUiController),
+                    nameof(GenericAdminUiController<TE, TFm, TVm, TApiController>.Details)).WithTag("details")
+                .AsButton("outline-info").WithModal().ToggleModal(UseModals)
+                .WithTitle("Details")
+                .WithIconClasses("far fa-eye").WithValues(new { id = "ENTITY_ID" }),
+            new MRichLink("", typeof(TUiController),
+                    nameof(GenericAdminUiController<TE, TFm, TVm, TApiController>.Edit)).WithTag("edit")
+                .AsButton("outline-primary").WithModal().ToggleModal(UseModals)
+                .WithTitle("Edit")
+                .WithIconClasses("fas fa-pencil-alt"),
+            new MRichLink("", typeof(TUiController),
+                    nameof(GenericAdminUiController<TE, TFm, TVm, TApiController>.Delete)).WithTag("delete")
+                .AsButton("outline-danger").WithModal().WithIconClasses("fas fa-trash-alt")
+                .WithTitle("Delete")
+        }.Select(l => l.WithValues(new { id = "ENTITY_ID" })).ToList();
+    }
 
-            return new List<MRichLink>
-            {
-                new MRichLink("", typeof(TUiController),
-                        nameof(GenericAdminUiController<TE, TFm, TVm, TApiController>.Details)).WithTag("details")
-                    .AsButton("outline-info").WithModal().ToggleModal(UseModals)
-                    .WithTitle("Details")
-                    .WithIconClasses("far fa-eye").WithValues(new { id = "ENTITY_ID" }),
-                new MRichLink("", typeof(TUiController),
-                        nameof(GenericAdminUiController<TE, TFm, TVm, TApiController>.Edit)).WithTag("edit")
-                    .AsButton("outline-primary").WithModal().ToggleModal(UseModals)
-                    .WithTitle("Edit")
-                    .WithIconClasses("fas fa-pencil-alt"),
-                new MRichLink("", typeof(TUiController),
-                        nameof(GenericAdminUiController<TE, TFm, TVm, TApiController>.Delete)).WithTag("delete")
-                    .AsButton("outline-danger").WithModal().WithIconClasses("fas fa-trash-alt")
-                    .WithTitle("Delete")
-            }.Select(l => l.WithValues(new { id = "ENTITY_ID" })).ToList();
+    public override List<BatchAction> GetBatchActions(bool excludeDefault = false)
+    {
+        if (excludeDefault)
+        {
+            return new();
         }
 
-        public override List<BatchAction> GetBatchActions(bool excludeDefault = false)
+        return new()
         {
-            if (excludeDefault)
-            {
-                return new();
-            }
+            new BatchAction("", typeof(TUiController),
+                        nameof(GenericAdminUiController<TE, TFm, TVm, TApiController>.BatchDelete))
+                    { TitleAttr = "Delete selected items" }
+                .WithTag("batch-delete").WithIconClasses("fas fa-trash").AsButton("outline-danger btn-light")
+                .WithModal()
+        };
+    }
 
-            return new()
-            {
-                new BatchAction("", typeof(TUiController),
-                            nameof(GenericAdminUiController<TE, TFm, TVm, TApiController>.BatchDelete))
-                        { TitleAttr = "Delete selected items" }
-                    .WithTag("batch-delete").WithIconClasses("fas fa-trash").AsButton("outline-danger btn-light")
-                    .WithModal()
-            };
+    public override Task<TableConfig> GetTableConfig()
+    {
+        if (CreateNewItemLink == null)
+        {
+            CreateNewItemLink = new MRichLink(
+                    $"{_translationsRepository.GetValueOrSlug("create").Result} {TypeHelpers.GetDisplayNameOrDefault(typeof(TVm)).ToLowerFirstChar()}",
+                    typeof(TUiController), nameof(GenericAdminUiController<TE, TFm, TVm, TApiController>.Create))
+                .WithTag("create").AsButton("outline-primary").WithIconClasses("fas fa-plus")
+                .WithValues(CreateNewItemLinkValues);
         }
 
-        public override Task<TableConfig> GetTableConfig()
+        if (TableItemsApiUrl == null)
         {
-            if (CreateNewItemLink == null)
-            {
-                CreateNewItemLink = new MRichLink(
-                        $"{_translationsRepository.GetValueOrSlug("create").Result} {TypeHelpers.GetDisplayNameOrDefault(typeof(TVm)).ToLowerFirstChar()}",
-                        typeof(TUiController), nameof(GenericAdminUiController<TE, TFm, TVm, TApiController>.Create))
-                    .WithTag("create").AsButton("outline-primary").WithIconClasses("fas fa-plus")
-                    .WithValues(CreateNewItemLinkValues);
-            }
-
-            if (TableItemsApiUrl == null)
-            {
-                TableItemsApiUrl = UrlHelper.ActionLink(ServerSide
-                        ? nameof(IReadOnlyApiController<TVm>.DtQuery)
-                        : nameof(IReadOnlyApiController<TVm>.Index),
-                    TypeHelpers.GetControllerName(typeof(TApiController)), TableItemsApiUrlValues);
-            }
-
-            return base.GetTableConfig();
+            TableItemsApiUrl = UrlHelper.ActionLink(ServerSide
+                    ? nameof(IReadOnlyApiController<TVm>.DtQuery)
+                    : nameof(IReadOnlyApiController<TVm>.Index),
+                TypeHelpers.GetControllerName(typeof(TApiController)), TableItemsApiUrlValues);
         }
 
-        public static Type MakeGenericTypeWithUiControllerType(Type uiControllerType)
-        {
-            return typeof(TableConfigForControllerService<,,,,>).MakeGenericType(typeof(TE), typeof(TFm), typeof(TVm),
-                uiControllerType, typeof(TApiController));
-        }
+        return base.GetTableConfig();
+    }
+
+    public static Type MakeGenericTypeWithUiControllerType(Type uiControllerType)
+    {
+        return typeof(TableConfigForControllerService<,,,,>).MakeGenericType(typeof(TE), typeof(TFm), typeof(TVm),
+            uiControllerType, typeof(TApiController));
     }
 }

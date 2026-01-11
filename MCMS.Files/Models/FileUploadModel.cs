@@ -1,10 +1,9 @@
 using MCMS.Base.Data.ViewModels;
 
-namespace MCMS.Files.Models
+namespace MCMS.Files.Models;
+
+public class FileUploadModel : ViewModel
 {
-    public class FileUploadModel : ViewModel
-    {
-        public string OwnerToken { get; set; }
-        public string Link { get; set; }
-    }
+    public string OwnerToken { get; set; }
+    public string Link { get; set; }
 }

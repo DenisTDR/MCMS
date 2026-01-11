@@ -1,6 +1,5 @@
-namespace MCMS.Base.Services
+namespace MCMS.Base.Services;
+
+public interface IMConfigurable
 {
-    public interface IMConfigurable
-    {
-    }
 }

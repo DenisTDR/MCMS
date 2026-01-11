@@ -1,25 +1,24 @@
 using System;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace MCMS.Base.Attributes
+namespace MCMS.Base.Attributes;
+
+[AttributeUsage(AttributeTargets.Class)]
+public class ServiceAttribute : Attribute
 {
-    [AttributeUsage(AttributeTargets.Class)]
-    public class ServiceAttribute : Attribute
+    public ServiceLifetime Lifetime { get; } = ServiceLifetime.Scoped;
+    public Type ServiceType { get; }
+    public Type OverrideImplementationFor { get; set; }
+    public bool HasServiceType => ServiceType != null;
+
+    public ServiceAttribute(ServiceLifetime lifetime = ServiceLifetime.Scoped, Type serviceType = null)
     {
-        public ServiceLifetime Lifetime { get; } = ServiceLifetime.Scoped;
-        public Type ServiceType { get; }
-        public Type OverrideImplementationFor { get; set; }
-        public bool HasServiceType => ServiceType != null;
+        Lifetime = lifetime;
+        ServiceType = serviceType;
+    }
 
-        public ServiceAttribute(ServiceLifetime lifetime = ServiceLifetime.Scoped, Type serviceType = null)
-        {
-            Lifetime = lifetime;
-            ServiceType = serviceType;
-        }
-
-        public ServiceAttribute(Type serviceType)
-        {
-            ServiceType = serviceType;
-        }
+    public ServiceAttribute(Type serviceType)
+    {
+        ServiceType = serviceType;
     }
 }

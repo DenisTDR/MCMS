@@ -9,73 +9,72 @@ using MCMS.Files.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace MCMS.Files
+namespace MCMS.Files;
+
+public class FilesRepository : Repository<FileEntity>
 {
-    public class FilesRepository : Repository<FileEntity>
+    private readonly ILogger<FilesRepository> _logger;
+
+    public FilesRepository(BaseDbContext dbContext, ILogger<FilesRepository> logger) : base(dbContext)
     {
-        private readonly ILogger<FilesRepository> _logger;
+        _logger = logger;
+    }
 
-        public FilesRepository(BaseDbContext dbContext, ILogger<FilesRepository> logger) : base(dbContext)
+    public override async Task<bool> Delete(FileEntity e)
+    {
+        e = await DeleteFile(e);
+        return await base.Delete(e);
+    }
+
+    public override async Task<bool> Delete(string id)
+    {
+        var e = new FileEntity {Id = id};
+        e = await DeleteFile(e);
+        return await base.Delete(e);
+    }
+
+    public override async Task<int> Delete(Expression<Func<FileEntity, bool>> predicate)
+    {
+        var query = DbSet.Where(predicate);
+        var files = await query.ToListAsync();
+        foreach (var fileEntity in files)
         {
-            _logger = logger;
+            await DeleteFile(fileEntity);
         }
 
-        public override async Task<bool> Delete(FileEntity e)
+        await query.DeleteFromQueryAsync();
+        return files.Count;
+    }
+
+    private async Task<FileEntity> DeleteFile(FileEntity e)
+    {
+        if (e.PhysicalFullPath == null)
         {
-            e = await DeleteFile(e);
-            return await base.Delete(e);
+            if (!DbContext.Entry(e).IsKeySet)
+            {
+                throw new KnownException("Can't delete a file, not enough intel provided.");
+            }
+
+            e = await GetOne(e.Id);
         }
 
-        public override async Task<bool> Delete(string id)
+        if (e.PhysicalFullPath == null)
         {
-            var e = new FileEntity {Id = id};
-            e = await DeleteFile(e);
-            return await base.Delete(e);
-        }
-
-        public override async Task<int> Delete(Expression<Func<FileEntity, bool>> predicate)
-        {
-            var query = DbSet.Where(predicate);
-            var files = await query.ToListAsync();
-            foreach (var fileEntity in files)
-            {
-                await DeleteFile(fileEntity);
-            }
-
-            await query.DeleteFromQueryAsync();
-            return files.Count;
-        }
-
-        private async Task<FileEntity> DeleteFile(FileEntity e)
-        {
-            if (e.PhysicalFullPath == null)
-            {
-                if (!DbContext.Entry(e).IsKeySet)
-                {
-                    throw new KnownException("Can't delete a file, not enough intel provided.");
-                }
-
-                e = await GetOne(e.Id);
-            }
-
-            if (e.PhysicalFullPath == null)
-            {
-                _logger.LogError($"Trying to delete a file with null {nameof(FileEntity.PhysicalFullPath)}.");
-                return e;
-                // throw new KnownException("Can't delete a file, not enough intel provided.");
-            }
-
-            if (File.Exists(e.PhysicalFullPath))
-            {
-                _logger.LogInformation("Deleting file: " + e.PhysicalFullPath);
-                File.Delete(e.PhysicalFullPath);
-            }
-            else
-            {
-                _logger.LogError("Trying to delete non-existing file: " + e.PhysicalFullPath);
-            }
-
+            _logger.LogError($"Trying to delete a file with null {nameof(FileEntity.PhysicalFullPath)}.");
             return e;
+            // throw new KnownException("Can't delete a file, not enough intel provided.");
         }
+
+        if (File.Exists(e.PhysicalFullPath))
+        {
+            _logger.LogInformation("Deleting file: " + e.PhysicalFullPath);
+            File.Delete(e.PhysicalFullPath);
+        }
+        else
+        {
+            _logger.LogError("Trying to delete non-existing file: " + e.PhysicalFullPath);
+        }
+
+        return e;
     }
 }

@@ -1,10 +1,9 @@
 using MCMS.Base.Controllers;
 using Microsoft.AspNetCore.Mvc;
 
-namespace MCMS.Controllers.Ui
+namespace MCMS.Controllers.Ui;
+
+[ApiExplorerSettings(IgnoreApi = true)]
+public class UiController : BaseController
 {
-    [ApiExplorerSettings(IgnoreApi = true)]
-    public class UiController : BaseController
-    {
-    }
 }

@@ -1,9 +1,8 @@
 using MCMS.Display.Link;
 
-namespace MCMS.Display.Menu
+namespace MCMS.Display.Menu;
+
+public interface IMenuItem : IMenuItemBase, IItemWithRequiredRoles
 {
-    public interface IMenuItem : IMenuItemBase, IItemWithRequiredRoles
-    {
-        public int Index { get; set; }
-    }
+    public int Index { get; set; }
 }

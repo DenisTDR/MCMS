@@ -1,11 +1,10 @@
 using Newtonsoft.Json;
 
-namespace MCMS.Common.Turnstile
+namespace MCMS.Common.Turnstile;
+
+public class TurnstileResponseModel
 {
-    public class TurnstileResponseModel
-    {
-        public bool Success { get; set; }
-        [JsonProperty("error-codes")] public string[] ErrorCodes { get; set; }
-        public string[] Messages { get; set; }
-    }
+    public bool Success { get; set; }
+    [JsonProperty("error-codes")] public string[] ErrorCodes { get; set; }
+    public string[] Messages { get; set; }
 }

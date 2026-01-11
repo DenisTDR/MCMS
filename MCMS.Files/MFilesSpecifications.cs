@@ -11,47 +11,46 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
 
-namespace MCMS.Files
+namespace MCMS.Files;
+
+public class MFilesSpecifications : MSpecifications
 {
-    public class MFilesSpecifications : MSpecifications
+    public MFilesSpecifications()
     {
-        public MFilesSpecifications()
-        {
-            HasRazorViews = true;
-            PrePublishRootPath = "../MCMS";
-        }
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddOptions<UploadPurposeOptions>();
-            services.AddTransient<FileUploadManager>();
-            services.ConfigureSwaggerGen(options => { options.SchemaFilter<SwaggerFilePurposesFilter>(); });
-            services.AddScoped<IRepository<FileEntity>, FilesRepository>();
-            services.AddScoped<FilesRepository>();
-            services.AddScoped<FilesService>();
-        }
+        HasRazorViews = true;
+        PrePublishRootPath = "../MCMS";
+    }
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddOptions<UploadPurposeOptions>();
+        services.AddTransient<FileUploadManager>();
+        services.ConfigureSwaggerGen(options => { options.SchemaFilter<SwaggerFilePurposesFilter>(); });
+        services.AddScoped<IRepository<FileEntity>, FilesRepository>();
+        services.AddScoped<FilesRepository>();
+        services.AddScoped<FilesService>();
+    }
 
-        public override void Configure(IApplicationBuilder app, IServiceProvider serviceProvider)
-        {
-            CreateAndRegisterDirectories(app, serviceProvider);
-        }
+    public override void Configure(IApplicationBuilder app, IServiceProvider serviceProvider)
+    {
+        CreateAndRegisterDirectories(app, serviceProvider);
+    }
 
-        private void CreateAndRegisterDirectories(IApplicationBuilder app, IServiceProvider serviceProvider)
+    private void CreateAndRegisterDirectories(IApplicationBuilder app, IServiceProvider serviceProvider)
+    {
+        var logger = serviceProvider.Service<ILogger<MFilesSpecifications>>();
+        var neededDirs = new[] {MFiles.PublicPath, MFiles.PrivatePath};
+        foreach (var neededDir in neededDirs)
         {
-            var logger = serviceProvider.Service<ILogger<MFilesSpecifications>>();
-            var neededDirs = new[] {MFiles.PublicPath, MFiles.PrivatePath};
-            foreach (var neededDir in neededDirs)
+            if (!Directory.Exists(neededDir))
             {
-                if (!Directory.Exists(neededDir))
-                {
-                    logger.LogInformation("Creating directory '" + neededDir + "'.");
-                    Directory.CreateDirectory(neededDir);
-                }
+                logger.LogInformation("Creating directory '" + neededDir + "'.");
+                Directory.CreateDirectory(neededDir);
             }
-
-            var path = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), MFiles.PublicPath));
-
-            app.UseStaticFiles(new StaticFileOptions
-                {FileProvider = new PhysicalFileProvider(path), RequestPath = MFiles.PublicVirtualPath});
         }
+
+        var path = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), MFiles.PublicPath));
+
+        app.UseStaticFiles(new StaticFileOptions
+            {FileProvider = new PhysicalFileProvider(path), RequestPath = MFiles.PublicVirtualPath});
     }
 }

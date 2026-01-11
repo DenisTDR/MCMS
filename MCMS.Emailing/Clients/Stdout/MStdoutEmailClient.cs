@@ -2,21 +2,20 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using MimeKit;
 
-namespace MCMS.Emailing.Clients.Stdout
+namespace MCMS.Emailing.Clients.Stdout;
+
+public class MStdoutEmailClient : IMEmailClient
 {
-    public class MStdoutEmailClient : IMEmailClient
+    private readonly ILogger<MStdoutEmailClient> _logger;
+
+    public MStdoutEmailClient(ILogger<MStdoutEmailClient> logger)
     {
-        private readonly ILogger<MStdoutEmailClient> _logger;
+        _logger = logger;
+    }
 
-        public MStdoutEmailClient(ILogger<MStdoutEmailClient> logger)
-        {
-            _logger = logger;
-        }
-
-        public Task<bool> SendEmail(MimeMessage message)
-        {
-            _logger.LogWarning($"Sending email:\n      {message}");
-            return Task.FromResult(true);
-        }
+    public Task<bool> SendEmail(MimeMessage message)
+    {
+        _logger.LogWarning($"Sending email:\n      {message}");
+        return Task.FromResult(true);
     }
 }

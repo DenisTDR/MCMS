@@ -14,141 +14,140 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Swashbuckle.AspNetCore.ReDoc;
 
-namespace MCMS.SwaggerFormly
+namespace MCMS.SwaggerFormly;
+
+public class SwaggerSpecifications : MSpecifications
 {
-    public class SwaggerSpecifications : MSpecifications
+    private readonly SwaggerConfigsOptions _configsOptions;
+
+    public SwaggerSpecifications(params SwaggerConfigOptions[] configOptions)
     {
-        private readonly SwaggerConfigsOptions _configsOptions;
-
-        public SwaggerSpecifications(params SwaggerConfigOptions[] configOptions)
+        _configsOptions = new SwaggerConfigsOptions
         {
-            _configsOptions = new SwaggerConfigsOptions
+            ForAdmin = configOptions.Length > 0 ? configOptions[0] : null,
+            ForApi = configOptions.Length > 1 ? configOptions[1] : null,
+        };
+        if (configOptions.Length > 2)
+        {
+            _configsOptions.CustomConfigs.AddRange(configOptions.Skip(2));
+        }
+
+        _configsOptions.PatchMainConfigs();
+    }
+
+    public override void Configure(IApplicationBuilder app, IServiceProvider serviceProvider)
+    {
+        if (Env.GetBool("FORMLY_DEBUG"))
+        {
+            var logger = serviceProvider.Service<ILogger<SwaggerSpecifications>>();
+            logger.LogWarning("FORMLY_DEBUG=True => enabling reverse proxy middleware");
+            var obj = new ReverseProxyMiddlewareOptions
             {
-                ForAdmin = configOptions.Length > 0 ? configOptions[0] : null,
-                ForApi = configOptions.Length > 1 ? configOptions[1] : null,
+                ProxyRules = new()
+                {
+                    {
+                        "/mcms-forms",
+                        Utils.UrlCombine(Env.GetOrThrow("FORMLY_SERVE_URL"), RoutePrefixes.RoutePrefix[1..],
+                            "mcms-forms/")
+                    }
+                }
             };
-            if (configOptions.Length > 2)
-            {
-                _configsOptions.CustomConfigs.AddRange(configOptions.Skip(2));
-            }
-
-            _configsOptions.PatchMainConfigs();
+            app.UseMiddleware<ReverseProxyMiddleware>(obj);
         }
 
-        public override void Configure(IApplicationBuilder app, IServiceProvider serviceProvider)
+        app.UseSwagger(options => options.RouteTemplate = _configsOptions.ForAdmin.RouteTemplate);
+
+        RegisterUi(app, serviceProvider.Service<IOptions<SwaggerConfigsOptions>>().Value);
+    }
+
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddOptions<SwaggerConfigsOptions>().Configure(c => { _configsOptions.SetupSwallowClone(c); });
+        services.AddSwaggerGen(swagger =>
         {
-            if (Env.GetBool("FORMLY_DEBUG"))
+            foreach (var swaggerConfigOptions in _configsOptions.GetAll())
             {
-                var logger = serviceProvider.Service<ILogger<SwaggerSpecifications>>();
-                logger.LogWarning("FORMLY_DEBUG=True => enabling reverse proxy middleware");
-                var obj = new ReverseProxyMiddlewareOptions
-                {
-                    ProxyRules = new()
-                    {
-                        {
-                            "/mcms-forms",
-                            Utils.UrlCombine(Env.GetOrThrow("FORMLY_SERVE_URL"), RoutePrefixes.RoutePrefix[1..],
-                                "mcms-forms/")
-                        }
-                    }
-                };
-                app.UseMiddleware<ReverseProxyMiddleware>(obj);
+                swagger.SwaggerDoc(swaggerConfigOptions.Name, swaggerConfigOptions.ToOpenApiInfo());
             }
 
-            app.UseSwagger(options => options.RouteTemplate = _configsOptions.ForAdmin.RouteTemplate);
+            swagger.SchemaFilter<OpenApiFormlyPatcherSchemaFilter>();
+            swagger.OperationFilter<DefaultSummaryOperationFilter>();
+            swagger.SchemaFilter<EnumSchemaFilter>();
+            swagger.UseAllOfToExtendReferenceSchemas();
+        });
+        services.AddSwaggerGenNewtonsoftSupport();
 
-            RegisterUi(app, serviceProvider.Service<IOptions<SwaggerConfigsOptions>>().Value);
-        }
-
-        public override void ConfigureServices(IServiceCollection services)
+        services.AddScoped(typeof(FormParamsForControllerService<,>));
+        services.AddScoped<FormParamsServiceBuilder>();
+        services.AddSingleton<SwaggerConfigService>();
+        services.AddOptions<UploadPurposeOptions>().Configure(o =>
         {
-            services.AddOptions<SwaggerConfigsOptions>().Configure(c => { _configsOptions.SetupSwallowClone(c); });
-            services.AddSwaggerGen(swagger =>
+            var ckeditorPurpose = new FileUploadPurpose("ckeditor")
             {
-                foreach (var swaggerConfigOptions in _configsOptions.GetAll())
+                Accept = new[] { "jpg", "jpeg", "png", "gif", "bmp", "webp", "tiff", "svg" }
+            };
+            o.Register("ckeditor", ckeditorPurpose);
+        });
+    }
+
+
+    private void RegisterUi(IApplicationBuilder app, SwaggerConfigsOptions configs)
+    {
+        var prefix = RoutePrefixes.RoutePrefix;
+
+        var allConfigs = configs.GetAll().ToList();
+        if (allConfigs.Any(c => c.UseSwaggerUi()))
+        {
+            app.UseSwaggerUI(uiOptions =>
+            {
+                foreach (var swaggerConfigOptions in allConfigs)
                 {
-                    swagger.SwaggerDoc(swaggerConfigOptions.Name, swaggerConfigOptions.ToOpenApiInfo());
+                    uiOptions.SwaggerEndpoint(swaggerConfigOptions.GetEndpointUrl(prefix),
+                        swaggerConfigOptions.GetEndpointName());
                 }
 
-                swagger.SchemaFilter<OpenApiFormlyPatcherSchemaFilter>();
-                swagger.OperationFilter<DefaultSummaryOperationFilter>();
-                swagger.SchemaFilter<EnumSchemaFilter>();
-                swagger.UseAllOfToExtendReferenceSchemas();
-            });
-            services.AddSwaggerGenNewtonsoftSupport();
-
-            services.AddScoped(typeof(FormParamsForControllerService<,>));
-            services.AddScoped<FormParamsServiceBuilder>();
-            services.AddSingleton<SwaggerConfigService>();
-            services.AddOptions<UploadPurposeOptions>().Configure(o =>
-            {
-                var ckeditorPurpose = new FileUploadPurpose("ckeditor")
+                foreach (var javascriptFile in configs.JavascriptFiles)
                 {
-                    Accept = new[] { "jpg", "jpeg", "png", "gif", "bmp", "webp", "tiff", "svg" }
-                };
-                o.Register("ckeditor", ckeditorPurpose);
+                    uiOptions.InjectJavascript(Utils.UrlCombine(prefix, javascriptFile));
+                }
+
+                foreach (var stylesheetFile in configs.StylesheetFiles)
+                {
+                    uiOptions.InjectStylesheet(Utils.UrlCombine(prefix, stylesheetFile));
+                }
+
+                uiOptions.RoutePrefix = "api/docs";
+                uiOptions.EnablePersistAuthorization();
+                uiOptions.EnableTryItOutByDefault();
+                uiOptions.EnableDeepLinking();
+                uiOptions.ConfigObject.DisplayRequestDuration = true;
             });
         }
 
-
-        private void RegisterUi(IApplicationBuilder app, SwaggerConfigsOptions configs)
+        var redocSwaggerSpecs = allConfigs.Where(swaggerConfigOptions => swaggerConfigOptions.UseReDoc()).ToList();
+        foreach (var redocSP in redocSwaggerSpecs)
         {
-            var prefix = RoutePrefixes.RoutePrefix;
-
-            var allConfigs = configs.GetAll().ToList();
-            if (allConfigs.Any(c => c.UseSwaggerUi()))
+            var redocOptions = new ReDocOptions
             {
-                app.UseSwaggerUI(uiOptions =>
-                {
-                    foreach (var swaggerConfigOptions in allConfigs)
-                    {
-                        uiOptions.SwaggerEndpoint(swaggerConfigOptions.GetEndpointUrl(prefix),
-                            swaggerConfigOptions.GetEndpointName());
-                    }
+                RoutePrefix = "api/redoc/" + redocSP.Name,
+                SpecUrl = redocSP.GetEndpointUrl(),
+                DocumentTitle = redocSP.Title + " | ReDoc"
+            };
 
-                    foreach (var javascriptFile in configs.JavascriptFiles)
-                    {
-                        uiOptions.InjectJavascript(Utils.UrlCombine(prefix, javascriptFile));
-                    }
-
-                    foreach (var stylesheetFile in configs.StylesheetFiles)
-                    {
-                        uiOptions.InjectStylesheet(Utils.UrlCombine(prefix, stylesheetFile));
-                    }
-
-                    uiOptions.RoutePrefix = "api/docs";
-                    uiOptions.EnablePersistAuthorization();
-                    uiOptions.EnableTryItOutByDefault();
-                    uiOptions.EnableDeepLinking();
-                    uiOptions.ConfigObject.DisplayRequestDuration = true;
-                });
-            }
-
-            var redocSwaggerSpecs = allConfigs.Where(swaggerConfigOptions => swaggerConfigOptions.UseReDoc()).ToList();
-            foreach (var redocSP in redocSwaggerSpecs)
+            if (redocSwaggerSpecs.Count > 1)
             {
-                var redocOptions = new ReDocOptions
+                var switchDocConfigObj = new
                 {
-                    RoutePrefix = "api/redoc/" + redocSP.Name,
-                    SpecUrl = redocSP.GetEndpointUrl(),
-                    DocumentTitle = redocSP.Title + " | ReDoc"
+                    current = redocSP.Name,
+                    docs = redocSwaggerSpecs.Select(rss => new { rss.Name, rss.Title })
                 };
-
-                if (redocSwaggerSpecs.Count > 1)
-                {
-                    var switchDocConfigObj = new
-                    {
-                        current = redocSP.Name,
-                        docs = redocSwaggerSpecs.Select(rss => new { rss.Name, rss.Title })
-                    };
-                    redocOptions.HeadContent =
-                        $"<script>\nvar switchDocConfig = {Utils.Serialize(switchDocConfigObj)};\n</script>\n"
-                        + "<script src='/_content/MCMS/api/redoc/redoc-doc-switcher.js'></script>";
-                }
-
-
-                app.UseReDoc(redocOptions);
+                redocOptions.HeadContent =
+                    $"<script>\nvar switchDocConfig = {Utils.Serialize(switchDocConfigObj)};\n</script>\n"
+                    + "<script src='/_content/MCMS/api/redoc/redoc-doc-switcher.js'></script>";
             }
+
+
+            app.UseReDoc(redocOptions);
         }
     }
 }

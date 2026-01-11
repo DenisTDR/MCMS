@@ -1,9 +1,8 @@
 using System;
 
-namespace MCMS.Base.Data.Entities
+namespace MCMS.Base.Data.Entities;
+
+[AttributeUsage(AttributeTargets.Class)]
+public class IgnoreDefaultTypeConfigurationAttribute : Attribute
 {
-    [AttributeUsage(AttributeTargets.Class)]
-    public class IgnoreDefaultTypeConfigurationAttribute : Attribute
-    {
-    }
 }

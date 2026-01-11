@@ -1,8 +1,7 @@
 using System;
 
-namespace MCMS.Base.SwaggerFormly.Formly
+namespace MCMS.Base.SwaggerFormly.Formly;
+
+public class DisablePatchSubPropertiesAttribute: Attribute
 {
-    public class DisablePatchSubPropertiesAttribute: Attribute
-    {
-    }
 }

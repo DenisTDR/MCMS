@@ -8,90 +8,89 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace MCMS.Auth.Session
+namespace MCMS.Auth.Session;
+
+public class SessionService : ISessionService
 {
-    public class SessionService : ISessionService
+    private readonly UserManager<User> _userManager;
+    private readonly IJwtFactory _jwtFactory;
+    private readonly JwtOptions _jwtOptions;
+    protected readonly ILogger Logger;
+    public IRefreshTokensService RefreshTokensService { get; }
+
+    public SessionService(
+        UserManager<User> userManager,
+        IJwtFactory jwtFactory,
+        IOptions<JwtOptions> jwtOptions,
+        IRefreshTokensService refreshTokensService,
+        ILoggerFactory loggerFactory
+    )
     {
-        private readonly UserManager<User> _userManager;
-        private readonly IJwtFactory _jwtFactory;
-        private readonly JwtOptions _jwtOptions;
-        protected readonly ILogger Logger;
-        public IRefreshTokensService RefreshTokensService { get; }
+        _userManager = userManager;
+        _jwtFactory = jwtFactory;
+        RefreshTokensService = refreshTokensService;
+        _jwtOptions = jwtOptions.Value;
+        Logger = loggerFactory.CreateLogger("Auth");
+    }
 
-        public SessionService(
-            UserManager<User> userManager,
-            IJwtFactory jwtFactory,
-            IOptions<JwtOptions> jwtOptions,
-            IRefreshTokensService refreshTokensService,
-            ILoggerFactory loggerFactory
-        )
+    public async Task<SessionDto> CreateSession(User user, string ipAddress = null)
+    {
+        user = await _userManager.FindByIdAsync(user.Id);
+        var roles = (await _userManager.GetRolesAsync(user)).ToList();
+
+        Logger.LogInformation("Creating session for user {UserId}", user.Id);
+
+        var refreshToken = await RefreshTokensService.CreateRefreshToken(user, ipAddress);
+
+
+        var session = new SessionDto
         {
-            _userManager = userManager;
-            _jwtFactory = jwtFactory;
-            RefreshTokensService = refreshTokensService;
-            _jwtOptions = jwtOptions.Value;
-            Logger = loggerFactory.CreateLogger("Auth");
-        }
-
-        public async Task<SessionDto> CreateSession(User user, string ipAddress = null)
-        {
-            user = await _userManager.FindByIdAsync(user.Id);
-            var roles = (await _userManager.GetRolesAsync(user)).ToList();
-
-            Logger.LogInformation("Creating session for user {UserId}", user.Id);
-
-            var refreshToken = await RefreshTokensService.CreateRefreshToken(user, ipAddress);
-
-
-            var session = new SessionDto
+            Profile = new UserProfileDto
             {
-                Profile = new UserProfileDto
-                {
-                    Id = user.Id,
-                    Username = user.UserName,
-                    Roles = roles,
-                    Fullname = user.FullName,
-                },
-                AccessToken = _jwtFactory.GenerateToken(user.Id, user.UserName, roles, _jwtOptions.CalcExpiration()),
-                RefreshToken = TokenDto.FromRefreshTokenEntity(refreshToken)
-            };
+                Id = user.Id,
+                Username = user.UserName,
+                Roles = roles,
+                Fullname = user.FullName,
+            },
+            AccessToken = _jwtFactory.GenerateToken(user.Id, user.UserName, roles, _jwtOptions.CalcExpiration()),
+            RefreshToken = TokenDto.FromRefreshTokenEntity(refreshToken)
+        };
 
-            return session;
-        }
+        return session;
+    }
 
-        public Task<SessionDto> CreateSession(string userId, string ipAddress = null)
+    public Task<SessionDto> CreateSession(string userId, string ipAddress = null)
+    {
+        return CreateSession(new User { Id = userId }, ipAddress);
+    }
+
+    public Task RevokeRefreshToken(string token, string ipAddress = null)
+    {
+        return RefreshTokensService.RevokeToken(token);
+    }
+
+
+    public async Task<SessionDto> RefreshSession(string token, string ipAddress = null)
+    {
+        var user = await RefreshTokensService.GetUserByRefreshToken(token);
+
+        var refreshToken = await RefreshTokensService.RecreateRefreshToken(user, token, ipAddress);
+
+        var roles = (await _userManager.GetRolesAsync(user)).ToList();
+
+        var session = new SessionDto
         {
-            return CreateSession(new User { Id = userId }, ipAddress);
-        }
-
-        public Task RevokeRefreshToken(string token, string ipAddress = null)
-        {
-            return RefreshTokensService.RevokeToken(token);
-        }
-
-
-        public async Task<SessionDto> RefreshSession(string token, string ipAddress = null)
-        {
-            var user = await RefreshTokensService.GetUserByRefreshToken(token);
-
-            var refreshToken = await RefreshTokensService.RecreateRefreshToken(user, token, ipAddress);
-
-            var roles = (await _userManager.GetRolesAsync(user)).ToList();
-
-            var session = new SessionDto
+            Profile = new UserProfileDto
             {
-                Profile = new UserProfileDto
-                {
-                    Id = user.Id,
-                    Username = user.UserName,
-                    Roles = roles,
-                    Fullname = user.FullName,
-                },
-                AccessToken = _jwtFactory.GenerateToken(user.Id, user.UserName, roles, _jwtOptions.CalcExpiration()),
-                RefreshToken = TokenDto.FromRefreshTokenEntity(refreshToken)
-            };
+                Id = user.Id,
+                Username = user.UserName,
+                Roles = roles,
+                Fullname = user.FullName,
+            },
+            AccessToken = _jwtFactory.GenerateToken(user.Id, user.UserName, roles, _jwtOptions.CalcExpiration()),
+            RefreshToken = TokenDto.FromRefreshTokenEntity(refreshToken)
+        };
 
-            return session;
-        }
+        return session;
     }
 }

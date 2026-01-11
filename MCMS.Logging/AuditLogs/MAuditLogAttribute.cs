@@ -8,73 +8,72 @@ using MCMS.Base.Extensions;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Filters;
 
-namespace MCMS.Logging.AuditLogs
+namespace MCMS.Logging.AuditLogs;
+
+public class MAuditLogAttribute : ActionFilterAttribute
 {
-    public class MAuditLogAttribute : ActionFilterAttribute
+    private bool IgnoreReadOnlyRequests { get; }
+
+    public MAuditLogAttribute(bool ignoreReadOnlyRequests = true)
     {
-        private bool IgnoreReadOnlyRequests { get; }
+        IgnoreReadOnlyRequests = ignoreReadOnlyRequests;
+    }
 
-        public MAuditLogAttribute(bool ignoreReadOnlyRequests = true)
+    private IMAuditLogger<MAuditLogAttribute> _auditLogger;
+
+    public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
+    {
+        if (context == null)
+            throw new ArgumentNullException(nameof(context));
+        if (next == null)
+            throw new ArgumentNullException(nameof(next));
+
+        OnActionExecuting(context);
+        if (context.Result == null)
         {
-            IgnoreReadOnlyRequests = ignoreReadOnlyRequests;
+            OnActionExecuted(await next());
+        }
+    }
+
+    public override void OnActionExecuting(ActionExecutingContext context)
+    {
+        if (ShouldSkipLog(context))
+            return;
+
+        _auditLogger = context.HttpContext.RequestServices.Service<IMAuditLogger<MAuditLogAttribute>>();
+        var request = context.HttpContext.Request;
+        var data = new Dictionary<string, object>
+        {
+            { "method", request.Method }
+        };
+        if (context.ActionArguments.Any())
+        {
+            data["actionArguments"] = context.ActionArguments;
         }
 
-        private IMAuditLogger<MAuditLogAttribute> _auditLogger;
+        _auditLogger.Log(data);
+    }
 
-        public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
+    public override void OnActionExecuted(ActionExecutedContext context)
+    {
+        if (ShouldSkipLog(context))
+            return;
+
+        var data = new Dictionary<string, object> { ["statusCode"] = context.HttpContext.Response.StatusCode };
+        _auditLogger.UpdateLog(data);
+    }
+
+    private static readonly string[] NonReadonlyHttpMethods = { "POST", "PUT", "DELETE", "PATCH" };
+
+    private bool ShouldSkipLog(FilterContext context)
+    {
+        if (context.ActionDescriptor is ControllerActionDescriptor controllerActionDescriptor
+            && controllerActionDescriptor.MethodInfo.GetCustomAttributes<ReadOnlyApiAttribute>().FirstOrDefault()
+                ?.IsReadOnly == true)
         {
-            if (context == null)
-                throw new ArgumentNullException(nameof(context));
-            if (next == null)
-                throw new ArgumentNullException(nameof(next));
-
-            OnActionExecuting(context);
-            if (context.Result == null)
-            {
-                OnActionExecuted(await next());
-            }
+            return true;
         }
 
-        public override void OnActionExecuting(ActionExecutingContext context)
-        {
-            if (ShouldSkipLog(context))
-                return;
-
-            _auditLogger = context.HttpContext.RequestServices.Service<IMAuditLogger<MAuditLogAttribute>>();
-            var request = context.HttpContext.Request;
-            var data = new Dictionary<string, object>
-            {
-                { "method", request.Method }
-            };
-            if (context.ActionArguments.Any())
-            {
-                data["actionArguments"] = context.ActionArguments;
-            }
-
-            _auditLogger.Log(data);
-        }
-
-        public override void OnActionExecuted(ActionExecutedContext context)
-        {
-            if (ShouldSkipLog(context))
-                return;
-
-            var data = new Dictionary<string, object> { ["statusCode"] = context.HttpContext.Response.StatusCode };
-            _auditLogger.UpdateLog(data);
-        }
-
-        private static readonly string[] NonReadonlyHttpMethods = { "POST", "PUT", "DELETE", "PATCH" };
-
-        private bool ShouldSkipLog(FilterContext context)
-        {
-            if (context.ActionDescriptor is ControllerActionDescriptor controllerActionDescriptor
-                && controllerActionDescriptor.MethodInfo.GetCustomAttributes<ReadOnlyApiAttribute>().FirstOrDefault()
-                    ?.IsReadOnly == true)
-            {
-                return true;
-            }
-
-            return IgnoreReadOnlyRequests && !NonReadonlyHttpMethods.Contains(context.HttpContext.Request.Method);
-        }
+        return IgnoreReadOnlyRequests && !NonReadonlyHttpMethods.Contains(context.HttpContext.Request.Method);
     }
 }

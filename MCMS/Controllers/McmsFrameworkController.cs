@@ -5,54 +5,54 @@ using MCMS.Base.Attributes;
 using MCMS.Controllers.Ui;
 using Microsoft.AspNetCore.Mvc;
 
-namespace MCMS.Controllers
+namespace MCMS.Controllers;
+
+public class McmsFrameworkController : UiController
 {
-    public class McmsFrameworkController : UiController
+    private FrameworkInfoService FrameworkInfoService =>
+        Service<FrameworkInfoService>();
+
+    public IActionResult FrameworkInfo()
     {
-        private FrameworkInfoService FrameworkInfoService =>
-            Service<FrameworkInfoService>();
+        return View();
+    }
 
-        public IActionResult FrameworkInfo()
+    [HttpGet]
+    [Produces("application/json")]
+    [ApiExplorerSettings(GroupName = "admin-api")]
+    [AdminApiRoute("[controller]/[action]")]
+    public ActionResult<List<FrameworkLibDetails>> FrameworkInfoJson()
+    {
+        var libs = FrameworkInfoService.GetDetails().Libs;
+        return Ok(libs);
+    }
+
+    private int GetStringWidth(string str)
+    {
+        var sl = ".ilI";
+        return (str.Length + 1) * 9 - 5 * str.Count(c => sl.Contains(c)) -
+               2 * str.Count(c => char.IsLower(c) && c != 'm');
+    }
+
+    [HttpGet]
+    [ApiExplorerSettings(GroupName = "admin-api")]
+    [AdminApiRoute("[controller]/[action]")]
+    [Produces("image/svg+xml; charset=utf-8")]
+    public IActionResult FrameworkVersion([FromQuery] string libName = "MCMS")
+    {
+        var version = FrameworkInfoService.GetDetails().Libs.FirstOrDefault(l => l.Name == libName)?.Version;
+        if (string.IsNullOrEmpty(version))
         {
-            return View();
+            version = "4.0.4";
         }
 
-        [HttpGet]
-        [Produces("application/json")]
-        [ApiExplorerSettings(GroupName = "admin-api")]
-        [AdminApiRoute("[controller]/[action]")]
-        public ActionResult<List<FrameworkLibDetails>> FrameworkInfoJson()
-        {
-            var libs = FrameworkInfoService.GetDetails().Libs;
-            return Ok(libs);
-        }
+        var versionTextWidth = GetStringWidth(version);
+        var libNameTextWidthWidth = GetStringWidth(libName);
+        var svgWidth = libNameTextWidthWidth + versionTextWidth;
+        var versionTextX = libNameTextWidthWidth + versionTextWidth / 2;
+        var libNameTextX = libNameTextWidthWidth / 2;
 
-        private int GetStringWidth(string str)
-        {
-            var sl = ".ilI";
-            return (str.Length + 1) * 9 - 5 * str.Count(c => sl.Contains(c)) -
-                   2 * str.Count(c => char.IsLower(c) && c != 'm');
-        }
-
-        [HttpGet]
-        [ApiExplorerSettings(GroupName = "admin-api")]
-        [AdminApiRoute("[controller]/[action]")]
-        [Produces("image/svg+xml; charset=utf-8")]
-        public IActionResult FrameworkVersion([FromQuery] string libName = "MCMS")
-        {
-            var version = FrameworkInfoService.GetDetails().Libs.FirstOrDefault(l => l.Name == libName)?.Version;
-            if (string.IsNullOrEmpty(version))
-            {
-                version = "4.0.4";
-            }
-
-            var versionTextWidth = GetStringWidth(version);
-            var libNameTextWidthWidth = GetStringWidth(libName);
-            var svgWidth = libNameTextWidthWidth + versionTextWidth;
-            var versionTextX = libNameTextWidthWidth + versionTextWidth / 2;
-            var libNameTextX = libNameTextWidthWidth / 2;
-
-            var svgContent = $@"<?xml version=""1.0"" encoding=""UTF-8""?>
+        var svgContent = $@"<?xml version=""1.0"" encoding=""UTF-8""?>
 <svg xmlns=""http://www.w3.org/2000/svg"" xmlns:xlink=""http://www.w3.org/1999/xlink"" 
      width=""{svgWidth}"" height=""20"" role=""img"" aria-label=""build: passing"">
     <title>build: passing</title>
@@ -91,7 +91,6 @@ namespace MCMS.Controllers
         <text x=""{versionTextX}"" y=""14"" fill=""#fff"">{version}</text>
     </g>
 </svg>";
-            return Content(svgContent, "image/svg+xml; charset=utf-8");
-        }
+        return Content(svgContent, "image/svg+xml; charset=utf-8");
     }
 }

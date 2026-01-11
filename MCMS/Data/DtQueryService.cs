@@ -8,124 +8,123 @@ using MCMS.Display.TableConfig;
 using MCMS.Models.Dt;
 using Microsoft.Extensions.Logging;
 
-namespace MCMS.Data
+namespace MCMS.Data;
+
+public class DtQueryService<TVm> : BaseDtQueryService<TVm> where TVm : IViewModel
 {
-    public class DtQueryService<TVm> : BaseDtQueryService<TVm> where TVm : IViewModel
+    private readonly List<TableColumn> _tableColumns;
+    private readonly Dictionary<string, TableColumn> _matchedColumns = new();
+    private readonly Dictionary<string, DbColumnMetadata> _dbColumnMetadataCache = new();
+
+    public DtQueryService(IMapper mapper, ITableConfigServiceT<TVm> tableConfigService,
+        ILoggerFactory loggerFactory) : base(mapper, loggerFactory)
     {
-        private readonly List<TableColumn> _tableColumns;
-        private readonly Dictionary<string, TableColumn> _matchedColumns = new();
-        private readonly Dictionary<string, DbColumnMetadata> _dbColumnMetadataCache = new();
+        _tableColumns = tableConfigService.GetTableColumns();
+    }
 
-        public DtQueryService(IMapper mapper, ITableConfigServiceT<TVm> tableConfigService,
-            ILoggerFactory loggerFactory) : base(mapper, loggerFactory)
+    protected override bool IsServerSideFilterable(DtColumn column)
+    {
+        if (!column.Searchable) return false;
+        var colConfig = TableColumn(column.Data);
+        return colConfig.Searchable.IsServer();
+    }
+
+    protected override bool IsGlobalServerSideFilterable(DtColumn column)
+    {
+        if (!column.Searchable) return false;
+        var colConfig = TableColumn(column.Data);
+        return colConfig.Searchable.IsServer() && colConfig.Type < TableColumnType.Bool;
+    }
+
+    protected override bool IsServerSideSortable(DtColumn column)
+    {
+        if (!column.Orderable) return false;
+        var colConfig = TableColumn(column.Data);
+        return colConfig.Orderable.IsServer();
+    }
+
+    protected override DbColumnMetadata GetDbColumn(DtColumn column)
+    {
+        if (_dbColumnMetadataCache.ContainsKey(column.Data))
         {
-            _tableColumns = tableConfigService.GetTableColumns();
+            return _dbColumnMetadataCache[column.Data];
         }
 
-        protected override bool IsServerSideFilterable(DtColumn column)
-        {
-            if (!column.Searchable) return false;
-            var colConfig = TableColumn(column.Data);
-            return colConfig.Searchable.IsServer();
-        }
+        var colConfig = TableColumn(column.Data);
+        return _dbColumnMetadataCache[column.Data] = new DbColumnMetadata()
+            { DbColumn = colConfig.DbColumn, DbFuncFormat = colConfig.DbFuncFormat };
+    }
 
-        protected override bool IsGlobalServerSideFilterable(DtColumn column)
+    protected override QueryCondition BuildFilter(DtColumn dtColumn)
+    {
+        var dbColumn = GetDbColumn(dtColumn);
+        var tableColumn = TableColumn(dtColumn.Data);
+        switch (tableColumn.Type)
         {
-            if (!column.Searchable) return false;
-            var colConfig = TableColumn(column.Data);
-            return colConfig.Searchable.IsServer() && colConfig.Type < TableColumnType.Bool;
-        }
-
-        protected override bool IsServerSideSortable(DtColumn column)
-        {
-            if (!column.Orderable) return false;
-            var colConfig = TableColumn(column.Data);
-            return colConfig.Orderable.IsServer();
-        }
-
-        protected override DbColumnMetadata GetDbColumn(DtColumn column)
-        {
-            if (_dbColumnMetadataCache.ContainsKey(column.Data))
+            case TableColumnType.Number:
             {
-                return _dbColumnMetadataCache[column.Data];
-            }
-
-            var colConfig = TableColumn(column.Data);
-            return _dbColumnMetadataCache[column.Data] = new DbColumnMetadata()
-                { DbColumn = colConfig.DbColumn, DbFuncFormat = colConfig.DbFuncFormat };
-        }
-
-        protected override QueryCondition BuildFilter(DtColumn dtColumn)
-        {
-            var dbColumn = GetDbColumn(dtColumn);
-            var tableColumn = TableColumn(dtColumn.Data);
-            switch (tableColumn.Type)
-            {
-                case TableColumnType.Number:
+                if (!dtColumn.Search.HasValidNumber())
                 {
-                    if (!dtColumn.Search.HasValidNumber())
-                    {
-                        break;
-                    }
-
-                    if (DtQueryHelper.BuildMultiTermQuery(dtColumn, out var res, dbColumn))
-                    {
-                        return res;
-                    }
-
                     break;
                 }
-                case TableColumnType.Bool:
-                case TableColumnType.NullableBool:
-                {
-                    var res =
-                        DtQueryHelper.BuildCondition(dbColumn.DbColumn,
-                            dtColumn.Search.GetValueBool(tableColumn.Type == TableColumnType.NullableBool),
-                            dbColumn.DbFuncFormat, true);
-                    return res;
-                }
-                case TableColumnType.Select:
-                {
-                    var res =
-                        DtQueryHelper.BuildCondition(dbColumn.DbColumn, dtColumn.Search.GetValueInteger(),
-                            dbColumn.DbFuncFormat, true);
-                    return res;
-                }
-                default:
-                {
-                    if (DtQueryHelper.BuildMultiTermQuery(dtColumn, out var res, dbColumn,
-                            useUnaccentForStrings: UseUnaccentForStrings))
-                    {
-                        return res;
-                    }
 
-                    break;
+                if (DtQueryHelper.BuildMultiTermQuery(dtColumn, out var res, dbColumn))
+                {
+                    return res;
                 }
+
+                break;
             }
+            case TableColumnType.Bool:
+            case TableColumnType.NullableBool:
+            {
+                var res =
+                    DtQueryHelper.BuildCondition(dbColumn.DbColumn,
+                        dtColumn.Search.GetValueBool(tableColumn.Type == TableColumnType.NullableBool),
+                        dbColumn.DbFuncFormat, true);
+                return res;
+            }
+            case TableColumnType.Select:
+            {
+                var res =
+                    DtQueryHelper.BuildCondition(dbColumn.DbColumn, dtColumn.Search.GetValueInteger(),
+                        dbColumn.DbFuncFormat, true);
+                return res;
+            }
+            default:
+            {
+                if (DtQueryHelper.BuildMultiTermQuery(dtColumn, out var res, dbColumn,
+                        useUnaccentForStrings: UseUnaccentForStrings))
+                {
+                    return res;
+                }
 
-            return new QueryCondition();
+                break;
+            }
         }
 
-        private TableColumn TableColumn(string data)
+        return new QueryCondition();
+    }
+
+    private TableColumn TableColumn(string data)
+    {
+        if (string.IsNullOrEmpty(data))
         {
-            if (string.IsNullOrEmpty(data))
-            {
-                throw new KnownException("Invalid column '" + data + "'.");
-            }
-
-            if (_matchedColumns.TryGetValue(data, out var column))
-            {
-                return column;
-            }
-
-            _matchedColumns[data] = _tableColumns.FirstOrDefault(col => col.Data == data);
-
-            if (_matchedColumns[data] == null)
-            {
-                throw new KnownException("Invalid column '" + data + "'.");
-            }
-
-            return _matchedColumns[data];
+            throw new KnownException("Invalid column '" + data + "'.");
         }
+
+        if (_matchedColumns.TryGetValue(data, out var column))
+        {
+            return column;
+        }
+
+        _matchedColumns[data] = _tableColumns.FirstOrDefault(col => col.Data == data);
+
+        if (_matchedColumns[data] == null)
+        {
+            throw new KnownException("Invalid column '" + data + "'.");
+        }
+
+        return _matchedColumns[data];
     }
 }

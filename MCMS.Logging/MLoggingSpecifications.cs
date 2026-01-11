@@ -8,38 +8,37 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-namespace MCMS.Logging
+namespace MCMS.Logging;
+
+public class MLoggingSpecifications : MSpecifications
 {
-    public class MLoggingSpecifications : MSpecifications
+    public MLoggingSpecifications()
     {
-        public MLoggingSpecifications()
-        {
-            HasRazorViews = true;
-            PrePublishRootPath = "../MCMS";
-        }
+        HasRazorViews = true;
+        PrePublishRootPath = "../MCMS";
+    }
 
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            base.ConfigureServices(services);
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        base.ConfigureServices(services);
 
-            services.AddOptions<LayoutIncludesOptions>().Configure(c => { c.AddForPages("MLoggingIncludes"); });
+        services.AddOptions<LayoutIncludesOptions>().Configure(c => { c.AddForPages("MLoggingIncludes"); });
 
-            services.AddScoped(typeof(IMAuditLogger<>), typeof(MAuditLogger<>));
+        services.AddScoped(typeof(IMAuditLogger<>), typeof(MAuditLogger<>));
 
-            services.AddHttpContextAccessor();
+        services.AddHttpContextAccessor();
 
-            services.AddSingleton<MAuditLogWorker>();
+        services.AddSingleton<MAuditLogWorker>();
             
-            services.AddScoped<LoggerService>();
-        }
+        services.AddScoped<LoggerService>();
+    }
 
-        public override void Configure(IApplicationBuilder app, IServiceProvider serviceProvider)
-        {
-            var auditLogWorker = serviceProvider.Service<MAuditLogWorker>();
-            auditLogWorker.Start();
+    public override void Configure(IApplicationBuilder app, IServiceProvider serviceProvider)
+    {
+        var auditLogWorker = serviceProvider.Service<MAuditLogWorker>();
+        auditLogWorker.Start();
 
-            serviceProvider.Service<IHostApplicationLifetime>()
-                .ApplicationStopping.Register(() => { auditLogWorker.Stop(); });
-        }
+        serviceProvider.Service<IHostApplicationLifetime>()
+            .ApplicationStopping.Register(() => { auditLogWorker.Stop(); });
     }
 }

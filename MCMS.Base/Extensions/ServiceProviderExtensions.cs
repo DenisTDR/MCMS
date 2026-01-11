@@ -6,56 +6,55 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace MCMS.Base.Extensions
+namespace MCMS.Base.Extensions;
+
+public static class ServiceProviderExtensions
 {
-    public static class ServiceProviderExtensions
+    public static IRepository<T> GetRepo<T>(this IServiceProvider serviceProvider) where T : class, IEntity
     {
-        public static IRepository<T> GetRepo<T>(this IServiceProvider serviceProvider) where T : class, IEntity
+        return serviceProvider.Service<IRepository<T>>();
+    }
+
+    public static IRepository<T> Repo<T>(this IServiceProvider serviceProvider) where T : class, IEntity
+    {
+        return serviceProvider.GetRepo<T>();
+    }
+
+    public static ILogger<T> Logger<T>(this IServiceProvider serviceProvider)
+    {
+        return serviceProvider.Service<ILogger<T>>();
+    }
+
+    public static object GetRepo(this IServiceProvider serviceProvider, Type entityType)
+    {
+        if (entityType == null)
         {
-            return serviceProvider.Service<IRepository<T>>();
+            throw new ArgumentNullException(nameof(entityType));
         }
 
-        public static IRepository<T> Repo<T>(this IServiceProvider serviceProvider) where T : class, IEntity
+        if (!typeof(IEntity).IsAssignableFrom(entityType))
         {
-            return serviceProvider.GetRepo<T>();
+            throw new Exception($"Type '{entityType.FullName}' does not inherit '{nameof(IEntity)}'.");
         }
 
-        public static ILogger<T> Logger<T>(this IServiceProvider serviceProvider)
-        {
-            return serviceProvider.Service<ILogger<T>>();
-        }
+        var genericMethodInfo = typeof(ServiceProviderExtensions).GetMethods()
+            .FirstOrDefault(mi => mi.Name == nameof(GetRepo) && mi.IsGenericMethod);
+        var methodInfo = genericMethodInfo?.MakeGenericMethod(entityType);
+        return methodInfo?.Invoke(null, new object[] { serviceProvider });
+    }
 
-        public static object GetRepo(this IServiceProvider serviceProvider, Type entityType)
-        {
-            if (entityType == null)
-            {
-                throw new ArgumentNullException(nameof(entityType));
-            }
+    public static T GetOptions<T>(this IServiceProvider serviceProvider) where T : class
+    {
+        return serviceProvider.GetService<IOptions<T>>()?.Value;
+    }
 
-            if (!typeof(IEntity).IsAssignableFrom(entityType))
-            {
-                throw new Exception($"Type '{entityType.FullName}' does not inherit '{nameof(IEntity)}'.");
-            }
+    public static T GetRequiredOptions<T>(this IServiceProvider serviceProvider) where T : class
+    {
+        return serviceProvider.Service<IOptions<T>>().Value;
+    }
 
-            var genericMethodInfo = typeof(ServiceProviderExtensions).GetMethods()
-                .FirstOrDefault(mi => mi.Name == nameof(GetRepo) && mi.IsGenericMethod);
-            var methodInfo = genericMethodInfo?.MakeGenericMethod(entityType);
-            return methodInfo?.Invoke(null, new object[] { serviceProvider });
-        }
-
-        public static T GetOptions<T>(this IServiceProvider serviceProvider) where T : class
-        {
-            return serviceProvider.GetService<IOptions<T>>()?.Value;
-        }
-
-        public static T GetRequiredOptions<T>(this IServiceProvider serviceProvider) where T : class
-        {
-            return serviceProvider.Service<IOptions<T>>().Value;
-        }
-
-        public static T Service<T>(this IServiceProvider serviceProvider)
-        {
-            return serviceProvider.GetRequiredService<T>();
-        }
+    public static T Service<T>(this IServiceProvider serviceProvider)
+    {
+        return serviceProvider.GetRequiredService<T>();
     }
 }

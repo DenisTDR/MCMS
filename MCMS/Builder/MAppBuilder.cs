@@ -13,94 +13,93 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Infrastructure;
 
-namespace MCMS.Builder
+namespace MCMS.Builder;
+
+public class MAppBuilder
 {
-    public class MAppBuilder
+    private readonly IList<MSpecifications> _specifications = new List<MSpecifications>();
+
+    private readonly IWebHostEnvironment _hostEnvironment;
+
+    public MAppBuilder(IWebHostEnvironment hostEnvironment)
     {
-        private readonly IList<MSpecifications> _specifications = new List<MSpecifications>();
+        _hostEnvironment = hostEnvironment;
+    }
 
-        private readonly IWebHostEnvironment _hostEnvironment;
-
-        public MAppBuilder(IWebHostEnvironment hostEnvironment)
+    public MAppBuilder AddSpecifications(MSpecifications specifications, int? index = null)
+    {
+        specifications.Environment = _hostEnvironment;
+        if (index != null)
         {
-            _hostEnvironment = hostEnvironment;
+            _specifications.Insert(index.Value, specifications);
+        }
+        else
+        {
+            _specifications.Add(specifications);
         }
 
-        public MAppBuilder AddSpecifications(MSpecifications specifications, int? index = null)
+        return this;
+    }
+
+    public MAppBuilder AddSpecifications<T>(int? index = null, Action<T> configure = null)
+        where T : MSpecifications, new()
+    {
+        var spec = new T();
+        configure?.Invoke(spec);
+        AddSpecifications(spec, index);
+        return this;
+    }
+
+    public MAppBuilder AddSpecifications<T>(Action<T> configure)
+        where T : MSpecifications, new()
+    {
+        return AddSpecifications(null, configure);
+    }
+
+    private Action<IServiceCollection> _addDbContextAction;
+
+    public MAppBuilder WithPostgres<T>(Action<NpgsqlDbContextOptionsBuilder> pgOptionsBuilder = null)
+        where T : BaseDbContext
+    {
+        _addDbContextAction = services =>
         {
-            specifications.Environment = _hostEnvironment;
-            if (index != null)
+            services.AddDbContext<T>(optionsBuilder =>
             {
-                _specifications.Insert(index.Value, specifications);
-            }
-            else
-            {
-                _specifications.Add(specifications);
-            }
+                optionsBuilder.UseNpgsql(Env.GetOrThrow("DB_URL"),
+                    o => { pgOptionsBuilder?.Invoke(o); });
+            });
 
-            return this;
-        }
+            // this is required because service provider should use the same scoped instance for T and for BaseDbContext 
+            // otherwise there will be two scoped instances and we don't like that
+            services.AddScoped<BaseDbContext>(serviceProvider => serviceProvider.Service<T>());
+        };
+        return this;
+    }
 
-        public MAppBuilder AddSpecifications<T>(int? index = null, Action<T> configure = null)
-            where T : MSpecifications, new()
+    public MAppBuilder WithSwagger(params SwaggerConfigOptions[] configOptions)
+    {
+        return AddSpecifications(new SwaggerSpecifications(configOptions));
+    }
+
+    public MApp Build()
+    {
+        if (!_specifications.Any(spec => spec is BaseSpecifications))
         {
-            var spec = new T();
-            configure?.Invoke(spec);
-            AddSpecifications(spec, index);
-            return this;
+            AddSpecifications<BaseSpecifications>(0);
         }
 
-        public MAppBuilder AddSpecifications<T>(Action<T> configure)
-            where T : MSpecifications, new()
+        if (!_specifications.Any(spec => spec is MAuthSpecifications))
         {
-            return AddSpecifications(null, configure);
+            AddSpecifications<MAuthSpecifications>(0);
         }
 
-        private Action<IServiceCollection> _addDbContextAction;
-
-        public MAppBuilder WithPostgres<T>(Action<NpgsqlDbContextOptionsBuilder> pgOptionsBuilder = null)
-            where T : BaseDbContext
+        if (!_specifications.Any(spec => spec is MBaseSpecifications))
         {
-            _addDbContextAction = services =>
-            {
-                services.AddDbContext<T>(optionsBuilder =>
-                {
-                    optionsBuilder.UseNpgsql(Env.GetOrThrow("DB_URL"),
-                        o => { pgOptionsBuilder?.Invoke(o); });
-                });
-
-                // this is required because service provider should use the same scoped instance for T and for BaseDbContext 
-                // otherwise there will be two scoped instances and we don't like that
-                services.AddScoped<BaseDbContext>(serviceProvider => serviceProvider.Service<T>());
-            };
-            return this;
+            AddSpecifications<MBaseSpecifications>(0);
         }
 
-        public MAppBuilder WithSwagger(params SwaggerConfigOptions[] configOptions)
-        {
-            return AddSpecifications(new SwaggerSpecifications(configOptions));
-        }
-
-        public MApp Build()
-        {
-            if (!_specifications.Any(spec => spec is BaseSpecifications))
-            {
-                AddSpecifications<BaseSpecifications>(0);
-            }
-
-            if (!_specifications.Any(spec => spec is MAuthSpecifications))
-            {
-                AddSpecifications<MAuthSpecifications>(0);
-            }
-
-            if (!_specifications.Any(spec => spec is MBaseSpecifications))
-            {
-                AddSpecifications<MBaseSpecifications>(0);
-            }
-
-            var app = new MApp(_hostEnvironment, _specifications, _addDbContextAction);
-            _addDbContextAction = null;
-            return app;
-        }
+        var app = new MApp(_hostEnvironment, _specifications, _addDbContextAction);
+        _addDbContextAction = null;
+        return app;
     }
 }

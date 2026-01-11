@@ -1,12 +1,11 @@
 using MCMS.Base.SwaggerFormly.Formly.Fields;
 
-namespace MCMS.Base.SwaggerFormly.Formly
+namespace MCMS.Base.SwaggerFormly.Formly;
+
+public class FormlyIgnoreAttribute : FormlyFieldAttribute
 {
-    public class FormlyIgnoreAttribute : FormlyFieldAttribute
+    public FormlyIgnoreAttribute()
     {
-        public FormlyIgnoreAttribute()
-        {
-            IgnoreField = true;
-        }
+        IgnoreField = true;
     }
 }

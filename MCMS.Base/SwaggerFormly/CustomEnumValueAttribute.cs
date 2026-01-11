@@ -1,14 +1,13 @@
 using System;
 
-namespace MCMS.Base.SwaggerFormly
-{
-    public class CustomEnumValueAttribute : Attribute
-    {
-        public CustomEnumValueAttribute(object value)
-        {
-            Value = value;
-        }
+namespace MCMS.Base.SwaggerFormly;
 
-        public object Value { get; }
+public class CustomEnumValueAttribute : Attribute
+{
+    public CustomEnumValueAttribute(object value)
+    {
+        Value = value;
     }
+
+    public object Value { get; }
 }

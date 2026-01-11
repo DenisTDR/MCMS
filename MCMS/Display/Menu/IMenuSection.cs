@@ -1,9 +1,8 @@
 using System.Collections.Generic;
 
-namespace MCMS.Display.Menu
+namespace MCMS.Display.Menu;
+
+public interface IMenuSection
 {
-    public interface IMenuSection
-    {
-        public List<IMenuItemBase> Items { get; }
-    }
+    public List<IMenuItemBase> Items { get; }
 }

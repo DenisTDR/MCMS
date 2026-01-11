@@ -8,41 +8,40 @@ using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
-namespace MCMS.Files.Filters
-{
-    public class SwaggerFilePurposesFilter : ISchemaFilter
-    {
-        private readonly ILogger<SwaggerFilePurposesFilter> _logger;
-        private readonly UploadPurposeOptions _options;
+namespace MCMS.Files.Filters;
 
-        public SwaggerFilePurposesFilter(ILogger<SwaggerFilePurposesFilter> logger,
-            IOptions<UploadPurposeOptions> options)
+public class SwaggerFilePurposesFilter : ISchemaFilter
+{
+    private readonly ILogger<SwaggerFilePurposesFilter> _logger;
+    private readonly UploadPurposeOptions _options;
+
+    public SwaggerFilePurposesFilter(ILogger<SwaggerFilePurposesFilter> logger,
+        IOptions<UploadPurposeOptions> options)
+    {
+        _logger = logger;
+        _options = options.Value;
+    }
+
+    public void Apply(OpenApiSchema schema, SchemaFilterContext context)
+    {
+        var fileUploadProps = context.Type.GetProperties()
+            .Where(prop => prop.GetCustomAttribute<FormlyFileAttribute>() != null).ToList();
+        if (!fileUploadProps.Any())
         {
-            _logger = logger;
-            _options = options.Value;
+            return;
         }
 
-        public void Apply(OpenApiSchema schema, SchemaFilterContext context)
+        foreach (var prop in fileUploadProps)
         {
-            var fileUploadProps = context.Type.GetProperties()
-                .Where(prop => prop.GetCustomAttribute<FormlyFileAttribute>() != null).ToList();
-            if (!fileUploadProps.Any())
+            var fileAttribute = prop.GetCustomAttribute<FormlyFileAttribute>();
+            if (string.IsNullOrEmpty(fileAttribute?.Purpose))
             {
-                return;
+                _logger.LogError("Found a null purposed FormlyFileField: " + context.Type.CSharpName() + " -> " +
+                                 prop.Name);
+                continue;
             }
 
-            foreach (var prop in fileUploadProps)
-            {
-                var fileAttribute = prop.GetCustomAttribute<FormlyFileAttribute>();
-                if (string.IsNullOrEmpty(fileAttribute?.Purpose))
-                {
-                    _logger.LogError("Found a null purposed FormlyFileField: " + context.Type.CSharpName() + " -> " +
-                                     prop.Name);
-                    continue;
-                }
-
-                _options.Register(fileAttribute.Purpose, fileAttribute);
-            }
+            _options.Register(fileAttribute.Purpose, fileAttribute);
         }
     }
 }

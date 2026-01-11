@@ -2,22 +2,21 @@ using System.Reflection;
 using MCMS.Base.Display.DisplayValue;
 using MCMS.Base.Helpers;
 
-namespace MCMS.Base.Display.ModelDisplay
+namespace MCMS.Base.Display.ModelDisplay;
+
+public class DetailsField
 {
-    public class DetailsField
+    public double OrderIndex { get; set; }
+    public string Tag { get; set; }
+    public string Name => TypeHelpers.GetDisplayNameOrDefault(PropertyInfo);
+    public string Description => TypeHelpers.GetDescription(PropertyInfo);
+    public PropertyInfo PropertyInfo { get; set; }
+    public string ClassName { get; set; }
+
+    public string ViewTemplate { get; set; }
+
+    public object GetDisplayValue(DisplayValueService displayValueService, object obj)
     {
-        public double OrderIndex { get; set; }
-        public string Tag { get; set; }
-        public string Name => TypeHelpers.GetDisplayNameOrDefault(PropertyInfo);
-        public string Description => TypeHelpers.GetDescription(PropertyInfo);
-        public PropertyInfo PropertyInfo { get; set; }
-        public string ClassName { get; set; }
-
-        public string ViewTemplate { get; set; }
-
-        public object GetDisplayValue(DisplayValueService displayValueService, object obj)
-        {
-            return displayValueService.GetDisplayValue(PropertyInfo, obj);
-        }
+        return displayValueService.GetDisplayValue(PropertyInfo, obj);
     }
 }

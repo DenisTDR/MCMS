@@ -1,11 +1,10 @@
 using System;
 
-namespace MCMS.Base.Data.Entities
+namespace MCMS.Base.Data.Entities;
+
+public interface IEntity
 {
-    public interface IEntity
-    {
-        string Id { get; set; }
-        DateTime Created { get; set; }
-        DateTime Updated { get; set; }
-    }
+    string Id { get; set; }
+    DateTime Created { get; set; }
+    DateTime Updated { get; set; }
 }

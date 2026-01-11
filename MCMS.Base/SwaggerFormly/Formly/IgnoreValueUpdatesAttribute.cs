@@ -1,8 +1,7 @@
 using System;
 
-namespace MCMS.Base.SwaggerFormly.Formly
+namespace MCMS.Base.SwaggerFormly.Formly;
+
+public class IgnoreValueUpdatesAttribute: Attribute
 {
-    public class IgnoreValueUpdatesAttribute: Attribute
-    {
-    }
 }

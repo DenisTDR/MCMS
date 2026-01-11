@@ -1,20 +1,19 @@
-namespace MCMS.Models.Dt
-{
-    public class DtColumn
-    {
-        public DtSearch Search { get; set; }
-        public string Data { get; set; }
-        public string Name { get; set; }
-        public bool Orderable { get; set; }
-        public bool Searchable { get; set; }
+namespace MCMS.Models.Dt;
 
-        public DtColumn CloneForGlobalSearch(DtSearch search)
+public class DtColumn
+{
+    public DtSearch Search { get; set; }
+    public string Data { get; set; }
+    public string Name { get; set; }
+    public bool Orderable { get; set; }
+    public bool Searchable { get; set; }
+
+    public DtColumn CloneForGlobalSearch(DtSearch search)
+    {
+        return new()
         {
-            return new()
-            {
-                Data = Data,
-                Search = search,
-            };
-        }
+            Data = Data,
+            Search = search,
+        };
     }
 }

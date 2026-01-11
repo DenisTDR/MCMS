@@ -1,8 +1,7 @@
 using MCMS.Base.Data.FormModels;
 
-namespace MCMS.Logging.AuditLogs.AuditLogEntries
+namespace MCMS.Logging.AuditLogs.AuditLogEntries;
+
+public class AuditLogEntryFormModel : IFormModel
 {
-    public class AuditLogEntryFormModel : IFormModel
-    {
-    }
 }

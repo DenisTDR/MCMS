@@ -5,26 +5,25 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace MCMS.Auth.Identity
+namespace MCMS.Auth.Identity;
+
+internal class ExternalLoginsPageFilter<TUser> : IAsyncPageFilter where TUser : class
 {
-    internal class ExternalLoginsPageFilter<TUser> : IAsyncPageFilter where TUser : class
+    public async Task OnPageHandlerExecutionAsync(PageHandlerExecutingContext context, PageHandlerExecutionDelegate next)
     {
-        public async Task OnPageHandlerExecutionAsync(PageHandlerExecutingContext context, PageHandlerExecutionDelegate next)
+        var result = await next();
+        if (result.Result is PageResult page)
         {
-            var result = await next();
-            if (result.Result is PageResult page)
-            {
-                var signInManager = context.HttpContext.RequestServices.Service<SignInManager<TUser>>();
-                var schemes = await signInManager.GetExternalAuthenticationSchemesAsync();
-                var hasExternalLogins = schemes.Any();
+            var signInManager = context.HttpContext.RequestServices.Service<SignInManager<TUser>>();
+            var schemes = await signInManager.GetExternalAuthenticationSchemesAsync();
+            var hasExternalLogins = schemes.Any();
 
-                page.ViewData["ManageNav.HasExternalLogins"] = hasExternalLogins;
-            }
+            page.ViewData["ManageNav.HasExternalLogins"] = hasExternalLogins;
         }
+    }
 
-        public Task OnPageHandlerSelectionAsync(PageHandlerSelectedContext context)
-        {
-            return Task.CompletedTask;
-        }
+    public Task OnPageHandlerSelectionAsync(PageHandlerSelectedContext context)
+    {
+        return Task.CompletedTask;
     }
 }

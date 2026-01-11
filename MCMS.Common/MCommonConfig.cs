@@ -1,8 +1,7 @@
-namespace MCMS.Common
+namespace MCMS.Common;
+
+public class MCommonConfig
 {
-    public class MCommonConfig
-    {
-        public bool IncludeClipboardJs { get; set; }
-        public bool IncludeHighlightJs { get; set; }
-    }
+    public bool IncludeClipboardJs { get; set; }
+    public bool IncludeHighlightJs { get; set; }
 }

@@ -1,7 +1,6 @@
-namespace MCMS.Base.Data.Entities
+namespace MCMS.Base.Data.Entities;
+
+public interface IOrderable
 {
-    public interface IOrderable
-    {
-        public int Order { get; set; }
-    }
+    public int Order { get; set; }
 }

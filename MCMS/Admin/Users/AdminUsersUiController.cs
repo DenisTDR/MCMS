@@ -17,196 +17,195 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
-namespace MCMS.Admin.Users
+namespace MCMS.Admin.Users;
+
+[Authorize(Roles = "Admin, Moderator")]
+public class AdminUsersUiController : AdminUiController
 {
-    [Authorize(Roles = "Admin, Moderator")]
-    public class AdminUsersUiController : AdminUiController
+    protected IRepository<User> Repo => Repo<User>();
+    protected UserRolesService UserRolesService => Service<UserRolesService>();
+
+    protected ITableConfigService TableConfigService => Service<UsersTableConfigService>();
+
+    protected IDetailsConfigServiceT<UserViewModel> DetailsConfigService =>
+        Service<IDetailsConfigServiceT<UserViewModel>>();
+
+    public override void OnActionExecuting(ActionExecutingContext context)
     {
-        protected IRepository<User> Repo => Repo<User>();
-        protected UserRolesService UserRolesService => Service<UserRolesService>();
+        base.OnActionExecuting(context);
+        ViewBag.ModelName = EntityHelper.GetEntityName<User>();
+    }
 
-        protected ITableConfigService TableConfigService => Service<UsersTableConfigService>();
+    public override async Task<IActionResult> Index()
+    {
+        TableConfigService.ServerSide = true;
+        return View("BasicPages/Index", await GetIndexPageConfig());
+    }
 
-        protected IDetailsConfigServiceT<UserViewModel> DetailsConfigService =>
-            Service<IDetailsConfigServiceT<UserViewModel>>();
+    [HttpGet]
+    [Route("{id}")]
+    [ViewLayout("_ModalLayout")]
+    public async Task<IActionResult> Details([FromRoute] string id)
+    {
+        var userVm = await GetUserWithRoles(id);
+        return View(DetailsConfigService.Wrap(userVm));
+    }
 
-        public override void OnActionExecuting(ActionExecutingContext context)
+
+    [HttpGet]
+    [Route("{id}")]
+    [ViewLayout("_ModalLayout")]
+    public async Task<IActionResult> ConfirmEmail([FromRoute] string id)
+    {
+        var user = await Repo.GetOneOrThrow(id);
+        var userVm = Mapper.Map<UserViewModel>(user);
+        return View(userVm);
+    }
+
+
+    [HttpGet]
+    [Route("{id}")]
+    [ViewLayout("_ModalLayout")]
+    public async Task<IActionResult> ResendActivationMail([FromRoute] string id)
+    {
+        var user = await Repo.GetOneOrThrow(id);
+        var userVm = Mapper.Map<UserViewModel>(user);
+        return View(userVm);
+    }
+
+    [HttpGet("{id}")]
+    public virtual async Task<IActionResult> Delete([FromRoute] string id)
+    {
+        var e = await Repo.GetOneOrThrow(id);
+        UserRolesService.Ensure(await UserRolesService.UserHasHigherRank(UserFromClaims.Roles, id));
+        ViewBag.ApiControllerName = nameof(AdminUsersAdminApiController).Replace("Controller", "");
+        return View("BasicModals/DeleteModal", e);
+    }
+
+    private async Task<UserViewModel> GetUserWithRoles(string id)
+    {
+        var user = await Repo.GetOneOrThrow(id);
+        var userVm = Mapper.Map<UserViewModel>(user);
+        userVm.RolesList = (await Service<UserManager<User>>().GetRolesAsync(user))
+            .ToList();
+        return userVm;
+    }
+
+    [NonAction]
+    public virtual async Task<IndexPageConfig> GetIndexPageConfig()
+    {
+        return new()
         {
-            base.OnActionExecuting(context);
-            ViewBag.ModelName = EntityHelper.GetEntityName<User>();
-        }
+            IndexPageTitle = "Users",
+            TableConfig = await TableConfigService.GetTableConfig()
+        };
+    }
 
-        public override async Task<IActionResult> Index()
-        {
-            TableConfigService.ServerSide = true;
-            return View("BasicPages/Index", await GetIndexPageConfig());
-        }
+    public IActionResult Create()
+    {
+        ViewBag.FormParamsService =
+            new FormParamsService(Url, TypeHelpers.GetControllerName(typeof(AdminUsersAdminApiController)),
+                nameof(CreateUserFormModel));
+        ViewBag.ModalDialogClasses = "modal-lg";
+        return View("BasicModals/CreateModal");
+    }
 
-        [HttpGet]
-        [Route("{id}")]
-        [ViewLayout("_ModalLayout")]
-        public async Task<IActionResult> Details([FromRoute] string id)
-        {
-            var userVm = await GetUserWithRoles(id);
-            return View(DetailsConfigService.Wrap(userVm));
-        }
-
-
-        [HttpGet]
-        [Route("{id}")]
-        [ViewLayout("_ModalLayout")]
-        public async Task<IActionResult> ConfirmEmail([FromRoute] string id)
-        {
-            var user = await Repo.GetOneOrThrow(id);
-            var userVm = Mapper.Map<UserViewModel>(user);
-            return View(userVm);
-        }
+    [HttpGet]
+    [Route("{id}")]
+    [ViewLayout("_ModalLayout")]
+    public async Task<IActionResult> UpdateRoles([FromRoute] string id)
+    {
+        var userVm = await GetUserWithRoles(id);
+        UserRolesService.Ensure(await UserRolesService.UserHasHigherRank(UserFromClaims.Roles, userVm.RolesList));
+        var fps =
+            new FormParamsService(Url, TypeHelpers.GetControllerName(typeof(AdminUsersAdminApiController)),
+                nameof(UpdateRolesFormModel));
 
 
-        [HttpGet]
-        [Route("{id}")]
-        [ViewLayout("_ModalLayout")]
-        public async Task<IActionResult> ResendActivationMail([FromRoute] string id)
-        {
-            var user = await Repo.GetOneOrThrow(id);
-            var userVm = Mapper.Map<UserViewModel>(user);
-            return View(userVm);
-        }
+        var fp = fps.ForCreate();
 
-        [HttpGet("{id}")]
-        public virtual async Task<IActionResult> Delete([FromRoute] string id)
-        {
-            var e = await Repo.GetOneOrThrow(id);
-            UserRolesService.Ensure(await UserRolesService.UserHasHigherRank(UserFromClaims.Roles, id));
-            ViewBag.ApiControllerName = nameof(AdminUsersAdminApiController).Replace("Controller", "");
-            return View("BasicModals/DeleteModal", e);
-        }
+        fp.SubmitUrl = Url.ActionLink(nameof(AdminUsersAdminApiController.UpdateRoles),
+            TypeHelpers.GetControllerName(typeof(AdminUsersAdminApiController)), new { id = userVm.Id });
 
-        private async Task<UserViewModel> GetUserWithRoles(string id)
-        {
-            var user = await Repo.GetOneOrThrow(id);
-            var userVm = Mapper.Map<UserViewModel>(user);
-            userVm.RolesList = (await Service<UserManager<User>>().GetRolesAsync(user))
-                .ToList();
-            return userVm;
-        }
+        fp.HideSubmitButton();
+        fp.UseSpinnerOuterOverlay();
+        fp.AdditionalFields = new { roles = userVm.RolesList };
 
-        [NonAction]
-        public virtual async Task<IndexPageConfig> GetIndexPageConfig()
-        {
-            return new()
-            {
-                IndexPageTitle = "Users",
-                TableConfig = await TableConfigService.GetTableConfig()
-            };
-        }
+        // ViewBag.ModalDialogClasses = "modal-md";
 
-        public IActionResult Create()
-        {
-            ViewBag.FormParamsService =
-                new FormParamsService(Url, TypeHelpers.GetControllerName(typeof(AdminUsersAdminApiController)),
-                    nameof(CreateUserFormModel));
-            ViewBag.ModalDialogClasses = "modal-lg";
-            return View("BasicModals/CreateModal");
-        }
+        return View((userVm.FullName, fp));
+    }
 
-        [HttpGet]
-        [Route("{id}")]
-        [ViewLayout("_ModalLayout")]
-        public async Task<IActionResult> UpdateRoles([FromRoute] string id)
-        {
-            var userVm = await GetUserWithRoles(id);
-            UserRolesService.Ensure(await UserRolesService.UserHasHigherRank(UserFromClaims.Roles, userVm.RolesList));
-            var fps =
-                new FormParamsService(Url, TypeHelpers.GetControllerName(typeof(AdminUsersAdminApiController)),
-                    nameof(UpdateRolesFormModel));
+    [HttpGet]
+    [Route("{id}")]
+    [ViewLayout("_ModalLayout")]
+    public async Task<IActionResult> UpdateEmail([FromRoute] string id)
+    {
+        var userVm = await GetUserWithRoles(id);
+        UserRolesService.Ensure(await UserRolesService.UserHasHigherRank(UserFromClaims.Roles, userVm.RolesList));
+        var fps =
+            new FormParamsService(Url, TypeHelpers.GetControllerName(typeof(AdminUsersAdminApiController)),
+                nameof(UpdateEmailFormModel));
 
 
-            var fp = fps.ForCreate();
+        var fp = fps.ForCreate();
 
-            fp.SubmitUrl = Url.ActionLink(nameof(AdminUsersAdminApiController.UpdateRoles),
-                TypeHelpers.GetControllerName(typeof(AdminUsersAdminApiController)), new { id = userVm.Id });
+        fp.SubmitUrl = Url.ActionLink(nameof(AdminUsersAdminApiController.UpdateEmail),
+            TypeHelpers.GetControllerName(typeof(AdminUsersAdminApiController)), new { id = userVm.Id });
 
-            fp.HideSubmitButton();
-            fp.UseSpinnerOuterOverlay();
-            fp.AdditionalFields = new { roles = userVm.RolesList };
+        fp.HideSubmitButton();
+        fp.UseSpinnerOuterOverlay();
+        fp.AdditionalFields = new { oldEmail = userVm.Email };
 
-            // ViewBag.ModalDialogClasses = "modal-md";
+        return View((userVm.FullName, fp));
+    }
 
-            return View((userVm.FullName, fp));
-        }
-
-        [HttpGet]
-        [Route("{id}")]
-        [ViewLayout("_ModalLayout")]
-        public async Task<IActionResult> UpdateEmail([FromRoute] string id)
-        {
-            var userVm = await GetUserWithRoles(id);
-            UserRolesService.Ensure(await UserRolesService.UserHasHigherRank(UserFromClaims.Roles, userVm.RolesList));
-            var fps =
-                new FormParamsService(Url, TypeHelpers.GetControllerName(typeof(AdminUsersAdminApiController)),
-                    nameof(UpdateEmailFormModel));
+    [HttpGet]
+    [Route("{id}")]
+    [ViewLayout("_ModalLayout")]
+    public async Task<IActionResult> UpdateUserName([FromRoute] string id)
+    {
+        var userVm = await GetUserWithRoles(id);
+        UserRolesService.Ensure(await UserRolesService.UserHasHigherRank(UserFromClaims.Roles, userVm.RolesList));
+        var fps =
+            new FormParamsService(Url, TypeHelpers.GetControllerName(typeof(AdminUsersAdminApiController)),
+                nameof(UpdateUserNameFormModel));
 
 
-            var fp = fps.ForCreate();
+        var fp = fps.ForCreate();
 
-            fp.SubmitUrl = Url.ActionLink(nameof(AdminUsersAdminApiController.UpdateEmail),
-                TypeHelpers.GetControllerName(typeof(AdminUsersAdminApiController)), new { id = userVm.Id });
+        fp.SubmitUrl = Url.ActionLink(nameof(AdminUsersAdminApiController.UpdateUserName),
+            TypeHelpers.GetControllerName(typeof(AdminUsersAdminApiController)), new { id = userVm.Id });
 
-            fp.HideSubmitButton();
-            fp.UseSpinnerOuterOverlay();
-            fp.AdditionalFields = new { oldEmail = userVm.Email };
+        fp.HideSubmitButton();
+        fp.UseSpinnerOuterOverlay();
+        fp.AdditionalFields = new { oldUserName = userVm.UserName };
 
-            return View((userVm.FullName, fp));
-        }
+        return View((userVm.FullName, fp));
+    }
 
-        [HttpGet]
-        [Route("{id}")]
-        [ViewLayout("_ModalLayout")]
-        public async Task<IActionResult> UpdateUserName([FromRoute] string id)
-        {
-            var userVm = await GetUserWithRoles(id);
-            UserRolesService.Ensure(await UserRolesService.UserHasHigherRank(UserFromClaims.Roles, userVm.RolesList));
-            var fps =
-                new FormParamsService(Url, TypeHelpers.GetControllerName(typeof(AdminUsersAdminApiController)),
-                    nameof(UpdateUserNameFormModel));
-
-
-            var fp = fps.ForCreate();
-
-            fp.SubmitUrl = Url.ActionLink(nameof(AdminUsersAdminApiController.UpdateUserName),
-                TypeHelpers.GetControllerName(typeof(AdminUsersAdminApiController)), new { id = userVm.Id });
-
-            fp.HideSubmitButton();
-            fp.UseSpinnerOuterOverlay();
-            fp.AdditionalFields = new { oldUserName = userVm.UserName };
-
-            return View((userVm.FullName, fp));
-        }
-
-        [HttpGet]
-        [Route("{id}")]
-        [ViewLayout("_ModalLayout")]
-        public async Task<IActionResult> UpdateUserProfile([FromRoute] string id)
-        {
-            var user = await Repo.GetOneOrThrow(id);
-            UserRolesService.Ensure(await UserRolesService.UserHasHigherRank(UserFromClaims.Roles, user.Id));
-            var fps =
-                new FormParamsService(Url, TypeHelpers.GetControllerName(typeof(AdminUsersAdminApiController)),
-                    nameof(UpdateUserProfileFormModel));
+    [HttpGet]
+    [Route("{id}")]
+    [ViewLayout("_ModalLayout")]
+    public async Task<IActionResult> UpdateUserProfile([FromRoute] string id)
+    {
+        var user = await Repo.GetOneOrThrow(id);
+        UserRolesService.Ensure(await UserRolesService.UserHasHigherRank(UserFromClaims.Roles, user.Id));
+        var fps =
+            new FormParamsService(Url, TypeHelpers.GetControllerName(typeof(AdminUsersAdminApiController)),
+                nameof(UpdateUserProfileFormModel));
 
 
-            var fp = fps.ForCreate();
+        var fp = fps.ForCreate();
 
-            fp.SubmitUrl = Url.ActionLink(nameof(AdminUsersAdminApiController.UpdateUserProfile),
-                TypeHelpers.GetControllerName(typeof(AdminUsersAdminApiController)), new { id = user.Id });
+        fp.SubmitUrl = Url.ActionLink(nameof(AdminUsersAdminApiController.UpdateUserProfile),
+            TypeHelpers.GetControllerName(typeof(AdminUsersAdminApiController)), new { id = user.Id });
 
-            fp.HideSubmitButton();
-            fp.UseSpinnerOuterOverlay();
-            fp.AdditionalFields = new
-                { firstName = user.FirstName, lastName = user.LastName, phoneNumber = user.PhoneNumber };
+        fp.HideSubmitButton();
+        fp.UseSpinnerOuterOverlay();
+        fp.AdditionalFields = new
+            { firstName = user.FirstName, lastName = user.LastName, phoneNumber = user.PhoneNumber };
 
-            return View((user.FullName, fp));
-        }
+        return View((user.FullName, fp));
     }
 }

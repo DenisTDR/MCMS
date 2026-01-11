@@ -1,10 +1,9 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace MCMS.Auth.Tokens.Dtos
+namespace MCMS.Auth.Tokens.Dtos;
+
+public class TokenRequestDto
 {
-    public class TokenRequestDto
-    {
-        [Required]
-        public string Token { get; set; }
-    }
+    [Required]
+    public string Token { get; set; }
 }

@@ -1,9 +1,8 @@
 using System.Collections.Generic;
 
-namespace MCMS.Base.Builder
+namespace MCMS.Base.Builder;
+
+public interface IMApp
 {
-    public interface IMApp
-    {
-        public IEnumerable<MSpecifications> Specifications { get; }
-    }
+    public IEnumerable<MSpecifications> Specifications { get; }
 }

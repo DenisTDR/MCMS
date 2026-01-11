@@ -9,210 +9,209 @@ using MCMS.Base.Display.ModelDisplay.Attributes;
 using MCMS.Base.Extensions;
 using MCMS.Base.Helpers;
 
-namespace MCMS.Base.Display.ModelDisplay
+namespace MCMS.Base.Display.ModelDisplay;
+
+public class TableColumn
 {
-    public class TableColumn
+    public int OrderIndex { get; set; }
+
+    public TableColumn(string name, string key, int orderIndex, TableColumnType type = TableColumnType.Default) :
+        this(name, key, type)
     {
-        public int OrderIndex { get; set; }
+        OrderIndex = orderIndex;
+    }
 
-        public TableColumn(string name, string key, int orderIndex, TableColumnType type = TableColumnType.Default) :
-            this(name, key, type)
+    public TableColumn(PropertyInfo prop, IList<TableColumnAttribute> attrs)
+        : this(TypeHelpers.GetDisplayNameOrDefault(prop), prop.Name.ToCamelCase())
+    {
+        var attr = attrs.FirstOrDefault();
+        OrderIndex = attr?.OrderIndex ?? 0;
+        Searchable = attr?.Searchable ?? ServerClient.Both;
+        Orderable = attr?.Orderable ?? ServerClient.Both;
+        RowGroups = attr?.RowGroup ?? false;
+        SumTotal = attr?.SumTotal ?? false;
+        Hidden = attr?.Hidden ?? false;
+        Tag = attr?.Tag;
+        Invisible = attr?.Invisible ?? false;
+        DbColumn = attr?.DbColumn ?? Key;
+        DbFuncFormat = attr?.DbFuncFormat;
+        Data = attr?.DataSelector ?? Key;
+        DefaultSearchValue = attr?.DefaultSearchValue;
+        Type = attr?.Type ?? TableColumnType.Default;
+        this.BuildTypeAndPatchFilter(prop);
+    }
+
+    public TableColumn(string name, string key, TableColumnType type = TableColumnType.Default)
+    {
+        Name = name;
+        Key = key;
+        Data = key;
+        Type = type;
+        this.PatchFilter();
+    }
+
+    public TableColumn()
+    {
+    }
+
+    public string Name { get; set; }
+    public string Key { get; set; }
+    public ServerClient Searchable { get; set; }
+    public ServerClient Orderable { get; set; }
+    public bool RowGroups { get; set; }
+    public object SumTotal { get; set; }
+    public bool Hidden { get; set; }
+    public string Tag { get; set; }
+    public bool Invisible { get; set; }
+
+    public string DefaultContent { get; set; }
+    public string ClassName { get; set; }
+    public string HeaderClassName { get; set; }
+    public Dictionary<string, string> DataAttributes { get; set; }
+    public string DbColumn { get; set; }
+    public string DbFuncFormat { get; set; }
+    public TableColumnType Type { get; set; }
+    public List<EnumValueTriple> FilterValues { get; set; }
+    public string Data { get; set; }
+
+    public string DefaultSearchValue { get; set; }
+
+    public override string ToString()
+    {
+        return $"{Key} as {Name} at {OrderIndex}";
+    }
+
+    public object GetDataTablesObject(bool serverSide = false)
+    {
+        return new
         {
-            OrderIndex = orderIndex;
-        }
+            data = Data,
+            defaultContent = DefaultContent ?? "<span class='st-text'>null/empty</i>",
+            orderable = Orderable.IsClient(serverSide),
+            searchable = Searchable.IsClient(serverSide),
+            sumTotal = SumTotal,
+            visible = !Hidden && !Invisible,
+            tag = Tag,
+            className = ClassName,
+            mType = Type.GetCustomValue(),
+            mFilterValues = FilterValues
+        };
+    }
+}
 
-        public TableColumn(PropertyInfo prop, IList<TableColumnAttribute> attrs)
-            : this(TypeHelpers.GetDisplayNameOrDefault(prop), prop.Name.ToCamelCase())
+public static class TableColumnExtensions
+{
+    public static string BuildHeaderClassSyntax(this TableColumn col)
+    {
+        if (string.IsNullOrEmpty(col.HeaderClassName)) return null;
+        return "class=\"" + col.HeaderClassName + "\"";
+    }
+
+    public static string BuildDataAttributesSyntax(this TableColumn col)
+    {
+        if (col.DataAttributes == null || col.DataAttributes.Count == 0) return null;
+        return string.Join(" ", col.DataAttributes.Select(kvp => $"data-{kvp.Key}=\"{kvp.Value}\""));
+    }
+
+    public static void PrepareDataAttributes(this TableColumn col)
+    {
+        if (col.Orderable == ServerClient.None)
         {
-            var attr = attrs.FirstOrDefault();
-            OrderIndex = attr?.OrderIndex ?? 0;
-            Searchable = attr?.Searchable ?? ServerClient.Both;
-            Orderable = attr?.Orderable ?? ServerClient.Both;
-            RowGroups = attr?.RowGroup ?? false;
-            SumTotal = attr?.SumTotal ?? false;
-            Hidden = attr?.Hidden ?? false;
-            Tag = attr?.Tag;
-            Invisible = attr?.Invisible ?? false;
-            DbColumn = attr?.DbColumn ?? Key;
-            DbFuncFormat = attr?.DbFuncFormat;
-            Data = attr?.DataSelector ?? Key;
-            DefaultSearchValue = attr?.DefaultSearchValue;
-            Type = attr?.Type ?? TableColumnType.Default;
-            this.BuildTypeAndPatchFilter(prop);
-        }
-
-        public TableColumn(string name, string key, TableColumnType type = TableColumnType.Default)
-        {
-            Name = name;
-            Key = key;
-            Data = key;
-            Type = type;
-            this.PatchFilter();
-        }
-
-        public TableColumn()
-        {
-        }
-
-        public string Name { get; set; }
-        public string Key { get; set; }
-        public ServerClient Searchable { get; set; }
-        public ServerClient Orderable { get; set; }
-        public bool RowGroups { get; set; }
-        public object SumTotal { get; set; }
-        public bool Hidden { get; set; }
-        public string Tag { get; set; }
-        public bool Invisible { get; set; }
-
-        public string DefaultContent { get; set; }
-        public string ClassName { get; set; }
-        public string HeaderClassName { get; set; }
-        public Dictionary<string, string> DataAttributes { get; set; }
-        public string DbColumn { get; set; }
-        public string DbFuncFormat { get; set; }
-        public TableColumnType Type { get; set; }
-        public List<EnumValueTriple> FilterValues { get; set; }
-        public string Data { get; set; }
-
-        public string DefaultSearchValue { get; set; }
-
-        public override string ToString()
-        {
-            return $"{Key} as {Name} at {OrderIndex}";
-        }
-
-        public object GetDataTablesObject(bool serverSide = false)
-        {
-            return new
-            {
-                data = Data,
-                defaultContent = DefaultContent ?? "<span class='st-text'>null/empty</i>",
-                orderable = Orderable.IsClient(serverSide),
-                searchable = Searchable.IsClient(serverSide),
-                sumTotal = SumTotal,
-                visible = !Hidden && !Invisible,
-                tag = Tag,
-                className = ClassName,
-                mType = Type.GetCustomValue(),
-                mFilterValues = FilterValues
-            };
+            col.DataAttributes ??= new Dictionary<string, string>();
+            col.DataAttributes["dt-order"] = "disable";
         }
     }
 
-    public static class TableColumnExtensions
+    public static void PatchFilter(this TableColumn col)
     {
-        public static string BuildHeaderClassSyntax(this TableColumn col)
+        if (col.Type is not TableColumnType.Bool and not TableColumnType.NullableBool)
         {
-            if (string.IsNullOrEmpty(col.HeaderClassName)) return null;
-            return "class=\"" + col.HeaderClassName + "\"";
+            return;
         }
 
-        public static string BuildDataAttributesSyntax(this TableColumn col)
+        col.FilterValues = new List<EnumValueTriple>
         {
-            if (col.DataAttributes == null || col.DataAttributes.Count == 0) return null;
-            return string.Join(" ", col.DataAttributes.Select(kvp => $"data-{kvp.Key}=\"{kvp.Value}\""));
+            new("", "-"),
+            new("true", "True"),
+            new("false", "False"),
+        };
+        if (col.Type == TableColumnType.NullableBool)
+        {
+            col.FilterValues.Add(new("null", "Not set"));
+        }
+    }
+
+    public static void BuildTypeAndPatchFilter(this TableColumn col, PropertyInfo prop)
+    {
+        if (col.Type != TableColumnType.Default)
+        {
+            return;
         }
 
-        public static void PrepareDataAttributes(this TableColumn col)
+        if (prop.PropertyType == typeof(bool) || prop.PropertyType == typeof(bool?))
         {
-            if (col.Orderable == ServerClient.None)
-            {
-                col.DataAttributes ??= new Dictionary<string, string>();
-                col.DataAttributes["dt-order"] = "disable";
-            }
-        }
-
-        public static void PatchFilter(this TableColumn col)
-        {
-            if (col.Type is not TableColumnType.Bool and not TableColumnType.NullableBool)
-            {
-                return;
-            }
-
+            col.Type = TableColumnType.Bool;
             col.FilterValues = new List<EnumValueTriple>
             {
                 new("", "-"),
                 new("true", "True"),
                 new("false", "False"),
             };
-            if (col.Type == TableColumnType.NullableBool)
+            if (prop.PropertyType == typeof(bool?))
             {
+                col.Type = TableColumnType.NullableBool;
                 col.FilterValues.Add(new("null", "Not set"));
             }
         }
-
-        public static void BuildTypeAndPatchFilter(this TableColumn col, PropertyInfo prop)
+        else if (prop.PropertyType.IsNumericType())
         {
-            if (col.Type != TableColumnType.Default)
+            col.Type = TableColumnType.Number;
+        }
+        else if (prop.PropertyType.IsEnum)
+        {
+            col.Type = TableColumnType.Select;
+            col.FilterValues =
+                Enum.GetValues(prop.PropertyType).Cast<Enum>()
+                    .Select(enumValue =>
+                        new EnumValueTriple(enumValue.GetCustomValue()?.ToString(),
+                            Convert.ToInt32(enumValue),
+                            enumValue.GetDisplayName()))
+                    .Prepend(
+                        new("", "", "-"))
+                    .ToList();
+        }
+        else if (prop.PropertyType == typeof(DateTime) || prop.PropertyType == typeof(DateTime?))
+        {
+            if (prop.PropertyType.GetCustomAttribute<DataTypeAttribute>() is { } attr)
             {
-                return;
-            }
-
-            if (prop.PropertyType == typeof(bool) || prop.PropertyType == typeof(bool?))
-            {
-                col.Type = TableColumnType.Bool;
-                col.FilterValues = new List<EnumValueTriple>
+                if (attr.DataType == DataType.Date)
                 {
-                    new("", "-"),
-                    new("true", "True"),
-                    new("false", "False"),
-                };
-                if (prop.PropertyType == typeof(bool?))
-                {
-                    col.Type = TableColumnType.NullableBool;
-                    col.FilterValues.Add(new("null", "Not set"));
+                    col.Type = TableColumnType.Date;
                 }
-            }
-            else if (prop.PropertyType.IsNumericType())
-            {
-                col.Type = TableColumnType.Number;
-            }
-            else if (prop.PropertyType.IsEnum)
-            {
-                col.Type = TableColumnType.Select;
-                col.FilterValues =
-                    Enum.GetValues(prop.PropertyType).Cast<Enum>()
-                        .Select(enumValue =>
-                            new EnumValueTriple(enumValue.GetCustomValue()?.ToString(),
-                                Convert.ToInt32(enumValue),
-                                enumValue.GetDisplayName()))
-                        .Prepend(
-                            new("", "", "-"))
-                        .ToList();
-            }
-            else if (prop.PropertyType == typeof(DateTime) || prop.PropertyType == typeof(DateTime?))
-            {
-                if (prop.PropertyType.GetCustomAttribute<DataTypeAttribute>() is { } attr)
+                else if (attr.DataType == DataType.Time)
                 {
-                    if (attr.DataType == DataType.Date)
-                    {
-                        col.Type = TableColumnType.Date;
-                    }
-                    else if (attr.DataType == DataType.Time)
-                    {
-                        col.Type = TableColumnType.Time;
-                    }
-
-                    col.Type = TableColumnType.DateTime;
+                    col.Type = TableColumnType.Time;
                 }
-            }
-            else if (typeof(IList).IsAssignableFrom(prop.PropertyType))
-            {
-                col.Type = TableColumnType.Array;
+
+                col.Type = TableColumnType.DateTime;
             }
         }
+        else if (typeof(IList).IsAssignableFrom(prop.PropertyType))
+        {
+            col.Type = TableColumnType.Array;
+        }
     }
+}
 
-    public enum TableColumnType
-    {
-        [EnumMember(Value = "default")] Default,
-        [EnumMember(Value = "number")] Number,
-        [EnumMember(Value = "bool")] Bool,
-        [EnumMember(Value = "nBool")] NullableBool,
-        [EnumMember(Value = "dateTime")] DateTime,
-        [EnumMember(Value = "date")] Date,
-        [EnumMember(Value = "time")] Time,
-        [EnumMember(Value = "select")] Select,
-        [EnumMember(Value = "array")] Array,
-    }
+public enum TableColumnType
+{
+    [EnumMember(Value = "default")] Default,
+    [EnumMember(Value = "number")] Number,
+    [EnumMember(Value = "bool")] Bool,
+    [EnumMember(Value = "nBool")] NullableBool,
+    [EnumMember(Value = "dateTime")] DateTime,
+    [EnumMember(Value = "date")] Date,
+    [EnumMember(Value = "time")] Time,
+    [EnumMember(Value = "select")] Select,
+    [EnumMember(Value = "array")] Array,
 }

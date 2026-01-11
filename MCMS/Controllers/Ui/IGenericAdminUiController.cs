@@ -1,10 +1,9 @@
 using System.Threading.Tasks;
 using MCMS.Display.ModelDisplay;
 
-namespace MCMS.Controllers.Ui
+namespace MCMS.Controllers.Ui;
+
+public interface IGenericAdminUiController
 {
-    public interface IGenericAdminUiController
-    {
-        public Task<IndexPageConfig> GetIndexPageConfig();
-    }
+    public Task<IndexPageConfig> GetIndexPageConfig();
 }

@@ -1,9 +1,8 @@
 using AutoMapper;
 
-namespace MCMS.Base.Data.MappingConfig
+namespace MCMS.Base.Data.MappingConfig;
+
+public interface IMappingConfig
 {
-    public interface IMappingConfig
-    {
-        void CreateMaps(IMapperConfigurationExpression configExpression);
-    }
+    void CreateMaps(IMapperConfigurationExpression configExpression);
 }

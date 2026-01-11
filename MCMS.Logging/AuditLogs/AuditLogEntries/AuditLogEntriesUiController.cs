@@ -8,33 +8,32 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace MCMS.Logging.AuditLogs.AuditLogEntries
+namespace MCMS.Logging.AuditLogs.AuditLogEntries;
+
+[Authorize(Roles = "Admin")]
+[Display(Name = "Audit Logs")]
+public class AuditLogEntriesUiController : GenericModalAdminUiController<AuditLogEntryEntity, AuditLogEntryFormModel
+    , AuditLogEntryViewModel, AuditLogEntriesAdminApiController>
 {
-    [Authorize(Roles = "Admin")]
-    [Display(Name = "Audit Logs")]
-    public class AuditLogEntriesUiController : GenericModalAdminUiController<AuditLogEntryEntity, AuditLogEntryFormModel
-        , AuditLogEntryViewModel, AuditLogEntriesAdminApiController>
+    public override Task<IActionResult> Details(string id)
     {
-        public override Task<IActionResult> Details(string id)
-        {
-            Repo.ChainQueryable(q => q.Include(le => le.Author));
-            return base.Details(id);
-        }
+        Repo.ChainQueryable(q => q.Include(le => le.Author));
+        return base.Details(id);
+    }
 
-        public override async Task<IndexPageConfig> GetIndexPageConfig()
-        {
-            TableConfigService.UseCreateNewItemLink = false;
+    public override async Task<IndexPageConfig> GetIndexPageConfig()
+    {
+        TableConfigService.UseCreateNewItemLink = false;
 
-            var pageConfig = await base.GetIndexPageConfig();
+        var pageConfig = await base.GetIndexPageConfig();
 
-            pageConfig.TableConfig.AdditionalClasses = "break-words";
+        pageConfig.TableConfig.AdditionalClasses = "break-words";
 
-            pageConfig.TableConfig.ItemActions =
-                pageConfig.TableConfig.ItemActions.Where(a => a.Tag == "details").ToList();
+        pageConfig.TableConfig.ItemActions =
+            pageConfig.TableConfig.ItemActions.Where(a => a.Tag == "details").ToList();
 
-            pageConfig.TableConfig.BatchActions = new List<BatchAction>();
+        pageConfig.TableConfig.BatchActions = new List<BatchAction>();
 
-            return pageConfig;
-        }
+        return pageConfig;
     }
 }

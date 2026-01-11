@@ -8,34 +8,33 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
 
-namespace MCMS.Logging.AuditLogs.AuditLogEntries
+namespace MCMS.Logging.AuditLogs.AuditLogEntries;
+
+[Authorize(Roles = "Admin")]
+public class
+    AuditLogEntriesAdminApiController : CrudAdminApiController<AuditLogEntryEntity, AuditLogEntryFormModel,
+    AuditLogEntryViewModel>
 {
-    [Authorize(Roles = "Admin")]
-    public class
-        AuditLogEntriesAdminApiController : CrudAdminApiController<AuditLogEntryEntity, AuditLogEntryFormModel,
-        AuditLogEntryViewModel>
+    public override void OnActionExecuting(ActionExecutingContext context)
     {
-        public override void OnActionExecuting(ActionExecutingContext context)
-        {
-            base.OnActionExecuting(context);
-            Repo.ChainQueryable(q => q
-                .Include(c => c.Author)
-                .OrderByDescending(c => c.Created)
-            );
-        }
+        base.OnActionExecuting(context);
+        Repo.ChainQueryable(q => q
+            .Include(c => c.Author)
+            .OrderByDescending(c => c.Created)
+        );
+    }
 
-        public override Task<ActionResult<DtResult<AuditLogEntryViewModel>>> DtQuery(DtParameters model)
-        {
-            QueryService.AlreadyOrdered = true;
-            return base.DtQuery(model);
-        }
+    public override Task<ActionResult<DtResult<AuditLogEntryViewModel>>> DtQuery(DtParameters model)
+    {
+        QueryService.AlreadyOrdered = true;
+        return base.DtQuery(model);
+    }
 
-        protected override Task OnCreating(AuditLogEntryEntity e)
-        {
-            if (e.Author != null)
-                e.Author = ServiceProvider.GetRepo<MCMS.Base.Auth.User>().Attach(e.Author);
+    protected override Task OnCreating(AuditLogEntryEntity e)
+    {
+        if (e.Author != null)
+            e.Author = ServiceProvider.GetRepo<MCMS.Base.Auth.User>().Attach(e.Author);
 
-            return Task.CompletedTask;
-        }
+        return Task.CompletedTask;
     }
 }

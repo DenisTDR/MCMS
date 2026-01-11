@@ -1,7 +1,6 @@
-namespace MCMS.Base.Data.Entities
+namespace MCMS.Base.Data.Entities;
+
+public interface ICanBeDeleted
 {
-    public interface ICanBeDeleted
-    {
-        public bool Deleted { get; set; }
-    }
+    public bool Deleted { get; set; }
 }

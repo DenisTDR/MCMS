@@ -2,32 +2,31 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 
-namespace MCMS.Base.SwaggerFormly
+namespace MCMS.Base.SwaggerFormly;
+
+public class RequireNotDefaultAttribute : RequiredAttribute
 {
-    public class RequireNotDefaultAttribute : RequiredAttribute
+    private readonly Type _propertyType;
+
+    public RequireNotDefaultAttribute([NotNull] Type propertyType)
     {
-        private readonly Type _propertyType;
-
-        public RequireNotDefaultAttribute([NotNull] Type propertyType)
+        if (propertyType == null)
         {
-            if (propertyType == null)
-            {
-                throw new ArgumentException("The provided type is null.");
-            }
-
-            if (!propertyType.IsValueType)
-            {
-                throw new ArgumentException($"The provided type '{_propertyType.Name}' is not a value type.");
-            }
-
-            _propertyType = propertyType;
+            throw new ArgumentException("The provided type is null.");
         }
 
-        public override bool IsValid(object value)
+        if (!propertyType.IsValueType)
         {
-            if (value == null)
-                return false;
-            return value != Activator.CreateInstance(_propertyType);
+            throw new ArgumentException($"The provided type '{_propertyType.Name}' is not a value type.");
         }
+
+        _propertyType = propertyType;
+    }
+
+    public override bool IsValid(object value)
+    {
+        if (value == null)
+            return false;
+        return value != Activator.CreateInstance(_propertyType);
     }
 }

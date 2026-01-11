@@ -1,7 +1,6 @@
-namespace MCMS.Base.Data.TypeConfig
+namespace MCMS.Base.Data.TypeConfig;
+
+public interface IEntityTypeConfiguration
 {
-    public interface IEntityTypeConfiguration
-    {
         
-    }
 }

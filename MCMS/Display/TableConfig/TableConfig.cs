@@ -6,101 +6,100 @@ using MCMS.Display.ModelDisplay;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
-namespace MCMS.Display.TableConfig
+namespace MCMS.Display.TableConfig;
+
+public class TableConfig : WithUniqueId
 {
-    public class TableConfig : WithUniqueId
+    public int Index { get; set; }
+    public string Id => UniqueId;
+    public List<MRichLink> ItemActions { get; set; }
+    public List<TableColumn> TableColumns { get; set; }
+    public IEnumerable<TableColumn> TableColumnsOrdered => TableColumns.OrderBy(tc => tc.OrderIndex);
+    public bool HasTableIndexColumn { get; set; }
+    public bool CheckboxSelection => BatchActions?.Any() == true;
+    public string ModelName { get; set; }
+    public MRichLink CreateNewItemLink { get; set; }
+    public string TableItemsApiUrl { get; set; }
+    public bool SkipDefaultModalEventHandlers { get; set; }
+    public bool EnableColumnSearch { get; set; } = true;
+    public List<BatchAction> BatchActions { get; set; }
+    public List<object> TableActions { get; set; }
+    public bool ServerSide { get; set; }
+    public int ServerSideSearchDelay { get; set; } = 500;
+    public int DefaultDisplayLength { get; set; } = 50;
+
+    public string AdditionalClasses { get; set; }
+    public Dictionary<string, string> ItemActionsPlaceholders { get; set; }
+    public MRichLink DefaultItemAction { get; set; }
+    public bool StateSave { get; set; } = true;
+    public int StateDuration { get; set; } = 60 * 60 * 24;
+    public List<List<object>> DefaultOrdering { get; set; }
+
+    public object BuildRowGroupObject(List<TableColumn> columns)
     {
-        public int Index { get; set; }
-        public string Id => UniqueId;
-        public List<MRichLink> ItemActions { get; set; }
-        public List<TableColumn> TableColumns { get; set; }
-        public IEnumerable<TableColumn> TableColumnsOrdered => TableColumns.OrderBy(tc => tc.OrderIndex);
-        public bool HasTableIndexColumn { get; set; }
-        public bool CheckboxSelection => BatchActions?.Any() == true;
-        public string ModelName { get; set; }
-        public MRichLink CreateNewItemLink { get; set; }
-        public string TableItemsApiUrl { get; set; }
-        public bool SkipDefaultModalEventHandlers { get; set; }
-        public bool EnableColumnSearch { get; set; } = true;
-        public List<BatchAction> BatchActions { get; set; }
-        public List<object> TableActions { get; set; }
-        public bool ServerSide { get; set; }
-        public int ServerSideSearchDelay { get; set; } = 500;
-        public int DefaultDisplayLength { get; set; } = 50;
+        var cols = columns?.Where(tc => tc.RowGroups).ToList();
+        return cols == null || !cols.Any() ? null : new { dataSrc = cols.Select(c => c.Key) };
+    }
 
-        public string AdditionalClasses { get; set; }
-        public Dictionary<string, string> ItemActionsPlaceholders { get; set; }
-        public MRichLink DefaultItemAction { get; set; }
-        public bool StateSave { get; set; } = true;
-        public int StateDuration { get; set; } = 60 * 60 * 24;
-        public List<List<object>> DefaultOrdering { get; set; }
-
-        public object BuildRowGroupObject(List<TableColumn> columns)
+    public string GetConfigObjectSerialized(IUrlHelper url)
+    {
+        var columns = GetFinalColumns();
+        return JsonConvert.SerializeObject(new
         {
-            var cols = columns?.Where(tc => tc.RowGroups).ToList();
-            return cols == null || !cols.Any() ? null : new { dataSrc = cols.Select(c => c.Key) };
+            columns = columns.Select(tc => tc.GetDataTablesObject(ServerSide)),
+            rowGroup = BuildRowGroupObject(columns),
+            ajaxUrl = TableItemsApiUrl,
+            hasStaticIndexColumn = HasTableIndexColumn,
+            skipDefaultModalEventHandlers = SkipDefaultModalEventHandlers,
+            enableColumnSearch = EnableColumnSearch,
+            checkboxSelection = CheckboxSelection,
+            batchActions = BatchActions?.Select(ba => ba.GetConfigObject(url)),
+            tableActions = TableActions,
+            serverSide = ServerSide,
+            searchDelay = ServerSideSearchDelay,
+            iDisplayLength = DefaultDisplayLength,
+            itemActionsPlaceholders = ItemActionsPlaceholders,
+            hasDefaultItemAction = DefaultItemAction != null,
+            stateSave = StateSave,
+            stateDuration = StateDuration,
+            order = DefaultOrdering,
+            searchCols = columns.Select(c =>
+                c.DefaultSearchValue == null ? null : new { search = c.DefaultSearchValue })
+        });
+    }
+
+    public List<TableColumn> GetFinalColumns()
+    {
+        var columns = TableColumns.OrderBy(tc => tc.OrderIndex).AsEnumerable();
+        if (HasTableIndexColumn)
+        {
+            columns = columns.Prepend(new TableColumn
+                { Name = "#", ClassName = "non-toggleable", Data = "_index" });
         }
 
-        public string GetConfigObjectSerialized(IUrlHelper url)
+        if (CheckboxSelection)
         {
-            var columns = GetFinalColumns();
-            return JsonConvert.SerializeObject(new
+            columns = columns.Prepend(new TableColumn
             {
-                columns = columns.Select(tc => tc.GetDataTablesObject(ServerSide)),
-                rowGroup = BuildRowGroupObject(columns),
-                ajaxUrl = TableItemsApiUrl,
-                hasStaticIndexColumn = HasTableIndexColumn,
-                skipDefaultModalEventHandlers = SkipDefaultModalEventHandlers,
-                enableColumnSearch = EnableColumnSearch,
-                checkboxSelection = CheckboxSelection,
-                batchActions = BatchActions?.Select(ba => ba.GetConfigObject(url)),
-                tableActions = TableActions,
-                serverSide = ServerSide,
-                searchDelay = ServerSideSearchDelay,
-                iDisplayLength = DefaultDisplayLength,
-                itemActionsPlaceholders = ItemActionsPlaceholders,
-                hasDefaultItemAction = DefaultItemAction != null,
-                stateSave = StateSave,
-                stateDuration = StateDuration,
-                order = DefaultOrdering,
-                searchCols = columns.Select(c =>
-                    c.DefaultSearchValue == null ? null : new { search = c.DefaultSearchValue })
+                Name = "<i class=\"far fa-square\"></i>",
+                DefaultContent = "",
+                ClassName = "select-checkbox non-toggleable",
+                HeaderClassName = "select-all-checkbox"
             });
         }
 
-        public List<TableColumn> GetFinalColumns()
+        if (ItemActions.Any())
         {
-            var columns = TableColumns.OrderBy(tc => tc.OrderIndex).AsEnumerable();
-            if (HasTableIndexColumn)
-            {
-                columns = columns.Prepend(new TableColumn
-                    { Name = "#", ClassName = "non-toggleable", Data = "_index" });
-            }
-
-            if (CheckboxSelection)
-            {
-                columns = columns.Prepend(new TableColumn
-                {
-                    Name = "<i class=\"far fa-square\"></i>",
-                    DefaultContent = "",
-                    ClassName = "select-checkbox non-toggleable",
-                    HeaderClassName = "select-all-checkbox"
-                });
-            }
-
-            if (ItemActions.Any())
-            {
-                columns = columns.Append(
-                    new TableColumn("<span class='col-name-hidden'>Actions</span>", "_actions", 100)
-                        { Orderable = ServerClient.None, Searchable = ServerClient.None });
-            }
-
-            return columns.ToList();
+            columns = columns.Append(
+                new TableColumn("<span class='col-name-hidden'>Actions</span>", "_actions", 100)
+                    { Orderable = ServerClient.None, Searchable = ServerClient.None });
         }
 
-        protected override string GetHashSource()
-        {
-            return TableItemsApiUrl.Split("?").FirstOrDefaultDynamic() + "-" + Index;
-        }
+        return columns.ToList();
+    }
+
+    protected override string GetHashSource()
+    {
+        return TableItemsApiUrl.Split("?").FirstOrDefaultDynamic() + "-" + Index;
     }
 }

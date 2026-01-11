@@ -4,16 +4,15 @@ using MCMS.Auth.Controllers;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Controllers;
 
-namespace MCMS.Auth
-{
-    // https://stackoverflow.com/a/46588830
-    public class RemoveDefaultAuthControllerFeatureProvider : IApplicationFeatureProvider<ControllerFeature>
-    {
-        public void PopulateFeature(IEnumerable<ApplicationPart> parts, ControllerFeature feature)
-        {
-            // https://stackoverflow.com/a/46588830
+namespace MCMS.Auth;
 
-            feature.Controllers.Remove(typeof(AuthController).GetTypeInfo());
-        }
+// https://stackoverflow.com/a/46588830
+public class RemoveDefaultAuthControllerFeatureProvider : IApplicationFeatureProvider<ControllerFeature>
+{
+    public void PopulateFeature(IEnumerable<ApplicationPart> parts, ControllerFeature feature)
+    {
+        // https://stackoverflow.com/a/46588830
+
+        feature.Controllers.Remove(typeof(AuthController).GetTypeInfo());
     }
 }

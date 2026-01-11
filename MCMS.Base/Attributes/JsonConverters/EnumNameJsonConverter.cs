@@ -3,36 +3,35 @@ using MCMS.Base.Exceptions;
 using MCMS.Base.Extensions;
 using Newtonsoft.Json;
 
-namespace MCMS.Base.Attributes.JsonConverters
+namespace MCMS.Base.Attributes.JsonConverters;
+
+public class EnumNameJsonConverter : JsonConverter
 {
-    public class EnumNameJsonConverter : JsonConverter
+    public override bool CanConvert(Type objectType) => objectType.IsEnum;
+
+    public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
     {
-        public override bool CanConvert(Type objectType) => objectType.IsEnum;
+        writer.WriteValue((value as Enum).GetDisplayName());
+    }
 
-        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+    public override object ReadJson(JsonReader reader, Type objectType, object existingValue,
+        JsonSerializer serializer)
+    {
+        if (reader.ValueType != typeof(string))
         {
-            writer.WriteValue((value as Enum).GetDisplayName());
+            throw new KnownException($"Can't convert '{reader.ValueType.Name}' to '{objectType.Name}'.");
         }
 
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue,
-            JsonSerializer serializer)
+        var str = reader.Value as string;
+
+        foreach (Enum value in Enum.GetValues(objectType))
         {
-            if (reader.ValueType != typeof(string))
+            if (value.GetDisplayName() == str)
             {
-                throw new KnownException($"Can't convert '{reader.ValueType.Name}' to '{objectType.Name}'.");
+                return value;
             }
-
-            var str = reader.Value as string;
-
-            foreach (Enum value in Enum.GetValues(objectType))
-            {
-                if (value.GetDisplayName() == str)
-                {
-                    return value;
-                }
-            }
-
-            return existingValue;
         }
+
+        return existingValue;
     }
 }

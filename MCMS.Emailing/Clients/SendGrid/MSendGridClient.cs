@@ -11,118 +11,117 @@ using Newtonsoft.Json;
 using SendGrid;
 using SendGrid.Helpers.Mail;
 
-namespace MCMS.Emailing.Clients.SendGrid
+namespace MCMS.Emailing.Clients.SendGrid;
+
+public class MSendGridClient : IMEmailClient
 {
-    public class MSendGridClient : IMEmailClient
+    private readonly ILogger _logger;
+    private readonly MSendGridClientOptions _clientOptions;
+
+    private SendGridClient _client;
+    private SendGridClient Client => _client ??= new SendGridClient(_clientOptions.Key);
+
+    public MSendGridClient(
+        ILoggerFactory loggerFactory,
+        IOptions<MSendGridClientOptions> clientOptions)
     {
-        private readonly ILogger _logger;
-        private readonly MSendGridClientOptions _clientOptions;
+        _clientOptions = clientOptions.Value;
+        _logger = loggerFactory.CreateLogger("MailClient");
+    }
 
-        private SendGridClient _client;
-        private SendGridClient Client => _client ??= new SendGridClient(_clientOptions.Key);
+    public async Task<bool> SendEmail(MimeMessage message)
+    {
+        var sender = message.From.Mailboxes.FirstOrDefault();
 
-        public MSendGridClient(
-            ILoggerFactory loggerFactory,
-            IOptions<MSendGridClientOptions> clientOptions)
+        if (!message.To.Any(a => a is MailboxAddress))
+            throw new Exception("No `to` address provided!");
+
+        var msg = new SendGridMessage
         {
-            _clientOptions = clientOptions.Value;
-            _logger = loggerFactory.CreateLogger("MailClient");
+            From = new EmailAddress(sender?.Address ?? _clientOptions.DefaultSenderAddress,
+                sender?.Name ?? _clientOptions.DefaultSenderName),
+            Subject = message.Subject,
+            PlainTextContent = message.TextBody,
+            HtmlContent = message.HtmlBody
+        };
+
+        MapAddressList(message, msg);
+        MapAttachments(message, msg);
+
+        var toStr = string.Join(", ", message.To.Where(a => a is MailboxAddress).Cast<MailboxAddress>()
+            .Select(a => $"<{a.Address}> {a.Name}".Trim()));
+        _logger.LogInformation("Sending mail with SendGrid:\nTo: {To}\nSubject: {Subject}", toStr, msg.Subject);
+
+        msg.SetClickTracking(false, false);
+        var response = await Client.SendEmailAsync(msg);
+
+        if (response.StatusCode == HttpStatusCode.Accepted)
+        {
+            return true;
         }
 
-        public async Task<bool> SendEmail(MimeMessage message)
+        var respStr = await response.DeserializeResponseBodyAsync(response.Body);
+        _logger.LogError("Mail send with SendGrid failed");
+        _logger.LogError("{Json}", JsonConvert.SerializeObject(respStr));
+        return false;
+    }
+
+    private void MapAttachments(MimeMessage message, SendGridMessage msg)
+    {
+        foreach (var srcAttach in message.Attachments)
         {
-            var sender = message.From.Mailboxes.FirstOrDefault();
+            if (srcAttach is not MimePart mimePart) continue;
 
-            if (!message.To.Any(a => a is MailboxAddress))
-                throw new Exception("No `to` address provided!");
-
-            var msg = new SendGridMessage
+            var attachment = new Attachment
             {
-                From = new EmailAddress(sender?.Address ?? _clientOptions.DefaultSenderAddress,
-                    sender?.Name ?? _clientOptions.DefaultSenderName),
-                Subject = message.Subject,
-                PlainTextContent = message.TextBody,
-                HtmlContent = message.HtmlBody
+                Type = mimePart.ContentType.MimeType,
+                Filename = mimePart.FileName
             };
+            using var ms = new MemoryStream();
+            mimePart.Content.Stream.CopyTo(ms);
+            var bytes = ms.ToArray();
+            var base64 = Convert.ToBase64String(bytes);
+            attachment.Content = base64;
+            msg.Attachments ??= new List<Attachment>();
+            msg.Attachments.Add(attachment);
+        }
+    }
 
-            MapAddressList(message, msg);
-            MapAttachments(message, msg);
-
-            var toStr = string.Join(", ", message.To.Where(a => a is MailboxAddress).Cast<MailboxAddress>()
-                .Select(a => $"<{a.Address}> {a.Name}".Trim()));
-            _logger.LogInformation("Sending mail with SendGrid:\nTo: {To}\nSubject: {Subject}", toStr, msg.Subject);
-
-            msg.SetClickTracking(false, false);
-            var response = await Client.SendEmailAsync(msg);
-
-            if (response.StatusCode == HttpStatusCode.Accepted)
+    private void MapAddressList(MimeMessage message, SendGridMessage msg)
+    {
+        foreach (var addr in message.To)
+        {
+            if (addr is MailboxAddress mAddr)
             {
-                return true;
+                msg.AddTo(mAddr.Address, mAddr.Name);
             }
-
-            var respStr = await response.DeserializeResponseBodyAsync(response.Body);
-            _logger.LogError("Mail send with SendGrid failed");
-            _logger.LogError("{Json}", JsonConvert.SerializeObject(respStr));
-            return false;
+            else
+                throw new Exception("message.To must contain only MailboxAddress objects");
         }
 
-        private void MapAttachments(MimeMessage message, SendGridMessage msg)
+        foreach (var addr in message.Cc)
         {
-            foreach (var srcAttach in message.Attachments)
+            if (addr is MailboxAddress mAddr)
             {
-                if (srcAttach is not MimePart mimePart) continue;
-
-                var attachment = new Attachment
-                {
-                    Type = mimePart.ContentType.MimeType,
-                    Filename = mimePart.FileName
-                };
-                using var ms = new MemoryStream();
-                mimePart.Content.Stream.CopyTo(ms);
-                var bytes = ms.ToArray();
-                var base64 = Convert.ToBase64String(bytes);
-                attachment.Content = base64;
-                msg.Attachments ??= new List<Attachment>();
-                msg.Attachments.Add(attachment);
+                msg.AddCc(mAddr.Address, mAddr.Name);
             }
+            else
+                throw new Exception("message.Cc must contain only MailboxAddress objects");
         }
 
-        private void MapAddressList(MimeMessage message, SendGridMessage msg)
+        foreach (var addr in message.Bcc)
         {
-            foreach (var addr in message.To)
+            if (addr is MailboxAddress mAddr)
             {
-                if (addr is MailboxAddress mAddr)
-                {
-                    msg.AddTo(mAddr.Address, mAddr.Name);
-                }
-                else
-                    throw new Exception("message.To must contain only MailboxAddress objects");
+                msg.AddBcc(mAddr.Address, mAddr.Name);
             }
+            else
+                throw new Exception("message.Bcc must contain only MailboxAddress objects");
+        }
 
-            foreach (var addr in message.Cc)
-            {
-                if (addr is MailboxAddress mAddr)
-                {
-                    msg.AddCc(mAddr.Address, mAddr.Name);
-                }
-                else
-                    throw new Exception("message.Cc must contain only MailboxAddress objects");
-            }
-
-            foreach (var addr in message.Bcc)
-            {
-                if (addr is MailboxAddress mAddr)
-                {
-                    msg.AddBcc(mAddr.Address, mAddr.Name);
-                }
-                else
-                    throw new Exception("message.Bcc must contain only MailboxAddress objects");
-            }
-
-            if (message.ReplyTo.FirstOrDefault() is MailboxAddress replyTo)
-            {
-                msg.ReplyTo = new EmailAddress(replyTo.Address, replyTo.Name);
-            }
+        if (message.ReplyTo.FirstOrDefault() is MailboxAddress replyTo)
+        {
+            msg.ReplyTo = new EmailAddress(replyTo.Address, replyTo.Name);
         }
     }
 }

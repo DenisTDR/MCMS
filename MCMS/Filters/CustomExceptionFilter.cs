@@ -10,93 +10,92 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 
-namespace MCMS.Filters
+namespace MCMS.Filters;
+
+internal class CustomExceptionFilter : IExceptionFilter
 {
-    internal class CustomExceptionFilter : IExceptionFilter
+    public void OnException(ExceptionContext context)
     {
-        public void OnException(ExceptionContext context)
+        if (IsApiController(context))
         {
-            if (IsApiController(context))
+            var responseModel = new { Error = GetRelevantExceptionMessage(context.Exception) };
+            var dr = new ObjectResult(responseModel);
+
+            if (context.Exception is KnownException knownExc)
             {
-                var responseModel = new { Error = GetRelevantExceptionMessage(context.Exception) };
-                var dr = new ObjectResult(responseModel);
-
-                if (context.Exception is KnownException knownExc)
-                {
-                    dr.StatusCode = knownExc.Code != 0 ? knownExc.Code : 500;
-                }
-                else
-                {
-                    Console.Error.WriteLine("Uncaught Exception: " + context.Exception + " ");
-                    dr.StatusCode = 500;
-                }
-
-                context.Result = dr;
+                dr.StatusCode = knownExc.Code != 0 ? knownExc.Code : 500;
             }
             else
             {
-                if (context.Exception is KnownException knownExc && knownExc.Code != 0 && knownExc.Code != 500
-                    // && !context.HttpContext.RequestServices.Service<IWebHostEnvironment>().IsDevelopment()
-                   )
+                Console.Error.WriteLine("Uncaught Exception: " + context.Exception + " ");
+                dr.StatusCode = 500;
+            }
+
+            context.Result = dr;
+        }
+        else
+        {
+            if (context.Exception is KnownException knownExc && knownExc.Code != 0 && knownExc.Code != 500
+                // && !context.HttpContext.RequestServices.Service<IWebHostEnvironment>().IsDevelopment()
+               )
+            {
+                var viewData = new ViewDataDictionary(new EmptyModelMetadataProvider(), context.ModelState)
                 {
-                    var viewData = new ViewDataDictionary(new EmptyModelMetadataProvider(), context.ModelState)
+                    Model = new ErrorViewModel
                     {
-                        Model = new ErrorViewModel
-                        {
-                            Exception = knownExc,
-                            RequestId = context.HttpContext.TraceIdentifier,
-                            StatusCode = knownExc.Code
-                        }
-                    };
-                    var result = new ViewResult
-                    {
-                        ViewName = "KnownError",
-                        ViewData = viewData,
-                    };
+                        Exception = knownExc,
+                        RequestId = context.HttpContext.TraceIdentifier,
+                        StatusCode = knownExc.Code
+                    }
+                };
+                var result = new ViewResult
+                {
+                    ViewName = "KnownError",
+                    ViewData = viewData,
+                };
 
-                    context.ExceptionHandled = true;
+                context.ExceptionHandled = true;
 
-                    context.Result = result;
-                }
+                context.Result = result;
             }
         }
+    }
 
-        private bool IsApiController(ExceptionContext context)
+    private bool IsApiController(ExceptionContext context)
+    {
+        if (!(context.ActionDescriptor is ControllerActionDescriptor actionDescriptor))
         {
-            if (!(context.ActionDescriptor is ControllerActionDescriptor actionDescriptor))
-            {
-                return false;
-            }
-
-            var pAttrs = actionDescriptor.MethodInfo.GetCustomAttributes<ProducesAttribute>().ToList();
-            if (!pAttrs.Any())
-            {
-                pAttrs = actionDescriptor.ControllerTypeInfo.GetCustomAttributes<ProducesAttribute>().ToList();
-            }
-
-            if (!pAttrs.Any())
-            {
-                return typeof(BaseApiController).IsAssignableFrom(actionDescriptor.ControllerTypeInfo);
-            }
-
-            return pAttrs.Any(a => a.ContentTypes.Any(c => c.ToLower().StartsWith("application/json")));
+            return false;
         }
 
-        private string GetRelevantExceptionMessage(Exception exc)
+        var pAttrs = actionDescriptor.MethodInfo.GetCustomAttributes<ProducesAttribute>().ToList();
+        if (!pAttrs.Any())
         {
-            if (string.IsNullOrEmpty(exc?.Message))
-            {
-                return "Unknown error";
-            }
-
-            var msg = exc.Message;
-            while (msg.Contains("See the inner exception for details") && exc.InnerException != null)
-            {
-                exc = exc.InnerException;
-                msg = exc.Message;
-            }
-
-            return msg;
+            pAttrs = actionDescriptor.ControllerTypeInfo.GetCustomAttributes<ProducesAttribute>().ToList();
         }
+
+        if (!pAttrs.Any())
+        {
+            return typeof(BaseApiController).IsAssignableFrom(actionDescriptor.ControllerTypeInfo);
+        }
+
+        return pAttrs.Any(a => a.ContentTypes.Any(c => c.ToLower().StartsWith("application/json")));
+    }
+
+    private string GetRelevantExceptionMessage(Exception exc)
+    {
+        if (string.IsNullOrEmpty(exc?.Message))
+        {
+            return "Unknown error";
+        }
+
+        var msg = exc.Message;
+        while (msg.Contains("See the inner exception for details") && exc.InnerException != null)
+        {
+            exc = exc.InnerException;
+            msg = exc.Message;
+        }
+
+        return msg;
     }
 }

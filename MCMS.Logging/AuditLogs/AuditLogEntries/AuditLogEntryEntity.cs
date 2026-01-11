@@ -5,37 +5,36 @@ using System.ComponentModel.DataAnnotations.Schema;
 using MCMS.Base.Data.Entities;
 using MCMS.Base.Helpers;
 
-namespace MCMS.Logging.AuditLogs.AuditLogEntries
+namespace MCMS.Logging.AuditLogs.AuditLogEntries;
+
+[Table("AuditLogEntries")]
+public class AuditLogEntryEntity : Entity
 {
-    [Table("AuditLogEntries")]
-    public class AuditLogEntryEntity : Entity
+    public MCMS.Base.Auth.User Author { get; set; }
+
+    public string Ip { get; set; }
+    public string Category { get; set; }
+
+    public string Controller { get; set; }
+
+    public string Action { get; set; }
+    public string Path { get; set; }
+
+    [Required] public string TraceIdentifier { get; set; }
+
+    public string SerializedData
     {
-        public MCMS.Base.Auth.User Author { get; set; }
+        get => SerializablePropertyUtils.SerializeOrEmpty(Data);
+        set => Data = SerializablePropertyUtils.DeserializeOrDefault<Dictionary<string, object>>(value);
+    }
 
-        public string Ip { get; set; }
-        public string Category { get; set; }
+    [NotMapped] public Dictionary<string, object> Data { get; set; }
 
-        public string Controller { get; set; }
+    public DateTime Begin { get; set; }
+    public DateTime End { get; set; }
 
-        public string Action { get; set; }
-        public string Path { get; set; }
-
-        [Required] public string TraceIdentifier { get; set; }
-
-        public string SerializedData
-        {
-            get => SerializablePropertyUtils.SerializeOrEmpty(Data);
-            set => Data = SerializablePropertyUtils.DeserializeOrDefault<Dictionary<string, object>>(value);
-        }
-
-        [NotMapped] public Dictionary<string, object> Data { get; set; }
-
-        public DateTime Begin { get; set; }
-        public DateTime End { get; set; }
-
-        public override string ToString()
-        {
-            return Id;
-        }
+    public override string ToString()
+    {
+        return Id;
     }
 }

@@ -1,9 +1,8 @@
-namespace MCMS.Display.ModelDisplay
-{
-    public class IndexPageConfig
-    {
-        public string IndexPageTitle { get; set; }
+namespace MCMS.Display.ModelDisplay;
 
-        public TableConfig.TableConfig TableConfig { get; set; }
-    }
+public class IndexPageConfig
+{
+    public string IndexPageTitle { get; set; }
+
+    public TableConfig.TableConfig TableConfig { get; set; }
 }

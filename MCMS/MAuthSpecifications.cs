@@ -10,31 +10,30 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using MCMS.Data;
 
-namespace MCMS
+namespace MCMS;
+
+public class MAuthSpecifications : MSpecifications
 {
-    public class MAuthSpecifications : MSpecifications
+    public override void ConfigureServices(IServiceCollection services)
     {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddDefaultIdentityWithBs4<User>(options =>
-                {
-                    options.SignIn.RequireConfirmedAccount = Env.GetBool("REQUIRE_CONFIRMED_ACCOUNT");
-                    options.Password.RequireUppercase = false;
-                    options.Password.RequireNonAlphanumeric = false;
-                })
-                .AddRoles<Role>()
-                .AddClaimsPrincipalFactory<MUserClaimsPrincipalFactory>()
-                .AddEntityFrameworkStores<BaseDbContext>();
-            services.AddScoped<UsersTableConfigService>();
-            services.AddScoped<AuthService>();
-            services.AddOptions<EntitySeeders>().Configure(seeders => { seeders.Add<RolesSeeder>(); });
-        }
+        services.AddDefaultIdentityWithBs4<User>(options =>
+            {
+                options.SignIn.RequireConfirmedAccount = Env.GetBool("REQUIRE_CONFIRMED_ACCOUNT");
+                options.Password.RequireUppercase = false;
+                options.Password.RequireNonAlphanumeric = false;
+            })
+            .AddRoles<Role>()
+            .AddClaimsPrincipalFactory<MUserClaimsPrincipalFactory>()
+            .AddEntityFrameworkStores<BaseDbContext>();
+        services.AddScoped<UsersTableConfigService>();
+        services.AddScoped<AuthService>();
+        services.AddOptions<EntitySeeders>().Configure(seeders => { seeders.Add<RolesSeeder>(); });
+    }
 
 
-        public override void Configure(IApplicationBuilder app, IServiceProvider serviceProvider)
-        {
-            app.UseAuthentication();
-            app.UseAuthorization();
-        }
+    public override void Configure(IApplicationBuilder app, IServiceProvider serviceProvider)
+    {
+        app.UseAuthentication();
+        app.UseAuthorization();
     }
 }

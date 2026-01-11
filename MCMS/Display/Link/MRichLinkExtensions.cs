@@ -2,108 +2,107 @@ using System.Collections.Generic;
 using System.Linq;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
-namespace MCMS.Display.Link
+namespace MCMS.Display.Link;
+
+public static class MRichLinkExtensions
 {
-    public static class MRichLinkExtensions
+    public static T AsButton<T>(this T value, string cssClasses) where T : MRichLink =>
+        value.WithCssClasses($"btn btn-{cssClasses}");
+
+    public static T ToggleModal<T>(this T value, bool isWith) where T : MRichLink
     {
-        public static T AsButton<T>(this T value, string cssClasses) where T : MRichLink =>
-            value.WithCssClasses($"btn btn-{cssClasses}");
-
-        public static T ToggleModal<T>(this T value, bool isWith) where T : MRichLink
+        if (value.GetData("toggle") is string str && str == "ajax-modal")
         {
-            if (value.GetData("toggle") is string str && str == "ajax-modal")
+            if (!isWith)
             {
-                if (!isWith)
-                {
-                    value.RemoveData("toggle");
-                }
+                value.RemoveData("toggle");
             }
-            else if (isWith)
-            {
-                value.SetData("toggle", "ajax-modal");
-            }
-
-            return value;
         }
-
-        public static T WithModal<T>(this T value, string backdrop = "static", bool keyboard = false)
-            where T : MRichLink
+        else if (isWith)
         {
             value.SetData("toggle", "ajax-modal");
-            value.SetData("modal-backdrop", backdrop);
-            value.SetData("modal-keyboard", keyboard.ToString().ToLower());
-            return value;
         }
 
-        public static T WithValues<T>(this T value, object values) where T : MRichLink
+        return value;
+    }
+
+    public static T WithModal<T>(this T value, string backdrop = "static", bool keyboard = false)
+        where T : MRichLink
+    {
+        value.SetData("toggle", "ajax-modal");
+        value.SetData("modal-backdrop", backdrop);
+        value.SetData("modal-keyboard", keyboard.ToString().ToLower());
+        return value;
+    }
+
+    public static T WithValues<T>(this T value, object values) where T : MRichLink
+    {
+        value.Values = values;
+        return value;
+    }
+
+    public static T WithCssClasses<T>(this T value, string cssClasses) where T : MRichLink
+    {
+        value.CssClasses = $"{(value.CssClasses != null ? value.CssClasses + " " : "")}{cssClasses}";
+        return value;
+    }
+
+    public static T WithData<T>(this T link, string key, object value) where T : MRichLink
+    {
+        link.SetData(key, value);
+        return link;
+    }
+
+    public static void SetData<T>(this T link, string key, object value) where T : MRichLink
+    {
+        link.AnchorData ??= new();
+        link.AnchorData[key] = value;
+    }
+
+    public static object GetData<T>(this T link, string key) where T : MRichLink
+    {
+        if (link.AnchorData == null || !link.AnchorData.ContainsKey(key))
         {
-            value.Values = values;
-            return value;
+            return null;
         }
 
-        public static T WithCssClasses<T>(this T value, string cssClasses) where T : MRichLink
-        {
-            value.CssClasses = $"{(value.CssClasses != null ? value.CssClasses + " " : "")}{cssClasses}";
-            return value;
-        }
+        return link.AnchorData[key];
+    }
 
-        public static T WithData<T>(this T link, string key, object value) where T : MRichLink
-        {
-            link.SetData(key, value);
-            return link;
-        }
+    public static Dictionary<string, object> GetData<T>(this T link) where T : MRichLink
+    {
+        return link.AnchorData ?? new Dictionary<string, object>();
+    }
 
-        public static void SetData<T>(this T link, string key, object value) where T : MRichLink
+    public static void RemoveData<T>(this T link, string key) where T : MRichLink
+    {
+        if (link.AnchorData != null && link.AnchorData.ContainsKey(key))
         {
-            link.AnchorData ??= new();
-            link.AnchorData[key] = value;
+            link.AnchorData.Remove(key);
         }
+    }
 
-        public static object GetData<T>(this T link, string key) where T : MRichLink
+    public static bool HasData<T>(this T link) where T : MRichLink
+    {
+        return link.AnchorData != null && link.AnchorData.Any();
+    }
+
+    public static T Clone<T>(this T link) where T : MRichLink, new()
+    {
+        var clone = new T();
+
+        var props = typeof(T).GetProperties().Where(prop => prop.CanWrite);
+        foreach (var propertyInfo in props)
         {
-            if (link.AnchorData == null || !link.AnchorData.ContainsKey(key))
+            var value = propertyInfo.GetValue(link);
+            if (value == null || propertyInfo.PropertyType.GetDefaultValue() == value)
             {
-                return null;
+                continue;
             }
 
-            return link.AnchorData[key];
+            propertyInfo.SetValue(clone, value);
         }
 
-        public static Dictionary<string, object> GetData<T>(this T link) where T : MRichLink
-        {
-            return link.AnchorData ?? new Dictionary<string, object>();
-        }
-
-        public static void RemoveData<T>(this T link, string key) where T : MRichLink
-        {
-            if (link.AnchorData != null && link.AnchorData.ContainsKey(key))
-            {
-                link.AnchorData.Remove(key);
-            }
-        }
-
-        public static bool HasData<T>(this T link) where T : MRichLink
-        {
-            return link.AnchorData != null && link.AnchorData.Any();
-        }
-
-        public static T Clone<T>(this T link) where T : MRichLink, new()
-        {
-            var clone = new T();
-
-            var props = typeof(T).GetProperties().Where(prop => prop.CanWrite);
-            foreach (var propertyInfo in props)
-            {
-                var value = propertyInfo.GetValue(link);
-                if (value == null || propertyInfo.PropertyType.GetDefaultValue() == value)
-                {
-                    continue;
-                }
-
-                propertyInfo.SetValue(clone, value);
-            }
-
-            return clone;
-        }
+        return clone;
     }
 }

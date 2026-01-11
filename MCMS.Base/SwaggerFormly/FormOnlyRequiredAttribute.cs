@@ -1,12 +1,11 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace MCMS.Base.SwaggerFormly
+namespace MCMS.Base.SwaggerFormly;
+
+public class FormOnlyRequiredAttribute : ValidationAttribute
 {
-    public class FormOnlyRequiredAttribute : ValidationAttribute
+    public override bool IsValid(object value)
     {
-        public override bool IsValid(object value)
-        {
-            return true;
-        }
+        return true;
     }
 }

@@ -3,27 +3,26 @@ using System.Text;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 
-namespace MCMS.Auth.Models
+namespace MCMS.Auth.Models;
+
+public class JwtKeyModel
 {
-    public class JwtKeyModel
+    public string Key { get; set; }
+    public DateTime Created { get; set; }
+
+    public string ToJson()
     {
-        public string Key { get; set; }
-        public DateTime Created { get; set; }
+        return JsonConvert.SerializeObject(this);
+    }
 
-        public string ToJson()
-        {
-            return JsonConvert.SerializeObject(this);
-        }
+    public static JwtKeyModel FromJson(string json)
+    {
+        return JsonConvert.DeserializeObject<JwtKeyModel>(json);
+    }
 
-        public static JwtKeyModel FromJson(string json)
-        {
-            return JsonConvert.DeserializeObject<JwtKeyModel>(json);
-        }
-
-        public SigningCredentials GetSigningCredentials()
-        {
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Key));
-            return new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-        }
+    public SigningCredentials GetSigningCredentials()
+    {
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Key));
+        return new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
     }
 }

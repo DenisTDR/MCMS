@@ -20,14 +20,12 @@ public class FileViewModel : ViewModel
         ? "--"
         : "<a target='_blank' href='" + Url + "'>" + OriginalName + "</a>";
 
-    private string _url;
-
     public string Url
     {
-        get => _url ??= !string.IsNullOrEmpty(VirtualPath) && !string.IsNullOrEmpty(Name)
+        get => field ??= !string.IsNullOrEmpty(VirtualPath) && !string.IsNullOrEmpty(Name)
             ? Path.Combine(RoutePrefixes.RoutePrefix, VirtualPath.TrimStart('/'), Name + Extension)
             : null;
-        set => _url = value;
+        set;
     }
 
     public string Name { get; set; }

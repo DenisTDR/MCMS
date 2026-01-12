@@ -2,10 +2,16 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.IO;
 using MCMS.Base.Data.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace MCMS.Files.Models;
 
 [Table("Files")]
+[Index(nameof(OriginalName))]
+[Index(nameof(Name))]
+[Index(nameof(Purpose))]
+[Index(nameof(Claimed))]
+[Index(nameof(OwnerToken))]
 public class FileEntity : Entity
 {
     public string OriginalName { get; set; }
@@ -29,8 +35,5 @@ public class FileEntity : Entity
         ? null
         : Path.Combine(PhysicalPath, PhysicalName);
 
-    public override string ToString()
-    {
-        return OriginalName;
-    }
+    public override string ToString() => OriginalName;
 }

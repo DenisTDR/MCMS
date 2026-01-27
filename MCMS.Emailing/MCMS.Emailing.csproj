@@ -26,7 +26,7 @@
     
     <ItemGroup>
         <PackageReference Include="brevo_csharp" Version="1.1.1" />
-        <PackageReference Include="Google.Apis.Gmail.v1" Version="1.72.0.3966" />
+        <PackageReference Include="Google.Apis.Gmail.v1" Version="1.73.0.4029" />
         <PackageReference Include="SendGrid" Version="9.29.3" />
         <PackageReference Include="MimeKitLite" Version="4.14.0" />
         <PackageReference Include="MailKitLite" Version="4.14.1" />

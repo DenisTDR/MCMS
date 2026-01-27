@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using MCMS.Base;
 using MCMS.Base.Builder;
+using MCMS.Base.Data;
 using MCMS.Base.Extensions;
 using MCMS.Base.Helpers;
 using MCMS.Base.SwaggerFormly.Models;
@@ -63,8 +64,12 @@ public class MAppBuilder
     {
         _addDbContextAction = services =>
         {
-            services.AddDbContext<T>(optionsBuilder =>
+            services.AddDbContext<T>((sp, optionsBuilder) =>
             {
+                // Auto-discover and add all registered IMcmsDbInterceptor implementations
+                var interceptors = sp.GetServices<IMcmsDbInterceptor>();
+                optionsBuilder.AddInterceptors(interceptors);
+                
                 optionsBuilder.UseNpgsql(Env.GetOrThrow("DB_URL"),
                     o => { pgOptionsBuilder?.Invoke(o); });
             });

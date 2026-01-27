@@ -22,3 +22,7 @@ public class ServiceAttribute : Attribute
         ServiceType = serviceType;
     }
 }
+
+[AttributeUsage(AttributeTargets.Class)]
+public class ServiceAttribute<T>(ServiceLifetime lifetime = ServiceLifetime.Scoped)
+    : ServiceAttribute(lifetime, typeof(T));

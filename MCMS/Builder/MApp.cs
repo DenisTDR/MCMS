@@ -87,6 +87,10 @@ public class MApp : IMApp
             {
                 buildMappingConfig.CreateMaps(expression);
             }
+
+            if (Env.Get("AUTOMAPPER_LICENSE_KEY") is { } automapperLicenseKey)
+                expression.LicenseKey = automapperLicenseKey;
+            
         }, typeof(MBaseSpecifications));
 
         foreach (var smpSpec in _specifications)

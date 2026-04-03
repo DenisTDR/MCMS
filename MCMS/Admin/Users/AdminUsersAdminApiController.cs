@@ -21,6 +21,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MCMS.Admin.Users;
 
+#pragma warning disable ASP0023
 [Authorize(Roles = "Admin, Moderator")]
 public class AdminUsersAdminApiController : AdminApiController
 {

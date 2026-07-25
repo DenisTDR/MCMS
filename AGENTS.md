@@ -1,7 +1,3 @@
----
-inclusion: auto
----
-
 # MCMS — Micro CMS Framework Overview
 
 MCMS is a modular ASP.NET Core framework (C#) used as a git submodule. It provides a full-stack admin CMS scaffold: data layer, authentication, display configuration, dynamic forms via Swagger/Formly, emailing, file management, and logging. Consumer projects add it as a submodule and extend it through the **Specifications** pattern.
@@ -60,16 +56,16 @@ git submodule update --init --recursive
 - Public API controllers: `[ROUTE_PREFIX]/api/[Controller]/[Action]`
 - Swagger docs: `[ROUTE_PREFIX]/api/docs`
 
-## Deep-Dive Steering Files
+## Deep-Dive Reference Docs
 
-When you need detailed guidance on a specific area, load the relevant file manually:
+This is a summary. For detailed guidance on a specific area, **open the relevant file below** — read it directly, the same as you would any other source file:
 
 | Topic | File |
 |---|---|
-| App bootstrap, `MSpecifications`, `MAppBuilder` | `mcms-setup-and-bootstrap.md` |
-| Entities, `Repository<T>`, EF config, seeding | `mcms-data-layer.md` |
-| Controllers, routing, filters, Swagger groups | `mcms-controllers-and-routing.md` |
-| TableConfig, DetailsConfig, Menu, `MRichLink` | `mcms-display-ui.md` |
-| Cookie auth, JWT, roles, claims | `mcms-auth.md` |
-| Translations, Emailing, Files, Logging modules | `mcms-optional-modules.md` |
-| Naming conventions, CRUD patterns, error handling | `mcms-patterns-and-conventions.md` |
+| App bootstrap, `MSpecifications`, `MAppBuilder` | [.agents/rules/setup-and-bootstrap.md](.agents/rules/setup-and-bootstrap.md) |
+| Entities, `Repository<T>`, EF config, seeding | [.agents/rules/data-layer.md](.agents/rules/data-layer.md) |
+| Controllers, routing, filters, Swagger groups | [.agents/rules/controllers-and-routing.md](.agents/rules/controllers-and-routing.md) |
+| TableConfig, DetailsConfig, Menu, `MRichLink` | [.agents/rules/display-ui.md](.agents/rules/display-ui.md) |
+| Cookie auth, JWT, roles, claims | [.agents/rules/auth.md](.agents/rules/auth.md) |
+| Translations, Emailing, Files, Logging modules | [.agents/rules/optional-modules.md](.agents/rules/optional-modules.md) |
+| Naming conventions, CRUD patterns, error handling | [.agents/rules/patterns-and-conventions.md](.agents/rules/patterns-and-conventions.md) |

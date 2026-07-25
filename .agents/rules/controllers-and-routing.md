@@ -1,7 +1,3 @@
----
-inclusion: manual
----
-
 # MCMS — Controllers & Routing
 
 ## Controller Hierarchy

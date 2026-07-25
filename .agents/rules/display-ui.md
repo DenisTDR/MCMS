@@ -1,7 +1,3 @@
----
-inclusion: manual
----
-
 # MCMS — Display & UI Configuration
 
 ## TableConfig — Data Tables

@@ -1,7 +1,3 @@
----
-inclusion: manual
----
-
 # MCMS — Application Setup & Bootstrap
 
 ## Bootstrap Pattern

@@ -1,7 +1,3 @@
----
-inclusion: manual
----
-
 # MCMS — Data Layer
 
 ## Entity Contracts
@@ -98,7 +94,7 @@ MCMS auto-discovers all `IMappingConfig` implementations across all specificatio
 
 `DtQueryService<TVm>` handles server-side filtering, sorting, and pagination for DataTables.
 
-Columns are configured via `[TableColumn]` attributes on the ViewModel (see `mcms-display-ui.md`). The service maps DataTables requests to EF Core queries automatically.
+Columns are configured via `[TableColumn]` attributes on the ViewModel (see `display-ui.md`). The service maps DataTables requests to EF Core queries automatically.
 
 ## Seeding
 

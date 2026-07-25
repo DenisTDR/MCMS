@@ -1,7 +1,3 @@
----
-inclusion: manual
----
-
 # MCMS — Patterns & Conventions
 
 ## Naming Conventions

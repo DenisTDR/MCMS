@@ -1,7 +1,3 @@
----
-inclusion: manual
----
-
 # MCMS — Authentication & Authorization
 
 ## Overview

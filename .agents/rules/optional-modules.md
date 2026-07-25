@@ -1,7 +1,3 @@
----
-inclusion: manual
----
-
 # MCMS — Optional Modules
 
 ## MCMS.Common — Translations
@@ -134,7 +130,7 @@ Application logs are stored in the database and viewable in the admin dashboard.
 
 ## MCMS.Auth — JWT Authentication
 
-See `mcms-auth.md` for full JWT authentication documentation.
+See `auth.md` for full JWT authentication documentation.
 
 ```csharp
 mAppBuilder.AddSpecifications<MJwtAuthSpecifications>();
